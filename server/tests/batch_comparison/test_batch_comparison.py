@@ -103,14 +103,8 @@ def test_batch_comparison_too_many_votes(
         b"Batch 5,100,50,50\n"
         b"Batch 6,100,50,50\n"
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/batch-tallies",
-        data={
-            "batchTallies": (
-                io.BytesIO(batch_tallies_file),
-                "batchTallies.csv",
-            )
-        },
+    rv = setup_batch_tallies_upload(
+        client, io.BytesIO(batch_tallies_file), election_id, jurisdiction_ids[1]
     )
     assert_ok(rv)
 

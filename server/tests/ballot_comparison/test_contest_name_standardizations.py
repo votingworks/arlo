@@ -237,15 +237,12 @@ def test_standardize_contest_names_cvr_change(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={
-            "cvrs": (
-                io.BytesIO(TEST_CVRS.replace("Contest 1", "Contest A").encode()),
-                "cvrs.csv",
-            ),
-            "cvrFileType": "DOMINION",
-        },
+    rv = setup_cvrs_upload(
+        client,
+        io.BytesIO(TEST_CVRS.replace("Contest 1", "Contest A").encode()),
+        election_id,
+        jurisdiction_ids[0],
+        "DOMINION",
     )
     assert_ok(rv)
 

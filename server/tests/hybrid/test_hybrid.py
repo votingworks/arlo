@@ -530,33 +530,27 @@ def test_hybrid_manifest_validation_too_many_votes(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
     for jurisdiction_id in jurisdiction_ids[:2]:
-        rv = client.put(
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/ballot-manifest",
-            data={
-                "manifest": (
-                    io.BytesIO(
-                        b"Tabulator,Batch Name,Number of Ballots,CVR\n"
-                        b"TABULATOR1,BATCH1,3,Y\n"
-                        b"TABULATOR1,BATCH2,3,Y\n"
-                        b"TABULATOR2,BATCH1,3,Y\n"
-                        b"TABULATOR2,BATCH2,6,Y\n"
-                        b"TABULATOR3,BATCH1,10,N"
-                    ),
-                    "manifest.csv",
-                )
-            },
+        rv = setup_ballot_manifest_upload(
+            client,
+            io.BytesIO(
+                b"Tabulator,Batch Name,Number of Ballots,CVR\n"
+                b"TABULATOR1,BATCH1,3,Y\n"
+                b"TABULATOR1,BATCH2,3,Y\n"
+                b"TABULATOR2,BATCH1,3,Y\n"
+                b"TABULATOR2,BATCH2,6,Y\n"
+                b"TABULATOR3,BATCH1,10,N"
+            ),
+            election_id,
+            jurisdiction_id,
         )
         assert_ok(rv)
 
-        rv = client.put(
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/cvrs",
-            data={
-                "cvrs": (
-                    io.BytesIO(TEST_CVRS.encode()),
-                    "cvrs.csv",
-                ),
-                "cvrFileType": "DOMINION",
-            },
+        rv = setup_cvrs_upload(
+            client,
+            io.BytesIO(TEST_CVRS.encode()),
+            election_id,
+            jurisdiction_id,
+            "DOMINION",
         )
         assert_ok(rv)
 
@@ -624,33 +618,27 @@ def test_hybrid_manifest_validation_too_few_cvr_ballots(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
     for jurisdiction_id in jurisdiction_ids[:2]:
-        rv = client.put(
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/ballot-manifest",
-            data={
-                "manifest": (
-                    io.BytesIO(
-                        b"Tabulator,Batch Name,Number of Ballots,CVR\n"
-                        b"TABULATOR1,BATCH1,3,Y\n"
-                        b"TABULATOR1,BATCH2,3,Y\n"
-                        b"TABULATOR2,BATCH1,3,Y\n"
-                        b"TABULATOR2,BATCH2,4,Y\n"
-                        b"TABULATOR3,BATCH1,12,N"
-                    ),
-                    "manifest.csv",
-                )
-            },
+        rv = setup_ballot_manifest_upload(
+            client,
+            io.BytesIO(
+                b"Tabulator,Batch Name,Number of Ballots,CVR\n"
+                b"TABULATOR1,BATCH1,3,Y\n"
+                b"TABULATOR1,BATCH2,3,Y\n"
+                b"TABULATOR2,BATCH1,3,Y\n"
+                b"TABULATOR2,BATCH2,4,Y\n"
+                b"TABULATOR3,BATCH1,12,N"
+            ),
+            election_id,
+            jurisdiction_id,
         )
         assert_ok(rv)
 
-        rv = client.put(
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/cvrs",
-            data={
-                "cvrs": (
-                    io.BytesIO(TEST_CVRS.encode()),
-                    "cvrs.csv",
-                ),
-                "cvrFileType": "DOMINION",
-            },
+        rv = setup_cvrs_upload(
+            client,
+            io.BytesIO(TEST_CVRS.encode()),
+            election_id,
+            jurisdiction_id,
+            "DOMINION",
         )
         assert_ok(rv)
 
@@ -700,33 +688,27 @@ def test_hybrid_manifest_validation_few_non_cvr_ballots(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
     for jurisdiction_id in jurisdiction_ids[:2]:
-        rv = client.put(
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/ballot-manifest",
-            data={
-                "manifest": (
-                    io.BytesIO(
-                        b"Tabulator,Batch Name,Number of Ballots,CVR\n"
-                        b"TABULATOR1,BATCH1,3,Y\n"
-                        b"TABULATOR1,BATCH2,3,Y\n"
-                        b"TABULATOR2,BATCH1,3,Y\n"
-                        b"TABULATOR2,BATCH2,6,Y\n"
-                        b"TABULATOR3,BATCH1,10,N"
-                    ),
-                    "manifest.csv",
-                )
-            },
+        rv = setup_ballot_manifest_upload(
+            client,
+            io.BytesIO(
+                b"Tabulator,Batch Name,Number of Ballots,CVR\n"
+                b"TABULATOR1,BATCH1,3,Y\n"
+                b"TABULATOR1,BATCH2,3,Y\n"
+                b"TABULATOR2,BATCH1,3,Y\n"
+                b"TABULATOR2,BATCH2,6,Y\n"
+                b"TABULATOR3,BATCH1,10,N"
+            ),
+            election_id,
+            jurisdiction_id,
         )
         assert_ok(rv)
 
-        rv = client.put(
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/cvrs",
-            data={
-                "cvrs": (
-                    io.BytesIO(TEST_CVRS.encode()),
-                    "cvrs.csv",
-                ),
-                "cvrFileType": "DOMINION",
-            },
+        rv = setup_cvrs_upload(
+            client,
+            io.BytesIO(TEST_CVRS.encode()),
+            election_id,
+            jurisdiction_id,
+            "DOMINION",
         )
         assert_ok(rv)
 
@@ -822,15 +804,8 @@ def test_hybrid_filter_cvrs(
         "16,TABULATOR3,BATCH1,2,3-1-2,12345,COUNTY,0,1,1,1,0\n"
         "17,TABULATOR3,BATCH1,3,3-1-3,12345,COUNTY,0,1,1,1,0\n"
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={
-            "cvrs": (
-                io.BytesIO(cvr.encode()),
-                "cvrs.csv",
-            ),
-            "cvrFileType": "DOMINION",
-        },
+    rv = setup_cvrs_upload(
+        client, io.BytesIO(cvr.encode()), election_id, jurisdiction_ids[0], "DOMINION"
     )
     assert_ok(rv)
 

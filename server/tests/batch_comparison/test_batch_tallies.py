@@ -12,19 +12,16 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
-        data={
-            "manifest": (
-                io.BytesIO(
-                    b"Batch Name,Number of Ballots\n"
-                    b"Batch 1,200\n"
-                    b"Batch 2,300\n"
-                    b"Batch 3,400\n"
-                ),
-                "manifest.csv",
-            )
-        },
+    rv = setup_ballot_manifest_upload(
+        client,
+        io.BytesIO(
+            b"Batch Name,Number of Ballots\n"
+            b"Batch 1,200\n"
+            b"Batch 2,300\n"
+            b"Batch 3,400\n"
+        ),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
@@ -51,14 +48,8 @@ def test_batch_tallies_upload(
         b"Batch 1,1,10,100\n"
         b"Batch 2,2,20,200\n"
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
-        data={
-            "batchTallies": (
-                io.BytesIO(batch_tallies_file),
-                "batchTallies.csv",
-            )
-        },
+    rv = setup_batch_tallies_upload(
+        client, io.BytesIO(batch_tallies_file), election_id, jurisdiction_ids[0]
     )
     assert_ok(rv)
 
@@ -69,7 +60,7 @@ def test_batch_tallies_upload(
         json.loads(rv.data),
         {
             "file": {
-                "name": "batchTallies.csv",
+                "name": asserts_startswith("batchTallies"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -119,7 +110,7 @@ def test_batch_tallies_upload(
         jurisdictions[0]["batchTallies"],
         {
             "file": {
-                "name": "batchTallies.csv",
+                "name": asserts_startswith("batchTallies"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -137,8 +128,8 @@ def test_batch_tallies_upload(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies/csv"
     )
     assert rv.status_code == 200
-    assert (
-        rv.headers["Content-Disposition"] == 'attachment; filename="batchTallies.csv"'
+    assert rv.headers["Content-Disposition"].startswith(
+        'attachment; filename="batchTallies'
     )
     assert rv.data == batch_tallies_file
 
@@ -153,20 +144,18 @@ def test_batch_tallies_clear(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
-        data={
-            "batchTallies": (
-                io.BytesIO(
-                    b"Batch Name,candidate 1,candidate 2,candidate 3\n"
-                    b"Batch 1,1,10,100\n"
-                    b"Batch 2,2,20,200\n"
-                    b"Batch 3,3,30,300\n"
-                ),
-                "batchTallies.csv",
-            )
-        },
+    rv = setup_batch_tallies_upload(
+        client,
+        io.BytesIO(
+            b"Batch Name,candidate 1,candidate 2,candidate 3\n"
+            b"Batch 1,1,10,100\n"
+            b"Batch 2,2,20,200\n"
+            b"Batch 3,3,30,300\n"
+        ),
+        election_id,
+        jurisdiction_ids[0],
     )
+
     assert_ok(rv)
 
     file_id = Jurisdiction.query.get(jurisdiction_ids[0]).batch_tallies_file_id
@@ -202,37 +191,31 @@ def test_batch_tallies_replace_as_audit_admin(
 ):
     # Check that AA can also get/put/clear batch tallies
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
-        data={
-            "batchTallies": (
-                io.BytesIO(
-                    b"Batch Name,candidate 1,candidate 2,candidate 3\n"
-                    b"Batch 1,1,10,100\n"
-                    b"Batch 2,2,20,200\n"
-                    b"Batch 3,3,30,300\n"
-                ),
-                "batchTallies.csv",
-            )
-        },
+    rv = setup_batch_tallies_upload(
+        client,
+        io.BytesIO(
+            b"Batch Name,candidate 1,candidate 2,candidate 3\n"
+            b"Batch 1,1,10,100\n"
+            b"Batch 2,2,20,200\n"
+            b"Batch 3,3,30,300\n"
+        ),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
     file_id = Jurisdiction.query.get(jurisdiction_ids[0]).batch_tallies_file_id
 
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
-        data={
-            "batchTallies": (
-                io.BytesIO(
-                    b"Batch Name,candidate 1,candidate 2,candidate 3\n"
-                    b"Batch 1,11,10,100\n"
-                    b"Batch 2,2,22,200\n"
-                    b"Batch 3,3,30,333\n"
-                ),
-                "batchTallies.csv",
-            )
-        },
+    rv = setup_batch_tallies_upload(
+        client,
+        io.BytesIO(
+            b"Batch Name,candidate 1,candidate 2,candidate 3\n"
+            b"Batch 1,11,10,100\n"
+            b"Batch 2,2,22,200\n"
+            b"Batch 3,3,30,333\n"
+        ),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
@@ -292,8 +275,8 @@ def test_batch_tallies_upload_missing_file(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
+    rv = client.post(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies/upload-complete",
         data={},
     )
     assert rv.status_code == 400
@@ -301,7 +284,7 @@ def test_batch_tallies_upload_missing_file(
         "errors": [
             {
                 "errorType": "Bad Request",
-                "message": "Missing required file parameter 'batchTallies'",
+                "message": "Missing required JSON parameter: storagePathKey",
             }
         ]
     }
@@ -317,9 +300,24 @@ def test_batch_tallies_upload_bad_csv(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
-        data={"batchTallies": (io.BytesIO(b"not a CSV file"), "random.txt")},
+    rv = client.post(
+        "/api/file-upload",
+        data={
+            "file": (
+                io.BytesIO(b"not a CSV file"),
+                "random.txt",
+            ),
+            "key": "test_dir/random.txt",
+        },
+    )
+    assert_ok(rv)
+    rv = client.post(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies/upload-complete",
+        data={
+            "storagePathKey": "test_dir/random.txt",
+            "fileName": "random.txt",
+            "fileType": "text/plain",
+        },
     )
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
@@ -347,14 +345,11 @@ def test_batch_tallies_upload_missing_choice(
     for missing_field in headers:
         header_row = ",".join(h for h in headers if h != missing_field)
 
-        rv = client.put(
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
-            data={
-                "batchTallies": (
-                    io.BytesIO(header_row.encode() + b"\n1,2,3"),
-                    "batchTallies.csv",
-                )
-            },
+        rv = setup_batch_tallies_upload(
+            client,
+            io.BytesIO(header_row.encode() + b"\n1,2,3"),
+            election_id,
+            jurisdiction_ids[0],
         )
         assert_ok(rv)
 
@@ -365,7 +360,7 @@ def test_batch_tallies_upload_missing_choice(
             json.loads(rv.data),
             {
                 "file": {
-                    "name": "batchTallies.csv",
+                    "name": asserts_startswith("batchTallies"),
                     "uploadedAt": assert_is_date,
                 },
                 "processing": {
@@ -425,14 +420,8 @@ def test_batch_tallies_wrong_batch_names(
         ),
     ]
     for bad_file, expected_error in bad_files:
-        rv = client.put(
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
-            data={
-                "batchTallies": (
-                    io.BytesIO(bad_file),
-                    "batchTallies.csv",
-                )
-            },
+        rv = setup_batch_tallies_upload(
+            client, io.BytesIO(bad_file), election_id, jurisdiction_ids[0]
         )
         assert_ok(rv)
 
@@ -443,7 +432,7 @@ def test_batch_tallies_wrong_batch_names(
             json.loads(rv.data),
             {
                 "file": {
-                    "name": "batchTallies.csv",
+                    "name": asserts_startswith("batchTallies"),
                     "uploadedAt": assert_is_date,
                 },
                 "processing": {
@@ -466,19 +455,16 @@ def test_batch_tallies_too_many_tallies(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
-        data={
-            "batchTallies": (
-                io.BytesIO(
-                    b"Batch Name,candidate 1,candidate 2,candidate 3\n"
-                    b"Batch 3,3,30,300\n"
-                    b"Batch 1,300,10,100\n"
-                    b"Batch 2,2,20,200\n"
-                ),
-                "batchTallies.csv",
-            )
-        },
+    rv = setup_batch_tallies_upload(
+        client,
+        io.BytesIO(
+            b"Batch Name,candidate 1,candidate 2,candidate 3\n"
+            b"Batch 3,3,30,300\n"
+            b"Batch 1,300,10,100\n"
+            b"Batch 2,2,20,200\n"
+        ),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
@@ -489,7 +475,7 @@ def test_batch_tallies_too_many_tallies(
         json.loads(rv.data),
         {
             "file": {
-                "name": "batchTallies.csv",
+                "name": asserts_startswith("batchTallies"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -518,19 +504,16 @@ def test_batch_tallies_ballot_polling(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
-        data={
-            "batchTallies": (
-                io.BytesIO(
-                    b"Batch Name,candidate 1,candidate 2,candidate 3\n"
-                    b"Batch 1,300,10,100\n"
-                    b"Batch 2,2,20,200\n"
-                    b"Batch 3,3,30,300\n"
-                ),
-                "batchTallies.csv",
-            )
-        },
+    rv = setup_batch_tallies_upload(
+        client,
+        io.BytesIO(
+            b"Batch Name,candidate 1,candidate 2,candidate 3\n"
+            b"Batch 1,300,10,100\n"
+            b"Batch 2,2,20,200\n"
+            b"Batch 3,3,30,300\n"
+        ),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
@@ -553,19 +536,16 @@ def test_batch_tallies_bad_jurisdiction(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, f"j3-{election_id}@example.com"
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[2]}/batch-tallies",
-        data={
-            "batchTallies": (
-                io.BytesIO(
-                    b"Batch Name,candidate 1,candidate 2,candidate 3\n"
-                    b"Batch 1,300,10,100\n"
-                    b"Batch 2,2,20,200\n"
-                    b"Batch 3,3,30,300\n"
-                ),
-                "batchTallies.csv",
-            )
-        },
+    rv = setup_batch_tallies_upload(
+        client,
+        io.BytesIO(
+            b"Batch Name,candidate 1,candidate 2,candidate 3\n"
+            b"Batch 1,300,10,100\n"
+            b"Batch 2,2,20,200\n"
+            b"Batch 3,3,30,300\n"
+        ),
+        election_id,
+        jurisdiction_ids[2],
     )
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
@@ -587,19 +567,16 @@ def test_batch_tallies_before_manifests(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
-        data={
-            "batchTallies": (
-                io.BytesIO(
-                    b"Batch Name,candidate 1,candidate 2,candidate 3\n"
-                    b"Batch 1,300,10,100\n"
-                    b"Batch 2,2,20,200\n"
-                    b"Batch 3,3,30,300\n"
-                ),
-                "batchTallies.csv",
-            )
-        },
+    rv = setup_batch_tallies_upload(
+        client,
+        io.BytesIO(
+            b"Batch Name,candidate 1,candidate 2,candidate 3\n"
+            b"Batch 1,300,10,100\n"
+            b"Batch 2,2,20,200\n"
+            b"Batch 3,3,30,300\n"
+        ),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
@@ -624,33 +601,25 @@ def test_batch_tallies_reprocess_after_manifest_reupload(
     )
 
     # Upload tallies
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
-        data={
-            "batchTallies": (
-                io.BytesIO(
-                    b"Batch Name,candidate 1,candidate 2,candidate 3\n"
-                    b"Batch 3,3,30,300\n"
-                    b"Batch 1,1,10,100\n"
-                    b"Batch 2,2,20,200\n"
-                ),
-                "batchTallies.csv",
-            )
-        },
+    rv = setup_batch_tallies_upload(
+        client,
+        io.BytesIO(
+            b"Batch Name,candidate 1,candidate 2,candidate 3\n"
+            b"Batch 3,3,30,300\n"
+            b"Batch 1,1,10,100\n"
+            b"Batch 2,2,20,200\n"
+        ),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
     # Reupload a manifest but remove a batch
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
-        data={
-            "manifest": (
-                io.BytesIO(
-                    b"Batch Name,Number of Ballots\n" b"Batch 1,200\n" b"Batch 2,300\n"
-                ),
-                "manifest.csv",
-            )
-        },
+    rv = setup_ballot_manifest_upload(
+        client,
+        io.BytesIO(b"Batch Name,Number of Ballots\n" b"Batch 1,200\n" b"Batch 2,300\n"),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
@@ -662,7 +631,7 @@ def test_batch_tallies_reprocess_after_manifest_reupload(
         json.loads(rv.data),
         {
             "file": {
-                "name": "batchTallies.csv",
+                "name": asserts_startswith("batchTallies"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -677,19 +646,16 @@ def test_batch_tallies_reprocess_after_manifest_reupload(
     assert Jurisdiction.query.get(jurisdiction_ids[0]).batch_tallies is None
 
     # Fix the manifest
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
-        data={
-            "manifest": (
-                io.BytesIO(
-                    b"Batch Name,Number of Ballots\n"
-                    b"Batch 1,200\n"
-                    b"Batch 2,300\n"
-                    b"Batch 3,400\n"
-                ),
-                "manifest.csv",
-            )
-        },
+    rv = setup_ballot_manifest_upload(
+        client,
+        io.BytesIO(
+            b"Batch Name,Number of Ballots\n"
+            b"Batch 1,200\n"
+            b"Batch 2,300\n"
+            b"Batch 3,400\n"
+        ),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
@@ -701,7 +667,7 @@ def test_batch_tallies_reprocess_after_manifest_reupload(
         json.loads(rv.data),
         {
             "file": {
-                "name": "batchTallies.csv",
+                "name": asserts_startswith("batchTallies"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {

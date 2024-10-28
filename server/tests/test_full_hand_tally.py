@@ -51,38 +51,32 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
-        data={
-            "manifest": (
-                io.BytesIO(
-                    b"Batch Name,Number of Ballots\n"
-                    b"1,200000\n"
-                    b"2,200000\n"
-                    b"3,200000\n"
-                    b"4,200000\n"
-                    b"5,200000"
-                ),
-                "manifest.csv",
-            )
-        },
+    rv = setup_ballot_manifest_upload(
+        client,
+        io.BytesIO(
+            b"Batch Name,Number of Ballots\n"
+            b"1,200000\n"
+            b"2,200000\n"
+            b"3,200000\n"
+            b"4,200000\n"
+            b"5,200000"
+        ),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/ballot-manifest",
-        data={
-            "manifest": (
-                io.BytesIO(
-                    b"Batch Name,Number of Ballots\n"
-                    b"1,200000\n"
-                    b"2,200000\n"
-                    b"3,200000\n"
-                    b"4,200000\n"
-                    b"5,200000"
-                ),
-                "manifest.csv",
-            )
-        },
+    rv = setup_ballot_manifest_upload(
+        client,
+        io.BytesIO(
+            b"Batch Name,Number of Ballots\n"
+            b"1,200000\n"
+            b"2,200000\n"
+            b"3,200000\n"
+            b"4,200000\n"
+            b"5,200000"
+        ),
+        election_id,
+        jurisdiction_ids[1],
     )
     assert_ok(rv)
 

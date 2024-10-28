@@ -1248,19 +1248,16 @@ def test_ballots_human_sort_order(
         "Batch 2",
         "Batch 10",
     ]
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
-        data={
-            "manifest": (
-                io.BytesIO(
-                    (
-                        "Batch Name,Number of Ballots\n"
-                        + "\n".join(f"{batch},10" for batch in human_ordered_batches)
-                    ).encode()
-                ),
-                "manifest.csv",
-            )
-        },
+    rv = setup_ballot_manifest_upload(
+        client,
+        io.BytesIO(
+            (
+                "Batch Name,Number of Ballots\n"
+                + "\n".join(f"{batch},10" for batch in human_ordered_batches)
+            ).encode()
+        ),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 

@@ -73,14 +73,8 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
         ),
     }
     for jurisdiction_id, manifest in manifests_by_jurisdiction.items():
-        rv = client.put(
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/ballot-manifest",
-            data={
-                "manifest": (
-                    manifest,
-                    "manifest.csv",
-                )
-            },
+        rv = setup_ballot_manifest_upload(
+            client, manifest, election_id, jurisdiction_id
         )
         assert_ok(rv)
 
@@ -131,14 +125,11 @@ def batch_tallies(
         jurisdiction_id,
         batch_tallies_file,
     ) in batch_tallies_by_jurisdiction.items():
-        rv = client.put(
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/batch-tallies",
-            data={
-                "batchTallies": (
-                    batch_tallies_file,
-                    "batchTallies.csv",
-                )
-            },
+        rv = setup_batch_tallies_upload(
+            client,
+            batch_tallies_file,
+            election_id,
+            jurisdiction_id,
         )
         assert_ok(rv)
 
@@ -260,14 +251,8 @@ def test_multi_contest_batch_comparison_jurisdiction_upload_validation(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
 
     for jurisdiction_id, batch_tallies_file, expected_error in test_cases:
-        rv = client.put(
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/batch-tallies",
-            data={
-                "batchTallies": (
-                    batch_tallies_file,
-                    "batchTallies.csv",
-                )
-            },
+        rv = setup_batch_tallies_upload(
+            client, batch_tallies_file, election_id, jurisdiction_id
         )
         assert_ok(rv)
 

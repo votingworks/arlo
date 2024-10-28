@@ -915,21 +915,16 @@ def test_batches_human_sort_order(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
     for jurisdiction_id in jurisdiction_ids[:2]:
-        rv = client.put(
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/ballot-manifest",
-            data={
-                "manifest": (
-                    io.BytesIO(
-                        (
-                            "Batch Name,Number of Ballots\n"
-                            + "\n".join(
-                                f"{batch},20" for batch in human_ordered_batches
-                            )
-                        ).encode()
-                    ),
-                    "manifest.csv",
-                )
-            },
+        rv = setup_ballot_manifest_upload(
+            client,
+            io.BytesIO(
+                (
+                    "Batch Name,Number of Ballots\n"
+                    + "\n".join(f"{batch},20" for batch in human_ordered_batches)
+                ).encode()
+            ),
+            election_id,
+            jurisdiction_id,
         )
         assert_ok(rv)
 
@@ -938,14 +933,11 @@ def test_batches_human_sort_order(
             "Batch Name,candidate 1,candidate 2,candidate 3\n"
             + "\n".join(f"{batch},10,5,5" for batch in human_ordered_batches)
         )
-        rv = client.put(
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/batch-tallies",
-            data={
-                "batchTallies": (
-                    io.BytesIO(batch_tallies_file.encode()),
-                    "batchTallies.csv",
-                )
-            },
+        rv = setup_batch_tallies_upload(
+            client,
+            io.BytesIO(batch_tallies_file.encode()),
+            election_id,
+            jurisdiction_id,
         )
         assert_ok(rv)
         rv = client.get(

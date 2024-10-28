@@ -73,14 +73,11 @@ def test_jurisdictions_list_with_manifest(
     manifest = (
         b"Batch Name,Number of Ballots\n" b"1,23\n" b"2,101\n" b"3,122\n" b"4,400"
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
-        data={
-            "manifest": (
-                io.BytesIO(manifest),
-                "manifest.csv",
-            )
-        },
+    rv = setup_ballot_manifest_upload(
+        client,
+        io.BytesIO(manifest),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
@@ -94,7 +91,7 @@ def test_jurisdictions_list_with_manifest(
                 "name": "J1",
                 "ballotManifest": {
                     "file": {
-                        "name": "manifest.csv",
+                        "name": asserts_startswith("manifest"),
                         "uploadedAt": assert_is_date,
                     },
                     "processing": {
@@ -140,7 +137,9 @@ def test_jurisdictions_list_with_manifest(
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest/csv"
     )
-    assert rv.headers["Content-Disposition"] == 'attachment; filename="manifest.csv"'
+    assert rv.headers["Content-Disposition"].startswith(
+        'attachment; filename="manifest'
+    )
     assert rv.data == manifest
 
 
@@ -155,14 +154,11 @@ def test_duplicate_batch_name(client, election_id, jurisdiction_ids):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
-        data={
-            "manifest": (
-                io.BytesIO(b"Batch Name,Number of Ballots\n" b"1,23\n" b"1,101\n"),
-                "manifest.csv",
-            )
-        },
+    rv = setup_ballot_manifest_upload(
+        client,
+        io.BytesIO(b"Batch Name,Number of Ballots\n" b"1,23\n" b"1,101\n"),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
@@ -176,7 +172,7 @@ def test_duplicate_batch_name(client, election_id, jurisdiction_ids):
                 "name": "J1",
                 "ballotManifest": {
                     "file": {
-                        "name": "manifest.csv",
+                        "name": asserts_startswith("manifest"),
                         "uploadedAt": assert_is_date,
                     },
                     "processing": {
