@@ -610,3 +610,47 @@ def test_reupload_standardized_contests_after_contests_selected(
             ]
         },
     )
+
+
+def test_standardized_contests_get_upload_url_missing_file_type(
+    client: FlaskClient, election_id: str
+):
+    set_logged_in_user(
+        client,
+        UserType.AUDIT_ADMIN,
+        DEFAULT_AA_EMAIL,
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/standardized-contests/file/upload-url"
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "Missing expected query parameter: fileType",
+            }
+        ]
+    }
+
+
+def test_standardized_contests_get_upload_url(client: FlaskClient, election_id: str):
+    set_logged_in_user(
+        client,
+        UserType.AUDIT_ADMIN,
+        DEFAULT_AA_EMAIL,
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/standardized-contests/file/upload-url",
+        query_string={"fileType": "text/csv"},
+    )
+    assert rv.status_code == 200
+
+    response_data = json.loads(rv.data)
+    expected_url = "/api/file-upload"
+
+    assert response_data["url"] == expected_url
+    assert response_data["fields"]["key"].startswith(
+        f"audits/{election_id}/standardized_contests_"
+    )
+    assert response_data["fields"]["key"].endswith(".csv")

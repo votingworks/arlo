@@ -307,3 +307,48 @@ def test_ballot_manifest_upload_duplicate_batch_name(
             },
         },
     )
+
+
+def test_ballot_manifest_get_upload_url_missing_file_type(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest/upload-url"
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "Missing expected query parameter: fileType",
+            }
+        ]
+    }
+
+
+def test_ballot_manifest_get_upload_url(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+):
+    allowed_users = [
+        (UserType.JURISDICTION_ADMIN, default_ja_email(election_id)),
+        (UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL),
+    ]
+    for user, email in allowed_users:
+        set_logged_in_user(client, user, email)
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest/upload-url",
+            query_string={"fileType": "text/csv"},
+        )
+        assert rv.status_code == 200
+
+        response_data = json.loads(rv.data)
+        expected_url = "/api/file-upload"
+
+        assert response_data["url"] == expected_url
+        assert response_data["fields"]["key"].startswith(
+            f"audits/{election_id}/jurisdictions/{jurisdiction_ids[0]}/manifest_"
+        )
+        assert response_data["fields"]["key"].endswith(".csv")
