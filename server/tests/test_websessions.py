@@ -58,7 +58,7 @@ def test_websession_create():
     db_session.commit()
 
     # cleanup shouldn't remove the session because 1s hasn't yet elapsed
-    cleanup_sessions()
+    cleanup_sessions(db_session)
     session_2 = asi.open_session(app, req)
     assert session_2.sid == session.sid
     assert session_2["foo"] == "bar"
@@ -66,7 +66,7 @@ def test_websession_create():
     time.sleep(1)
 
     # now cleanup should remove the session because 1s has elapsed
-    cleanup_sessions()
+    cleanup_sessions(db_session)
     session_3 = asi.open_session(app, req)
     assert session_3.sid != session.sid
     assert "foo" not in session_3
