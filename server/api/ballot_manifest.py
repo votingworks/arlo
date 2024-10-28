@@ -103,6 +103,7 @@ def hybrid_jurisdiction_total_ballots(jurisdiction: Jurisdiction) -> HybridPair:
 
 @background_task
 def process_ballot_manifest_file(
+    election_id: str,
     jurisdiction_id: str,
     jurisdiction_admin_email: str,
     support_user_email: Optional[str],
@@ -189,10 +190,11 @@ def process_ballot_manifest_file(
         # batch names from the manifest
         if jurisdiction.cvr_file:
             cvrs.clear_cvr_contests_metadata(jurisdiction)
-            cvrs.clear_cvr_ballots(jurisdiction.id)
+            cvrs.clear_cvr_ballots(election_id, jurisdiction.id)
             jurisdiction.cvr_file.task = create_background_task(
                 cvrs.process_cvr_file,
                 dict(
+                    election_id=election_id,
                     jurisdiction_id=jurisdiction.id,
                     jurisdiction_admin_email=jurisdiction_admin_email,
                     support_user_email=support_user_email,
@@ -256,6 +258,7 @@ def save_ballot_manifest_file(
     jurisdiction.manifest_file.task = create_background_task(
         process_ballot_manifest_file,
         dict(
+            election_id=jurisdiction.election_id,
             jurisdiction_id=jurisdiction.id,
             jurisdiction_admin_email=get_loggedin_user(session)[1],
             support_user_email=get_support_user(session),

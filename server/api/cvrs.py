@@ -1323,6 +1323,7 @@ def parse_hart_cvrs(
 
 @background_task
 def process_cvr_file(
+    election_id: str,
     jurisdiction_id: str,
     jurisdiction_admin_email: str,
     support_user_email: Optional[str],
@@ -1341,7 +1342,7 @@ def process_cvr_file(
         # overwriting a previous file). This query can sometimes be slow so we
         # run it here in the background task instead of in the endpoint for
         # uploading a CVR file (where we clear other CVR data).
-        clear_cvr_ballots(jurisdiction.id)
+        clear_cvr_ballots(election_id, jurisdiction.id)
 
         # Ideally, the CVR should have the same number of ballots as the
         # manifest, so we can use that as an approximation of the file parsing
@@ -1568,7 +1569,6 @@ def clear_cvr_contests_metadata(jurisdiction: Jurisdiction):
 def finalize_cvr_upload(
     storage_path: str, file_name: str, cvr_file_type: str, jurisdiction: Jurisdiction
 ):
-
     jurisdiction.cvr_file = File(
         id=str(uuid.uuid4()),
         name=file_name,
@@ -1579,6 +1579,7 @@ def finalize_cvr_upload(
     jurisdiction.cvr_file.task = create_background_task(
         process_cvr_file,
         dict(
+            election_id=jurisdiction.election_id,
             jurisdiction_id=jurisdiction.id,
             jurisdiction_admin_email=get_loggedin_user(session)[1],
             support_user_email=get_support_user(session),
@@ -1587,7 +1588,9 @@ def finalize_cvr_upload(
 
 
 @background_task
-def clear_cvr_ballots(jurisdiction_id: str):
+def clear_cvr_ballots(
+    election_id: str, jurisdiction_id: str  # pylint: disable=unused-argument
+):
     # Note that this query can be slow due to the query planner sometimes
     # choosing to not use the relevant index on CvrBallot.batch_id. So it should
     # only be run in background tasks.
@@ -1685,7 +1688,7 @@ def download_cvr_file(
 )
 @restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def clear_cvrs(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
 ):
     if jurisdiction.cvr_file_id:
@@ -1703,6 +1706,9 @@ def clear_cvrs(
         #   will be processed.
         File.query.filter_by(id=jurisdiction.cvr_file_id).delete()
         clear_cvr_contests_metadata(jurisdiction)
-        create_background_task(clear_cvr_ballots, dict(jurisdiction_id=jurisdiction.id))
+        create_background_task(
+            clear_cvr_ballots,
+            dict(election_id=election.id, jurisdiction_id=jurisdiction.id),
+        )
     db_session.commit()
     return jsonify(status="ok")

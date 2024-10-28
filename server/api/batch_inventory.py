@@ -101,6 +101,7 @@ def items_list_to_dict(items):
 
 @background_task
 def process_batch_inventory_cvr_file(
+    election_id: str,  # pylint: disable=unused-argument
     jurisdiction_id: str,
     user: Tuple[UserType, str],
     support_user_email: Optional[str],
@@ -247,6 +248,7 @@ def process_batch_inventory_cvr_file(
             batch_inventory_data.tabulator_status_file.task = create_background_task(
                 process_batch_inventory_tabulator_status_file,
                 dict(
+                    election_id=jurisdiction.election_id,
                     jurisdiction_id=jurisdiction.id,
                     user=user,
                     support_user_email=support_user_email,
@@ -444,6 +446,7 @@ TABULATOR_STATUS_PARSE_ERROR = (
 
 @background_task
 def process_batch_inventory_tabulator_status_file(
+    election_id: str,  # pylint: disable=unused-argument
     jurisdiction_id: str,
     user: Tuple[UserType, str],
     support_user_email: Optional[str],
@@ -681,6 +684,7 @@ def complete_upload_for_batch_inventory_cvr(
     batch_inventory_data.cvr_file.task = create_background_task(
         process_batch_inventory_cvr_file,
         dict(
+            election_id=election.id,
             jurisdiction_id=jurisdiction.id,
             user=get_loggedin_user(session),
             support_user_email=get_support_user(session),
@@ -794,6 +798,7 @@ def complete_upload_for_batch_inventory_tabulator_status(
     batch_inventory_data.tabulator_status_file.task = create_background_task(
         process_batch_inventory_tabulator_status_file,
         dict(
+            election_id=election.id,
             jurisdiction_id=jurisdiction.id,
             user=get_loggedin_user(session),
             support_user_email=get_support_user(session),

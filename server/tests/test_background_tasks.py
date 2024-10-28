@@ -59,11 +59,11 @@ def setup():
 def test_task_happy_path(caplog, db_session):
     task_ran = False
     task_id = None
-    test_payload = dict(arg2=2, arg1=1)  # Order shouldn't matter
+    test_payload = dict(arg2=2, election_id=1)  # Order shouldn't matter
 
     @background_task
-    def happy_path(arg1, arg2):
-        assert arg1 == 1
+    def happy_path(election_id, arg2):
+        assert election_id == 1
         assert arg2 == 2
 
         task = db_session.query(BackgroundTask).get(task_id)
@@ -120,7 +120,7 @@ def test_task_happy_path(caplog, db_session):
         (
             f"TASK_START {{'id': '{task_id}', "
             "'task_name': 'happy_path',"
-            f" 'payload': {{'arg2': 2, 'arg1': 1}},"
+            f" 'payload': {{'arg2': 2, 'election_id': 1}},"
             " 'worker_id': 'test_worker'}"
         ),
     )
@@ -130,7 +130,7 @@ def test_task_happy_path(caplog, db_session):
         (
             f"TASK_COMPLETE {{'id': '{task_id}', "
             "'task_name': 'happy_path',"
-            f" 'payload': {{'arg2': 2, 'arg1': 1}},"
+            f" 'payload': {{'arg2': 2, 'election_id': 1}},"
             " 'worker_id': 'test_worker'}"
         ),
     )
@@ -138,10 +138,12 @@ def test_task_happy_path(caplog, db_session):
 
 def test_task_user_error(caplog, db_session):
     @background_task
-    def user_error():
+    def user_error(election_id):
         raise UserError("something went wrong")
 
-    task = create_background_task(user_error, {}, db_session)
+    task = create_background_task(
+        user_error, dict(election_id="test-election-id"), db_session
+    )
 
     run_task(claim_next_task("test_worker", db_session), db_session)
 
@@ -162,7 +164,7 @@ def test_task_user_error(caplog, db_session):
         (
             f"TASK_START {{'id': '{task.id}', "
             "'task_name': 'user_error',"
-            f" 'payload': {{}},"
+            f" 'payload': {{'election_id': 'test-election-id'}},"
             " 'worker_id': 'test_worker'}"
         ),
     )
@@ -172,7 +174,7 @@ def test_task_user_error(caplog, db_session):
         (
             f"TASK_USER_ERROR {{'id': '{task.id}', "
             "'task_name': 'user_error',"
-            f" 'payload': {{}},"
+            f" 'payload': {{'election_id': 'test-election-id'}},"
             " 'worker_id': 'test_worker',"
             " 'error': 'something went wrong'}"
         ),
@@ -182,10 +184,12 @@ def test_task_user_error(caplog, db_session):
 @patch("sentry_sdk.capture_exception", auto_spec=True)
 def test_task_python_error(capture_exception, caplog, db_session):
     @background_task
-    def python_error():
+    def python_error(election_id):  # pylint: disable=unused-argument
         return [][1]  # pylint: disable=potential-index-error
 
-    task = create_background_task(python_error, {}, db_session)
+    task = create_background_task(
+        python_error, dict(election_id="test-election-id"), db_session
+    )
 
     run_task(claim_next_task("test_worker", db_session), db_session)
 
@@ -206,7 +210,7 @@ def test_task_python_error(capture_exception, caplog, db_session):
         (
             f"TASK_START {{'id': '{task.id}', "
             "'task_name': 'python_error',"
-            f" 'payload': {{}},"
+            f" 'payload': {{'election_id': 'test-election-id'}},"
             " 'worker_id': 'test_worker'}"
         ),
     )
@@ -216,7 +220,7 @@ def test_task_python_error(capture_exception, caplog, db_session):
         (
             f"TASK_ERROR {{'id': '{task.id}', "
             "'task_name': 'python_error',"
-            f" 'payload': {{}},"
+            f" 'payload': {{'election_id': 'test-election-id'}},"
             " 'worker_id': 'test_worker',"
             " 'error': 'list index out of range', 'traceback':"
         ),
@@ -229,10 +233,12 @@ def test_task_python_error(capture_exception, caplog, db_session):
 @patch("sentry_sdk.capture_exception", auto_spec=True)
 def test_task_python_error_format(capture_exception, caplog, db_session):
     @background_task
-    def error_format():
+    def error_format(election_id: str):  # pylint: disable=unused-argument
         return next(iter([]))
 
-    task = create_background_task(error_format, {}, db_session)
+    task = create_background_task(
+        error_format, dict(election_id="test-election-id"), db_session
+    )
 
     run_task(claim_next_task("test_worker", db_session), db_session)
 
@@ -253,7 +259,7 @@ def test_task_python_error_format(capture_exception, caplog, db_session):
         (
             f"TASK_START {{'id': '{task.id}', "
             "'task_name': 'error_format',"
-            f" 'payload': {{}},"
+            f" 'payload': {{'election_id': 'test-election-id'}},"
             " 'worker_id': 'test_worker'}"
         ),
     )
@@ -263,7 +269,7 @@ def test_task_python_error_format(capture_exception, caplog, db_session):
         (
             f"TASK_ERROR {{'id': '{task.id}', "
             "'task_name': 'error_format',"
-            f" 'payload': {{}},"
+            f" 'payload': {{'election_id': 'test-election-id'}},"
             " 'worker_id': 'test_worker',"
             " 'error': 'StopIteration', 'traceback':"
         ),
@@ -276,10 +282,12 @@ def test_task_python_error_format(capture_exception, caplog, db_session):
 @patch("sentry_sdk.capture_exception", auto_spec=True)
 def test_task_db_error(capture_exception, caplog, db_session):
     @background_task
-    def db_error():
+    def db_error(election_id):  # pylint: disable=unused-argument
         db_session.add(Election(id=1))
 
-    task = create_background_task(db_error, {}, db_session)
+    task = create_background_task(
+        db_error, dict(election_id="test-election-id"), db_session
+    )
 
     run_task(claim_next_task("test_worker", db_session), db_session)
 
@@ -302,7 +310,7 @@ def test_task_db_error(capture_exception, caplog, db_session):
         (
             f"TASK_START {{'id': '{task.id}', "
             "'task_name': 'db_error',"
-            f" 'payload': {{}},"
+            f" 'payload': {{'election_id': 'test-election-id'}},"
             " 'worker_id': 'test_worker'}"
         ),
     )
@@ -312,7 +320,7 @@ def test_task_db_error(capture_exception, caplog, db_session):
         (
             f"TASK_ERROR {{'id': '{task.id}', "
             "'task_name': 'db_error',"
-            f" 'payload': {{}},"
+            f" 'payload': {{'election_id': 'test-election-id'}},"
             " 'worker_id': 'test_worker',"
             " 'error': '(psycopg2.errors.NotNullViolation) null value in column \"audit_name\""
         ),
@@ -326,13 +334,19 @@ def test_task_multiple_run_in_order(db_session):
     results = []
 
     @background_task
-    def multiple(num):
+    def multiple(election_id, num):  # pylint: disable=unused-argument
         nonlocal results
         results.append(num)
 
-    create_background_task(multiple, dict(num=1), db_session)
-    create_background_task(multiple, dict(num=2), db_session)
-    create_background_task(multiple, dict(num=3), db_session)
+    create_background_task(
+        multiple, dict(election_id="test-election-id", num=1), db_session
+    )
+    create_background_task(
+        multiple, dict(election_id="test-election-id", num=2), db_session
+    )
+    create_background_task(
+        multiple, dict(election_id="test-election-id", num=3), db_session
+    )
 
     run_task(claim_next_task("test_worker", db_session), db_session)
     run_task(claim_next_task("test_worker", db_session), db_session)
@@ -353,18 +367,24 @@ def test_task_interrupted(caplog, db_session):
     db_session.execute("TRUNCATE TABLE task_to_interrupt_results")
 
     @background_task
-    def task_to_interrupt(num):
+    def task_to_interrupt(election_id, num):  # pylint: disable=unused-argument
         db_session.execute(
             "INSERT INTO task_to_interrupt_results (num) VALUES (:num)", dict(num=num)
         )
 
-    task1 = create_background_task(task_to_interrupt, dict(num=1), db_session)
-    task2 = create_background_task(task_to_interrupt, dict(num=2), db_session)
+    task1 = create_background_task(
+        task_to_interrupt, dict(election_id="test-election-id", num=1), db_session
+    )
+    task2 = create_background_task(
+        task_to_interrupt, dict(election_id="test-election-id", num=2), db_session
+    )
 
     # Simulate that the worker got interrupted mid-task
     claim_next_task("test_worker", db_session)
     db_session.commit()
-    task_to_interrupt(num=1)  # Simulate starting the task before interruption
+    task_to_interrupt(  # Simulate starting the task before interruption
+        election_id="test-election-id", num=1
+    )
     reset_task(task1, db_session)
 
     # Try resetting a task that's already been reset - this should be a no-op
@@ -395,7 +415,7 @@ def test_task_interrupted(caplog, db_session):
         (
             f"TASK_RESET {{'id': '{task1.id}', "
             "'task_name': 'task_to_interrupt',"
-            f" 'payload': {{'num': 1}},"
+            f" 'payload': {{'election_id': 'test-election-id', 'num': 1}},"
             " 'worker_id': 'test_worker'}"
         ),
     )
@@ -405,7 +425,7 @@ def test_task_interrupted(caplog, db_session):
         (
             f"TASK_START {{'id': '{task1.id}', "
             "'task_name': 'task_to_interrupt',"
-            f" 'payload': {{'num': 1}},"
+            f" 'payload': {{'election_id': 'test-election-id', 'num': 1}},"
             " 'worker_id': 'test_worker'}"
         ),
     )
@@ -415,7 +435,7 @@ def test_task_interrupted(caplog, db_session):
         (
             f"TASK_COMPLETE {{'id': '{task1.id}', "
             "'task_name': 'task_to_interrupt',"
-            f" 'payload': {{'num': 1}},"
+            f" 'payload': {{'election_id': 'test-election-id', 'num': 1}},"
             " 'worker_id': 'test_worker'}"
         ),
     )
@@ -432,7 +452,7 @@ def test_multiple_workers(db_session):
     db_session.commit()
 
     @background_task
-    def count(db_session, num: int):
+    def count(election_id, db_session, num: int):  # pylint: disable=unused-argument
         time.sleep(random.randint(0, 2) / 10)
         db_session.execute(
             "INSERT INTO count_results (num) VALUES (:num)", dict(num=num)
@@ -440,7 +460,9 @@ def test_multiple_workers(db_session):
 
     # Enqueue tasks
     for num in expected_results:
-        create_background_task(count, dict(num=num), db_session)
+        create_background_task(
+            count, dict(election_id="test-election-id", num=num), db_session
+        )
     db_session.commit()
 
     db_url = db_session.bind.url
@@ -488,3 +510,26 @@ def test_multiple_workers(db_session):
     ]
     # Each task should have run exactly once
     assert sorted(results) == expected_sorted_results
+
+
+def test_task_missing_election_id():
+    with pytest.raises(
+        AssertionError,
+        match="Payload for task missing_election_id must include 'election_id'",
+    ):
+
+        @background_task
+        def missing_election_id():
+            pass
+
+
+def test_task_missing_parameter(db_session):
+    @background_task
+    def missing_parameters(election_id, arg2, arg3):  # pylint: disable=unused-argument
+        pass
+
+    with pytest.raises(
+        AssertionError,
+        match="Payload for task missing_parameters must match the handler's parameters.",
+    ):
+        create_background_task(missing_parameters, dict(arg2=2), db_session)

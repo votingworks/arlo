@@ -67,6 +67,7 @@ def construct_contest_choice_csv_headers(
 
 @background_task
 def process_batch_tallies_file(
+    election_id: str,  # pylint: disable=unused-argument
     jurisdiction_id: str,
     user: Tuple[UserType, str],
     support_user_email: Optional[str],
@@ -213,6 +214,7 @@ def reprocess_batch_tallies_file_if_uploaded(
         jurisdiction.batch_tallies_file.task = create_background_task(
             process_batch_tallies_file,
             dict(
+                election_id=jurisdiction.election_id,
                 jurisdiction_id=jurisdiction.id,
                 user=user,
                 support_user_email=support_user_email,
@@ -268,6 +270,7 @@ def complete_upload_for_batch_tallies(
     jurisdiction.batch_tallies_file.task = create_background_task(
         process_batch_tallies_file,
         dict(
+            election_id=election.id,
             jurisdiction_id=jurisdiction.id,
             user=get_loggedin_user(session),
             support_user_email=get_support_user(session),

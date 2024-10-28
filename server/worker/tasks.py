@@ -31,10 +31,12 @@ task_dispatch: Dict[str, Callable] = {}
 # name as the key.
 def background_task(task_handler: Callable):
     task_dispatch[task_handler.__name__] = task_handler
+    assert (
+        "election_id" in signature(task_handler).parameters
+    ), f"Payload for task {task_handler.__name__} must include 'election_id' to easily identify all task logs for a single audit."
     return task_handler
 
 
-# All tasks should have election_id in the payload in order to easily identify their logs.
 def create_background_task(
     task_handler: Callable,
     payload: JSONDict,
@@ -44,6 +46,15 @@ def create_background_task(
     assert task_handler.__name__ in task_dispatch, (
         f"No task handler registered for {task_handler.__name__}."
         " Did you forget to use the @background_task decorator?"
+    )
+    task_parameters = set(signature(task_handler).parameters.keys()) - {
+        "emit_progress",
+        "db_session",
+    }
+    assert task_parameters == set(payload.keys()), (
+        f"Payload for task {task_handler.__name__} must match the handler's parameters.\n"
+        f"Expected: {task_parameters}\n"
+        f"Got: {set(payload.keys())}\n"
     )
 
     task = BackgroundTask(
