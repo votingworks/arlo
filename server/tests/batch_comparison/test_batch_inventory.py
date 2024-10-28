@@ -991,7 +991,7 @@ def test_batch_inventory_missing_data_multi_contest_batch_comparison(
         assert_ok(rv)
 
 
-def test_batch_inventory_wrong_tabulator_status_file(
+def test_batch_inventory_excel_tabulator_status_file(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
@@ -1116,16 +1116,30 @@ def test_batch_inventory_wrong_tabulator_status_file(
 </Row>
 <Row>
 <Cell>
-<Data ss:Type="String">10</Data>
+<Data ss:Type="String">TABULATOR1</Data>
 </Cell>
 <Cell>
-<Data ss:Type="String">ED-ICP 1</Data>
+<Data ss:Type="String">Tabulator 1</Data>
 </Cell>
 <Cell>
 <Data ss:Type="Number">1</Data>
 </Cell>
 <Cell ss:StyleID="Number">
-<Data ss:Type="Number">538</Data>
+<Data ss:Type="Number">123</Data>
+</Cell>
+</Row>
+<Row>
+<Cell>
+<Data ss:Type="String">TABULATOR2</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Tabulator 2</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">1</Data>
+</Cell>
+<Cell ss:StyleID="Number">
+<Data ss:Type="Number">456</Data>
 </Cell>
 </Row>
 </Table>
@@ -1141,12 +1155,49 @@ def test_batch_inventory_wrong_tabulator_status_file(
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/tabulator-status"
     )
-    tabulator_status = json.loads(rv.data)
-    assert tabulator_status["processing"]["status"] == ProcessingStatus.ERRORED
-    assert (
-        tabulator_status["processing"]["error"]
-        == 'We could not parse this file. Please make sure you upload the plain XML version of the tabulator status report. The file name should end in ".xml" and should not contain the words "To Excel".'
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {"name": "tabulator-status.xml", "uploadedAt": assert_is_date},
+            "processing": {
+                "status": ProcessingStatus.PROCESSED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": None,
+            },
+        },
     )
+
+
+def test_batch_inventory_wrong_tabulator_status_file(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_id: str,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+
+    # Set system type
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type",
+        {"systemType": CvrFileType.DOMINION},
+    )
+    assert_ok(rv)
+
+    # Upload CVR file
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr",
+        data={
+            "cvr": (
+                io.BytesIO(TEST_CVR.encode()),
+                "cvrs.csv",
+            ),
+        },
+    )
+    assert_ok(rv)
 
     # Upload tabulator status HTML version
     rv = client.put(
@@ -1248,7 +1299,7 @@ p { line-height=100%}
     assert tabulator_status["processing"]["status"] == ProcessingStatus.ERRORED
     assert (
         tabulator_status["processing"]["error"]
-        == 'We could not parse this file. Please make sure you upload the plain XML version of the tabulator status report. The file name should end in ".xml" and should not contain the words "To Excel".'
+        == 'We could not parse this file. Please make sure you upload either the plain XML version or Excel version of the tabulator status report. The file name should end in ".xml".'
     )
 
 

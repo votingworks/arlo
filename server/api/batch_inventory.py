@@ -1,4 +1,5 @@
 import os
+import re
 import shutil
 import tempfile
 from collections import defaultdict
@@ -428,8 +429,8 @@ def process_batch_inventory_cvr_file(
 
 
 TABULATOR_STATUS_PARSE_ERROR = (
-    "We could not parse this file. Please make sure you upload the plain XML version of the tabulator status report."
-    ' The file name should end in ".xml" and should not contain the words "To Excel".'
+    "We could not parse this file. Please make sure you upload either the plain XML version or Excel version of the tabulator status report."
+    ' The file name should end in ".xml".'
 )
 
 
@@ -442,6 +443,65 @@ def process_batch_inventory_tabulator_status_file(
     jurisdiction = Jurisdiction.query.get(jurisdiction_id)
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction_id)
 
+    def get_tabulator_id_to_name_dict_for_excel_file(
+        cvr_xml: ElementTree.ElementTree,
+    ) -> Dict[Optional[str], Optional[str]]:
+        namespaces = {"ss": "urn:schemas-microsoft-com:office:spreadsheet"}
+        worksheet = cvr_xml.find(
+            ".//ss:Worksheet[@ss:Name='Tabulator Status']", namespaces
+        )
+        if worksheet is None:
+            raise UserError(TABULATOR_STATUS_PARSE_ERROR)
+
+        tabulator_status_table = worksheet.find("ss:Table", namespaces)
+        if tabulator_status_table is None:
+            raise UserError(TABULATOR_STATUS_PARSE_ERROR)
+
+        columns = tabulator_status_table.findall("Column")
+        if columns is None:
+            raise UserError(TABULATOR_STATUS_PARSE_ERROR)
+
+        rows = tabulator_status_table.findall("ss:Row", namespaces)
+        if rows is None:
+            raise UserError(TABULATOR_STATUS_PARSE_ERROR)
+
+        # Ignore rows containing data we don't need:
+        # 1. "Tabulator Status"
+        # 2. Election name
+        # 3. "Official"/"Unofficial" status
+        # 4. Timestamp
+        # 5. Empty row for spacing
+        row_offset = 5
+        rows = rows[row_offset:]
+
+        column_headers_row = rows.pop(0)
+        column_header_values = column_headers_row.findall(
+            "./ss:Cell/ss:Data", namespaces
+        )
+        headers = [(data.text or "").strip() for data in column_header_values]
+        header_indices = {k: v for v, k in enumerate(headers)}
+
+        tabulator_id_key = "Tabulator Id"
+        name_key = "Name"
+
+        return {
+            (values := row.findall("./ss:Cell/ss:Data", namespaces))[
+                header_indices[tabulator_id_key]
+            ]
+            .text: values[header_indices[name_key]]
+            .text
+            for row in rows
+        }
+
+    def get_tabulator_id_to_name_dict_for_plain_xml_file(
+        cvr_xml: ElementTree.ElementTree,
+    ) -> Dict[Optional[str], Optional[str]]:
+        tabulators = cvr_xml.findall("tabulators/tb")
+        if len(tabulators) == 0:
+            raise UserError(TABULATOR_STATUS_PARSE_ERROR)
+
+        return {tabulator.get("tid"): tabulator.get("name") for tabulator in tabulators}
+
     def process():
         file = retrieve_file(batch_inventory_data.tabulator_status_file.storage_path)
         try:
@@ -449,12 +509,15 @@ def process_batch_inventory_tabulator_status_file(
         except Exception as error:
             raise UserError(TABULATOR_STATUS_PARSE_ERROR) from error
 
-        tabulators = cvr_xml.findall("tabulators/tb")
-        if len(tabulators) == 0:
-            raise UserError(TABULATOR_STATUS_PARSE_ERROR)
-        tabulator_id_to_name = {
-            tabulator.get("tid"): tabulator.get("name") for tabulator in tabulators
-        }
+        root = cvr_xml.getroot()
+        is_ms_excel_file = re.match(
+            r"\{urn:schemas-microsoft-com:office:spreadsheet\}", root.tag
+        )
+        tabulator_id_to_name = (
+            get_tabulator_id_to_name_dict_for_excel_file(cvr_xml)
+            if is_ms_excel_file
+            else get_tabulator_id_to_name_dict_for_plain_xml_file(cvr_xml)
+        )
 
         ballot_count_by_batch = items_list_to_dict(
             batch_inventory_data.election_results["ballot_count_by_batch"]
