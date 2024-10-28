@@ -58,7 +58,12 @@ def create_background_task(
     )
 
     task = BackgroundTask(
-        id=str(uuid.uuid4()), task_name=task_handler.__name__, payload=payload
+        id=str(uuid.uuid4()),
+        task_name=task_handler.__name__,
+        payload=payload,
+        # Only allow one task per audit to run at a time. This ensures that
+        # tasks won't try to access the same db resources at the same time.
+        lock_key=f"election_id:{payload['election_id']}",
     )
     db_session.add(task)
 
@@ -144,14 +149,43 @@ def run_task(task: BackgroundTask, db_session):
 
 
 def claim_next_task(worker_id: str, db_session) -> Optional[BackgroundTask]:
+    # Use SELECT ... FOR UPDATE to lock all queued tasks, ensuring that only a
+    # single worker can claim a single task at a time. This ensures that we get
+    # an accurate view of which tasks are available to claim. If another worker has
+    # already locked the queued task, this query will block (though it shouldn't
+    # take long to claim a task, so this shouldn't cause problems).
+    #
+    # Importantly, this also ensures that we get a safe view of which lock_keys
+    # are currently in use by in-progress tasks. If we're the only worker that
+    # can claim a task right now, then no additional lock_keys can be locked. It
+    # is possible for another worker to finish an in-progress task and release a
+    # lock_key while we're running this query, but that's fine because even if
+    # we don't see that change and wanted to claim that lock_key, we'll just fail
+    # and try again later.
+    #
+    # We don't actually need to load the queued tasks into the app, so we just
+    # execute the query.
+    (
+        db_session.execute(
+            db_session.query(BackgroundTask)
+            .filter_by(started_at=None)
+            .with_for_update()
+            .with_entities(BackgroundTask.id)
+        )
+    )
+    in_progress_task_lock_keys = (
+        BackgroundTask.query.filter(BackgroundTask.started_at.isnot(None))
+        .filter_by(completed_at=None)
+        .with_entities(BackgroundTask.lock_key)
+        .subquery()
+    )
     task: Optional[BackgroundTask] = (
         db_session.query(BackgroundTask)
         .filter_by(started_at=None)
+        # Only allow one task per lock key to run at a time.
+        .filter(BackgroundTask.lock_key.notin_(in_progress_task_lock_keys))
         .order_by(BackgroundTask.created_at)
         .limit(1)
-        # Use SELECT ... FOR UPDATE to lock the row so that only one worker can
-        # claim a task at a time.
-        .with_for_update()
         .one_or_none()
     )
     if task:

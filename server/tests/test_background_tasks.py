@@ -512,6 +512,119 @@ def test_multiple_workers(db_session):
     assert sorted(results) == expected_sorted_results
 
 
+def test_lock_key(db_session):
+    results = []
+
+    @background_task
+    def lock_task_a(election_id):
+        nonlocal results
+        results.append((election_id, "a"))
+
+    @background_task
+    def lock_task_b(election_id):
+        nonlocal results
+        results.append((election_id, "b"))
+
+    task1a = create_background_task(lock_task_a, dict(election_id="1"), db_session)
+    task1b = create_background_task(lock_task_b, dict(election_id="1"), db_session)
+    task2a = create_background_task(lock_task_a, dict(election_id="2"), db_session)
+
+    next_task_1 = claim_next_task("test_worker", db_session)
+    assert next_task_1.id == task1a.id
+
+    # task1b should not be claimed because it has the same lock_key
+    # (election_id) as task1a
+    next_task_2 = claim_next_task("test_worker", db_session)
+    assert next_task_2.id == task2a.id
+
+    run_task(next_task_1, db_session)
+
+    # Now task1b should be claimable, since task1a has been completed
+    next_task_3 = claim_next_task("test_worker", db_session)
+    assert next_task_3.id == task1b.id
+
+
+# The idea of this test is to create race conditions by having multiple tasks
+# per election that try to increment a counter in the database. If only one task
+# per election can run at a time, then the counter should end up equal to the
+# number of tasks. If there are multiple tasks running at the same time, they
+# will overwrite each other's changes and the counter will be less than the
+# number of tasks.
+def test_multiple_workers_lock_on_election(db_session):
+    context = multiprocessing.get_context()
+    num_tasks_per_election = 20
+    num_workers = 4
+
+    election_id_1 = "election-1"
+    election_id_2 = "election-2"
+
+    db_session.execute(
+        "CREATE TABLE IF NOT EXISTS election_count (election_id TEXT, count INT)"
+    )
+    db_session.execute("TRUNCATE TABLE election_count")
+    for election_id in [election_id_1, election_id_2]:
+        db_session.execute(
+            "INSERT INTO election_count (election_id, count) VALUES (:election_id, 0)",
+            dict(election_id=election_id),
+        )
+    db_session.commit()
+
+    @background_task
+    def add1(election_id, db_session):
+        (current_count,) = db_session.execute(
+            "SELECT count FROM election_count WHERE election_id = :election_id",
+            dict(election_id=election_id),
+        ).fetchone()
+        time.sleep(random.randint(0, 2) / 10)
+        db_session.execute(
+            "UPDATE election_count SET count = :count WHERE election_id = :election_id",
+            dict(count=current_count + 1, election_id=election_id),
+        )
+        db_session.commit()
+
+    # Enqueue tasks
+    for _ in range(num_tasks_per_election):
+        for election_id in [election_id_1, election_id_2]:
+            create_background_task(add1, dict(election_id=election_id), db_session)
+    db_session.commit()
+
+    db_url = db_session.bind.url
+
+    def run_test_worker():
+        engine = sqlalchemy.create_engine(db_url)
+        db_session = scoped_session(
+            sessionmaker(autocommit=False, autoflush=True, bind=engine)
+        )
+        name = context.current_process().name
+        run_worker(
+            name, db_session, pause_between_tasks_seconds=random.randint(0, 3) / 10
+        )
+
+    # Start worker processes
+    workers = [context.Process(target=run_test_worker) for _ in range(num_workers)]
+    for worker in workers:
+        worker.start()
+
+    def num_incomplete_tasks():
+        return (
+            db_session.query(BackgroundTask)
+            .filter_by(task_name="add1", completed_at=None)
+            .count()
+        )
+
+    while num_incomplete_tasks() > 0:
+        time.sleep(0.1)
+
+    for worker in workers:
+        worker.terminate()
+
+    [(election_1_count,), (election_2_count,)] = db_session.execute(
+        "SELECT count FROM election_count ORDER BY election_id"
+    ).fetchall()
+    assert election_1_count == num_tasks_per_election
+    assert election_2_count == num_tasks_per_election
+
+
 def test_task_missing_election_id():
     with pytest.raises(
         AssertionError,
