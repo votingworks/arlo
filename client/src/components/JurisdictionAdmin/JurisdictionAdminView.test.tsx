@@ -76,7 +76,7 @@ describe('JA setup', () => {
       jaApiCalls.getSettings(auditSettingsMocks.all),
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.empty),
-      jaApiCalls.putManifest,
+      ...jaApiCalls.uploadManifestCalls,
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.deleteManifest,
       jaApiCalls.getBallotManifestFile(manifestMocks.empty),
@@ -112,7 +112,7 @@ describe('JA setup', () => {
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
-      jaApiCalls.putTallies,
+      ...jaApiCalls.uploadTalliesCalls,
       jaApiCalls.getBatchTalliesFile(talliesMocks.processed),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -157,7 +157,9 @@ describe('JA setup', () => {
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
-      serverError('putTallies', jaApiCalls.putTallies),
+      jaApiCalls.uploadTalliesCalls[0],
+      jaApiCalls.uploadTalliesCalls[1],
+      serverError('postTallies', jaApiCalls.uploadTalliesCalls[2]),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
@@ -165,7 +167,7 @@ describe('JA setup', () => {
       userEvent.upload(screen.getByLabelText('Select a file...'), talliesFile)
       userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
       const toast = await screen.findByRole('alert')
-      expect(toast).toHaveTextContent('something went wrong: putTallies')
+      expect(toast).toHaveTextContent('something went wrong: postTallies')
     })
   })
 
@@ -176,7 +178,7 @@ describe('JA setup', () => {
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getBatchTalliesFile(talliesMocks.processed),
-      jaApiCalls.putTallies,
+      ...jaApiCalls.uploadTalliesCalls,
       jaApiCalls.getBatchTalliesFile(talliesMocks.errored),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -206,7 +208,7 @@ describe('JA setup', () => {
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.empty),
       jaApiCalls.getBatchTalliesFile(talliesMocks.processed),
-      jaApiCalls.putManifest,
+      ...jaApiCalls.uploadManifestCalls,
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getBatchTalliesFile(talliesMocks.errored),
     ]
@@ -235,7 +237,7 @@ describe('JA setup', () => {
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getCVRSfile(cvrsMocks.empty),
-      jaApiCalls.putCVRs,
+      ...jaApiCalls.uploadCVRsCalls,
       jaApiCalls.getCVRSfile(cvrsMocks.processing),
       jaApiCalls.getCVRSfile(cvrsMocks.processed),
     ]
@@ -304,7 +306,7 @@ describe('JA setup', () => {
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getCVRSfile(cvrsMocks.processed),
-      jaApiCalls.putCVRs,
+      ...jaApiCalls.uploadCVRsCalls,
       jaApiCalls.getCVRSfile(cvrsMocks.errored),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -327,59 +329,10 @@ describe('JA setup', () => {
     })
   })
 
-  it('allows multiple CVR files to be uploaded for ES&S', async () => {
-    const cvrsFormData: FormData = new FormData()
-    const cvrsFile1 = new File(['test cvr data'], 'cvrs1.csv', {
-      type: 'text/csv',
-    })
-    const cvrsFile2 = new File(['test cvr data'], 'cvrs2.csv', {
-      type: 'text/csv',
-    })
-    // Make the combined CVR files large enough to trigger an "Uploading..." progress bar
-    Object.defineProperty(cvrsFile1, 'size', { value: 500 * 1000 })
-    Object.defineProperty(cvrsFile2, 'size', { value: 500 * 1000 })
-    cvrsFormData.append('cvrs', cvrsFile1, cvrsFile1.name)
-    cvrsFormData.append('cvrs', cvrsFile2, cvrsFile2.name)
-    cvrsFormData.append('cvrFileType', 'ESS')
-
-    const expectedCalls = [
-      jaApiCalls.getUser,
-      jaApiCalls.getSettings(auditSettingsMocks.ballotComparisonAll),
-      jaApiCalls.getRounds([]),
-      jaApiCalls.getBallotManifestFile(manifestMocks.processed),
-      jaApiCalls.getCVRSfile(cvrsMocks.empty),
-      {
-        ...jaApiCalls.putCVRs,
-        options: { ...jaApiCalls.putCVRs.options, body: cvrsFormData },
-      },
-      jaApiCalls.getCVRSfile(cvrsMocks.processed),
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      renderView()
-      await screen.findByText('Audit Setup')
-
-      userEvent.selectOptions(
-        screen.getByLabelText(/CVR File Type:/),
-        screen.getByRole('option', { name: 'ES&S' })
-      )
-
-      const fileSelect = screen.getByLabelText('Select files...')
-      userEvent.upload(fileSelect, [cvrsFile1, cvrsFile2])
-      await screen.findByLabelText('2 files selected')
-      userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
-
-      await screen.findByText('Uploading...')
-      await screen.findByText('Uploaded at 11/18/2020, 9:39:14 PM.')
-    })
-  })
-
   it('allows CVRs ZIP file to be uploaded for Hart', async () => {
-    const cvrsFormData: FormData = new FormData()
     const cvrsZip = new File(['test cvr data'], 'cvrs.zip', {
       type: 'application/zip',
     })
-    cvrsFormData.append('cvrs', cvrsZip, cvrsZip.name)
-    cvrsFormData.append('cvrFileType', 'HART')
 
     const expectedCalls = [
       jaApiCalls.getUser,
@@ -387,10 +340,7 @@ describe('JA setup', () => {
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getCVRSfile(cvrsMocks.empty),
-      {
-        ...jaApiCalls.putCVRs,
-        options: { ...jaApiCalls.putCVRs.options, body: cvrsFormData },
-      },
+      ...jaApiCalls.uploadCVRZipCalls,
       jaApiCalls.getCVRSfile(cvrsMocks.processed),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -402,58 +352,8 @@ describe('JA setup', () => {
         screen.getByRole('option', { name: 'Hart' })
       )
 
-      const fileSelect = screen.getByLabelText('Select files...')
-      userEvent.upload(fileSelect, [cvrsZip])
-      await screen.findByLabelText('cvrs.zip')
-      userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
-      await screen.findByText('Uploaded at 11/18/2020, 9:39:14 PM.')
-    })
-  })
-
-  it('allows CVRs ZIP file and scanned ballot information CSV to be uploaded for Hart', async () => {
-    const cvrsFormData: FormData = new FormData()
-    const cvrsZip = new File(['test cvr data'], 'cvrs.zip', {
-      type: 'application/zip',
-    })
-    const scannedBallotInformationCsv = new File(
-      ['test cvr data'],
-      'scanned-ballot-information.csv',
-      {
-        type: 'text/csv',
-      }
-    )
-    cvrsFormData.append('cvrs', cvrsZip, cvrsZip.name)
-    cvrsFormData.append(
-      'cvrs',
-      scannedBallotInformationCsv,
-      scannedBallotInformationCsv.name
-    )
-    cvrsFormData.append('cvrFileType', 'HART')
-
-    const expectedCalls = [
-      jaApiCalls.getUser,
-      jaApiCalls.getSettings(auditSettingsMocks.ballotComparisonAll),
-      jaApiCalls.getRounds([]),
-      jaApiCalls.getBallotManifestFile(manifestMocks.processed),
-      jaApiCalls.getCVRSfile(cvrsMocks.empty),
-      {
-        ...jaApiCalls.putCVRs,
-        options: { ...jaApiCalls.putCVRs.options, body: cvrsFormData },
-      },
-      jaApiCalls.getCVRSfile(cvrsMocks.processed),
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      renderView()
-      await screen.findByText('Audit Setup')
-
-      userEvent.selectOptions(
-        screen.getByLabelText(/CVR File Type:/),
-        screen.getByRole('option', { name: 'Hart' })
-      )
-
-      const fileSelect = screen.getByLabelText('Select files...')
-      userEvent.upload(fileSelect, [cvrsZip, scannedBallotInformationCsv])
-      await screen.findByLabelText('2 files selected')
+      const fileSelect = screen.getByLabelText('Select a file...')
+      userEvent.upload(fileSelect, cvrsZip)
       userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
       await screen.findByText('Uploaded at 11/18/2020, 9:39:14 PM.')
     })
@@ -466,7 +366,7 @@ describe('JA setup', () => {
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.empty),
       jaApiCalls.getCVRSfile(cvrsMocks.processed),
-      jaApiCalls.putManifest,
+      ...jaApiCalls.uploadManifestCalls,
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getCVRSfile(cvrsMocks.errored),
     ]
@@ -495,7 +395,7 @@ describe('JA setup', () => {
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.empty),
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
-      jaApiCalls.putManifest,
+      ...jaApiCalls.uploadManifestCalls,
       jaApiCalls.getBallotManifestFile(manifestMocks.errored),
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
     ]
@@ -528,7 +428,7 @@ describe('JA setup', () => {
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
-      jaApiCalls.putManifest,
+      ...jaApiCalls.uploadManifestCalls,
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
     ]
     await withMockFetch(expectedCalls, async () => {

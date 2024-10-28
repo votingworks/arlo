@@ -165,10 +165,7 @@ const CvrsFileUpload = ({
         acceptFileTypes={
           selectedCvrFileType === CvrFileType.HART ? ['zip', 'csv'] : ['csv']
         }
-        allowMultipleFiles={
-          selectedCvrFileType === CvrFileType.ESS ||
-          selectedCvrFileType === CvrFileType.HART
-        }
+        allowMultipleFiles={false}
         uploadDisabled={uploadDisabled || (!cvrs.file && !selectedCvrFileType)}
         deleteDisabled={deleteDisabled}
         additionalFields={

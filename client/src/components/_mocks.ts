@@ -1464,34 +1464,32 @@ export const auditBoardMocks = mocksOfType<IAuditBoard[]>()({
   ],
 })
 
-const jurisdictionFormData: FormData = new FormData()
-jurisdictionFormData.append(
-  'jurisdictions',
-  jurisdictionFile,
-  jurisdictionFile.name
-)
-const jurisdictionErrorFormData: FormData = new FormData()
-jurisdictionErrorFormData.append(
-  'jurisdictions',
-  jurisdictionFile,
-  jurisdictionFile.name
-)
-const standardizedContestsFormData: FormData = new FormData()
-standardizedContestsFormData.append(
-  'standardized-contests',
-  standardizedContestsFile,
-  standardizedContestsFile.name
-)
+export const getMockFormDataForFileUpload = (file: File): FormData => {
+  const formData = new FormData()
+  formData.append('key', '/path/to/file')
+  formData.append('Content-Type', file.type)
+  formData.append('file', file, file.name)
+  return formData
+}
+export const getMockFormDataForUploadComplete = (
+  file: File,
+  cvrFileType?: CvrFileType
+): FormData => {
+  const formData = new FormData()
+  formData.append('fileName', file.name)
+  formData.append('fileType', file.type)
+  if (cvrFileType) {
+    formData.append('cvrFileType', cvrFileType)
+  }
+  formData.append('storagePathKey', '/path/to/file')
+  return formData
+}
 
-const manifestFormData: FormData = new FormData()
-manifestFormData.append('manifest', manifestFile, manifestFile.name)
-const talliesFormData: FormData = new FormData()
-talliesFormData.append('batchTallies', talliesFile, talliesFile.name)
-const cvrsFormData: FormData = new FormData()
 // Make the mock CVR file large enough to trigger an "Uploading..." progress bar
 Object.defineProperty(cvrsFile, 'size', { value: 1000 * 1000 })
-cvrsFormData.append('cvrs', cvrsFile, cvrsFile.name)
-cvrsFormData.append('cvrFileType', 'CLEARBALLOT')
+const cvrsZip = new File(['test cvr data'], 'cvrs.zip', {
+  type: 'application/zip',
+})
 
 export const apiCalls = {
   serverError: (
@@ -1637,30 +1635,122 @@ export const jaApiCalls = {
     url: '/api/election/1/jurisdiction/jurisdiction-id-1/settings',
     response,
   }),
-  putManifest: {
-    url: '/api/election/1/jurisdiction/jurisdiction-id-1/ballot-manifest',
-    options: {
-      method: 'PUT',
-      body: manifestFormData,
+  uploadManifestCalls: [
+    {
+      url:
+        '/api/election/1/jurisdiction/jurisdiction-id-1/ballot-manifest/upload-url',
+      options: {
+        method: 'GET',
+        params: { fileType: manifestFile.type },
+      },
+      response: { url: '/api/upload', fields: { key: '/path/to/file' } },
     },
-    response: { status: 'ok' },
-  },
-  putTallies: {
-    url: '/api/election/1/jurisdiction/jurisdiction-id-1/batch-tallies',
-    options: {
-      method: 'PUT',
-      body: talliesFormData,
+    {
+      url: '/api/upload',
+      options: {
+        method: 'POST',
+        body: getMockFormDataForFileUpload(manifestFile),
+      },
+      response: { status: 'ok' },
     },
-    response: { status: 'ok' },
-  },
-  putCVRs: {
-    url: '/api/election/1/jurisdiction/jurisdiction-id-1/cvrs',
-    options: {
-      method: 'PUT',
-      body: cvrsFormData,
+    {
+      url:
+        '/api/election/1/jurisdiction/jurisdiction-id-1/ballot-manifest/upload-complete',
+      options: {
+        method: 'POST',
+        body: getMockFormDataForUploadComplete(manifestFile),
+      },
+      response: { status: 'ok' },
     },
-    response: { status: 'ok' },
-  },
+  ],
+  uploadTalliesCalls: [
+    {
+      url:
+        '/api/election/1/jurisdiction/jurisdiction-id-1/batch-tallies/upload-url',
+      options: {
+        method: 'GET',
+        params: { fileType: talliesFile.type },
+      },
+      response: { url: '/api/upload', fields: { key: '/path/to/file' } },
+    },
+    {
+      url: '/api/upload',
+      options: {
+        method: 'POST',
+        body: getMockFormDataForFileUpload(talliesFile),
+      },
+      response: { status: 'ok' },
+    },
+    {
+      url:
+        '/api/election/1/jurisdiction/jurisdiction-id-1/batch-tallies/upload-complete',
+      options: {
+        method: 'POST',
+        body: getMockFormDataForUploadComplete(talliesFile),
+      },
+      response: { status: 'ok' },
+    },
+  ],
+  uploadCVRsCalls: [
+    {
+      url: '/api/election/1/jurisdiction/jurisdiction-id-1/cvrs/upload-url',
+      options: {
+        method: 'GET',
+        params: {
+          fileType: cvrsFile.type,
+          cvrFileType: CvrFileType.CLEARBALLOT,
+        },
+      },
+      response: { url: '/api/upload', fields: { key: '/path/to/file' } },
+    },
+    {
+      url: '/api/upload',
+      options: {
+        method: 'POST',
+        body: getMockFormDataForFileUpload(cvrsFile),
+      },
+      response: { status: 'ok' },
+    },
+    {
+      url:
+        '/api/election/1/jurisdiction/jurisdiction-id-1/cvrs/upload-complete',
+      options: {
+        method: 'POST',
+        body: getMockFormDataForUploadComplete(
+          cvrsFile,
+          CvrFileType.CLEARBALLOT
+        ),
+      },
+      response: { status: 'ok' },
+    },
+  ],
+  uploadCVRZipCalls: [
+    {
+      url: '/api/election/1/jurisdiction/jurisdiction-id-1/cvrs/upload-url',
+      options: {
+        method: 'GET',
+        params: { fileType: cvrsZip.type, cvrFileType: CvrFileType.HART },
+      },
+      response: { url: '/api/upload', fields: { key: '/path/to/file' } },
+    },
+    {
+      url: '/api/upload',
+      options: {
+        method: 'POST',
+        body: getMockFormDataForFileUpload(cvrsZip),
+      },
+      response: { status: 'ok' },
+    },
+    {
+      url:
+        '/api/election/1/jurisdiction/jurisdiction-id-1/cvrs/upload-complete',
+      options: {
+        method: 'POST',
+        body: getMockFormDataForUploadComplete(cvrsZip, CvrFileType.HART),
+      },
+      response: { status: 'ok' },
+    },
+  ],
   deleteCVRs: {
     url: '/api/election/1/jurisdiction/jurisdiction-id-1/cvrs',
     options: { method: 'DELETE' },
@@ -1972,19 +2062,35 @@ export const aaApiCalls = {
     url: '/api/election/1/sample-sizes/1',
     response,
   }),
-  putJurisdictionFile: {
-    url: '/api/election/1/jurisdiction/file',
+  uploadJurisdictionFileGetUrl: {
+    url: '/api/election/1/jurisdiction/file/upload-url',
     options: {
-      method: 'PUT',
-      body: jurisdictionFormData,
+      method: 'GET',
+      params: { fileType: jurisdictionFile.type },
+    },
+    response: { url: '/api/upload', fields: { key: '/path/to/file' } },
+  },
+  uploadJurisdictionFilePostFile: {
+    url: '/api/upload',
+    options: {
+      method: 'POST',
+      body: getMockFormDataForFileUpload(jurisdictionFile),
     },
     response: { status: 'ok' },
   },
-  putJurisdictionErrorFile: {
-    url: '/api/election/1/jurisdiction/file',
+  uploadJurisdictionFileUploadComplete: {
+    url: '/api/election/1/jurisdiction/file/upload-complete',
     options: {
-      method: 'PUT',
-      body: jurisdictionErrorFormData,
+      method: 'POST',
+      body: getMockFormDataForUploadComplete(jurisdictionFile),
+    },
+    response: { status: 'ok' },
+  },
+  uploadJurisdictionFileUploadCompleteError: {
+    url: '/api/election/1/jurisdiction/file/upload-complete',
+    options: {
+      method: 'POST',
+      body: getMockFormDataForUploadComplete(jurisdictionFile),
     },
     response: { status: 'ok' },
   },
@@ -1992,11 +2098,27 @@ export const aaApiCalls = {
     url: '/api/election/1/jurisdiction/file',
     response,
   }),
-  putStandardizedContestsFile: {
-    url: '/api/election/1/standardized-contests/file',
+  uploadStandardizedContestsFileGetUrl: {
+    url: '/api/election/1/standardized-contests/file/upload-url',
     options: {
-      method: 'PUT',
-      body: standardizedContestsFormData,
+      method: 'GET',
+      params: { fileType: standardizedContestsFile.type },
+    },
+    response: { url: '/api/upload', fields: { key: '/path/to/file' } },
+  },
+  uploadStandardizedContestsFilePostFile: {
+    url: '/api/upload',
+    options: {
+      method: 'POST',
+      body: getMockFormDataForFileUpload(standardizedContestsFile),
+    },
+    response: { status: 'ok' },
+  },
+  uploadStandardizedContestsFileUploadComplete: {
+    url: '/api/election/1/standardized-contests/file/upload-complete',
+    options: {
+      method: 'POST',
+      body: getMockFormDataForUploadComplete(standardizedContestsFile),
     },
     response: { status: 'ok' },
   },

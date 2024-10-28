@@ -6,6 +6,10 @@ import Participants, { IParticipantsProps } from './Participants'
 import { jurisdictionFile } from './_mocks'
 import { withMockFetch, createQueryClient } from '../../../testUtilities'
 import { IFileInfo, FileProcessingStatus } from '../../../useCSV'
+import {
+  getMockFormDataForFileUpload,
+  getMockFormDataForUploadComplete,
+} from '../../../_mocks'
 
 jest.mock('axios')
 
@@ -75,29 +79,61 @@ const apiCalls = {
     url: '/api/election/1/standardized-contests/file',
     response,
   }),
-  putJurisdictionsFile: (file: File) => {
-    const formData: FormData = new FormData()
-    formData.append('jurisdictions', file, file.name)
-    return {
-      url: '/api/election/1/jurisdiction/file',
-      options: {
-        method: 'PUT',
-        body: formData,
+  uploadJurisdictionFileCalls: (file: File) => {
+    return [
+      {
+        url: '/api/election/1/jurisdiction/file/upload-url',
+        options: {
+          method: 'GET',
+          params: { fileType: file.type },
+        },
+        response: { url: '/api/upload', fields: { key: '/path/to/file' } },
       },
-      response: { status: 'ok' },
-    }
+      {
+        url: '/api/upload',
+        options: {
+          method: 'POST',
+          body: getMockFormDataForFileUpload(file),
+        },
+        response: { status: 'ok' },
+      },
+      {
+        url: '/api/election/1/jurisdiction/file/upload-complete',
+        options: {
+          method: 'POST',
+          body: getMockFormDataForUploadComplete(file),
+        },
+        response: { status: 'ok' },
+      },
+    ]
   },
-  putStandardizedContestsFile: (file: File) => {
-    const formData: FormData = new FormData()
-    formData.append('standardized-contests', file, file.name)
-    return {
-      url: '/api/election/1/standardized-contests/file',
-      options: {
-        method: 'PUT',
-        body: formData,
+  uploadStandardizedContestsFileCalls: (file: File) => {
+    return [
+      {
+        url: '/api/election/1/standardized-contests/file/upload-url',
+        options: {
+          method: 'GET',
+          params: { fileType: file.type },
+        },
+        response: { url: '/api/upload', fields: { key: '/path/to/file' } },
       },
-      response: { status: 'ok' },
-    }
+      {
+        url: '/api/upload',
+        options: {
+          method: 'POST',
+          body: getMockFormDataForFileUpload(file),
+        },
+        response: { status: 'ok' },
+      },
+      {
+        url: '/api/election/1/standardized-contests/file/upload-complete',
+        options: {
+          method: 'POST',
+          body: getMockFormDataForUploadComplete(file),
+        },
+        response: { status: 'ok' },
+      },
+    ]
   },
 }
 
@@ -117,9 +153,9 @@ describe('Audit Setup > Participants', () => {
     const anotherFile = new File([], 'another file')
     const expectedCalls = [
       apiCalls.getJurisdictionsFile(fileMocks.empty),
-      apiCalls.putJurisdictionsFile(jurisdictionFile),
+      ...apiCalls.uploadJurisdictionFileCalls(jurisdictionFile),
       apiCalls.getJurisdictionsFile(fileMocks.processed),
-      apiCalls.putJurisdictionsFile(anotherFile),
+      ...apiCalls.uploadJurisdictionFileCalls(anotherFile),
       apiCalls.getJurisdictionsFile(fileMocks.processed),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -156,10 +192,10 @@ describe('Audit Setup > Participants', () => {
     const expectedCalls = [
       apiCalls.getJurisdictionsFile(fileMocks.empty),
       apiCalls.getStandardizedContestsFile(fileMocks.empty),
-      apiCalls.putJurisdictionsFile(jurisdictionFile),
+      ...apiCalls.uploadJurisdictionFileCalls(jurisdictionFile),
       apiCalls.getJurisdictionsFile(fileMocks.processed),
       apiCalls.getStandardizedContestsFile(fileMocks.empty),
-      apiCalls.putStandardizedContestsFile(contestsFile),
+      ...apiCalls.uploadStandardizedContestsFileCalls(contestsFile),
       apiCalls.getStandardizedContestsFile(fileMocks.processed),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -212,10 +248,10 @@ describe('Audit Setup > Participants', () => {
     const expectedCalls = [
       apiCalls.getJurisdictionsFile(fileMocks.empty),
       apiCalls.getStandardizedContestsFile(fileMocks.empty),
-      apiCalls.putJurisdictionsFile(jurisdictionFile),
+      ...apiCalls.uploadJurisdictionFileCalls(jurisdictionFile),
       apiCalls.getJurisdictionsFile(fileMocks.processed),
       apiCalls.getStandardizedContestsFile(fileMocks.empty),
-      apiCalls.putStandardizedContestsFile(contestsFile),
+      ...apiCalls.uploadStandardizedContestsFileCalls(contestsFile),
       apiCalls.getStandardizedContestsFile(fileMocks.processed),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -331,7 +367,7 @@ describe('Audit Setup > Participants', () => {
     const expectedCalls = [
       apiCalls.getJurisdictionsFile(fileMocks.processed),
       apiCalls.getStandardizedContestsFile(fileMocks.processed),
-      apiCalls.putStandardizedContestsFile(contestsFile),
+      ...apiCalls.uploadStandardizedContestsFileCalls(contestsFile),
       apiCalls.getStandardizedContestsFile(fileMocks.processing),
       apiCalls.getStandardizedContestsFile(fileMocks.errored),
     ]
@@ -361,7 +397,7 @@ describe('Audit Setup > Participants', () => {
     const expectedCalls = [
       apiCalls.getJurisdictionsFile(fileMocks.processed),
       apiCalls.getStandardizedContestsFile(fileMocks.processed),
-      apiCalls.putJurisdictionsFile(jurisdictionFile),
+      ...apiCalls.uploadJurisdictionFileCalls(jurisdictionFile),
       apiCalls.getJurisdictionsFile(fileMocks.processing),
       apiCalls.getJurisdictionsFile(fileMocks.processed),
       apiCalls.getStandardizedContestsFile(fileMocks.errored),
