@@ -359,18 +359,27 @@ def test_task_interrupted(caplog, db_session):
         )
 
     task1 = create_background_task(task_to_interrupt, dict(num=1), db_session)
-    create_background_task(task_to_interrupt, dict(num=2), db_session)
+    task2 = create_background_task(task_to_interrupt, dict(num=2), db_session)
 
     # Simulate that the worker got interrupted mid-task
     claim_next_task("test_worker", db_session)
     db_session.commit()
-    # Simulate starting the task before interruption
-    task_to_interrupt(num=1)
+    task_to_interrupt(num=1)  # Simulate starting the task before interruption
     reset_task(task1, db_session)
-    db_session.commit()
 
+    # Try resetting a task that's already been reset - this should be a no-op
+    reset_task(task1, db_session)
+
+    # Continue running tasks
     run_task(claim_next_task("test_worker", db_session), db_session)
     run_task(claim_next_task("test_worker", db_session), db_session)
+    # Ensure resetting didn't duplicate the task
+    assert claim_next_task("test_worker", db_session) is None
+
+    # Try resetting a task that's already completed
+    reset_task(task2, db_session)
+    db_session.commit()
+    assert claim_next_task("test_worker", db_session) is None
 
     results = [
         num
