@@ -451,46 +451,60 @@ def process_batch_inventory_tabulator_status_file(
 
     def get_tabulator_id_to_name_dict_for_excel_file(
         cvr_xml: ElementTree.ElementTree,
-    ) -> Dict[Optional[str], Optional[str]]:
+    ):
         namespaces = {"ss": "urn:schemas-microsoft-com:office:spreadsheet"}
-        rows = iter(
-            cvr_xml.findall(
-                ".//ss:Worksheet[@ss:Name='Tabulator Status']/ss:Table/ss:Row",
-                namespaces,
-            )
+        # List of all rows in the table
+        rows = cvr_xml.findall(
+            ".//ss:Worksheet[@ss:Name='Tabulator Status']/ss:Table/ss:Row",
+            namespaces,
         )
+        # List of all rows and text content of each cell in the row. eg.
+        # [ ...
+        #   ["Tabulator Id", "Name",          "Load Status", "Total Ballots Cast"],
+        #   ["TABULATOR1",   "Tabulator One", "1",           "123"],
+        #   ["TABULATOR2",   "Tabulator Two", "1",           "456"],
+        #   ...
+        # ]
+        rows_with_cell_text = [
+            [
+                strip_optional_string(data_element.text)
+                for data_element in row.findall(
+                    "ss:Cell/ss:Data[@ss:Type='String']", namespaces
+                )
+            ]
+            for row in rows
+        ]
 
         # Get the column headers row so we know at which indices to access "Tabulator Id" and "Name" later
-        column_headers_row: Optional[ElementTree.Element] = None
-        while column_headers_row is None:
-            row = next(rows, None)
-            if row is None:
-                raise UserError(TABULATOR_STATUS_PARSE_ERROR)
-
-            row_content = row.find("ss:Cell/ss:Data[@ss:Type='String']", namespaces)
-            if row_content is not None:
-                if strip_optional_string(row_content.text) == TABULATOR_ID:
-                    column_headers_row = row
-
-        column_header_values = column_headers_row.findall(
-            "./ss:Cell/ss:Data", namespaces
+        column_header_row_index = next(
+            (
+                i
+                for i, row_cells in enumerate(rows_with_cell_text)
+                if TABULATOR_ID in row_cells
+            ),
+            -1,
         )
-        # Headers in the order they appear in the file eg. ["Tabulator Id", "Name", "Load Status", "Total Ballots Cast"]
-        headers = [(data.text or "").strip() for data in column_header_values]
-        # The indices of values of interest, according to the headers above
-        tabulator_id_index = headers.index(TABULATOR_ID)
-        tabulator_name_index = headers.index(NAME)
+
+        # Validate column header row was found
+        if column_header_row_index == -1:
+            raise UserError(TABULATOR_STATUS_PARSE_ERROR)
+
+        # Validate we have at least 1 row of tabulator data after the column headers
+        if column_header_row_index == len(rows_with_cell_text) - 1:
+            raise UserError(TABULATOR_STATUS_PARSE_ERROR)
+
+        column_headers_row = rows_with_cell_text[column_header_row_index]
+
+        # Get the position of "Tabulator Id" and "Name" values in the list of cells for a single row
+        tabulator_id_index = column_headers_row.index(TABULATOR_ID)
+        tabulator_name_index = column_headers_row.index(NAME)
 
         tabulator_id_to_name = {}
-        tabulator_data_row = next(rows, None)
-        # Iterate over and parse tabulator data rows until exhausted
-        while tabulator_data_row is not None:
-            values = tabulator_data_row.findall("./ss:Cell/ss:Data", namespaces)
-            tabulator_id = values[tabulator_id_index].text
-            tabulator_name = values[tabulator_name_index].text
+        # Iterate over and parse tabulator data rows
+        for tabulator_data_row in rows_with_cell_text[column_header_row_index + 1 :]:
+            tabulator_id = tabulator_data_row[tabulator_id_index]
+            tabulator_name = tabulator_data_row[tabulator_name_index]
             tabulator_id_to_name[tabulator_id] = tabulator_name
-
-            tabulator_data_row = next(rows, None)
 
         return tabulator_id_to_name
 
