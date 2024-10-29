@@ -50,7 +50,7 @@ def s3():  # pylint: disable=invalid-name
 
 def store_file(file: IO[bytes], storage_path: str) -> str:
     assert not os.path.isabs(storage_path)
-    full_path = os.path.join(config.FILE_UPLOAD_STORAGE_PATH, storage_path)
+    full_path = get_full_storage_path(storage_path)
     if config.FILE_UPLOAD_STORAGE_PATH.startswith("s3://"):
         raise Exception("This method should only be used for local file storage.")
     else:
@@ -62,8 +62,7 @@ def store_file(file: IO[bytes], storage_path: str) -> str:
 
 def retrieve_file(storage_path: str) -> BinaryIO:
     if config.FILE_UPLOAD_STORAGE_PATH.startswith("s3://"):
-        if not storage_path.startswith(config.FILE_UPLOAD_STORAGE_PATH):
-            raise Exception("Invalid file storage path")
+        assert storage_path.startswith(config.FILE_UPLOAD_STORAGE_PATH)
         parsed_path = urlparse(storage_path)
         bucket_name = parsed_path.netloc
         key = parsed_path.path[1:]
@@ -120,7 +119,7 @@ def get_file_upload_url(
         response: Dict[str, Any] = s3().generate_presigned_post(
             bucket_name,
             f"{storage_prefix}/{file_name}",
-            # More documentation on diffrent options to specify here:
+            # More documentation on different options to specify here:
             # https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-HTTPPOSTConstructPolicy.html
             Conditions=[
                 {"bucket": bucket_name},

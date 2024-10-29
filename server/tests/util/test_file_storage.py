@@ -73,7 +73,7 @@ def test_store_file_raises_with_s3_config(mock_boto_client):
     )
     assert retrieved_file.read() == b"test file contents"
 
-    with pytest.raises(Exception, match=r"Invalid file storage path"):
+    with pytest.raises(AssertionError):
         retrieve_file("invalid/path/to/file")
 
     delete_file("s3://test_bucket/test_dir/test_file.csv")
