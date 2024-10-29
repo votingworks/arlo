@@ -260,3 +260,20 @@ def allow_public_access(route: Callable):
     wrapper.has_access_control = True  # type: ignore
 
     return wrapper
+
+
+def allow_any_logged_in_user_access(route: Callable):
+    """
+    Flask route decorator that allows public access to a route.
+    """
+
+    @functools.wraps(route)
+    def wrapper(*args, **kwargs):
+        _, user_key = get_loggedin_user(session)
+        if not user_key:
+            raise Unauthorized("Please log in to access Arlo")
+        return route(*args, **kwargs)
+
+    wrapper.has_access_control = True  # type: ignore
+
+    return wrapper
