@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import BinaryIO, Optional
 import uuid
 import logging
 from datetime import datetime
@@ -12,6 +12,7 @@ from ..database import db_session, engine
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import restrict_access, UserType, get_loggedin_user, get_support_user
 from ..worker.tasks import (
+    UserError,
     background_task,
     create_background_task,
 )
@@ -56,6 +57,8 @@ TABULATOR = "Tabulator"
 BATCH_NAME = "Batch Name"
 NUMBER_OF_BALLOTS = "Number of Ballots"
 CVR = "CVR"
+
+BATCH_INVENTORY_WORKSHEET_UPLOADED_ERROR = 'You have uploaded a Batch Inventory Worksheet. Please upload a ballot manifest file exported from Step 4: "Download Audit Files".'
 
 
 def all_manifests_uploaded(contest: Contest):
@@ -143,6 +146,7 @@ def process_ballot_manifest_file(
             )
 
         manifest_file = retrieve_file(jurisdiction.manifest_file.storage_path)
+        validate_is_not_batch_inventory_worksheet(manifest_file)
         manifest_csv = parse_csv(manifest_file, columns)
 
         counting_group_allowlist = [item.value for item in CountingGroup]
@@ -227,6 +231,17 @@ def process_ballot_manifest_file(
             session,
         )
         session.commit()
+
+
+def is_batch_inventory_worksheet(first_line: bytes) -> bool:
+    return first_line.decode("utf-8").strip() == "Batch Inventory Worksheet"
+
+
+def validate_is_not_batch_inventory_worksheet(file: BinaryIO):
+    first_line = file.readline()
+    file.seek(0)
+    if is_batch_inventory_worksheet(first_line):
+        raise UserError(BATCH_INVENTORY_WORKSHEET_UPLOADED_ERROR)
 
 
 def save_ballot_manifest_file(

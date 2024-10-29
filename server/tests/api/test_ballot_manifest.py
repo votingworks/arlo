@@ -155,6 +155,41 @@ def test_ballot_manifest_upload_missing_file_path(
     }
 
 
+def test_ballot_manifest_upload_batch_inventory_worksheet(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+
+    rv = upload_ballot_manifest(
+        client,
+        io.BytesIO(b"Batch Inventory Worksheet \r\n"),
+        election_id,
+        jurisdiction_ids[0],
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
+    )
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {
+                "name": asserts_startswith("manifest"),
+                "uploadedAt": assert_is_date,
+            },
+            "processing": {
+                "status": ProcessingStatus.ERRORED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": 'You have uploaded a Batch Inventory Worksheet. Please upload a ballot manifest file exported from Step 4: "Download Audit Files".',
+            },
+        },
+    )
+
+
 def test_ballot_manifest_upload_bad_csv(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 ):
