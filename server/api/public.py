@@ -153,13 +153,14 @@ def compute_batch_comparison_sample_size(
     )
     return min(sample_size, contest.ballots)
 
+
 @api.route(
     "/file-upload",
     methods=["POST"],
 )
 @allow_public_access
 def upload_file_to_local_filesystem():
-    file = request.files["file"]
+    file = request.files.get("file")
     storage_key = request.form.get("key")
     if storage_key is None:
         raise BadRequest("Missing required form parameter 'key'")
