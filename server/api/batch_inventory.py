@@ -1,4 +1,5 @@
 import os
+import re
 import shutil
 import tempfile
 from collections import defaultdict
@@ -11,6 +12,8 @@ from xml.etree import ElementTree
 from flask import request, jsonify, session
 from werkzeug.exceptions import BadRequest, Conflict
 from sqlalchemy.orm import Session
+
+from server.util.string import strip_optional_string
 
 
 from ..database import db_session, engine
@@ -49,6 +52,10 @@ from ..util.isoformat import isoformat
 from .batch_tallies import construct_contest_choice_csv_headers
 from ..activity_log.activity_log import UploadFile, activity_base, record_activity
 from ..util.get_json import safe_get_json_dict
+
+
+TABULATOR_ID = "Tabulator Id"
+NAME = "Name"
 
 # (tabulator_id, batch_id)
 BatchKey = Tuple[str, str]
@@ -428,8 +435,8 @@ def process_batch_inventory_cvr_file(
 
 
 TABULATOR_STATUS_PARSE_ERROR = (
-    "We could not parse this file. Please make sure you upload the plain XML version of the tabulator status report."
-    ' The file name should end in ".xml" and should not contain the words "To Excel".'
+    "We could not parse this file. Please make sure you upload either the plain XML version or Excel version of the tabulator status report."
+    ' The file name should end in ".xml".'
 )
 
 
@@ -442,6 +449,72 @@ def process_batch_inventory_tabulator_status_file(
     jurisdiction = Jurisdiction.query.get(jurisdiction_id)
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction_id)
 
+    def get_tabulator_id_to_name_dict_for_excel_file(
+        cvr_xml: ElementTree.ElementTree,
+    ):
+        namespaces = {"ss": "urn:schemas-microsoft-com:office:spreadsheet"}
+        # List of all rows in the table
+        rows = cvr_xml.findall(
+            ".//ss:Worksheet[@ss:Name='Tabulator Status']/ss:Table/ss:Row",
+            namespaces,
+        )
+        # List of all rows and text content of each cell in the row. eg.
+        # [ ...
+        #   ["Tabulator Id", "Name",          "Load Status", "Total Ballots Cast"],
+        #   ["TABULATOR1",   "Tabulator One", "1",           "123"],
+        #   ["TABULATOR2",   "Tabulator Two", "1",           "456"],
+        #   ...
+        # ]
+        rows_with_cell_text = [
+            [
+                strip_optional_string(data_element.text)
+                for data_element in row.findall(
+                    "ss:Cell/ss:Data[@ss:Type='String']", namespaces
+                )
+            ]
+            for row in rows
+        ]
+
+        # Get the column headers row so we know at which indices to access "Tabulator Id" and "Name" later
+        column_header_row_index = next(
+            (
+                i
+                for i, row_cells in enumerate(rows_with_cell_text)
+                if TABULATOR_ID in row_cells
+            ),
+            -1,
+        )
+
+        # Validate column header row was found
+        if column_header_row_index == -1:
+            raise UserError(TABULATOR_STATUS_PARSE_ERROR)
+
+        # Validate we have at least 1 row of tabulator data after the column headers
+        if column_header_row_index == len(rows_with_cell_text) - 1:
+            raise UserError(TABULATOR_STATUS_PARSE_ERROR)
+
+        column_headers_row = rows_with_cell_text[column_header_row_index]
+
+        # Get the position of "Tabulator Id" and "Name" values in the list of cells for a single row
+        tabulator_id_index = column_headers_row.index(TABULATOR_ID)
+        tabulator_name_index = column_headers_row.index(NAME)
+
+        return {
+            tabulator_data_row[tabulator_id_index]: tabulator_data_row[
+                tabulator_name_index
+            ]
+            for tabulator_data_row in rows_with_cell_text[column_header_row_index + 1 :]
+        }
+
+    def get_tabulator_id_to_name_dict_for_plain_xml_file(
+        cvr_xml: ElementTree.ElementTree,
+    ) -> Dict[Optional[str], Optional[str]]:
+        tabulators = cvr_xml.findall("tabulators/tb")
+        if len(tabulators) == 0:
+            raise UserError(TABULATOR_STATUS_PARSE_ERROR)
+
+        return {tabulator.get("tid"): tabulator.get("name") for tabulator in tabulators}
+
     def process():
         file = retrieve_file(batch_inventory_data.tabulator_status_file.storage_path)
         try:
@@ -449,12 +522,15 @@ def process_batch_inventory_tabulator_status_file(
         except Exception as error:
             raise UserError(TABULATOR_STATUS_PARSE_ERROR) from error
 
-        tabulators = cvr_xml.findall("tabulators/tb")
-        if len(tabulators) == 0:
-            raise UserError(TABULATOR_STATUS_PARSE_ERROR)
-        tabulator_id_to_name = {
-            tabulator.get("tid"): tabulator.get("name") for tabulator in tabulators
-        }
+        root = cvr_xml.getroot()
+        is_ms_excel_file = re.match(
+            r"\{urn:schemas-microsoft-com:office:spreadsheet\}", root.tag
+        )
+        tabulator_id_to_name = (
+            get_tabulator_id_to_name_dict_for_excel_file(cvr_xml)
+            if is_ms_excel_file
+            else get_tabulator_id_to_name_dict_for_plain_xml_file(cvr_xml)
+        )
 
         ballot_count_by_batch = items_list_to_dict(
             batch_inventory_data.election_results["ballot_count_by_batch"]
