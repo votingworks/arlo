@@ -1032,7 +1032,7 @@ def parse_hart_cvrs(
 
     cvr_zip_files: Dict[str, BinaryIO] = {}  # { file_name: file }
     scanned_ballot_information_files: List[BinaryIO] = []
-    hasNonCsvZipFiles = []
+    nonCsvZipFiles = []
     for file_name in file_names:
         if file_name.lower().endswith(".zip"):
             # pylint: disable=consider-using-with
@@ -1045,7 +1045,7 @@ def parse_hart_cvrs(
                 open(os.path.join(working_directory, file_name), "rb")
             )
         else:
-            hasNonCsvZipFiles.append(file_name)
+            nonCsvZipFiles.append(file_name)
 
     # If there are no zip files inside the "wrapper" we assume it was not a wrapper and there was only one cvr zip file uploaded, unwrapped.
     if len(cvr_zip_files) == 0 and len(scanned_ballot_information_files) == 0:
@@ -1053,9 +1053,9 @@ def parse_hart_cvrs(
             jurisdiction.cvr_file.storage_path
         )
     # If the wrapper was a "wrapper" zip it should only contain csv and zip files
-    elif len(hasNonCsvZipFiles) > 0:
+    elif len(nonCsvZipFiles) > 0:
         raise UserError(
-            f"Unsupported file type. Expected either a ZIP file or a CSV file, but found {(','.join(hasNonCsvZipFiles))}."
+            f"Unsupported file type. Expected either a ZIP file or a CSV file, but found {(','.join(nonCsvZipFiles))}."
         )
 
     def parse_scanned_ballot_information_file(

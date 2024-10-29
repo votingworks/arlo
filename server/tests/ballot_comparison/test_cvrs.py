@@ -48,7 +48,6 @@ def test_dominion_cvr_upload(
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
     )
-    print(json.loads(rv.data))
     compare_json(
         json.loads(rv.data),
         {

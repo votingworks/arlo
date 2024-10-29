@@ -237,7 +237,7 @@ def test_standardized_contests_wrong_audit_type(
             "errors": [
                 {
                     "errorType": "Conflict",
-                    "message": "Can't upload CVR file for this audit type.",
+                    "message": "Can't upload standardized contests file for this audit type.",
                 }
             ]
         }

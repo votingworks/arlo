@@ -73,6 +73,8 @@ def election_id(client: FlaskClient, org_id: str, request) -> str:
 def jurisdiction_ids(client: FlaskClient, election_id: str) -> List[str]:
     rv = setup_jurisdictions_upload(
         client,
+        # We expect the API to order the jurisdictions by name, so we
+        # upload them out of order.
         io.BytesIO(
             (
                 "Jurisdiction,Admin Email\n"

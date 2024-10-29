@@ -198,7 +198,7 @@ def save_standardized_contests_file(
 ):
     election.standardized_contests_file = File(
         id=str(uuid.uuid4()),
-        name=filename,  # type: ignore
+        name=filename,
         storage_path=storage_path,
         uploaded_at=datetime.now(timezone.utc),
     )
@@ -214,7 +214,7 @@ def save_standardized_contests_file(
 @restrict_access([UserType.AUDIT_ADMIN])
 def complete_upload_for_standardized_contests_file(election: Election):
     if election.audit_type not in [AuditType.BALLOT_COMPARISON, AuditType.HYBRID]:
-        raise Conflict("Can't upload CVR file for this audit type.")
+        raise Conflict("Can't upload standardized contests file for this audit type.")
 
     if len(list(election.jurisdictions)) == 0:
         raise Conflict(
