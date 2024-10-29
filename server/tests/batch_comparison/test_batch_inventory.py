@@ -1138,7 +1138,10 @@ def test_batch_inventory_excel_tabulator_status_file(
     compare_json(
         json.loads(rv.data),
         {
-            "file": {"name": "tabulator-status.xml", "uploadedAt": assert_is_date},
+            "file": {
+                "name": asserts_startswith("tabulator-status"),
+                "uploadedAt": assert_is_date,
+            },
             "processing": {
                 "status": ProcessingStatus.PROCESSED,
                 "startedAt": assert_is_date,
@@ -1174,14 +1177,11 @@ def test_batch_inventory_wrong_tabulator_status_file(
     assert_ok(rv)
 
     # Upload CVR file
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr",
-        data={
-            "cvr": (
-                io.BytesIO(TEST_CVR.encode()),
-                "cvrs.csv",
-            ),
-        },
+    rv = setup_batch_inventory_cvr_upload(
+        client,
+        io.BytesIO(TEST_CVR.encode()),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
