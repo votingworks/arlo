@@ -33,8 +33,6 @@ from werkzeug.exceptions import BadRequest, NotFound, Conflict
 from sqlalchemy import func, and_
 from sqlalchemy.orm import Session
 
-from server.util.isoformat import isoformat
-
 from . import api
 from ..database import db_session, engine as db_engine
 from ..models import *  # pylint: disable=wildcard-import
@@ -1626,10 +1624,7 @@ def start_upload_for_cvrs(election: Election, jurisdiction: Jurisdiction):
     if file_type is None:
         raise BadRequest("Missing expected query parameter: fileType")
 
-    storage_path_prefix = (
-        f"audits/{election.id}/jurisdictions/{jurisdiction.id}"
-        f"/cvrs_{isoformat(datetime.now(timezone.utc))}"
-    )
+    storage_path_prefix = f"audits/{election.id}/jurisdictions/{jurisdiction.id}"
 
     cvr_file_type = request.args.get("cvrFileType")
     if cvr_file_type in [CvrFileType.ESS, CvrFileType.HART]:
