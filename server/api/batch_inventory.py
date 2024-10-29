@@ -13,6 +13,8 @@ from flask import request, jsonify, session
 from werkzeug.exceptions import BadRequest, Conflict
 from sqlalchemy.orm import Session
 
+from server.util.string import strip_optional_string
+
 
 from ..database import db_session, engine
 from . import api
@@ -50,6 +52,10 @@ from ..util.isoformat import isoformat
 from .batch_tallies import construct_contest_choice_csv_headers
 from ..activity_log.activity_log import UploadFile, activity_base, record_activity
 from ..util.get_json import safe_get_json_dict
+
+
+TABULATOR_ID = "Tabulator Id"
+NAME = "Name"
 
 # (tabulator_id, batch_id)
 BatchKey = Tuple[str, str]
@@ -447,51 +453,46 @@ def process_batch_inventory_tabulator_status_file(
         cvr_xml: ElementTree.ElementTree,
     ) -> Dict[Optional[str], Optional[str]]:
         namespaces = {"ss": "urn:schemas-microsoft-com:office:spreadsheet"}
-        worksheet = cvr_xml.find(
-            ".//ss:Worksheet[@ss:Name='Tabulator Status']", namespaces
+        rows = iter(
+            cvr_xml.findall(
+                ".//ss:Worksheet[@ss:Name='Tabulator Status']/ss:Table/ss:Row",
+                namespaces,
+            )
         )
-        if worksheet is None:
-            raise UserError(TABULATOR_STATUS_PARSE_ERROR)
 
-        tabulator_status_table = worksheet.find("ss:Table", namespaces)
-        if tabulator_status_table is None:
-            raise UserError(TABULATOR_STATUS_PARSE_ERROR)
+        # Get the column headers row so we know at which indices to access "Tabulator Id" and "Name" later
+        column_headers_row: Optional[ElementTree.Element] = None
+        while column_headers_row is None:
+            row = next(rows, None)
+            if row is None:
+                raise UserError(TABULATOR_STATUS_PARSE_ERROR)
 
-        columns = tabulator_status_table.findall("Column")
-        if columns is None:
-            raise UserError(TABULATOR_STATUS_PARSE_ERROR)
+            row_content = row.find("ss:Cell/ss:Data[@ss:Type='String']", namespaces)
+            if row_content is not None:
+                if strip_optional_string(row_content.text) == TABULATOR_ID:
+                    column_headers_row = row
 
-        rows = tabulator_status_table.findall("ss:Row", namespaces)
-        if rows is None:
-            raise UserError(TABULATOR_STATUS_PARSE_ERROR)
-
-        # Ignore rows containing data we don't need:
-        # 1. "Tabulator Status"
-        # 2. Election name
-        # 3. "Official"/"Unofficial" status
-        # 4. Timestamp
-        # 5. Empty row for spacing
-        row_offset = 5
-        rows = rows[row_offset:]
-
-        column_headers_row = rows.pop(0)
         column_header_values = column_headers_row.findall(
             "./ss:Cell/ss:Data", namespaces
         )
+        # Headers in the order they appear in the file eg. ["Tabulator Id", "Name", "Load Status", "Total Ballots Cast"]
         headers = [(data.text or "").strip() for data in column_header_values]
-        header_indices = {k: v for v, k in enumerate(headers)}
+        # The indices of values of interest, according to the headers above
+        tabulator_id_index = headers.index(TABULATOR_ID)
+        tabulator_name_index = headers.index(NAME)
 
-        tabulator_id_key = "Tabulator Id"
-        name_key = "Name"
+        tabulator_id_to_name = {}
+        tabulator_data_row = next(rows, None)
+        # Iterate over and parse tabulator data rows until exhausted
+        while tabulator_data_row is not None:
+            values = tabulator_data_row.findall("./ss:Cell/ss:Data", namespaces)
+            tabulator_id = values[tabulator_id_index].text
+            tabulator_name = values[tabulator_name_index].text
+            tabulator_id_to_name[tabulator_id] = tabulator_name
 
-        return {
-            (values := row.findall("./ss:Cell/ss:Data", namespaces))[
-                header_indices[tabulator_id_key]
-            ]
-            .text: values[header_indices[name_key]]
-            .text
-            for row in rows
-        }
+            tabulator_data_row = next(rows, None)
+
+        return tabulator_id_to_name
 
     def get_tabulator_id_to_name_dict_for_plain_xml_file(
         cvr_xml: ElementTree.ElementTree,

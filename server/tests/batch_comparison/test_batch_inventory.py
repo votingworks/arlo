@@ -996,6 +996,7 @@ def test_batch_inventory_excel_tabulator_status_file(
     election_id: str,
     jurisdiction_ids: List[str],
     contest_id: str,  # pylint: disable=unused-argument
+    snapshot,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -1167,6 +1168,12 @@ def test_batch_inventory_excel_tabulator_status_file(
             },
         },
     )
+
+    # Download worksheet
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/worksheet"
+    )
+    snapshot.assert_match(rv.data.decode("utf-8"))
 
 
 def test_batch_inventory_wrong_tabulator_status_file(
