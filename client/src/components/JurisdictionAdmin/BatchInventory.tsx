@@ -239,6 +239,7 @@ const SelectSystemStep: React.FC<{
             <option value={CvrFileType.DOMINION}>Dominion</option>
             {/* eslint-disable-next-line react/jsx-curly-brace-presence */}
             <option value={CvrFileType.ESS}>{'ES&S'}</option>
+            <option value={CvrFileType.HART}>Hart</option>
           </HTMLSelect>
         </Row>
       </StepPanel>
@@ -293,6 +294,17 @@ const UploadElectionResultsStep: React.FC<{
               title="Cast Vote Records (CVR)"
               {...cvrUpload}
               acceptFileTypes={['csv', 'zip']}
+            />
+          </StepPanelColumn>
+        </StepPanel>
+      )}
+      {systemType === CvrFileType.HART && (
+        <StepPanel>
+          <StepPanelColumn>
+            <FileUpload
+              title="Cast Vote Records (CVR)"
+              {...cvrUpload}
+              acceptFileTypes={['zip']}
             />
           </StepPanelColumn>
         </StepPanel>
