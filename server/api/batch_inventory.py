@@ -499,14 +499,12 @@ def process_batch_inventory_tabulator_status_file(
         tabulator_id_index = column_headers_row.index(TABULATOR_ID)
         tabulator_name_index = column_headers_row.index(NAME)
 
-        tabulator_id_to_name = {}
-        # Iterate over and parse tabulator data rows
-        for tabulator_data_row in rows_with_cell_text[column_header_row_index + 1 :]:
-            tabulator_id = tabulator_data_row[tabulator_id_index]
-            tabulator_name = tabulator_data_row[tabulator_name_index]
-            tabulator_id_to_name[tabulator_id] = tabulator_name
-
-        return tabulator_id_to_name
+        return {
+            tabulator_data_row[tabulator_id_index]: tabulator_data_row[
+                tabulator_name_index
+            ]
+            for tabulator_data_row in rows_with_cell_text[column_header_row_index + 1 :]
+        }
 
     def get_tabulator_id_to_name_dict_for_plain_xml_file(
         cvr_xml: ElementTree.ElementTree,
