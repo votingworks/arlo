@@ -37,7 +37,7 @@ export interface IFileInfo {
 }
 
 interface IUpload {
-  files: File[]
+  file: File
   progress: number
 }
 
@@ -47,15 +47,14 @@ export const isFileProcessed = (file: IFileInfo): boolean =>
 const loadCSVFile = async (url: string): Promise<IFileInfo | null> =>
   api<IFileInfo>(url)
 
-const putCSVFiles = async (
+const putCSVFile = async (
   url: string,
-  files: File[],
+  file: File,
   formKey: string,
   trackProgress: (progress: number) => void,
   cvrFileType?: CvrFileType
 ): Promise<boolean> => {
   try {
-    const file = files[0]
     // Get the signed s3 URL for the file upload
     const params = cvrFileType
       ? {
@@ -129,7 +128,7 @@ const useCSV = (
   dependencyFile?: IFileInfo | null
 ): [
   IFileInfo | null,
-  (csv: File[]) => Promise<boolean>,
+  (csv: File) => Promise<boolean>,
   () => Promise<boolean>
 ] => {
   const [csv, setCSV] = useState<IFileInfo | null>(null)
@@ -159,18 +158,18 @@ const useCSV = (
     dependencyNotProcessing,
   ])
 
-  const uploadCSVs = async (
-    files: File[],
+  const uploadCSV = async (
+    file: File,
     cvrFileType?: CvrFileType
   ): Promise<boolean> => {
     if (!shouldFetch) return false
-    setUpload({ files, progress: 0 })
+    setUpload({ file, progress: 0 })
     if (
-      await putCSVFiles(
+      await putCSVFile(
         url,
-        files,
+        file,
         formKey,
-        progress => setUpload({ files, progress }),
+        progress => setUpload({ file, progress }),
         cvrFileType
       )
     ) {
@@ -200,12 +199,12 @@ const useCSV = (
     shouldPoll ? 1000 : null
   )
 
-  return [csv && { ...csv, upload }, uploadCSVs, deleteCSV]
+  return [csv && { ...csv, upload }, uploadCSV, deleteCSV]
 }
 
 export const useJurisdictionsFile = (
   electionId: string
-): [IFileInfo | null, (csv: File[]) => Promise<boolean>] => {
+): [IFileInfo | null, (csv: File) => Promise<boolean>] => {
   const [csv, uploadCSV] = useCSV(
     `/election/${electionId}/jurisdiction/file`,
     'jurisdictions'
@@ -218,7 +217,7 @@ export const useStandardizedContestsFile = (
   electionId: string,
   auditType: IAuditSettings['auditType'],
   jurisdictionsFile?: IFileInfo | null
-): [IFileInfo | null, (csv: File[]) => Promise<boolean>] => {
+): [IFileInfo | null, (csv: File) => Promise<boolean>] => {
   const [csv, uploadCSV] = useCSV(
     `/election/${electionId}/standardized-contests/file`,
     'standardized-contests',
@@ -234,7 +233,7 @@ export const useBallotManifest = (
   jurisdictionId: string
 ): [
   IFileInfo | null,
-  (csv: File[]) => Promise<boolean>,
+  (csv: File) => Promise<boolean>,
   () => Promise<boolean>
 ] =>
   useCSV(
@@ -249,7 +248,7 @@ export const useBatchTallies = (
   ballotManifest: IFileInfo | null
 ): [
   IFileInfo | null,
-  (csv: File[]) => Promise<boolean>,
+  (csv: File) => Promise<boolean>,
   () => Promise<boolean>
 ] =>
   useCSV(
@@ -266,7 +265,7 @@ export const useCVRs = (
   ballotManifest: IFileInfo | null
 ): [
   IFileInfo | null,
-  (csv: File[]) => Promise<boolean>,
+  (csv: File) => Promise<boolean>,
   () => Promise<boolean>
 ] =>
   useCSV(
