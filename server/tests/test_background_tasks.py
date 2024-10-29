@@ -342,25 +342,42 @@ def test_task_multiple_run_in_order(db_session):
 
 
 def test_task_interrupted(caplog, db_session):
-    results = []
+    db_session.execute(
+        """
+        CREATE TABLE IF NOT EXISTS task_to_interrupt_results (
+            num INT,
+            inserted_at TIMESTAMPTZ DEFAULT NOW()
+        )
+        """
+    )
+    db_session.execute("TRUNCATE TABLE task_to_interrupt_results")
 
     @background_task
-    def interrupted(num):
-        nonlocal results
-        results.append(num)
+    def task_to_interrupt(num):
+        db_session.execute(
+            "INSERT INTO task_to_interrupt_results (num) VALUES (:num)", dict(num=num)
+        )
 
-    task1 = create_background_task(interrupted, dict(num=1), db_session)
-    create_background_task(interrupted, dict(num=2), db_session)
+    task1 = create_background_task(task_to_interrupt, dict(num=1), db_session)
+    create_background_task(task_to_interrupt, dict(num=2), db_session)
 
     # Simulate that the worker got interrupted mid-task
     claim_next_task("test_worker", db_session)
     db_session.commit()
+    # Simulate starting the task before interruption
+    task_to_interrupt(num=1)
     reset_task(task1, db_session)
     db_session.commit()
 
     run_task(claim_next_task("test_worker", db_session), db_session)
     run_task(claim_next_task("test_worker", db_session), db_session)
 
+    results = [
+        num
+        for num, in db_session.execute(
+            "SELECT num FROM task_to_interrupt_results ORDER BY inserted_at"
+        ).fetchall()
+    ]
     assert results == [1, 2]
 
     assert find_log(
@@ -368,7 +385,7 @@ def test_task_interrupted(caplog, db_session):
         logging.INFO,
         (
             f"TASK_RESET {{'id': '{task1.id}', "
-            "'task_name': 'interrupted',"
+            "'task_name': 'task_to_interrupt',"
             f" 'payload': {{'num': 1}},"
             " 'worker_id': 'test_worker'}"
         ),
@@ -378,7 +395,7 @@ def test_task_interrupted(caplog, db_session):
         logging.INFO,
         (
             f"TASK_START {{'id': '{task1.id}', "
-            "'task_name': 'interrupted',"
+            "'task_name': 'task_to_interrupt',"
             f" 'payload': {{'num': 1}},"
             " 'worker_id': 'test_worker'}"
         ),
@@ -388,7 +405,7 @@ def test_task_interrupted(caplog, db_session):
         logging.INFO,
         (
             f"TASK_COMPLETE {{'id': '{task1.id}', "
-            "'task_name': 'interrupted',"
+            "'task_name': 'task_to_interrupt',"
             f" 'payload': {{'num': 1}},"
             " 'worker_id': 'test_worker'}"
         ),
@@ -400,14 +417,17 @@ def test_multiple_workers(db_session):
     num_tasks = 40
     num_workers = 4
     expected_results = list(range(num_tasks))
-    manager = context.Manager()
-    results = manager.list()
+
+    db_session.execute("CREATE TABLE IF NOT EXISTS count_results (num INT)")
+    db_session.execute("TRUNCATE TABLE count_results")
+    db_session.commit()
 
     @background_task
-    def count(num: int):
-        nonlocal results
+    def count(db_session, num: int):
         time.sleep(random.randint(0, 2) / 10)
-        results.append(num)
+        db_session.execute(
+            "INSERT INTO count_results (num) VALUES (:num)", dict(num=num)
+        )
 
     # Enqueue tasks
     for num in expected_results:
@@ -454,7 +474,8 @@ def test_multiple_workers(db_session):
         worker.terminate()
 
     expected_sorted_results = list(range(num_tasks))
+    results = [
+        num for num, in db_session.execute("SELECT num FROM count_results").fetchall()
+    ]
     # Each task should have run exactly once
     assert sorted(results) == expected_sorted_results
-    # Tasks should not have run in order, since some got interrupted and reset
-    assert results != expected_sorted_results

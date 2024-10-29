@@ -91,9 +91,13 @@ def run_task(task: BackgroundTask, db_session):
     logger.info(f"TASK_START {task_log_data(task)}")
 
     task_args = dict(task.payload)
+    task_parameters = signature(task_handler).parameters
     # Inject emit_progress for handlers that want to record task progress
-    if "emit_progress" in signature(task_handler).parameters:
+    if "emit_progress" in task_parameters:
         task_args["emit_progress"] = emit_progress_for_task(task.id)
+    # For testing, allow the db_session to be injected into the task handler.
+    if "db_session" in task_parameters:
+        task_args["db_session"] = db_session
 
     try:
         task_handler(**task_args)
@@ -149,6 +153,7 @@ def claim_next_task(worker_id: str, db_session) -> Optional[BackgroundTask]:
 
 
 def reset_task(task: BackgroundTask, db_session):
+    db_session.rollback()
     logger.info(f"TASK_RESET {task_log_data(task)}")
     task.worker_id = None
     task.started_at = None
