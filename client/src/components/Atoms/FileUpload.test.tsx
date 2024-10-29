@@ -68,10 +68,11 @@ uploadFormData.append('otherField', 'canBePassedThrough')
 uploadFormData.append('Content-Type', testFile.type)
 uploadFormData.append('file', testFile, testFile.name)
 
-const uploadCompleteFormData = new FormData()
-uploadCompleteFormData.append('fileName', testFile.name)
-uploadCompleteFormData.append('fileType', testFile.type)
-uploadCompleteFormData.append('storagePathKey', 'path/to/file/file.csv')
+const uploadCompleteJSONData = {
+  fileName: testFile.name,
+  fileType: testFile.type,
+  storagePathKey: 'path/to/file/file.csv',
+}
 
 const getUploadUrlMock = {
   url: '/test/file-upload',
@@ -100,7 +101,11 @@ describe('FileUpload + useFileUpload', () => {
       },
       {
         url: '/test/upload-complete',
-        options: { method: 'POST', body: uploadCompleteFormData },
+        options: {
+          method: 'POST',
+          body: (uploadCompleteJSONData as unknown) as BodyInit,
+          headers: { 'Content-Type': 'application/json' },
+        },
         response: { status: 'ok' },
       },
       { url: '/test', response: fileInfoMocks.processing },
@@ -177,7 +182,11 @@ describe('FileUpload + useFileUpload', () => {
       },
       {
         url: '/test/upload-complete',
-        options: { method: 'POST', body: uploadCompleteFormData },
+        options: {
+          method: 'POST',
+          body: (uploadCompleteJSONData as unknown) as BodyInit,
+          headers: { 'Content-Type': 'application/json' },
+        },
         response: { status: 'ok' },
       },
       { url: '/test', response: fileInfoMocks.errored },
@@ -227,7 +236,11 @@ describe('FileUpload + useFileUpload', () => {
       },
       {
         url: '/test/upload-complete',
-        options: { method: 'POST', body: uploadCompleteFormData },
+        options: {
+          method: 'POST',
+          body: (uploadCompleteJSONData as unknown) as BodyInit,
+          headers: { 'Content-Type': 'application/json' },
+        },
         response: { status: 'ok' },
       },
       { url: '/test', response: fileInfoMocks.processed },
@@ -363,7 +376,8 @@ describe('FileUpload + useFileUpload', () => {
         url: '/test/upload-complete',
         options: {
           method: 'POST',
-          body: uploadCompleteFormData,
+          body: (uploadCompleteJSONData as unknown) as BodyInit,
+          headers: { 'Content-Type': 'application/json' },
         },
       }),
     ]

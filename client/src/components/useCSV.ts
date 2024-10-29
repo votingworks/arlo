@@ -91,19 +91,21 @@ const putCSVFile = async (
     )
 
     // Tell the server that the upload has finished to save the file path reference and kick off processing
-    const finalizeUploadformData: FormData = new FormData()
-    finalizeUploadformData.append('fileName', file.name)
-    finalizeUploadformData.append('fileType', file.type)
-    if (cvrFileType) finalizeUploadformData.append('cvrFileType', cvrFileType)
-    finalizeUploadformData.append(
-      'storagePathKey',
-      getUploadResponse.data.fields.key
-    )
+    const jsonData = {
+      fileName: file.name,
+      fileType: file.type,
+      ...(cvrFileType && { cvrFileType }),
+      storagePathKey: getUploadResponse.data.fields.key,
+    }
+
     await axios(
       `/api${url}/upload-complete`,
       addCSRFToken({
         method: 'POST',
-        data: finalizeUploadformData,
+        data: jsonData,
+        headers: {
+          'Content-Type': 'application/json',
+        },
       }) as AxiosRequestConfig
     )
     return true

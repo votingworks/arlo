@@ -1471,18 +1471,17 @@ export const getMockFormDataForFileUpload = (file: File): FormData => {
   formData.append('file', file, file.name)
   return formData
 }
-export const getMockFormDataForUploadComplete = (
+
+export const getMockJsonDataForUploadComplete = (
   file: File,
   cvrFileType?: CvrFileType
-): FormData => {
-  const formData = new FormData()
-  formData.append('fileName', file.name)
-  formData.append('fileType', file.type)
-  if (cvrFileType) {
-    formData.append('cvrFileType', cvrFileType)
-  }
-  formData.append('storagePathKey', '/path/to/file')
-  return formData
+): BodyInit => {
+  return ({
+    fileName: file.name,
+    fileType: file.type,
+    ...(cvrFileType && { cvrFileType }),
+    storagePathKey: '/path/to/file',
+  } as unknown) as BodyInit
 }
 
 // Make the mock CVR file large enough to trigger an "Uploading..." progress bar
@@ -1658,7 +1657,8 @@ export const jaApiCalls = {
         '/api/election/1/jurisdiction/jurisdiction-id-1/ballot-manifest/upload-complete',
       options: {
         method: 'POST',
-        body: getMockFormDataForUploadComplete(manifestFile),
+        body: getMockJsonDataForUploadComplete(manifestFile),
+        headers: { 'Content-Type': 'application/json' },
       },
       response: { status: 'ok' },
     },
@@ -1686,7 +1686,8 @@ export const jaApiCalls = {
         '/api/election/1/jurisdiction/jurisdiction-id-1/batch-tallies/upload-complete',
       options: {
         method: 'POST',
-        body: getMockFormDataForUploadComplete(talliesFile),
+        body: getMockJsonDataForUploadComplete(talliesFile),
+        headers: { 'Content-Type': 'application/json' },
       },
       response: { status: 'ok' },
     },
@@ -1716,10 +1717,11 @@ export const jaApiCalls = {
         '/api/election/1/jurisdiction/jurisdiction-id-1/cvrs/upload-complete',
       options: {
         method: 'POST',
-        body: getMockFormDataForUploadComplete(
+        body: getMockJsonDataForUploadComplete(
           cvrsFile,
           CvrFileType.CLEARBALLOT
         ),
+        headers: { 'Content-Type': 'application/json' },
       },
       response: { status: 'ok' },
     },
@@ -1746,7 +1748,8 @@ export const jaApiCalls = {
         '/api/election/1/jurisdiction/jurisdiction-id-1/cvrs/upload-complete',
       options: {
         method: 'POST',
-        body: getMockFormDataForUploadComplete(cvrsZip, CvrFileType.HART),
+        body: getMockJsonDataForUploadComplete(cvrsZip, CvrFileType.HART),
+        headers: { 'Content-Type': 'application/json' },
       },
       response: { status: 'ok' },
     },
@@ -2082,7 +2085,8 @@ export const aaApiCalls = {
     url: '/api/election/1/jurisdiction/file/upload-complete',
     options: {
       method: 'POST',
-      body: getMockFormDataForUploadComplete(jurisdictionFile),
+      body: getMockJsonDataForUploadComplete(jurisdictionFile),
+      headers: { 'Content-Type': 'application/json' },
     },
     response: { status: 'ok' },
   },
@@ -2090,7 +2094,8 @@ export const aaApiCalls = {
     url: '/api/election/1/jurisdiction/file/upload-complete',
     options: {
       method: 'POST',
-      body: getMockFormDataForUploadComplete(jurisdictionFile),
+      body: getMockJsonDataForUploadComplete(jurisdictionFile),
+      headers: { 'Content-Type': 'application/json' },
     },
     response: { status: 'ok' },
   },
@@ -2118,7 +2123,8 @@ export const aaApiCalls = {
     url: '/api/election/1/standardized-contests/file/upload-complete',
     options: {
       method: 'POST',
-      body: getMockFormDataForUploadComplete(standardizedContestsFile),
+      body: getMockJsonDataForUploadComplete(standardizedContestsFile),
+      headers: { 'Content-Type': 'application/json' },
     },
     response: { status: 'ok' },
   },

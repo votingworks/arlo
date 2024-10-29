@@ -13,7 +13,7 @@ import { CvrFileType, IFileInfo } from '../useCSV'
 import {
   fileInfoMocks,
   getMockFormDataForFileUpload,
-  getMockFormDataForUploadComplete,
+  getMockJsonDataForUploadComplete,
 } from '../_mocks'
 
 jest.mock('axios')
@@ -101,7 +101,8 @@ const apiCalls = {
         '/api/election/1/jurisdiction/jurisdiction-id-1/batch-inventory/cvr/upload-complete',
       options: {
         method: 'POST',
-        body: getMockFormDataForUploadComplete(testCvrFile),
+        body: getMockJsonDataForUploadComplete(testCvrFile),
+        headers: { 'Content-Type': 'application/json' },
       },
       response: { status: 'ok' },
     },
@@ -129,7 +130,8 @@ const apiCalls = {
         '/api/election/1/jurisdiction/jurisdiction-id-1/batch-inventory/tabulator-status/upload-complete',
       options: {
         method: 'POST',
-        body: getMockFormDataForUploadComplete(testTabulatorStatusFile),
+        body: getMockJsonDataForUploadComplete(testTabulatorStatusFile),
+        headers: { 'Content-Type': 'application/json' },
       },
       response: { status: 'ok' },
     },

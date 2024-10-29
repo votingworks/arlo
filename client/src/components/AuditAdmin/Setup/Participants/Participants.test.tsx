@@ -8,7 +8,7 @@ import { withMockFetch, createQueryClient } from '../../../testUtilities'
 import { IFileInfo, FileProcessingStatus } from '../../../useCSV'
 import {
   getMockFormDataForFileUpload,
-  getMockFormDataForUploadComplete,
+  getMockJsonDataForUploadComplete,
 } from '../../../_mocks'
 
 jest.mock('axios')
@@ -101,7 +101,8 @@ const apiCalls = {
         url: '/api/election/1/jurisdiction/file/upload-complete',
         options: {
           method: 'POST',
-          body: getMockFormDataForUploadComplete(file),
+          body: getMockJsonDataForUploadComplete(file),
+          headers: { 'Content-Type': 'application/json' },
         },
         response: { status: 'ok' },
       },
@@ -129,7 +130,8 @@ const apiCalls = {
         url: '/api/election/1/standardized-contests/file/upload-complete',
         options: {
           method: 'POST',
-          body: getMockFormDataForUploadComplete(file),
+          body: getMockJsonDataForUploadComplete(file),
+          headers: { 'Content-Type': 'application/json' },
         },
         response: { status: 'ok' },
       },
