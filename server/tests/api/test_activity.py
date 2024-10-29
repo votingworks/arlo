@@ -318,12 +318,12 @@ def test_file_upload_errors(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client, io.BytesIO(b"invalid"), election_id, jurisdiction_ids[0]
     )
     assert_ok(rv)
 
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(b"Batch Name,Number of Ballots\n" b"A,1"),
         election_id,
@@ -335,7 +335,7 @@ def test_file_upload_errors(
     election.audit_type = AuditType.BATCH_COMPARISON
     db_session.commit()
 
-    rv = setup_batch_tallies_upload(
+    rv = upload_batch_tallies(
         client, io.BytesIO(b"invalid"), election_id, jurisdiction_ids[0]
     )
     assert rv.status_code == 200
@@ -344,7 +344,7 @@ def test_file_upload_errors(
     election.audit_type = AuditType.BALLOT_COMPARISON
     db_session.commit()
 
-    rv = setup_cvrs_upload(
+    rv = upload_cvrs(
         client, io.BytesIO(b""), election_id, jurisdiction_ids[0], "DOMINION"
     )
     assert_ok(rv)

@@ -15,7 +15,7 @@ def test_upload_standardized_contests(
         'Contest 2,"J1, J3"\n'
         "Contest 3,J2 \n"
     )
-    rv = setup_standardized_contests_upload(
+    rv = upload_standardized_contests(
         client,
         io.BytesIO(standardized_contests_file.encode()),
         election_id,
@@ -66,7 +66,7 @@ def test_download_standardized_contests_file_before_upload(
 def test_standardized_contests_replace(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 ):
-    rv = setup_standardized_contests_upload(
+    rv = upload_standardized_contests(
         client,
         io.BytesIO(
             b"Contest Name,Jurisdictions\n"
@@ -82,7 +82,7 @@ def test_standardized_contests_replace(
     file_id = election.standardized_contests_file_id
     standardized_contests = election.standardized_contests
 
-    rv = setup_standardized_contests_upload(
+    rv = upload_standardized_contests(
         client,
         io.BytesIO(b"Contest Name,Jurisdictions\n" b"Contest 4,all\n"),
         election_id,
@@ -107,7 +107,7 @@ def test_standardized_contests_bad_jurisdiction(
     election_id: str,
     jurisdiction_ids: List[str],  # pylint: disable=unused-argument
 ):
-    rv = setup_standardized_contests_upload(
+    rv = upload_standardized_contests(
         client,
         io.BytesIO(
             b"Contest Name,Jurisdictions\n"
@@ -143,7 +143,7 @@ def test_standardized_contests_no_jurisdictions(
     election_id: str,
     jurisdiction_ids: List[str],  # pylint: disable=unused-argument
 ):
-    rv = setup_standardized_contests_upload(
+    rv = upload_standardized_contests(
         client,
         io.BytesIO(b"Contest Name,Jurisdictions\n" b"Contest 1,"),
         election_id,
@@ -227,7 +227,7 @@ def test_standardized_contests_wrong_audit_type(
         db_session.add(election)
         db_session.commit()
 
-        rv = setup_standardized_contests_upload(
+        rv = upload_standardized_contests(
             client,
             io.BytesIO(b"Contest Name,Jurisdictions\n" b"Contest 1,all\n"),
             election_id,
@@ -246,7 +246,7 @@ def test_standardized_contests_wrong_audit_type(
 def test_standardized_contests_before_jurisdictions(
     client: FlaskClient, election_id: str
 ):
-    rv = setup_standardized_contests_upload(
+    rv = upload_standardized_contests(
         client,
         io.BytesIO(b"Contest Name,Jurisdictions\n" b"Contest 1,all\n"),
         election_id,
@@ -265,7 +265,7 @@ def test_standardized_contests_before_jurisdictions(
 def test_standardized_contests_newlines(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 ):
-    rv = setup_standardized_contests_upload(
+    rv = upload_standardized_contests(
         client,
         io.BytesIO(
             b"Contest Name,Jurisdictions\n"
@@ -291,7 +291,7 @@ def test_standardized_contests_newlines(
 def test_standardized_contests_dominion_vote_for(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 ):
-    rv = setup_standardized_contests_upload(
+    rv = upload_standardized_contests(
         client,
         io.BytesIO(
             b"Contest Name,Jurisdictions\n"
@@ -323,7 +323,7 @@ def test_standardized_contests_change_jurisdictions_file(
         'Contest 2,"J1, J3"\n'
         "Contest 3,all \n"
     )
-    rv = setup_standardized_contests_upload(
+    rv = upload_standardized_contests(
         client,
         io.BytesIO(standardized_contests_file.encode()),
         election_id,
@@ -346,7 +346,7 @@ def test_standardized_contests_change_jurisdictions_file(
     assert_ok(rv)
 
     # Remove a jurisdiction that isn't referenced directly in standardized contests
-    rv = setup_jurisdictions_upload(
+    rv = upload_jurisdictions_file(
         client,
         io.BytesIO(
             (
@@ -377,7 +377,7 @@ def test_standardized_contests_change_jurisdictions_file(
     ]
 
     # Now remove a jurisdiction that is referenced directly in standardized contests
-    rv = setup_jurisdictions_upload(
+    rv = upload_jurisdictions_file(
         client,
         io.BytesIO(
             (
@@ -417,7 +417,7 @@ def test_standardized_contests_parse_all(
     standardized_contests_file = (
         "Contest Name,Jurisdictions\n" + "Contest 1,All\n" + "Contest 2,  aLL \n"
     )
-    rv = setup_standardized_contests_upload(
+    rv = upload_standardized_contests(
         client,
         io.BytesIO(standardized_contests_file.encode()),
         election_id,
@@ -449,7 +449,7 @@ def test_reupload_standardized_contests_after_contests_selected(
         'Contest 2,"J1, J3"\n'
         "Contest 3,J2 \n"
     )
-    rv = setup_standardized_contests_upload(
+    rv = upload_standardized_contests(
         client,
         io.BytesIO(standardized_contests_file.encode()),
         election_id,
@@ -518,7 +518,7 @@ def test_reupload_standardized_contests_after_contests_selected(
     standardized_contests_file = (
         "Contest Name,Jurisdictions\n" + 'Contest 1,"J1,J2"\n' + "Contest 3,J2 \n"
     )
-    rv = setup_standardized_contests_upload(
+    rv = upload_standardized_contests(
         client,
         io.BytesIO(standardized_contests_file.encode()),
         election_id,

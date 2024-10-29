@@ -19,7 +19,7 @@ def test_hybrid_manifest(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(
             b"Container,Tabulator,Batch Name,Number of Ballots,CVR\n"
@@ -71,7 +71,7 @@ def test_hybrid_manifest_missing_cvr_column(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(
             b"Container,Tabulator,Batch Name,Number of Ballots\n"
@@ -111,7 +111,7 @@ def test_hybrid_manifest_missing_cvr_column(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(
             b"Container,Tabulator,Batch Name,Number of Ballots,CVR\n"

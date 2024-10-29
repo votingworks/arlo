@@ -1248,7 +1248,7 @@ def test_ballots_human_sort_order(
         "Batch 2",
         "Batch 10",
     ]
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(
             (

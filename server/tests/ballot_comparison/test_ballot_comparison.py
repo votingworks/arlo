@@ -95,9 +95,7 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
         b"TABULATOR2,BATCH1,3\n"
         b"TABULATOR2,BATCH2,6"
     )
-    rv = setup_ballot_manifest_upload(
-        client, file_content, election_id, jurisdiction_ids[0]
-    )
+    rv = upload_ballot_manifest(client, file_content, election_id, jurisdiction_ids[0])
     assert_ok(rv)
 
     # Contest total ballots isn't set when only some manifests uploaded
@@ -107,7 +105,7 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
     assert contest["totalBallotsCast"] is None
     assert contest["votesAllowed"] is None
 
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(
             b"Tabulator,Batch Name,Number of Ballots\n"
@@ -128,7 +126,7 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
     assert contest["totalBallotsCast"] == 30
     assert contest["votesAllowed"] is None
 
-    rv = setup_cvrs_upload(
+    rv = upload_cvrs(
         client,
         io.BytesIO(TEST_CVRS.encode()),
         election_id,
@@ -144,7 +142,7 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
     assert contest["totalBallotsCast"] == 30
     assert contest["votesAllowed"] is None
 
-    rv = setup_cvrs_upload(
+    rv = upload_cvrs(
         client,
         io.BytesIO(TEST_CVRS.encode()),
         election_id,
@@ -171,7 +169,7 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
     # Contest metadata changes on new manifest/CVR upload
     #
 
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(
             b"Tabulator,Batch Name,Number of Ballots\n"
@@ -185,7 +183,7 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
     assert_ok(rv)
 
     new_cvr = "\n".join(TEST_CVRS.splitlines()[:10])
-    rv = setup_cvrs_upload(
+    rv = upload_cvrs(
         client,
         io.BytesIO(new_cvr.encode()),
         election_id,
@@ -235,7 +233,7 @@ def test_cvr_choice_name_validation(
     contest = json.loads(rv.data)["contests"][0]
     assert "cvrChoiceNameConsistencyError" not in contest
 
-    rv = setup_cvrs_upload(
+    rv = upload_cvrs(
         client,
         io.BytesIO(TEST_CVRS.encode()),
         election_id,
@@ -248,7 +246,7 @@ def test_cvr_choice_name_validation(
     contest = json.loads(rv.data)["contests"][0]
     assert "cvrChoiceNameConsistencyError" not in contest
 
-    rv = setup_cvrs_upload(
+    rv = upload_cvrs(
         client,
         io.BytesIO(TEST_CVRS.encode()),
         election_id,
@@ -262,7 +260,7 @@ def test_cvr_choice_name_validation(
     assert "cvrChoiceNameConsistencyError" not in contest
 
     modified_cvrs = TEST_CVRS.replace("Choice", "CHOICE")
-    rv = setup_cvrs_upload(
+    rv = upload_cvrs(
         client,
         io.BytesIO(modified_cvrs.encode()),
         election_id,
@@ -285,7 +283,7 @@ def test_cvr_choice_name_validation(
     }
 
     modified_cvrs = TEST_CVRS.replace("Choice 1-1", "CHOICE 1-1")
-    rv = setup_cvrs_upload(
+    rv = upload_cvrs(
         client,
         io.BytesIO(modified_cvrs.encode()),
         election_id,
@@ -308,7 +306,7 @@ def test_cvr_choice_name_validation(
     }
 
     modified_cvrs = TEST_CVRS_WITH_CHOICE_REMOVED
-    rv = setup_cvrs_upload(
+    rv = upload_cvrs(
         client,
         io.BytesIO(modified_cvrs.encode()),
         election_id,
@@ -322,7 +320,7 @@ def test_cvr_choice_name_validation(
     assert "cvrChoiceNameConsistencyError" not in contest
 
     modified_cvrs = TEST_CVRS_WITH_EXTRA_CHOICE
-    rv = setup_cvrs_upload(
+    rv = upload_cvrs(
         client,
         io.BytesIO(modified_cvrs.encode()),
         election_id,
@@ -369,7 +367,7 @@ def test_set_contest_metadata_on_jurisdiction_change(
 
     # Upload new jurisdictions, removing J1
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = setup_jurisdictions_upload(
+    rv = upload_jurisdictions_file(
         client,
         io.BytesIO(
             (
@@ -692,7 +690,7 @@ def test_ballot_comparison_two_rounds(
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     # AA uploads standardized contests file
-    rv = setup_standardized_contests_upload(
+    rv = upload_standardized_contests(
         client,
         io.BytesIO(
             b"Contest Name,Jurisdictions\n"
@@ -1358,7 +1356,7 @@ def test_ballot_comparison_ess(
 13,p,bs,Choice 1-1,Choice 2-3
 15,p,bs,Choice 1-1,Choice 2-3
 """
-    rv = setup_cvrs_upload(
+    rv = upload_cvrs(
         client,
         zip_cvrs(
             [
@@ -1382,7 +1380,7 @@ def test_ballot_comparison_ess(
         "application/zip",
     )
     assert_ok(rv)
-    rv = setup_cvrs_upload(
+    rv = upload_cvrs(
         client,
         zip_cvrs(
             [

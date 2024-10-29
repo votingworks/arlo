@@ -30,7 +30,7 @@ def manifests(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(
             b"Container,Batch Name,Number of Ballots\n"
@@ -48,7 +48,7 @@ def manifests(
         jurisdiction_ids[0],
     )
     assert_ok(rv)
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(
             b"Container,Batch Name,Number of Ballots\n"
@@ -88,7 +88,7 @@ def batch_tallies(
         b"Batch 8,100,50,50\n"
         b"Batch 9,100,50,50\n"
     )
-    rv = setup_batch_tallies_upload(
+    rv = upload_batch_tallies(
         client, io.BytesIO(batch_tallies_file), election_id, jurisdiction_ids[0]
     )
     assert_ok(rv)
@@ -101,7 +101,7 @@ def batch_tallies(
         b"Batch 5,100,50,50\n"
         b"Batch 6,100,50,50\n"
     )
-    rv = setup_batch_tallies_upload(
+    rv = upload_batch_tallies(
         client,
         io.BytesIO(batch_tallies_file),
         election_id,
@@ -293,7 +293,7 @@ def test_sample_extra_batches_with_no_extra_batches_to_sample(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(
             b"Container,Batch Name,Number of Ballots\n"
@@ -311,7 +311,7 @@ def test_sample_extra_batches_with_no_extra_batches_to_sample(
         jurisdiction_ids[0],
     )
     assert_ok(rv)
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(
             b"Container,Batch Name,Number of Ballots\n"
@@ -389,7 +389,7 @@ def test_sample_extra_batches_min_percentage_of_jurisdiction_ballots_selected(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(
             b"Container,Batch Name,Number of Ballots\n"
@@ -462,7 +462,7 @@ def test_sample_extra_batches_hmpb_and_bmd_groups_selected(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(
             b"Container,Batch Name,Number of Ballots\n"
@@ -558,7 +558,7 @@ def test_sample_extra_batches_with_invalid_counting_group(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(
             b"Container,Batch Name,Number of Ballots\n"

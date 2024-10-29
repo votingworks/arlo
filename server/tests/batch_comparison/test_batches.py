@@ -915,7 +915,7 @@ def test_batches_human_sort_order(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
     for jurisdiction_id in jurisdiction_ids[:2]:
-        rv = setup_ballot_manifest_upload(
+        rv = upload_ballot_manifest(
             client,
             io.BytesIO(
                 (
@@ -933,7 +933,7 @@ def test_batches_human_sort_order(
             "Batch Name,candidate 1,candidate 2,candidate 3\n"
             + "\n".join(f"{batch},10,5,5" for batch in human_ordered_batches)
         )
-        rv = setup_batch_tallies_upload(
+        rv = upload_batch_tallies(
             client,
             io.BytesIO(batch_tallies_file.encode()),
             election_id,

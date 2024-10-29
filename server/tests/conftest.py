@@ -71,7 +71,7 @@ def election_id(client: FlaskClient, org_id: str, request) -> str:
 
 @pytest.fixture
 def jurisdiction_ids(client: FlaskClient, election_id: str) -> List[str]:
-    rv = setup_jurisdictions_upload(
+    rv = upload_jurisdictions_file(
         client,
         # We expect the API to order the jurisdictions by name, so we
         # upload them out of order.
@@ -175,7 +175,7 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(
             b"Batch Name,Number of Ballots\n" b"1,23\n" b"2,101\n" b"3,122\n" b"4,400"
@@ -184,7 +184,7 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
         jurisdiction_ids[0],
     )
     assert_ok(rv)
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(
             b"Batch Name,Number of Ballots\n" b"1,20\n" b"2,10\n" b"3,220\n" b"4,40"

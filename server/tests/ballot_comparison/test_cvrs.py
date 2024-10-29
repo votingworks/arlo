@@ -33,7 +33,7 @@ def test_dominion_cvr_upload(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_cvrs_upload(
+    rv = upload_cvrs(
         client,
         io.BytesIO(TEST_CVRS.encode()),
         election_id,
@@ -156,7 +156,7 @@ def test_cvrs_counting_group(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_cvrs_upload(
+    rv = upload_cvrs(
         client,
         io.BytesIO(COUNTING_GROUP_CVR.encode()),
         election_id,
@@ -251,7 +251,7 @@ def test_dominion_cvr_unique_voting_identifier(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_cvrs_upload(
+    rv = upload_cvrs(
         client,
         io.BytesIO(DOMINION_UNIQUE_VOTING_IDENTIFIER_CVR.encode()),
         election_id,
@@ -344,7 +344,7 @@ def test_dominion_cvrs_with_leading_equal_signs(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_cvrs_upload(
+    rv = upload_cvrs(
         client,
         io.BytesIO(DOMINION_CVRS_WITH_LEADING_EQUAL_SIGNS.encode()),
         election_id,
@@ -394,7 +394,7 @@ def test_cvrs_clear(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_cvrs_upload(
+    rv = upload_cvrs(
         client,
         io.BytesIO(TEST_CVRS.encode()),
         election_id,
@@ -442,7 +442,7 @@ def test_cvrs_replace_as_audit_admin(
 ):
     # Check that AA can also get/put/clear batch tallies
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = setup_cvrs_upload(
+    rv = upload_cvrs(
         client,
         io.BytesIO(TEST_CVRS.encode()),
         election_id,
@@ -453,7 +453,7 @@ def test_cvrs_replace_as_audit_admin(
 
     file_id = Jurisdiction.query.get(jurisdiction_ids[0]).cvr_file_id
 
-    rv = setup_cvrs_upload(
+    rv = upload_cvrs(
         client,
         io.BytesIO("\n".join(TEST_CVRS.splitlines()[:-2]).encode()),
         election_id,
@@ -556,7 +556,7 @@ def test_cvrs_wrong_audit_type(
         set_logged_in_user(
             client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
         )
-        rv = setup_cvrs_upload(
+        rv = upload_cvrs(
             client,
             io.BytesIO(TEST_CVRS.encode()),
             election_id,
@@ -582,7 +582,7 @@ def test_cvrs_before_manifests(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_cvrs_upload(
+    rv = upload_cvrs(
         client,
         io.BytesIO(TEST_CVRS.encode()),
         election_id,
@@ -634,7 +634,7 @@ def test_cvrs_newlines(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_cvrs_upload(
+    rv = upload_cvrs(
         client,
         io.BytesIO(NEWLINE_CVR.encode()),
         election_id,
@@ -980,7 +980,7 @@ BATCH1,1,1-1-1,p,bs,ps,TABULATOR1,s,r,0,1,1,1,0
     ]
 
     for invalid_cvr, expected_error, cvr_file_type in invalid_cvrs:
-        rv = setup_cvrs_upload(
+        rv = upload_cvrs(
             client,
             io.BytesIO(invalid_cvr.encode()),
             election_id,
@@ -1030,7 +1030,7 @@ def test_cvr_reprocess_after_manifest_reupload(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(
             b"Tabulator,Batch Name,Number of Ballots\n"
@@ -1084,7 +1084,7 @@ def test_cvr_reprocess_after_manifest_reupload(
     assert Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata is None
 
     # Fix the manifest
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(
             b"Tabulator,Batch Name,Number of Ballots\n"
@@ -1174,7 +1174,7 @@ def test_clearballot_cvr_upload(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_cvrs_upload(
+    rv = upload_cvrs(
         client,
         io.BytesIO(CLEARBALLOT_CVRS.encode()),
         election_id,
@@ -1247,7 +1247,7 @@ def test_clearballot_cvr_upload_invalid(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_cvrs_upload(
+    rv = upload_cvrs(
         client,
         io.BytesIO(CLEARBALLOT_CVRS_INVALID.encode()),
         election_id,
@@ -1455,7 +1455,7 @@ def test_ess_cvr_upload(
     )
 
     for cvrs in test_cases:
-        rv = setup_cvrs_upload(
+        rv = upload_cvrs(
             client,
             zip_cvrs(cvrs),
             election_id,
@@ -1807,7 +1807,7 @@ def test_ess_cvr_upload_invalid(
     )
 
     for invalid_cvrs, expected_error in test_cases:
-        rv = setup_cvrs_upload(
+        rv = upload_cvrs(
             client,
             zip_cvrs(invalid_cvrs),
             election_id,
@@ -1870,7 +1870,7 @@ def test_ess_cvr_upload_cvr_file_with_tabulator_cvr_column(
         (io.BytesIO(ESS_BALLOTS_2.encode()), "ess_ballots_2.csv"),
     ]
 
-    rv = setup_cvrs_upload(
+    rv = upload_cvrs(
         client,
         zip_cvrs(cvrs),
         election_id,
@@ -1904,7 +1904,7 @@ def test_ess_cvr_upload_cvr_file_with_tabulator_cvr_column(
         },
     )
 
-    rv = setup_cvrs_upload(
+    rv = upload_cvrs(
         client,
         zip_cvrs(cvrs_with_override_cvr_file_name),
         election_id,
@@ -2154,7 +2154,7 @@ def test_hart_cvr_upload(
     snapshot,
 ):
     # Upload CVRs
-    rv = setup_cvrs_upload(
+    rv = upload_cvrs(
         client,
         zip_hart_cvrs(HART_CVRS),
         election_id,
@@ -2340,7 +2340,7 @@ def test_hart_cvr_upload_with_scanned_ballot_information(
                 test_case["scanned_ballot_information_file_contents"]
             )
         ]
-        rv = setup_cvrs_upload(
+        rv = upload_cvrs(
             client,
             zip_cvrs(
                 [
@@ -2511,7 +2511,7 @@ def test_hart_cvr_upload_with_duplicate_batch_names(
     ]
 
     for test_case in test_cases:
-        rv = setup_cvrs_upload(
+        rv = upload_cvrs(
             client,
             zip_cvrs(test_case["files"]),
             election_id,
@@ -2595,7 +2595,7 @@ def test_hart_cvr_upload_no_batch_match(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
     for invalid_cvr, expected_error in invalid_cvrs:
-        rv = setup_cvrs_upload(
+        rv = upload_cvrs(
             client,
             zip_hart_cvrs(invalid_cvr),
             election_id,
@@ -2680,7 +2680,7 @@ def test_hart_cvr_upload_no_tabulator_plus_batch_match(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
     for cvr_upload, expected_error in cvr_uploads:
-        rv = setup_cvrs_upload(
+        rv = upload_cvrs(
             client,
             zip_cvrs(cvr_upload),
             election_id,
@@ -2752,7 +2752,7 @@ def test_hart_cvr_upload_basic_input_validation(
     ]
 
     for test_case in test_cases:
-        rv = setup_cvrs_upload(
+        rv = upload_cvrs(
             client,
             test_case["cvrs"],
             election_id,
@@ -2809,7 +2809,7 @@ def test_hart_cvr_upload_processing_validation(
     ]
 
     for test_case in test_cases:
-        rv = setup_cvrs_upload(
+        rv = upload_cvrs(
             client,
             test_case["cvrs"],
             election_id,
@@ -2864,7 +2864,7 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_cvrs_upload(
+    rv = upload_cvrs(
         client,
         io.BytesIO(cvrs.encode()),
         election_id,
@@ -2913,7 +2913,7 @@ def test_cvr_invalid_file_type(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_cvrs_upload(
+    rv = upload_cvrs(
         client,
         io.BytesIO(TEST_CVRS.encode()),
         election_id,

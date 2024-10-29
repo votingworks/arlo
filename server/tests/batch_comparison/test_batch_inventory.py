@@ -179,7 +179,7 @@ def test_batch_inventory_happy_path(
     compare_json(json.loads(rv.data), {"systemType": CvrFileType.DOMINION})
 
     # Upload CVR file
-    rv = setup_batch_inventory_cvr_upload(
+    rv = upload_batch_inventory_cvr(
         client,
         io.BytesIO(TEST_CVR.encode()),
         election_id,
@@ -207,7 +207,7 @@ def test_batch_inventory_happy_path(
     )
 
     # Upload tabulator status file
-    rv = setup_batch_inventory_tabulator_status_upload(
+    rv = upload_batch_inventory_tabulator_status(
         client,
         io.BytesIO(TEST_TABULATOR_STATUS.encode()),
         election_id,
@@ -271,7 +271,7 @@ def test_batch_inventory_happy_path(
     snapshot.assert_match(batch_tallies)
 
     # Upload manifest
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(ballot_manifest.encode()),
         election_id,
@@ -299,7 +299,7 @@ def test_batch_inventory_happy_path(
     )
 
     # Upload batch tallies
-    rv = setup_batch_tallies_upload(
+    rv = upload_batch_tallies(
         client,
         io.BytesIO(batch_tallies.encode()),
         election_id,
@@ -390,7 +390,7 @@ def test_batch_inventory_happy_path_cvrs_with_leading_equal_signs(
     compare_json(json.loads(rv.data), {"systemType": CvrFileType.DOMINION})
 
     # Upload CVR file
-    rv = setup_batch_inventory_cvr_upload(
+    rv = upload_batch_inventory_cvr(
         client,
         io.BytesIO(TEST_CVRS_WITH_LEADING_EQUAL_SIGNS.encode()),
         election_id,
@@ -418,7 +418,7 @@ def test_batch_inventory_happy_path_cvrs_with_leading_equal_signs(
     )
 
     # Upload tabulator status file
-    rv = setup_batch_inventory_tabulator_status_upload(
+    rv = upload_batch_inventory_tabulator_status(
         client,
         io.BytesIO(TEST_TABULATOR_STATUS.encode()),
         election_id,
@@ -482,7 +482,7 @@ def test_batch_inventory_happy_path_cvrs_with_leading_equal_signs(
     snapshot.assert_match(batch_tallies)
 
     # Upload manifest
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(ballot_manifest.encode()),
         election_id,
@@ -510,7 +510,7 @@ def test_batch_inventory_happy_path_cvrs_with_leading_equal_signs(
     )
 
     # Upload batch tallies
-    rv = setup_batch_tallies_upload(
+    rv = upload_batch_tallies(
         client,
         io.BytesIO(batch_tallies.encode()),
         election_id,
@@ -601,7 +601,7 @@ def test_batch_inventory_happy_path_multi_contest_batch_comparison(
     compare_json(json.loads(rv.data), {"systemType": CvrFileType.DOMINION})
 
     # Upload CVR file
-    rv = setup_batch_inventory_cvr_upload(
+    rv = upload_batch_inventory_cvr(
         client,
         io.BytesIO(TEST_CVR.encode()),
         election_id,
@@ -629,7 +629,7 @@ def test_batch_inventory_happy_path_multi_contest_batch_comparison(
     )
 
     # Upload tabulator status file
-    rv = setup_batch_inventory_tabulator_status_upload(
+    rv = upload_batch_inventory_tabulator_status(
         client,
         io.BytesIO(TEST_TABULATOR_STATUS.encode()),
         election_id,
@@ -693,7 +693,7 @@ def test_batch_inventory_happy_path_multi_contest_batch_comparison(
     snapshot.assert_match(batch_tallies)
 
     # Upload manifest
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(ballot_manifest.encode()),
         election_id,
@@ -721,7 +721,7 @@ def test_batch_inventory_happy_path_multi_contest_batch_comparison(
     )
 
     # Upload batch tallies
-    rv = setup_batch_tallies_upload(
+    rv = upload_batch_tallies(
         client,
         io.BytesIO(batch_tallies.encode()),
         election_id,
@@ -826,7 +826,7 @@ def test_batch_inventory_invalid_file_uploads(
         ),
     ]
     for invalid_cvr, expected_error in invalid_cvrs:
-        rv = setup_batch_inventory_cvr_upload(
+        rv = upload_batch_inventory_cvr(
             client,
             io.BytesIO(invalid_cvr.encode()),
             election_id,
@@ -847,7 +847,7 @@ def test_batch_inventory_invalid_file_uploads(
         assert_ok(rv)
 
     # Upload valid CVR file
-    rv = setup_batch_inventory_cvr_upload(
+    rv = upload_batch_inventory_cvr(
         client,
         io.BytesIO(TEST_CVR.encode()),
         election_id,
@@ -862,7 +862,7 @@ def test_batch_inventory_invalid_file_uploads(
     assert cvr["processing"]["status"] == ProcessingStatus.PROCESSED
 
     # Upload tabulator status file with missing tabulator
-    rv = setup_batch_inventory_tabulator_status_upload(
+    rv = upload_batch_inventory_tabulator_status(
         client,
         io.BytesIO(
             TEST_TABULATOR_STATUS.replace(
@@ -888,7 +888,7 @@ def test_batch_inventory_invalid_file_uploads(
     )
     assert_ok(rv)
 
-    rv = setup_batch_inventory_cvr_upload(
+    rv = upload_batch_inventory_cvr(
         client,
         io.BytesIO(
             TEST_CVR.replace(
@@ -955,7 +955,7 @@ def test_batch_inventory_missing_data_multi_contest_batch_comparison(
         ),
     ]
     for invalid_cvr, expected_error in invalid_cvrs:
-        rv = setup_batch_inventory_cvr_upload(
+        rv = upload_batch_inventory_cvr(
             client,
             io.BytesIO(invalid_cvr.encode()),
             election_id,
@@ -996,7 +996,7 @@ def test_batch_inventory_excel_tabulator_status_file(
     assert_ok(rv)
 
     # Upload CVR file
-    rv = setup_batch_inventory_cvr_upload(
+    rv = upload_batch_inventory_cvr(
         client,
         io.BytesIO(TEST_CVR.encode()),
         election_id,
@@ -1005,7 +1005,7 @@ def test_batch_inventory_excel_tabulator_status_file(
     assert_ok(rv)
 
     # Upload tabulator status "To Excel" version
-    rv = setup_batch_inventory_tabulator_status_upload(
+    rv = upload_batch_inventory_tabulator_status(
         client,
         io.BytesIO(
             b"""<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" xmlns:html="http://www.w3.org/TR/REC-html40" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
@@ -1177,7 +1177,7 @@ def test_batch_inventory_wrong_tabulator_status_file(
     assert_ok(rv)
 
     # Upload CVR file
-    rv = setup_batch_inventory_cvr_upload(
+    rv = upload_batch_inventory_cvr(
         client,
         io.BytesIO(TEST_CVR.encode()),
         election_id,
@@ -1186,7 +1186,7 @@ def test_batch_inventory_wrong_tabulator_status_file(
     assert_ok(rv)
 
     # Upload tabulator status HTML version
-    rv = setup_batch_inventory_tabulator_status_upload(
+    rv = upload_batch_inventory_tabulator_status(
         client,
         io.BytesIO(
             b"""<html xmlns:msxsl="urn:schemas-microsoft-com:xslt" xmlns:user="http://www.contoso.com">
@@ -1305,7 +1305,7 @@ def test_batch_inventory_undo_sign_off(
     assert_ok(rv)
 
     # Upload CVR file
-    rv = setup_batch_inventory_cvr_upload(
+    rv = upload_batch_inventory_cvr(
         client,
         io.BytesIO(TEST_CVR.encode()),
         election_id,
@@ -1314,7 +1314,7 @@ def test_batch_inventory_undo_sign_off(
     assert_ok(rv)
 
     # Upload tabulator status file
-    rv = setup_batch_inventory_tabulator_status_upload(
+    rv = upload_batch_inventory_tabulator_status(
         client,
         io.BytesIO(TEST_TABULATOR_STATUS.encode()),
         election_id,
@@ -1360,7 +1360,7 @@ def test_batch_inventory_delete_cvr_after_sign_off(
     assert_ok(rv)
 
     # Upload CVR file
-    rv = setup_batch_inventory_cvr_upload(
+    rv = upload_batch_inventory_cvr(
         client,
         io.BytesIO(TEST_CVR.encode()),
         election_id,
@@ -1369,7 +1369,7 @@ def test_batch_inventory_delete_cvr_after_sign_off(
     assert_ok(rv)
 
     # Upload tabulator status file
-    rv = setup_batch_inventory_tabulator_status_upload(
+    rv = upload_batch_inventory_tabulator_status(
         client,
         io.BytesIO(TEST_TABULATOR_STATUS.encode()),
         election_id,
@@ -1415,7 +1415,7 @@ def test_batch_inventory_delete_tabulator_status_after_sign_off(
     assert_ok(rv)
 
     # Upload CVR file
-    rv = setup_batch_inventory_cvr_upload(
+    rv = upload_batch_inventory_cvr(
         client,
         io.BytesIO(TEST_CVR.encode()),
         election_id,
@@ -1424,7 +1424,7 @@ def test_batch_inventory_delete_tabulator_status_after_sign_off(
     assert_ok(rv)
 
     # Upload tabulator status file
-    rv = setup_batch_inventory_tabulator_status_upload(
+    rv = upload_batch_inventory_tabulator_status(
         client,
         io.BytesIO(TEST_TABULATOR_STATUS.encode()),
         election_id,
@@ -1468,7 +1468,7 @@ def test_batch_inventory_upload_cvr_before_contests(
     )
     assert_ok(rv)
 
-    rv = setup_batch_inventory_cvr_upload(
+    rv = upload_batch_inventory_cvr(
         client,
         io.BytesIO(TEST_CVR.encode()),
         election_id,
@@ -1502,7 +1502,7 @@ def test_batch_inventory_upload_tabulator_status_before_cvr(
     )
     assert_ok(rv)
 
-    rv = setup_batch_inventory_tabulator_status_upload(
+    rv = upload_batch_inventory_tabulator_status(
         client,
         io.BytesIO(TEST_TABULATOR_STATUS.encode()),
         election_id,

@@ -73,7 +73,7 @@ def test_jurisdictions_list_with_manifest(
     manifest = (
         b"Batch Name,Number of Ballots\n" b"1,23\n" b"2,101\n" b"3,122\n" b"4,400"
     )
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(manifest),
         election_id,
@@ -154,7 +154,7 @@ def test_duplicate_batch_name(client, election_id, jurisdiction_ids):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(b"Batch Name,Number of Ballots\n" b"1,23\n" b"1,101\n"),
         election_id,

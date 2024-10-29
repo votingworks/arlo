@@ -452,7 +452,7 @@ def upload_file_helper(
     )
 
 
-def setup_ballot_manifest_upload(
+def upload_ballot_manifest(
     client: FlaskClient,
     file_content: io.BytesIO,
     election_id: str,
@@ -468,7 +468,7 @@ def setup_ballot_manifest_upload(
     )
 
 
-def setup_batch_tallies_upload(
+def upload_batch_tallies(
     client: FlaskClient,
     file_content: io.BytesIO,
     election_id: str,
@@ -484,7 +484,7 @@ def setup_batch_tallies_upload(
     )
 
 
-def setup_cvrs_upload(
+def upload_cvrs(
     client: FlaskClient,
     file_content: io.BytesIO,
     election_id: str,
@@ -512,7 +512,7 @@ def setup_cvrs_upload(
     )
 
 
-def setup_jurisdictions_upload(
+def upload_jurisdictions_file(
     client: FlaskClient,
     file_content: io.BytesIO,
     election_id: str,
@@ -527,7 +527,7 @@ def setup_jurisdictions_upload(
     )
 
 
-def setup_standardized_contests_upload(
+def upload_standardized_contests(
     client: FlaskClient,
     file_content: io.BytesIO,
     election_id: str,
@@ -542,7 +542,7 @@ def setup_standardized_contests_upload(
     )
 
 
-def setup_batch_inventory_cvr_upload(
+def upload_batch_inventory_cvr(
     client: FlaskClient,
     file_content: io.BytesIO,
     election_id: str,
@@ -558,7 +558,7 @@ def setup_batch_inventory_cvr_upload(
     )
 
 
-def setup_batch_inventory_tabulator_status_upload(
+def upload_batch_inventory_tabulator_status(
     client: FlaskClient,
     file_content: io.BytesIO,
     election_id: str,

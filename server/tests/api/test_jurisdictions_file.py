@@ -19,7 +19,7 @@ def test_missing_file(client: FlaskClient, election_id: str):
 
 
 def test_bad_csv_file(client: FlaskClient, election_id: str):
-    rv = setup_jurisdictions_upload(
+    rv = upload_jurisdictions_file(
         client,
         io.BytesIO(b"not a CSV file"),
         election_id,
@@ -44,7 +44,7 @@ def test_bad_csv_file(client: FlaskClient, election_id: str):
 
 
 def test_missing_one_csv_field(client, election_id):
-    rv = setup_jurisdictions_upload(
+    rv = upload_jurisdictions_file(
         client,
         io.BytesIO(b"Jurisdiction\nJurisdiction #1"),
         election_id,
@@ -74,7 +74,7 @@ def test_jurisdictions_file_metadata(client, election_id):
     assert json.loads(rv.data) == {"file": None, "processing": None}
 
     contents = "Jurisdiction,Admin Email\nJ1,ja@example.com"
-    rv = setup_jurisdictions_upload(
+    rv = upload_jurisdictions_file(
         client,
         io.BytesIO(contents.encode()),
         election_id,
@@ -105,7 +105,7 @@ def test_jurisdictions_file_metadata(client, election_id):
 
 def test_replace_jurisdictions_file(client, election_id):
     # Create the initial file.
-    rv = setup_jurisdictions_upload(
+    rv = upload_jurisdictions_file(
         client,
         io.BytesIO(
             b"Jurisdiction,Admin Email\n" b"J1,ja@example.com\n" b"J2,ja2@example.com"
@@ -126,7 +126,7 @@ def test_replace_jurisdictions_file(client, election_id):
     file_id = election.jurisdictions_file_id
 
     # Replace it with another file.
-    rv = setup_jurisdictions_upload(
+    rv = upload_jurisdictions_file(
         client,
         io.BytesIO(
             b"Jurisdiction,Admin Email\n" b"J2,ja2@example.com\n" b"J3,ja3@example.com"
@@ -155,7 +155,7 @@ def test_replace_jurisdictions_file(client, election_id):
 
 
 def test_no_jurisdiction(client, election_id):
-    rv = setup_jurisdictions_upload(
+    rv = upload_jurisdictions_file(
         client,
         io.BytesIO(b"Jurisdiction,Admin Email"),
         election_id,
@@ -167,7 +167,7 @@ def test_no_jurisdiction(client, election_id):
 
 
 def test_single_jurisdiction_single_admin(client, election_id):
-    rv = setup_jurisdictions_upload(
+    rv = upload_jurisdictions_file(
         client,
         io.BytesIO(b"Jurisdiction,Admin Email\nJ1,a1@example.com"),
         election_id,
@@ -184,7 +184,7 @@ def test_single_jurisdiction_single_admin(client, election_id):
 
 
 def test_single_jurisdiction_multiple_admins(client, election_id):
-    rv = setup_jurisdictions_upload(
+    rv = upload_jurisdictions_file(
         client,
         io.BytesIO(b"Jurisdiction,Admin Email\nJ1,a1@example.com\nJ1,a2@example.com"),
         election_id,
@@ -202,7 +202,7 @@ def test_single_jurisdiction_multiple_admins(client, election_id):
 
 
 def test_multiple_jurisdictions_single_admin(client, election_id):
-    rv = setup_jurisdictions_upload(
+    rv = upload_jurisdictions_file(
         client,
         io.BytesIO(b"Jurisdiction,Admin Email\nJ1,a1@example.com\nJ2,a1@example.com"),
         election_id,
@@ -224,7 +224,7 @@ def test_download_jurisdictions_file_not_found(client, election_id):
 
 
 def test_convert_emails_to_lowercase(client, election_id):
-    rv = setup_jurisdictions_upload(
+    rv = upload_jurisdictions_file(
         client,
         io.BytesIO(
             b"Jurisdiction,Admin Email\n"
@@ -247,7 +247,7 @@ def test_upload_jurisdictions_file_after_audit_starts(
     election_id: str,
     round_1_id: str,  # pylint: disable=unused-argument
 ):
-    rv = setup_jurisdictions_upload(
+    rv = upload_jurisdictions_file(
         client,
         io.BytesIO(b"Jurisdiction,Admin Email\n" b"J1,j1@example.com\n"),
         election_id,
@@ -267,7 +267,7 @@ def test_upload_jurisdictions_file_duplicate_row(
     client: FlaskClient,
     election_id: str,
 ):
-    rv = setup_jurisdictions_upload(
+    rv = upload_jurisdictions_file(
         client,
         io.BytesIO(
             b"Jurisdiction,Admin Email\n" b"J1,j1@example.com\n" b"J1,j1@example.com"
@@ -306,7 +306,7 @@ def test_jurisdictions_file_dont_clobber_other_elections(
     )
 
     # Add jurisdictions.
-    rv = setup_jurisdictions_upload(
+    rv = upload_jurisdictions_file(
         client,
         io.BytesIO(b"Jurisdiction,Admin Email\n" b"J1,j1@example.com\n"),
         election_id,
@@ -314,7 +314,7 @@ def test_jurisdictions_file_dont_clobber_other_elections(
     assert_ok(rv)
 
     # Add jurisdictions for other election
-    rv = setup_jurisdictions_upload(
+    rv = upload_jurisdictions_file(
         client,
         io.BytesIO(b"Jurisdiction,Admin Email\n" b"J2,j2@example.com\n"),
         other_election_id,
@@ -322,7 +322,7 @@ def test_jurisdictions_file_dont_clobber_other_elections(
     assert_ok(rv)
 
     # Now change them
-    rv = setup_jurisdictions_upload(
+    rv = upload_jurisdictions_file(
         client,
         io.BytesIO(b"Jurisdiction,Admin Email\n" b"J3,j3@example.com\n"),
         other_election_id,
@@ -341,7 +341,7 @@ def test_jurisdictions_file_dont_clobber_other_elections(
 
 
 def test_jurisdictions_file_expected_num_ballots(client: FlaskClient, election_id: str):
-    rv = setup_jurisdictions_upload(
+    rv = upload_jurisdictions_file(
         client,
         io.BytesIO(
             b"Jurisdiction,Admin Email,Expected Number of Ballots\n"

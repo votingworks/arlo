@@ -51,7 +51,7 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(
             b"Batch Name,Number of Ballots\n"
@@ -65,7 +65,7 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
         jurisdiction_ids[0],
     )
     assert_ok(rv)
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(
             b"Batch Name,Number of Ballots\n"

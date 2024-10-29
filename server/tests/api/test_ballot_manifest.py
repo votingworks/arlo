@@ -12,7 +12,7 @@ def test_ballot_manifest_upload(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(b"Batch Name,Number of Ballots\n" b"1,23\n" b"12,100\n" b"6,0\n"),
         election_id,
@@ -57,7 +57,7 @@ def test_ballot_manifest_clear(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(b"Batch Name,Number of Ballots\n" b"1,23\n"),
         election_id,
@@ -90,7 +90,7 @@ def test_ballot_manifest_replace_as_audit_admin(
 ):
     # Check that AA can also get/put/clear manifest
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(b"Batch Name,Number of Ballots\n" b"1,23\n" b"12,100\n" b"6,0,,\n"),
         election_id,
@@ -100,7 +100,7 @@ def test_ballot_manifest_replace_as_audit_admin(
 
     file_id = Jurisdiction.query.get(jurisdiction_ids[0]).manifest_file_id
 
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(b"Batch Name,Number of Ballots\n" b"1,23\n" b"12,6\n"),
         election_id,
@@ -201,7 +201,7 @@ def test_ballot_manifest_upload_missing_field(
         set_logged_in_user(
             client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
         )
-        rv = setup_ballot_manifest_upload(
+        rv = upload_ballot_manifest(
             client,
             io.BytesIO(header_row.encode() + b"\n1,2,3"),
             election_id,
@@ -236,7 +236,7 @@ def test_ballot_manifest_upload_invalid_num_ballots(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
 
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(b"Batch Name,Number of Ballots\n" b"1,not a number\n"),
         election_id,
@@ -270,7 +270,7 @@ def test_ballot_manifest_upload_duplicate_batch_name(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(b"Batch Name,Number of Ballots\n" b"12,23\n" b"12,100\n" b"6,0\n"),
         election_id,

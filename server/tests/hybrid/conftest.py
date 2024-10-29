@@ -64,7 +64,7 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(
             b"Tabulator,Batch Name,Number of Ballots,CVR\n"
@@ -78,7 +78,7 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
         jurisdiction_ids[0],
     )
     assert_ok(rv)
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(
             b"Tabulator,Batch Name,Number of Ballots,CVR\n"
@@ -104,7 +104,7 @@ def cvrs(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_cvrs_upload(
+    rv = upload_cvrs(
         client,
         io.BytesIO(TEST_CVRS.encode()),
         election_id,
@@ -112,7 +112,7 @@ def cvrs(
         "DOMINION",
     )
     assert_ok(rv)
-    rv = setup_cvrs_upload(
+    rv = upload_cvrs(
         client,
         io.BytesIO(TEST_CVRS.encode()),
         election_id,

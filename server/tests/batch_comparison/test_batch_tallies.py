@@ -12,7 +12,7 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(
             b"Batch Name,Number of Ballots\n"
@@ -48,7 +48,7 @@ def test_batch_tallies_upload(
         b"Batch 1,1,10,100\n"
         b"Batch 2,2,20,200\n"
     )
-    rv = setup_batch_tallies_upload(
+    rv = upload_batch_tallies(
         client, io.BytesIO(batch_tallies_file), election_id, jurisdiction_ids[0]
     )
     assert_ok(rv)
@@ -144,7 +144,7 @@ def test_batch_tallies_clear(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_batch_tallies_upload(
+    rv = upload_batch_tallies(
         client,
         io.BytesIO(
             b"Batch Name,candidate 1,candidate 2,candidate 3\n"
@@ -191,7 +191,7 @@ def test_batch_tallies_replace_as_audit_admin(
 ):
     # Check that AA can also get/put/clear batch tallies
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = setup_batch_tallies_upload(
+    rv = upload_batch_tallies(
         client,
         io.BytesIO(
             b"Batch Name,candidate 1,candidate 2,candidate 3\n"
@@ -206,7 +206,7 @@ def test_batch_tallies_replace_as_audit_admin(
 
     file_id = Jurisdiction.query.get(jurisdiction_ids[0]).batch_tallies_file_id
 
-    rv = setup_batch_tallies_upload(
+    rv = upload_batch_tallies(
         client,
         io.BytesIO(
             b"Batch Name,candidate 1,candidate 2,candidate 3\n"
@@ -345,7 +345,7 @@ def test_batch_tallies_upload_missing_choice(
     for missing_field in headers:
         header_row = ",".join(h for h in headers if h != missing_field)
 
-        rv = setup_batch_tallies_upload(
+        rv = upload_batch_tallies(
             client,
             io.BytesIO(header_row.encode() + b"\n1,2,3"),
             election_id,
@@ -420,7 +420,7 @@ def test_batch_tallies_wrong_batch_names(
         ),
     ]
     for bad_file, expected_error in bad_files:
-        rv = setup_batch_tallies_upload(
+        rv = upload_batch_tallies(
             client, io.BytesIO(bad_file), election_id, jurisdiction_ids[0]
         )
         assert_ok(rv)
@@ -455,7 +455,7 @@ def test_batch_tallies_too_many_tallies(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_batch_tallies_upload(
+    rv = upload_batch_tallies(
         client,
         io.BytesIO(
             b"Batch Name,candidate 1,candidate 2,candidate 3\n"
@@ -504,7 +504,7 @@ def test_batch_tallies_ballot_polling(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_batch_tallies_upload(
+    rv = upload_batch_tallies(
         client,
         io.BytesIO(
             b"Batch Name,candidate 1,candidate 2,candidate 3\n"
@@ -536,7 +536,7 @@ def test_batch_tallies_bad_jurisdiction(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, f"j3-{election_id}@example.com"
     )
-    rv = setup_batch_tallies_upload(
+    rv = upload_batch_tallies(
         client,
         io.BytesIO(
             b"Batch Name,candidate 1,candidate 2,candidate 3\n"
@@ -567,7 +567,7 @@ def test_batch_tallies_before_manifests(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_batch_tallies_upload(
+    rv = upload_batch_tallies(
         client,
         io.BytesIO(
             b"Batch Name,candidate 1,candidate 2,candidate 3\n"
@@ -601,7 +601,7 @@ def test_batch_tallies_reprocess_after_manifest_reupload(
     )
 
     # Upload tallies
-    rv = setup_batch_tallies_upload(
+    rv = upload_batch_tallies(
         client,
         io.BytesIO(
             b"Batch Name,candidate 1,candidate 2,candidate 3\n"
@@ -615,7 +615,7 @@ def test_batch_tallies_reprocess_after_manifest_reupload(
     assert_ok(rv)
 
     # Reupload a manifest but remove a batch
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(b"Batch Name,Number of Ballots\n" b"Batch 1,200\n" b"Batch 2,300\n"),
         election_id,
@@ -646,7 +646,7 @@ def test_batch_tallies_reprocess_after_manifest_reupload(
     assert Jurisdiction.query.get(jurisdiction_ids[0]).batch_tallies is None
 
     # Fix the manifest
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(
             b"Batch Name,Number of Ballots\n"

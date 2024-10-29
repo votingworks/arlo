@@ -19,7 +19,7 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    setup_ballot_manifest_upload(
+    upload_ballot_manifest(
         client,
         io.BytesIO(
             b"Container,Tabulator,Batch Name,Number of Ballots\n"
@@ -43,7 +43,7 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
         election_id,
         jurisdiction_ids[0],
     )
-    setup_ballot_manifest_upload(
+    upload_ballot_manifest(
         client,
         io.BytesIO(
             b"Tabulator,Batch Name,Number of Ballots\n"
@@ -81,7 +81,7 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,PrecinctPortion,BallotType,R
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    setup_cvrs_upload(
+    upload_cvrs(
         client,
         io.BytesIO(j1_cvr.encode()),
         election_id,
@@ -103,7 +103,7 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,PrecinctPortion,BallotType,R
         [f"{i},{line}" for i, line in enumerate(j2_cvr_lines)]
     )
 
-    setup_cvrs_upload(
+    upload_cvrs(
         client,
         io.BytesIO(j2_cvr.encode()),
         election_id,
@@ -282,7 +282,7 @@ def test_ballot_comparison_manifest_missing_tabulator(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(
             b"Container,Batch Name,Number of Ballots\n"
@@ -329,7 +329,7 @@ def test_ballot_comparison_manifest_unexpected_cvr_column(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = setup_ballot_manifest_upload(
+    rv = upload_ballot_manifest(
         client,
         io.BytesIO(
             b"Container,Tabulator,Batch Name,Number of Ballots,CVR\n"
