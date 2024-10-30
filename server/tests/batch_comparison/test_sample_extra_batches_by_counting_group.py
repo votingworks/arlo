@@ -436,7 +436,9 @@ def test_sample_extra_batches_min_percentage_of_jurisdiction_ballots_selected(
     assert rv.status_code == 200
     j1_batches = json.loads(rv.data)["batches"]
     j1_batch_names = {batch["name"] for batch in j1_batches}
-    assert len(j1_batch_names) >= 2
+    # This is a magic number, but we want to make sure the sampling logic is
+    # deterministic, so we enshrine it in the tests
+    assert len(j1_batch_names) == 8
     assert "Batch 1" in j1_batch_names  # HMPB group
     assert (
         "Batch 9" in j1_batch_names

@@ -665,24 +665,16 @@ def compute_sample_batches_for_contest(
     if is_enabled_sample_extra_batches_by_counting_group(election) and round_num == 1:
         rand = random.Random(str(election.random_seed))
         for jurisdiction in contest.jurisdictions:
-            batch_ids_with_container_and_num_ballots = (
-                Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
-                .with_entities(Batch.id, Batch.container, Batch.num_ballots)
-                .all()
-            )
-            batch_ids = [
-                batch_id for batch_id, _, _ in batch_ids_with_container_and_num_ballots
-            ]
-            batch_id_to_num_ballots = {
-                batch_id: num_ballots
-                for batch_id, _, num_ballots in batch_ids_with_container_and_num_ballots
+            batch_key_to_num_ballots = {
+                (jurisdiction.name, batch.name): batch.num_ballots
+                for batch in jurisdiction.batches
             }
             # To simplify this experiment, we specify the counting group in the
             # container column of the ballot manifest
-            bmd_batch_ids = {
-                batch_id
-                for batch_id, container, _ in batch_ids_with_container_and_num_ballots
-                if container
+            bmd_batch_keys = {
+                (jurisdiction.name, batch.name)
+                for batch in jurisdiction.batches
+                if batch.container
                 in [
                     CountingGroup.ADVANCED_VOTING,
                     CountingGroup.ADVANCE_VOTING,
@@ -690,36 +682,43 @@ def compute_sample_batches_for_contest(
                     CountingGroup.ELECTIONS_DAY,
                 ]
             }
-            hmpb_batch_ids = {
-                batch_id
-                for batch_id, container, _ in batch_ids_with_container_and_num_ballots
-                if container
+            hmpb_batch_keys = {
+                (jurisdiction.name, batch.name)
+                for batch in jurisdiction.batches
+                if batch.container
                 in [CountingGroup.ABSENTEE_BY_MAIL, CountingGroup.PROVISIONAL]
             }
-            sampled_batch_ids = {
-                batch_key_to_id[batch_key]
+            sampled_batch_keys = {
+                batch_key
                 for _, batch_key in sample
                 if batch_key[0] == jurisdiction.name
             }
-            extra_batch_ids = set()
+
+            extra_batch_keys = set()
             # If we didn't sample any BMD batches, add one to the sample
-            if len(bmd_batch_ids & sampled_batch_ids) == 0 and len(bmd_batch_ids) > 0:
-                extra_bmd_batch_id = rand.choice(list(bmd_batch_ids))
-                extra_batch_ids.add(extra_bmd_batch_id)
+            if (
+                len(bmd_batch_keys & sampled_batch_keys) == 0
+                and len(bmd_batch_keys) > 0
+            ):
+                extra_bmd_batch_key = rand.choice(sorted(bmd_batch_keys))
+                extra_batch_keys.add(extra_bmd_batch_key)
                 sample_batches.append(
                     BatchDraw(
-                        batch_id=extra_bmd_batch_id,
+                        batch_id=batch_key_to_id[extra_bmd_batch_key],
                         contest_id=contest.id,
                         ticket_number=EXTRA_TICKET_NUMBER,
                     )
                 )
             # If we didn't sample any HMPB batches, add one to the sample
-            if len(hmpb_batch_ids & sampled_batch_ids) == 0 and len(hmpb_batch_ids) > 0:
-                extra_hmpb_batch_id = rand.choice(list(hmpb_batch_ids))
-                extra_batch_ids.add(extra_hmpb_batch_id)
+            if (
+                len(hmpb_batch_keys & sampled_batch_keys) == 0
+                and len(hmpb_batch_keys) > 0
+            ):
+                extra_hmpb_batch_key = rand.choice(sorted(hmpb_batch_keys))
+                extra_batch_keys.add(extra_hmpb_batch_key)
                 sample_batches.append(
                     BatchDraw(
-                        batch_id=extra_hmpb_batch_id,
+                        batch_id=batch_key_to_id[extra_hmpb_batch_key],
                         contest_id=contest.id,
                         ticket_number=EXTRA_TICKET_NUMBER,
                     )
@@ -730,30 +729,32 @@ def compute_sample_batches_for_contest(
             min_percentage_of_jurisdiction_ballots_selected = 0.02
 
             def compute_percentage_of_jurisdiction_ballots_selected(
-                selected_batch_ids, num_jurisdiction_ballots
+                selected_batch_keys, num_jurisdiction_ballots
             ):
                 num_jurisdiction_ballots_selected = sum(
                     # pylint: disable=cell-var-from-loop
-                    batch_id_to_num_ballots[batch_id]
-                    for batch_id in selected_batch_ids
+                    batch_key_to_num_ballots[batch_key]
+                    for batch_key in selected_batch_keys
                 )
                 return num_jurisdiction_ballots_selected / num_jurisdiction_ballots
 
             while (
                 compute_percentage_of_jurisdiction_ballots_selected(
-                    sampled_batch_ids.union(extra_batch_ids),
+                    sampled_batch_keys.union(extra_batch_keys),
                     jurisdiction.manifest_num_ballots,
                 )
                 < min_percentage_of_jurisdiction_ballots_selected
             ):
-                remaining_batch_ids = (
-                    set(batch_ids) - sampled_batch_ids - extra_batch_ids
+                remaining_batch_keys = (
+                    set(batch_key_to_num_ballots.keys())
+                    - sampled_batch_keys
+                    - extra_batch_keys
                 )
-                extra_batch_id = rand.choice(list(remaining_batch_ids))
-                extra_batch_ids.add(extra_batch_id)
+                extra_batch_key = rand.choice(sorted(remaining_batch_keys))
+                extra_batch_keys.add(extra_batch_key)
                 sample_batches.append(
                     BatchDraw(
-                        batch_id=extra_batch_id,
+                        batch_id=batch_key_to_id[extra_batch_key],
                         contest_id=contest.id,
                         ticket_number=EXTRA_TICKET_NUMBER,
                     )
