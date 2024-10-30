@@ -1,16 +1,17 @@
 import math
 from typing import Any
 
-from werkzeug.exceptions import Conflict
+from werkzeug.exceptions import Conflict, BadRequest
 from flask import jsonify, request
 
 
 from . import api
-from ..auth.auth_helpers import allow_public_access
+from ..auth.auth_helpers import allow_public_access, allow_any_logged_in_user_access
 from ..audit_math import bravo, sampler_contest, supersimple
 from ..util.jsonschema import validate
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.get_json import safe_get_json_dict
+from ..util.file import store_file
 
 
 # Leave enough buffer to support an election of galactic scale while making it hard for users to
@@ -151,3 +152,23 @@ def compute_batch_comparison_sample_size(
         + 2
     )
     return min(sample_size, contest.ballots)
+
+
+@api.route(
+    "/file-upload",
+    methods=["POST"],
+)
+@allow_any_logged_in_user_access
+def upload_file_to_local_filesystem():
+    file = request.files.get("file")
+    storage_key = request.form.get("key")
+    if storage_key is None:
+        raise BadRequest("Missing required form parameter 'key'")
+    if file is None:
+        raise BadRequest("Missing required form parameter 'file'")
+
+    store_file(
+        file.stream,
+        storage_key,
+    )
+    return jsonify(status="ok")

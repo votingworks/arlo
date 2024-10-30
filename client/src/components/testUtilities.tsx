@@ -183,6 +183,10 @@ export const withMockFetch = async (
           }
           throw error
         }
+        return {
+          ...response,
+          data: await response.json(),
+        }
       }
     )
   }

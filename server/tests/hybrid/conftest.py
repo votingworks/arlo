@@ -64,38 +64,32 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
-        data={
-            "manifest": (
-                io.BytesIO(
-                    b"Tabulator,Batch Name,Number of Ballots,CVR\n"
-                    b"TABULATOR1,BATCH1,3,Y\n"
-                    b"TABULATOR1,BATCH2,3,Y\n"
-                    b"TABULATOR2,BATCH1,3,Y\n"
-                    b"TABULATOR2,BATCH2,6,Y\n"
-                    b"TABULATOR3,BATCH1,10,N"
-                ),
-                "manifest.csv",
-            )
-        },
+    rv = upload_ballot_manifest(
+        client,
+        io.BytesIO(
+            b"Tabulator,Batch Name,Number of Ballots,CVR\n"
+            b"TABULATOR1,BATCH1,3,Y\n"
+            b"TABULATOR1,BATCH2,3,Y\n"
+            b"TABULATOR2,BATCH1,3,Y\n"
+            b"TABULATOR2,BATCH2,6,Y\n"
+            b"TABULATOR3,BATCH1,10,N"
+        ),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/ballot-manifest",
-        data={
-            "manifest": (
-                io.BytesIO(
-                    b"Tabulator,Batch Name,Number of Ballots,CVR\n"
-                    b"TABULATOR1,BATCH1,3,Y\n"
-                    b"TABULATOR1,BATCH2,3,Y\n"
-                    b"TABULATOR2,BATCH1,3,Y\n"
-                    b"TABULATOR2,BATCH2,6,Y\n"
-                    b"TABULATOR3,BATCH1,10,N"
-                ),
-                "manifest.csv",
-            )
-        },
+    rv = upload_ballot_manifest(
+        client,
+        io.BytesIO(
+            b"Tabulator,Batch Name,Number of Ballots,CVR\n"
+            b"TABULATOR1,BATCH1,3,Y\n"
+            b"TABULATOR1,BATCH2,3,Y\n"
+            b"TABULATOR2,BATCH1,3,Y\n"
+            b"TABULATOR2,BATCH2,6,Y\n"
+            b"TABULATOR3,BATCH1,10,N"
+        ),
+        election_id,
+        jurisdiction_ids[1],
     )
     assert_ok(rv)
 
@@ -110,25 +104,19 @@ def cvrs(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={
-            "cvrs": (
-                io.BytesIO(TEST_CVRS.encode()),
-                "cvrs.csv",
-            ),
-            "cvrFileType": "DOMINION",
-        },
+    rv = upload_cvrs(
+        client,
+        io.BytesIO(TEST_CVRS.encode()),
+        election_id,
+        jurisdiction_ids[0],
+        "DOMINION",
     )
     assert_ok(rv)
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/cvrs",
-        data={
-            "cvrs": (
-                io.BytesIO(TEST_CVRS.encode()),
-                "cvrs.csv",
-            ),
-            "cvrFileType": "DOMINION",
-        },
+    rv = upload_cvrs(
+        client,
+        io.BytesIO(TEST_CVRS.encode()),
+        election_id,
+        jurisdiction_ids[1],
+        "DOMINION",
     )
     assert_ok(rv)

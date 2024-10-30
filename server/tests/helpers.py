@@ -1,12 +1,13 @@
 import io
 import uuid, json, re
 from datetime import datetime
-from typing import Any, List, Union, Tuple, Optional
+from typing import Any, List, Union, Tuple, Optional, Dict, BinaryIO
 import logging
 from flask.testing import FlaskClient
 from werkzeug.wrappers import Response
 from sqlalchemy.exc import IntegrityError
 
+from ..util.file import zip_files, timestamp_filename
 from ..auth.auth_helpers import UserType
 from ..auth import auth_helpers
 from ..database import db_session
@@ -311,6 +312,11 @@ def assert_is_string(value):
     assert isinstance(value, str)
 
 
+def assert_is_int(value):
+    __tracebackhide__ = True  # pylint: disable=unused-variable
+    assert isinstance(value, int)
+
+
 def assert_is_id(value):
     __tracebackhide__ = True  # pylint: disable=unused-variable
     assert isinstance(value, str)
@@ -413,3 +419,175 @@ def string_to_bytes_io(string: str) -> io.BytesIO:
     string_io = io.StringIO(string)
     bytes_io = io.BytesIO(string_io.read().encode("utf-8"))
     return bytes_io
+
+
+def upload_file_helper(
+    client: FlaskClient,
+    url: str,
+    filename: str,
+    file_type: str,
+    file_content: io.BytesIO,
+    cvr_file_type: Optional[str] = None,
+):
+    rv = client.post(
+        "/api/file-upload",
+        data={
+            "file": (
+                file_content,
+                filename,
+            ),
+            "key": f"test_dir/{filename}",
+        },
+    )
+    assert_ok(rv)
+
+    return client.post(
+        f"{url}/upload-complete",
+        json={
+            "storagePathKey": f"test_dir/{filename}",
+            "fileName": filename,
+            "fileType": file_type,
+            "cvrFileType": cvr_file_type,
+        },
+    )
+
+
+def upload_ballot_manifest(
+    client: FlaskClient,
+    file_content: io.BytesIO,
+    election_id: str,
+    jurisdiction_id: str,
+):
+    filename = timestamp_filename("manifest", "csv")
+    return upload_file_helper(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/ballot-manifest",
+        filename,
+        "text/csv",
+        file_content,
+    )
+
+
+def upload_batch_tallies(
+    client: FlaskClient,
+    file_content: io.BytesIO,
+    election_id: str,
+    jurisdiction_id: str,
+):
+    filename = timestamp_filename("batchTallies", "csv")
+    return upload_file_helper(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/batch-tallies",
+        filename,
+        "text/csv",
+        file_content,
+    )
+
+
+def upload_cvrs(
+    client: FlaskClient,
+    file_content: io.BytesIO,
+    election_id: str,
+    jurisdiction_id: str,
+    cvr_file_type: str,
+    file_type: Optional[str] = None,
+    filename: Optional[str] = None,
+):
+    if filename is None:
+        if file_type in ["application/zip", "application/x-zip-compressed"]:
+            filename = timestamp_filename("cvrs", "zip")
+        else:
+            filename = timestamp_filename("cvrs", "csv")
+
+    if file_type is None:
+        file_type = "text/csv"
+
+    return upload_file_helper(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/cvrs",
+        filename,
+        file_type,
+        file_content,
+        cvr_file_type,
+    )
+
+
+def upload_jurisdictions_file(
+    client: FlaskClient,
+    file_content: io.BytesIO,
+    election_id: str,
+):
+    filename = timestamp_filename("jurisdictions", "csv")
+    return upload_file_helper(
+        client,
+        f"/api/election/{election_id}/jurisdiction/file",
+        filename,
+        "text/csv",
+        file_content,
+    )
+
+
+def upload_standardized_contests(
+    client: FlaskClient,
+    file_content: io.BytesIO,
+    election_id: str,
+):
+    filename = timestamp_filename("standardizedContests", "csv")
+    return upload_file_helper(
+        client,
+        f"/api/election/{election_id}/standardized-contests/file",
+        filename,
+        "text/csv",
+        file_content,
+    )
+
+
+def upload_batch_inventory_cvr(
+    client: FlaskClient,
+    file_content: io.BytesIO,
+    election_id: str,
+    jurisdiction_id: str,
+):
+    filename = timestamp_filename("batchInventoryCvr", "csv")
+    return upload_file_helper(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/batch-inventory/cvr",
+        filename,
+        "text/csv",
+        file_content,
+    )
+
+
+def upload_batch_inventory_tabulator_status(
+    client: FlaskClient,
+    file_content: io.BytesIO,
+    election_id: str,
+    jurisdiction_id: str,
+):
+    filename = timestamp_filename("tabulator-status", "xml")
+    return upload_file_helper(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/batch-inventory/tabulator-status",
+        filename,
+        "text/xml",
+        file_content,
+    )
+
+
+def zip_cvrs(cvrs: List[Tuple[io.BytesIO, str]]) -> io.BytesIO:
+    if len(cvrs) == 1 and cvrs[0][1].endswith(".zip"):
+        return cvrs[0][0]
+    files: Dict[str, BinaryIO] = {}
+    for file_contents, file_name in cvrs:
+        files[file_name] = file_contents
+    return io.BytesIO(zip_files(files).read())
+
+
+def zip_hart_cvrs(cvrs: List[str]):
+    files: Dict[str, BinaryIO] = {
+        f"cvr-{i}.xml": io.BytesIO(cvr.encode()) for i, cvr in enumerate(cvrs)
+    }
+    # There's usually a WriteIns directory in the zip file - simulate that to
+    # make sure it gets skipped
+    files["WriteIns"] = io.BytesIO()
+    return io.BytesIO(zip_files(files).read())

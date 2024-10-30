@@ -47,8 +47,8 @@ const Participants: React.FC<IParticipantsProps> = ({
     >
       <CSVFile
         csvFile={jurisdictionsFileUpload.uploadedFile.data}
-        uploadCSVFiles={async files => {
-          await jurisdictionsFileUpload.uploadFiles(files)
+        uploadCSVFile={async file => {
+          await jurisdictionsFileUpload.uploadFiles([file])
           return true
         }}
         title={
@@ -64,8 +64,8 @@ const Participants: React.FC<IParticipantsProps> = ({
         <div style={{ marginTop: '30px' }}>
           <CSVFile
             csvFile={standardizedContestsFileUpload.uploadedFile.data!}
-            uploadCSVFiles={async files => {
-              await standardizedContestsFileUpload.uploadFiles(files)
+            uploadCSVFile={async file => {
+              await standardizedContestsFileUpload.uploadFiles([file])
               return true
             }}
             title="Standardized Contests"

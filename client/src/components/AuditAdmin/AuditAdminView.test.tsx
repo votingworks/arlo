@@ -127,7 +127,9 @@ describe('AA setup flow', () => {
       aaApiCalls.getContests(contestMocks.filledTargeted),
       aaApiCalls.getSettings(auditSettingsMocks.all),
       aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.empty),
-      aaApiCalls.putJurisdictionFile,
+      aaApiCalls.uploadJurisdictionFileGetUrl,
+      aaApiCalls.uploadJurisdictionFilePostFile,
+      aaApiCalls.uploadJurisdictionFileUploadComplete,
       aaApiCalls.getJurisdictionFileWithResponse(
         jurisdictionFileMocks.processed
       ),
@@ -160,7 +162,9 @@ describe('AA setup flow', () => {
       aaApiCalls.getContests(contestMocks.filledTargeted),
       aaApiCalls.getSettings(auditSettingsMocks.all),
       aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.empty),
-      aaApiCalls.putJurisdictionErrorFile,
+      aaApiCalls.uploadJurisdictionFileGetUrl,
+      aaApiCalls.uploadJurisdictionFilePostFile,
+      aaApiCalls.uploadJurisdictionFileUploadCompleteError,
       aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.errored),
       aaApiCalls.getJurisdictions,
     ]
@@ -197,7 +201,9 @@ describe('AA setup flow', () => {
       aaApiCalls.getStandardizedContestsFileWithResponse(
         standardizedContestsFileMocks.empty
       ),
-      aaApiCalls.putStandardizedContestsFile,
+      aaApiCalls.uploadStandardizedContestsFileGetUrl,
+      aaApiCalls.uploadStandardizedContestsFilePostFile,
+      aaApiCalls.uploadStandardizedContestsFileUploadComplete,
       aaApiCalls.getStandardizedContestsFileWithResponse(
         standardizedContestsFileMocks.processed
       ),
@@ -320,7 +326,7 @@ describe('AA setup flow', () => {
       aaApiCalls.getSettings(auditSettingsMocks.all),
       aaApiCalls.getMapData,
       jaApiCalls.getBallotManifestFile(manifestMocks.empty),
-      jaApiCalls.putManifest,
+      ...jaApiCalls.uploadManifestCalls,
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       {
         ...aaApiCalls.getJurisdictions,

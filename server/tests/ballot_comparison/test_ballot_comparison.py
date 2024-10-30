@@ -88,21 +88,14 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
     assert contest["totalBallotsCast"] is None
     assert contest["votesAllowed"] is None
 
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
-        data={
-            "manifest": (
-                io.BytesIO(
-                    b"Tabulator,Batch Name,Number of Ballots\n"
-                    b"TABULATOR1,BATCH1,3\n"
-                    b"TABULATOR1,BATCH2,3\n"
-                    b"TABULATOR2,BATCH1,3\n"
-                    b"TABULATOR2,BATCH2,6"
-                ),
-                "manifest.csv",
-            )
-        },
+    file_content = io.BytesIO(
+        b"Tabulator,Batch Name,Number of Ballots\n"
+        b"TABULATOR1,BATCH1,3\n"
+        b"TABULATOR1,BATCH2,3\n"
+        b"TABULATOR2,BATCH1,3\n"
+        b"TABULATOR2,BATCH2,6"
     )
+    rv = upload_ballot_manifest(client, file_content, election_id, jurisdiction_ids[0])
     assert_ok(rv)
 
     # Contest total ballots isn't set when only some manifests uploaded
@@ -112,20 +105,17 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
     assert contest["totalBallotsCast"] is None
     assert contest["votesAllowed"] is None
 
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/ballot-manifest",
-        data={
-            "manifest": (
-                io.BytesIO(
-                    b"Tabulator,Batch Name,Number of Ballots\n"
-                    b"TABULATOR1,BATCH1,3\n"
-                    b"TABULATOR1,BATCH2,3\n"
-                    b"TABULATOR2,BATCH1,3\n"
-                    b"TABULATOR2,BATCH2,6"
-                ),
-                "manifest.csv",
-            )
-        },
+    rv = upload_ballot_manifest(
+        client,
+        io.BytesIO(
+            b"Tabulator,Batch Name,Number of Ballots\n"
+            b"TABULATOR1,BATCH1,3\n"
+            b"TABULATOR1,BATCH2,3\n"
+            b"TABULATOR2,BATCH1,3\n"
+            b"TABULATOR2,BATCH2,6"
+        ),
+        election_id,
+        jurisdiction_ids[1],
     )
     assert_ok(rv)
 
@@ -136,15 +126,12 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
     assert contest["totalBallotsCast"] == 30
     assert contest["votesAllowed"] is None
 
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={
-            "cvrs": (
-                io.BytesIO(TEST_CVRS.encode()),
-                "cvrs.csv",
-            ),
-            "cvrFileType": "DOMINION",
-        },
+    rv = upload_cvrs(
+        client,
+        io.BytesIO(TEST_CVRS.encode()),
+        election_id,
+        jurisdiction_ids[0],
+        "DOMINION",
     )
     assert_ok(rv)
 
@@ -155,15 +142,12 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
     assert contest["totalBallotsCast"] == 30
     assert contest["votesAllowed"] is None
 
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/cvrs",
-        data={
-            "cvrs": (
-                io.BytesIO(TEST_CVRS.encode()),
-                "cvrs.csv",
-            ),
-            "cvrFileType": "DOMINION",
-        },
+    rv = upload_cvrs(
+        client,
+        io.BytesIO(TEST_CVRS.encode()),
+        election_id,
+        jurisdiction_ids[1],
+        "DOMINION",
     )
     assert_ok(rv)
 
@@ -185,32 +169,26 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
     # Contest metadata changes on new manifest/CVR upload
     #
 
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
-        data={
-            "manifest": (
-                io.BytesIO(
-                    b"Tabulator,Batch Name,Number of Ballots\n"
-                    b"TABULATOR1,BATCH1,3\n"
-                    b"TABULATOR1,BATCH2,3\n"
-                    b"TABULATOR2,BATCH1,3"
-                ),
-                "manifest.csv",
-            )
-        },
+    rv = upload_ballot_manifest(
+        client,
+        io.BytesIO(
+            b"Tabulator,Batch Name,Number of Ballots\n"
+            b"TABULATOR1,BATCH1,3\n"
+            b"TABULATOR1,BATCH2,3\n"
+            b"TABULATOR2,BATCH1,3"
+        ),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
     new_cvr = "\n".join(TEST_CVRS.splitlines()[:10])
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={
-            "cvrs": (
-                io.BytesIO(new_cvr.encode()),
-                "cvrs.csv",
-            ),
-            "cvrFileType": "DOMINION",
-        },
+    rv = upload_cvrs(
+        client,
+        io.BytesIO(new_cvr.encode()),
+        election_id,
+        jurisdiction_ids[0],
+        "DOMINION",
     )
     assert_ok(rv)
 
@@ -255,15 +233,12 @@ def test_cvr_choice_name_validation(
     contest = json.loads(rv.data)["contests"][0]
     assert "cvrChoiceNameConsistencyError" not in contest
 
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={
-            "cvrs": (
-                io.BytesIO(TEST_CVRS.encode()),
-                "cvrs.csv",
-            ),
-            "cvrFileType": "DOMINION",
-        },
+    rv = upload_cvrs(
+        client,
+        io.BytesIO(TEST_CVRS.encode()),
+        election_id,
+        jurisdiction_ids[0],
+        "DOMINION",
     )
     assert_ok(rv)
 
@@ -271,15 +246,12 @@ def test_cvr_choice_name_validation(
     contest = json.loads(rv.data)["contests"][0]
     assert "cvrChoiceNameConsistencyError" not in contest
 
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/cvrs",
-        data={
-            "cvrs": (
-                io.BytesIO(TEST_CVRS.encode()),
-                "cvrs.csv",
-            ),
-            "cvrFileType": "DOMINION",
-        },
+    rv = upload_cvrs(
+        client,
+        io.BytesIO(TEST_CVRS.encode()),
+        election_id,
+        jurisdiction_ids[1],
+        "DOMINION",
     )
     assert_ok(rv)
 
@@ -288,15 +260,12 @@ def test_cvr_choice_name_validation(
     assert "cvrChoiceNameConsistencyError" not in contest
 
     modified_cvrs = TEST_CVRS.replace("Choice", "CHOICE")
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/cvrs",
-        data={
-            "cvrs": (
-                io.BytesIO(modified_cvrs.encode()),
-                "cvrs.csv",
-            ),
-            "cvrFileType": "DOMINION",
-        },
+    rv = upload_cvrs(
+        client,
+        io.BytesIO(modified_cvrs.encode()),
+        election_id,
+        jurisdiction_ids[1],
+        "DOMINION",
     )
     assert_ok(rv)
 
@@ -314,15 +283,12 @@ def test_cvr_choice_name_validation(
     }
 
     modified_cvrs = TEST_CVRS.replace("Choice 1-1", "CHOICE 1-1")
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/cvrs",
-        data={
-            "cvrs": (
-                io.BytesIO(modified_cvrs.encode()),
-                "cvrs.csv",
-            ),
-            "cvrFileType": "DOMINION",
-        },
+    rv = upload_cvrs(
+        client,
+        io.BytesIO(modified_cvrs.encode()),
+        election_id,
+        jurisdiction_ids[1],
+        "DOMINION",
     )
     assert_ok(rv)
 
@@ -340,15 +306,12 @@ def test_cvr_choice_name_validation(
     }
 
     modified_cvrs = TEST_CVRS_WITH_CHOICE_REMOVED
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/cvrs",
-        data={
-            "cvrs": (
-                io.BytesIO(modified_cvrs.encode()),
-                "cvrs.csv",
-            ),
-            "cvrFileType": "DOMINION",
-        },
+    rv = upload_cvrs(
+        client,
+        io.BytesIO(modified_cvrs.encode()),
+        election_id,
+        jurisdiction_ids[1],
+        "DOMINION",
     )
     assert_ok(rv)
 
@@ -357,15 +320,12 @@ def test_cvr_choice_name_validation(
     assert "cvrChoiceNameConsistencyError" not in contest
 
     modified_cvrs = TEST_CVRS_WITH_EXTRA_CHOICE
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/cvrs",
-        data={
-            "cvrs": (
-                io.BytesIO(modified_cvrs.encode()),
-                "cvrs.csv",
-            ),
-            "cvrFileType": "DOMINION",
-        },
+    rv = upload_cvrs(
+        client,
+        io.BytesIO(modified_cvrs.encode()),
+        election_id,
+        jurisdiction_ids[1],
+        "DOMINION",
     )
     assert_ok(rv)
 
@@ -407,20 +367,16 @@ def test_set_contest_metadata_on_jurisdiction_change(
 
     # Upload new jurisdictions, removing J1
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/file",
-        data={
-            "jurisdictions": (
-                io.BytesIO(
-                    (
-                        "Jurisdiction,Admin Email\n"
-                        f"J2,{default_ja_email(election_id)}\n"
-                        f"J3,j3-{election_id}@example.com\n"
-                    ).encode()
-                ),
-                "jurisdictions.csv",
-            )
-        },
+    rv = upload_jurisdictions_file(
+        client,
+        io.BytesIO(
+            (
+                "Jurisdiction,Admin Email\n"
+                f"J2,{default_ja_email(election_id)}\n"
+                f"J3,j3-{election_id}@example.com\n"
+            ).encode()
+        ),
+        election_id,
     )
     assert_ok(rv)
 
@@ -733,21 +689,16 @@ def test_ballot_comparison_two_rounds(
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-
     # AA uploads standardized contests file
-    rv = client.put(
-        f"/api/election/{election_id}/standardized-contests/file",
-        data={
-            "standardized-contests": (
-                io.BytesIO(
-                    b"Contest Name,Jurisdictions\n"
-                    b'Contest 1,"J1,J2"\n'
-                    b'Contest 2,"J1,J2"\n'
-                    b"Contest 3,J2\n"
-                ),
-                "standardized-contests.csv",
-            )
-        },
+    rv = upload_standardized_contests(
+        client,
+        io.BytesIO(
+            b"Contest Name,Jurisdictions\n"
+            b'Contest 1,"J1,J2"\n'
+            b'Contest 2,"J1,J2"\n'
+            b"Contest 3,J2\n"
+        ),
+        election_id,
     )
     assert_ok(rv)
 
@@ -1405,10 +1356,10 @@ def test_ballot_comparison_ess(
 13,p,bs,Choice 1-1,Choice 2-3
 15,p,bs,Choice 1-1,Choice 2-3
 """
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={
-            "cvrs": [
+    rv = upload_cvrs(
+        client,
+        zip_cvrs(
+            [
                 (
                     io.BytesIO(ESS_BALLOTS_1.encode()),
                     "ess_ballots_1.csv",
@@ -1421,15 +1372,18 @@ def test_ballot_comparison_ess(
                     io.BytesIO(j1_cvr.encode()),
                     "ess_cvr.csv",
                 ),
-            ],
-            "cvrFileType": "ESS",
-        },
+            ]
+        ),
+        election_id,
+        jurisdiction_ids[0],
+        "ESS",
+        "application/zip",
     )
     assert_ok(rv)
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/cvrs",
-        data={
-            "cvrs": [
+    rv = upload_cvrs(
+        client,
+        zip_cvrs(
+            [
                 (
                     io.BytesIO(ESS_BALLOTS_1.encode()),
                     "ess_ballots_1.csv",
@@ -1442,9 +1396,12 @@ def test_ballot_comparison_ess(
                     io.BytesIO(j2_cvr.encode()),
                     "ess_cvr.csv",
                 ),
-            ],
-            "cvrFileType": "ESS",
-        },
+            ]
+        ),
+        election_id,
+        jurisdiction_ids[1],
+        "ESS",
+        "application/zip",
     )
     assert_ok(rv)
 

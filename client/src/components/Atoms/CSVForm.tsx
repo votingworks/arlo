@@ -15,7 +15,6 @@ import { CvrFileType, IFileInfo, FileProcessingStatus } from '../useCSV'
 import FormWrapper from './Form/FormWrapper'
 import { FormSectionDescription } from './Form/FormSection'
 import { ErrorLabel, SuccessLabel } from './Form/_helpers'
-import { sum } from '../../utils/number'
 import FormButton from './Form/FormButton'
 import AsyncButton from './AsyncButton'
 
@@ -30,13 +29,13 @@ const schema = Yup.object().shape({
 })
 
 interface IValues {
-  csv: File[] | null
+  csv: File | null
   cvrFileType?: CvrFileType
 }
 
 interface IProps {
   csvFile: IFileInfo
-  uploadCSVFiles: (csvs: File[], cvrFileType?: CvrFileType) => Promise<boolean>
+  uploadCSVFile: (csv: File, cvrFileType?: CvrFileType) => Promise<boolean>
   deleteCSVFile?: () => Promise<boolean>
   title?: string
   description: string
@@ -47,7 +46,7 @@ interface IProps {
 
 const CSVFile: React.FC<IProps> = ({
   csvFile,
-  uploadCSVFiles,
+  uploadCSVFile,
   deleteCSVFile,
   title,
   description,
@@ -62,7 +61,7 @@ const CSVFile: React.FC<IProps> = ({
   return (
     <Formik
       initialValues={{
-        csv: isProcessing ? [new File([], file!.name)] : null,
+        csv: isProcessing ? new File([], file!.name) : null,
         cvrFileType: showCvrFileType
           ? file
             ? file.cvrFileType
@@ -74,7 +73,7 @@ const CSVFile: React.FC<IProps> = ({
       validateOnBlur={false}
       onSubmit={async (values: IValues) => {
         if (values.csv) {
-          await uploadCSVFiles(values.csv, values.cvrFileType)
+          await uploadCSVFile(values.csv, values.cvrFileType)
           setIsEditing(false)
         }
       }}
@@ -117,34 +116,30 @@ const CSVFile: React.FC<IProps> = ({
                   <FileInput
                     inputProps={{
                       // While this component is named CSVFile, it can accept zip files in the case
-                      // of Hart CVRs
+                      // of Hart and ESS CVRs
                       // TODO: Consider renaming the component and its internals accordingly
                       accept:
-                        values.cvrFileType === CvrFileType.HART
-                          ? '.zip,.csv'
+                        values.cvrFileType &&
+                        [CvrFileType.HART, CvrFileType.ESS].includes(
+                          values.cvrFileType
+                        )
+                          ? '.zip'
                           : '.csv',
                       name: 'csv',
-                      multiple:
-                        values.cvrFileType === CvrFileType.ESS ||
-                        values.cvrFileType === CvrFileType.HART,
                     }}
                     onInputChange={e => {
                       const { files } = e.currentTarget
                       setFieldValue(
                         'csv',
-                        files && files.length > 0 ? Array.from(files) : null
+                        files && files.length === 1 ? files[0] : null
                       )
                     }}
                     hasSelection={!!values.csv}
                     text={(() => {
                       if (!values.csv) {
-                        return values.cvrFileType === CvrFileType.ESS ||
-                          values.cvrFileType === CvrFileType.HART
-                          ? 'Select files...'
-                          : 'Select a file...'
+                        return 'Select a file...'
                       }
-                      if (values.csv.length === 1) return values.csv[0].name
-                      return `${values.csv.length} files selected`
+                      return values.csv.name
                     })()}
                     onBlur={handleBlur}
                     disabled={isSubmitting || isProcessing || !enabled}
@@ -180,7 +175,7 @@ const CSVFile: React.FC<IProps> = ({
                     {upload &&
                       // Only show upload progress for large sets of files (over 1 MB),
                       // otherwise it will just flash on the screen
-                      sum(upload.files.map(f => f.size)) >= 1000 * 1000 && (
+                      upload.file.size >= 1000 * 1000 && (
                         <>
                           <span style={{ marginRight: '5px' }}>
                             Uploading...

@@ -1,7 +1,11 @@
 import json
+import io
+import tempfile
 from typing import Any, Dict, List, TypedDict
 
 from flask.testing import FlaskClient
+from ..helpers import *  # pylint: disable=wildcard-import
+from ... import config
 
 
 def copy_dict_and_remove_key(input: Dict, key: str):
@@ -548,3 +552,82 @@ def test_public_compute_sample_sizes(client: FlaskClient, snapshot):
         assert rv.status_code == 200
         response = json.loads(rv.data)
         snapshot.assert_match(response, test_case["description"])
+
+
+def test_public_file_upload(client: FlaskClient):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    with tempfile.TemporaryDirectory() as temp_dir:
+        config.FILE_UPLOAD_STORAGE_PATH = temp_dir
+        rv = client.post(
+            "/api/file-upload",
+            data={
+                "file": (
+                    io.BytesIO(b"hello, I am a file"),
+                    "random.txt",
+                ),
+                "key": "test_dir/random.txt",
+            },
+        )
+        assert_ok(rv)
+        with open(f"{temp_dir}/test_dir/random.txt", "rb") as stored_file:
+            assert stored_file.read() == b"hello, I am a file"
+
+
+def test_public_file_upload_unauthorized(client: FlaskClient):
+    rv = client.post(
+        "/api/file-upload",
+        data={
+            "file": (
+                io.BytesIO(b"hello, I am a file"),
+                "random.txt",
+            ),
+            "key": "test_dir/random.txt",
+        },
+    )
+    assert rv.status_code == 401
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Unauthorized",
+                "message": "Please log in to access Arlo",
+            }
+        ]
+    }
+
+
+def test_public_file_upload_error(client: FlaskClient):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.post(
+        "/api/file-upload",
+        data={
+            "key": "test_dir/random.txt",
+        },
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "Missing required form parameter 'file'",
+            }
+        ]
+    }
+
+    rv = client.post(
+        "/api/file-upload",
+        data={
+            "file": (
+                io.BytesIO(b"hello, I am a file"),
+                "random.txt",
+            ),
+        },
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "Missing required form parameter 'key'",
+            }
+        ]
+    }

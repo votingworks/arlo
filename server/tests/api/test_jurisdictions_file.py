@@ -6,12 +6,14 @@ from ..helpers import *  # pylint: disable=wildcard-import
 
 
 def test_missing_file(client: FlaskClient, election_id: str):
-    rv = client.put(f"/api/election/{election_id}/jurisdiction/file")
+    rv = client.post(
+        f"/api/election/{election_id}/jurisdiction/file/upload-complete", json={}
+    )
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
         "errors": [
             {
-                "message": "Missing required file parameter 'jurisdictions'",
+                "message": "Missing required JSON parameter: storagePathKey",
                 "errorType": "Bad Request",
             }
         ]
@@ -19,9 +21,18 @@ def test_missing_file(client: FlaskClient, election_id: str):
 
 
 def test_bad_csv_file(client: FlaskClient, election_id: str):
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/file",
-        data={"jurisdictions": (io.BytesIO(b"not a CSV file"), "random.txt")},
+    rv = upload_jurisdictions_file(
+        client,
+        io.BytesIO(b"not a CSV file"),
+        election_id,
+    )
+    rv = client.post(
+        f"/api/election/{election_id}/jurisdiction/file/upload-complete",
+        json={
+            "storagePathKey": "test_dir/random.txt",
+            "fileName": "random.txt",
+            "fileType": "text/plain",
+        },
     )
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
@@ -35,14 +46,10 @@ def test_bad_csv_file(client: FlaskClient, election_id: str):
 
 
 def test_missing_one_csv_field(client, election_id):
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/file",
-        data={
-            "jurisdictions": (
-                io.BytesIO(b"Jurisdiction\nJurisdiction #1"),
-                "jurisdictions.csv",
-            )
-        },
+    rv = upload_jurisdictions_file(
+        client,
+        io.BytesIO(b"Jurisdiction\nJurisdiction #1"),
+        election_id,
     )
     assert_ok(rv)
 
@@ -50,7 +57,10 @@ def test_missing_one_csv_field(client, election_id):
     compare_json(
         json.loads(rv.data),
         {
-            "file": {"name": "jurisdictions.csv", "uploadedAt": assert_is_date},
+            "file": {
+                "name": asserts_startswith("jurisdictions"),
+                "uploadedAt": assert_is_date,
+            },
             "processing": {
                 "status": ProcessingStatus.ERRORED,
                 "startedAt": assert_is_date,
@@ -66,21 +76,22 @@ def test_jurisdictions_file_metadata(client, election_id):
     assert json.loads(rv.data) == {"file": None, "processing": None}
 
     contents = "Jurisdiction,Admin Email\nJ1,ja@example.com"
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/file",
-        data={"jurisdictions": (io.BytesIO(contents.encode()), "jurisdictions.csv")},
+    rv = upload_jurisdictions_file(
+        client,
+        io.BytesIO(contents.encode()),
+        election_id,
     )
     assert_ok(rv)
 
     election = Election.query.filter_by(id=election_id).one()
-    assert election.jurisdictions_file.name == "jurisdictions.csv"
+    assert election.jurisdictions_file.name.startswith("jurisdictions")
     assert election.jurisdictions_file.uploaded_at
 
     rv = client.get(f"/api/election/{election_id}/jurisdiction/file")
     response = json.loads(rv.data)
     file = response["file"]
     processing = response["processing"]
-    assert file["name"] == "jurisdictions.csv"
+    assert file["name"].startswith("jurisdictions")
     assert file["uploadedAt"]
     assert processing["status"] == ProcessingStatus.PROCESSED
     assert processing["startedAt"]
@@ -88,26 +99,20 @@ def test_jurisdictions_file_metadata(client, election_id):
     assert processing["error"] is None
 
     rv = client.get(f"/api/election/{election_id}/jurisdiction/file/csv")
-    assert (
-        rv.headers["Content-Disposition"] == 'attachment; filename="jurisdictions.csv"'
+    assert rv.headers["Content-Disposition"].startswith(
+        'attachment; filename="jurisdictions'
     )
     assert rv.data.decode("utf-8") == contents
 
 
 def test_replace_jurisdictions_file(client, election_id):
     # Create the initial file.
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/file",
-        data={
-            "jurisdictions": (
-                io.BytesIO(
-                    b"Jurisdiction,Admin Email\n"
-                    b"J1,ja@example.com\n"
-                    b"J2,ja2@example.com"
-                ),
-                "jurisdictions.csv",
-            )
-        },
+    rv = upload_jurisdictions_file(
+        client,
+        io.BytesIO(
+            b"Jurisdiction,Admin Email\n" b"J1,ja@example.com\n" b"J2,ja2@example.com"
+        ),
+        election_id,
     )
     assert_ok(rv)
 
@@ -123,18 +128,12 @@ def test_replace_jurisdictions_file(client, election_id):
     file_id = election.jurisdictions_file_id
 
     # Replace it with another file.
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/file",
-        data={
-            "jurisdictions": (
-                io.BytesIO(
-                    b"Jurisdiction,Admin Email\n"
-                    b"J2,ja2@example.com\n"
-                    b"J3,ja3@example.com"
-                ),
-                "jurisdictions2.csv",
-            )
-        },
+    rv = upload_jurisdictions_file(
+        client,
+        io.BytesIO(
+            b"Jurisdiction,Admin Email\n" b"J2,ja2@example.com\n" b"J3,ja3@example.com"
+        ),
+        election_id,
     )
     assert_ok(rv)
 
@@ -143,7 +142,7 @@ def test_replace_jurisdictions_file(client, election_id):
     )
     assert rv.status_code == 200
     response = json.loads(rv.data)
-    assert response["file"]["name"] == "jurisdictions2.csv"
+    assert response["file"]["name"].startswith("jurisdictions")
 
     assert File.query.get(file_id) is None, "the old file should have been deleted"
 
@@ -158,14 +157,10 @@ def test_replace_jurisdictions_file(client, election_id):
 
 
 def test_no_jurisdiction(client, election_id):
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/file",
-        data={
-            "jurisdictions": (
-                io.BytesIO(b"Jurisdiction,Admin Email"),
-                "jurisdictions.csv",
-            )
-        },
+    rv = upload_jurisdictions_file(
+        client,
+        io.BytesIO(b"Jurisdiction,Admin Email"),
+        election_id,
     )
     assert_ok(rv)
 
@@ -174,14 +169,10 @@ def test_no_jurisdiction(client, election_id):
 
 
 def test_single_jurisdiction_single_admin(client, election_id):
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/file",
-        data={
-            "jurisdictions": (
-                io.BytesIO(b"Jurisdiction,Admin Email\nJ1,a1@example.com"),
-                "jurisdictions.csv",
-            )
-        },
+    rv = upload_jurisdictions_file(
+        client,
+        io.BytesIO(b"Jurisdiction,Admin Email\nJ1,a1@example.com"),
+        election_id,
     )
     assert_ok(rv)
 
@@ -195,16 +186,10 @@ def test_single_jurisdiction_single_admin(client, election_id):
 
 
 def test_single_jurisdiction_multiple_admins(client, election_id):
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/file",
-        data={
-            "jurisdictions": (
-                io.BytesIO(
-                    b"Jurisdiction,Admin Email\nJ1,a1@example.com\nJ1,a2@example.com"
-                ),
-                "jurisdictions.csv",
-            )
-        },
+    rv = upload_jurisdictions_file(
+        client,
+        io.BytesIO(b"Jurisdiction,Admin Email\nJ1,a1@example.com\nJ1,a2@example.com"),
+        election_id,
     )
     assert_ok(rv)
 
@@ -219,16 +204,10 @@ def test_single_jurisdiction_multiple_admins(client, election_id):
 
 
 def test_multiple_jurisdictions_single_admin(client, election_id):
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/file",
-        data={
-            "jurisdictions": (
-                io.BytesIO(
-                    b"Jurisdiction,Admin Email\nJ1,a1@example.com\nJ2,a1@example.com"
-                ),
-                "jurisdictions.csv",
-            )
-        },
+    rv = upload_jurisdictions_file(
+        client,
+        io.BytesIO(b"Jurisdiction,Admin Email\nJ1,a1@example.com\nJ2,a1@example.com"),
+        election_id,
     )
     assert_ok(rv)
 
@@ -247,19 +226,15 @@ def test_download_jurisdictions_file_not_found(client, election_id):
 
 
 def test_convert_emails_to_lowercase(client, election_id):
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/file",
-        data={
-            "jurisdictions": (
-                io.BytesIO(
-                    b"Jurisdiction,Admin Email\n"
-                    b"J1,lowecase@example.com\n"
-                    b"J2,UPPERCASE@EXAMPLE.COM\n"
-                    b"J3,MiXeDcAsE@eXaMpLe.CoM\n"
-                ),
-                "jurisdictions.csv",
-            )
-        },
+    rv = upload_jurisdictions_file(
+        client,
+        io.BytesIO(
+            b"Jurisdiction,Admin Email\n"
+            b"J1,lowecase@example.com\n"
+            b"J2,UPPERCASE@EXAMPLE.COM\n"
+            b"J3,MiXeDcAsE@eXaMpLe.CoM\n"
+        ),
+        election_id,
     )
     assert_ok(rv)
 
@@ -274,14 +249,10 @@ def test_upload_jurisdictions_file_after_audit_starts(
     election_id: str,
     round_1_id: str,  # pylint: disable=unused-argument
 ):
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/file",
-        data={
-            "jurisdictions": (
-                io.BytesIO(b"Jurisdiction,Admin Email\n" b"J1,j1@example.com\n"),
-                "jurisdictions.csv",
-            )
-        },
+    rv = upload_jurisdictions_file(
+        client,
+        io.BytesIO(b"Jurisdiction,Admin Email\n" b"J1,j1@example.com\n"),
+        election_id,
     )
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
@@ -298,18 +269,12 @@ def test_upload_jurisdictions_file_duplicate_row(
     client: FlaskClient,
     election_id: str,
 ):
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/file",
-        data={
-            "jurisdictions": (
-                io.BytesIO(
-                    b"Jurisdiction,Admin Email\n"
-                    b"J1,j1@example.com\n"
-                    b"J1,j1@example.com"
-                ),
-                "jurisdictions.csv",
-            )
-        },
+    rv = upload_jurisdictions_file(
+        client,
+        io.BytesIO(
+            b"Jurisdiction,Admin Email\n" b"J1,j1@example.com\n" b"J1,j1@example.com"
+        ),
+        election_id,
     )
     assert_ok(rv)
 
@@ -317,7 +282,10 @@ def test_upload_jurisdictions_file_duplicate_row(
     compare_json(
         json.loads(rv.data),
         {
-            "file": {"name": "jurisdictions.csv", "uploadedAt": assert_is_date},
+            "file": {
+                "name": asserts_startswith("jurisdictions"),
+                "uploadedAt": assert_is_date,
+            },
             "processing": {
                 "status": ProcessingStatus.ERRORED,
                 "startedAt": assert_is_date,
@@ -340,38 +308,26 @@ def test_jurisdictions_file_dont_clobber_other_elections(
     )
 
     # Add jurisdictions.
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/file",
-        data={
-            "jurisdictions": (
-                io.BytesIO(b"Jurisdiction,Admin Email\n" b"J1,j1@example.com\n"),
-                "jurisdictions.csv",
-            )
-        },
+    rv = upload_jurisdictions_file(
+        client,
+        io.BytesIO(b"Jurisdiction,Admin Email\n" b"J1,j1@example.com\n"),
+        election_id,
     )
     assert_ok(rv)
 
     # Add jurisdictions for other election
-    rv = client.put(
-        f"/api/election/{other_election_id}/jurisdiction/file",
-        data={
-            "jurisdictions": (
-                io.BytesIO(b"Jurisdiction,Admin Email\n" b"J2,j2@example.com\n"),
-                "jurisdictions.csv",
-            )
-        },
+    rv = upload_jurisdictions_file(
+        client,
+        io.BytesIO(b"Jurisdiction,Admin Email\n" b"J2,j2@example.com\n"),
+        other_election_id,
     )
     assert_ok(rv)
 
     # Now change them
-    rv = client.put(
-        f"/api/election/{other_election_id}/jurisdiction/file",
-        data={
-            "jurisdictions": (
-                io.BytesIO(b"Jurisdiction,Admin Email\n" b"J3,j3@example.com\n"),
-                "jurisdictions.csv",
-            )
-        },
+    rv = upload_jurisdictions_file(
+        client,
+        io.BytesIO(b"Jurisdiction,Admin Email\n" b"J3,j3@example.com\n"),
+        other_election_id,
     )
     assert_ok(rv)
 
@@ -387,26 +343,22 @@ def test_jurisdictions_file_dont_clobber_other_elections(
 
 
 def test_jurisdictions_file_expected_num_ballots(client: FlaskClient, election_id: str):
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/file",
-        data={
-            "jurisdictions": (
-                io.BytesIO(
-                    b"Jurisdiction,Admin Email,Expected Number of Ballots\n"
-                    # If multiple rows for the same jurisdiction, the last one wins
-                    b"J1,a1@example.com,10\n"
-                    b"J1,a2@example.com,20\n"
-                    # Value is optional
-                    b"J2,a1@example.com,\n"
-                    # If no value in some rows for jurisdiction, the last value wins
-                    b"J3,a1@example.com,10\n"
-                    b"J3,a2@example.com,\n"
-                    b"J4,a1@example.com,\n"
-                    b"J4,a2@example.com,500\n"
-                ),
-                "jurisdictions.csv",
-            )
-        },
+    rv = upload_jurisdictions_file(
+        client,
+        io.BytesIO(
+            b"Jurisdiction,Admin Email,Expected Number of Ballots\n"
+            # If multiple rows for the same jurisdiction, the last one wins
+            b"J1,a1@example.com,10\n"
+            b"J1,a2@example.com,20\n"
+            # Value is optional
+            b"J2,a1@example.com,\n"
+            # If no value in some rows for jurisdiction, the last value wins
+            b"J3,a1@example.com,10\n"
+            b"J3,a2@example.com,\n"
+            b"J4,a1@example.com,\n"
+            b"J4,a2@example.com,500\n"
+        ),
+        election_id,
     )
     assert_ok(rv)
 
@@ -415,3 +367,38 @@ def test_jurisdictions_file_expected_num_ballots(client: FlaskClient, election_i
     assert [
         (j["name"], j["expectedBallotManifestNumBallots"]) for j in jurisdictions
     ] == [("J1", 20), ("J2", None), ("J3", 10), ("J4", 500)]
+
+
+def test_jurisdiction_file_get_upload_url_missing_file_type(
+    client: FlaskClient, election_id: str
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, user_key=DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction/file/upload-url")
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "Missing expected query parameter: fileType",
+            }
+        ]
+    }
+
+
+def test_jurisdiction_file_get_upload_url(client: FlaskClient, election_id: str):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, user_key=DEFAULT_AA_EMAIL)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/file/upload-url",
+        query_string={"fileType": "text/csv"},
+    )
+    assert rv.status_code == 200
+
+    response_data = json.loads(rv.data)
+    expected_url = "/api/file-upload"
+
+    assert response_data["url"] == expected_url
+    assert response_data["fields"]["key"].startswith(
+        f"audits/{election_id}/participating_jurisdictions_"
+    )
+    assert response_data["fields"]["key"].endswith(".csv")

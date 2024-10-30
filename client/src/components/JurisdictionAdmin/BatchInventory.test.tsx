@@ -10,7 +10,11 @@ import {
   createQueryClient,
 } from '../testUtilities'
 import { CvrFileType, IFileInfo } from '../useCSV'
-import { fileInfoMocks } from '../_mocks'
+import {
+  fileInfoMocks,
+  getMockFormDataForFileUpload,
+  getMockJsonDataForUploadComplete,
+} from '../_mocks'
 
 jest.mock('axios')
 jest.mock('../useFeatureFlag', (): typeof import('../useFeatureFlag') => ({
@@ -21,8 +25,6 @@ jest.mock('../useFeatureFlag', (): typeof import('../useFeatureFlag') => ({
 const testCvrFile = new File([''], 'test-cvr.csv', {
   type: 'text/csv',
 })
-const cvrFormData = new FormData()
-cvrFormData.append('cvr', testCvrFile, testCvrFile.name)
 
 const testTabulatorStatusFile = new File([''], 'test-tabulator-status.xml', {
   type: 'application/xml',
@@ -76,23 +78,64 @@ const apiCalls = {
     },
     response: { status: 'ok' },
   }),
-  putCvr: {
-    url: '/api/election/1/jurisdiction/jurisdiction-id-1/batch-inventory/cvr',
-    options: {
-      method: 'PUT',
-      body: cvrFormData,
+  uploadCvrCalls: [
+    {
+      url:
+        '/api/election/1/jurisdiction/jurisdiction-id-1/batch-inventory/cvr/upload-url',
+      options: {
+        method: 'GET',
+        params: { fileType: testCvrFile.type },
+      },
+      response: { url: '/api/upload', fields: { key: '/path/to/file' } },
     },
-    response: { status: 'ok' },
-  },
-  putTabulatorStatus: {
-    url:
-      '/api/election/1/jurisdiction/jurisdiction-id-1/batch-inventory/tabulator-status',
-    options: {
-      method: 'PUT',
-      body: tabulatorStatusFormData,
+    {
+      url: '/api/upload',
+      options: {
+        method: 'POST',
+        body: getMockFormDataForFileUpload(testCvrFile),
+      },
+      response: { status: 'ok' },
     },
-    response: { status: 'ok' },
-  },
+    {
+      url:
+        '/api/election/1/jurisdiction/jurisdiction-id-1/batch-inventory/cvr/upload-complete',
+      options: {
+        method: 'POST',
+        body: getMockJsonDataForUploadComplete(testCvrFile),
+        headers: { 'Content-Type': 'application/json' },
+      },
+      response: { status: 'ok' },
+    },
+  ],
+  uploadTabulatorStatusCalls: [
+    {
+      url:
+        '/api/election/1/jurisdiction/jurisdiction-id-1/batch-inventory/tabulator-status/upload-url',
+      options: {
+        method: 'GET',
+        params: { fileType: testTabulatorStatusFile.type },
+      },
+      response: { url: '/api/upload', fields: { key: '/path/to/file' } },
+    },
+    {
+      url: '/api/upload',
+      options: {
+        method: 'POST',
+        body: getMockFormDataForFileUpload(testTabulatorStatusFile),
+      },
+      response: { status: 'ok' },
+    },
+    {
+      url:
+        '/api/election/1/jurisdiction/jurisdiction-id-1/batch-inventory/tabulator-status/upload-complete',
+      options: {
+        method: 'POST',
+        body: getMockJsonDataForUploadComplete(testTabulatorStatusFile),
+        headers: { 'Content-Type': 'application/json' },
+      },
+      response: { status: 'ok' },
+    },
+  ],
   postSignOff: {
     url:
       '/api/election/1/jurisdiction/jurisdiction-id-1/batch-inventory/sign-off',
@@ -138,12 +181,12 @@ describe('BatchInventory', () => {
       apiCalls.getCvr(fileInfoMocks.empty),
       apiCalls.getTabulatorStatus(fileInfoMocks.empty),
       apiCalls.getSignOff(null),
-      apiCalls.putCvr,
+      ...apiCalls.uploadCvrCalls,
       apiCalls.getCvr(cvrProcessed),
       apiCalls.getTabulatorStatus(fileInfoMocks.empty),
       apiCalls.getSignOff(null),
       apiCalls.getSignOff(null),
-      apiCalls.putTabulatorStatus,
+      ...apiCalls.uploadTabulatorStatusCalls,
       apiCalls.getTabulatorStatus(tabulatorStatusProcessed),
       apiCalls.getSignOff(null),
     ]

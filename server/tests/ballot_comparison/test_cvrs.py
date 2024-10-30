@@ -1,10 +1,9 @@
 import io, json
-from typing import BinaryIO, Dict, List, TypedDict, Tuple
+from typing import List, TypedDict, Tuple
 from flask.testing import FlaskClient
 
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
-from ...util.file import zip_files
 from .conftest import TEST_CVRS
 
 
@@ -34,15 +33,12 @@ def test_dominion_cvr_upload(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={
-            "cvrs": (
-                io.BytesIO(TEST_CVRS.encode()),
-                "cvrs.csv",
-            ),
-            "cvrFileType": "DOMINION",
-        },
+    rv = upload_cvrs(
+        client,
+        io.BytesIO(TEST_CVRS.encode()),
+        election_id,
+        jurisdiction_ids[0],
+        "DOMINION",
     )
     assert_ok(rv)
 
@@ -56,7 +52,7 @@ def test_dominion_cvr_upload(
         json.loads(rv.data),
         {
             "file": {
-                "name": "cvrs.csv",
+                "name": asserts_startswith("cvrs"),
                 "uploadedAt": assert_is_date,
                 "cvrFileType": "DOMINION",
             },
@@ -103,7 +99,7 @@ def test_dominion_cvr_upload(
         jurisdictions[0]["cvrs"],
         {
             "file": {
-                "name": "cvrs.csv",
+                "name": asserts_startswith("cvrs"),
                 "uploadedAt": assert_is_date,
                 "cvrFileType": "DOMINION",
             },
@@ -124,7 +120,7 @@ def test_dominion_cvr_upload(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs/csv"
     )
     assert rv.status_code == 200
-    assert rv.headers["Content-Disposition"] == 'attachment; filename="cvrs.csv"'
+    assert rv.headers["Content-Disposition"].startswith('attachment; filename="cvrs')
     assert rv.data == TEST_CVRS.encode()
 
 
@@ -160,15 +156,12 @@ def test_cvrs_counting_group(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={
-            "cvrs": (
-                io.BytesIO(COUNTING_GROUP_CVR.encode()),
-                "cvrs.csv",
-            ),
-            "cvrFileType": "DOMINION",
-        },
+    rv = upload_cvrs(
+        client,
+        io.BytesIO(COUNTING_GROUP_CVR.encode()),
+        election_id,
+        jurisdiction_ids[0],
+        "DOMINION",
     )
     assert_ok(rv)
 
@@ -187,7 +180,7 @@ def test_cvrs_counting_group(
         json.loads(rv.data),
         {
             "file": {
-                "name": "cvrs.csv",
+                "name": asserts_startswith("cvrs"),
                 "uploadedAt": assert_is_date,
                 "cvrFileType": "DOMINION",
             },
@@ -258,15 +251,12 @@ def test_dominion_cvr_unique_voting_identifier(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={
-            "cvrs": (
-                io.BytesIO(DOMINION_UNIQUE_VOTING_IDENTIFIER_CVR.encode()),
-                "cvrs.csv",
-            ),
-            "cvrFileType": "DOMINION",
-        },
+    rv = upload_cvrs(
+        client,
+        io.BytesIO(DOMINION_UNIQUE_VOTING_IDENTIFIER_CVR.encode()),
+        election_id,
+        jurisdiction_ids[0],
+        "DOMINION",
     )
     assert_ok(rv)
 
@@ -285,7 +275,7 @@ def test_dominion_cvr_unique_voting_identifier(
         json.loads(rv.data),
         {
             "file": {
-                "name": "cvrs.csv",
+                "name": asserts_startswith("cvrs"),
                 "uploadedAt": assert_is_date,
                 "cvrFileType": "DOMINION",
             },
@@ -354,15 +344,12 @@ def test_dominion_cvrs_with_leading_equal_signs(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={
-            "cvrs": (
-                io.BytesIO(DOMINION_CVRS_WITH_LEADING_EQUAL_SIGNS.encode()),
-                "cvrs.csv",
-            ),
-            "cvrFileType": "DOMINION",
-        },
+    rv = upload_cvrs(
+        client,
+        io.BytesIO(DOMINION_CVRS_WITH_LEADING_EQUAL_SIGNS.encode()),
+        election_id,
+        jurisdiction_ids[0],
+        "DOMINION",
     )
     assert_ok(rv)
 
@@ -377,11 +364,12 @@ def test_dominion_cvrs_with_leading_equal_signs(
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
     )
+    print(json.loads(rv.data))
     compare_json(
         json.loads(rv.data),
         {
             "file": {
-                "name": "cvrs.csv",
+                "name": asserts_startswith("cvrs"),
                 "uploadedAt": assert_is_date,
                 "cvrFileType": "DOMINION",
             },
@@ -406,15 +394,12 @@ def test_cvrs_clear(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={
-            "cvrs": (
-                io.BytesIO(TEST_CVRS.encode()),
-                "cvrs.csv",
-            ),
-            "cvrFileType": "DOMINION",
-        },
+    rv = upload_cvrs(
+        client,
+        io.BytesIO(TEST_CVRS.encode()),
+        election_id,
+        jurisdiction_ids[0],
+        "DOMINION",
     )
     assert_ok(rv)
 
@@ -457,29 +442,23 @@ def test_cvrs_replace_as_audit_admin(
 ):
     # Check that AA can also get/put/clear batch tallies
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={
-            "cvrs": (
-                io.BytesIO(TEST_CVRS.encode()),
-                "cvrs.csv",
-            ),
-            "cvrFileType": "DOMINION",
-        },
+    rv = upload_cvrs(
+        client,
+        io.BytesIO(TEST_CVRS.encode()),
+        election_id,
+        jurisdiction_ids[0],
+        "DOMINION",
     )
     assert_ok(rv)
 
     file_id = Jurisdiction.query.get(jurisdiction_ids[0]).cvr_file_id
 
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={
-            "cvrs": (
-                io.BytesIO("\n".join(TEST_CVRS.splitlines()[:-2]).encode()),
-                "cvrs.csv",
-            ),
-            "cvrFileType": "DOMINION",
-        },
+    rv = upload_cvrs(
+        client,
+        io.BytesIO("\n".join(TEST_CVRS.splitlines()[:-2]).encode()),
+        election_id,
+        jurisdiction_ids[0],
+        "DOMINION",
     )
     assert_ok(rv)
 
@@ -517,16 +496,16 @@ def test_cvrs_upload_missing_file(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={},
+    rv = client.post(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs/upload-complete",
+        json={},
     )
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
         "errors": [
             {
                 "errorType": "Bad Request",
-                "message": "Missing required file parameter 'cvrs'",
+                "message": "CVR file type is required",
             }
         ]
     }
@@ -541,10 +520,12 @@ def test_cvrs_upload_bad_csv(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={
-            "cvrs": (io.BytesIO(b"not a CSV file"), "random.txt"),
+    rv = client.post(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs/upload-complete",
+        json={
+            "storagePathKey": "random.txt",
+            "fileName": "random.txt",
+            "fileType": "text/plain",
             "cvrFileType": "DOMINION",
         },
     )
@@ -575,14 +556,12 @@ def test_cvrs_wrong_audit_type(
         set_logged_in_user(
             client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
         )
-        rv = client.put(
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-            data={
-                "cvrs": (
-                    io.BytesIO(TEST_CVRS.encode()),
-                    "cvrs.csv",
-                )
-            },
+        rv = upload_cvrs(
+            client,
+            io.BytesIO(TEST_CVRS.encode()),
+            election_id,
+            jurisdiction_ids[0],
+            "DOMINION",
         )
         assert rv.status_code == 409
         assert json.loads(rv.data) == {
@@ -603,14 +582,12 @@ def test_cvrs_before_manifests(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={
-            "cvrs": (
-                io.BytesIO(TEST_CVRS.encode()),
-                "cvrs.csv",
-            )
-        },
+    rv = upload_cvrs(
+        client,
+        io.BytesIO(TEST_CVRS.encode()),
+        election_id,
+        jurisdiction_ids[0],
+        "DOMINION",
     )
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
@@ -657,15 +634,12 @@ def test_cvrs_newlines(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={
-            "cvrs": (
-                io.BytesIO(NEWLINE_CVR.encode()),
-                "cvrs.csv",
-            ),
-            "cvrFileType": "DOMINION",
-        },
+    rv = upload_cvrs(
+        client,
+        io.BytesIO(NEWLINE_CVR.encode()),
+        election_id,
+        jurisdiction_ids[0],
+        "DOMINION",
     )
     assert_ok(rv)
 
@@ -684,7 +658,7 @@ def test_cvrs_newlines(
         json.loads(rv.data),
         {
             "file": {
-                "name": "cvrs.csv",
+                "name": asserts_startswith("cvrs"),
                 "uploadedAt": assert_is_date,
                 "cvrFileType": "DOMINION",
             },
@@ -1006,15 +980,12 @@ BATCH1,1,1-1-1,p,bs,ps,TABULATOR1,s,r,0,1,1,1,0
     ]
 
     for invalid_cvr, expected_error, cvr_file_type in invalid_cvrs:
-        rv = client.put(
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-            data={
-                "cvrs": (
-                    io.BytesIO(invalid_cvr.encode()),
-                    "cvrs.csv",
-                ),
-                "cvrFileType": cvr_file_type,
-            },
+        rv = upload_cvrs(
+            client,
+            io.BytesIO(invalid_cvr.encode()),
+            election_id,
+            jurisdiction_ids[0],
+            cvr_file_type,
         )
         assert_ok(rv)
 
@@ -1025,7 +996,7 @@ BATCH1,1,1-1-1,p,bs,ps,TABULATOR1,s,r,0,1,1,1,0
             json.loads(rv.data),
             {
                 "file": {
-                    "name": "cvrs.csv",
+                    "name": asserts_startswith("cvrs"),
                     "uploadedAt": assert_is_date,
                     "cvrFileType": cvr_file_type,
                 },
@@ -1059,20 +1030,18 @@ def test_cvr_reprocess_after_manifest_reupload(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
-        data={
-            "manifest": (
-                io.BytesIO(
-                    b"Tabulator,Batch Name,Number of Ballots\n"
-                    b"TABULATOR2,BATCH2,6\n"
-                    b"TABULATOR1,BATCH1,3\n"
-                    b"TABULATOR1,BATCH2,3"
-                ),
-                "manifest.csv",
-            )
-        },
+    rv = upload_ballot_manifest(
+        client,
+        io.BytesIO(
+            b"Tabulator,Batch Name,Number of Ballots\n"
+            b"TABULATOR2,BATCH2,6\n"
+            b"TABULATOR1,BATCH1,3\n"
+            b"TABULATOR1,BATCH2,3"
+        ),
+        election_id,
+        jurisdiction_ids[0],
     )
+
     assert_ok(rv)
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -1091,7 +1060,7 @@ def test_cvr_reprocess_after_manifest_reupload(
         json.loads(rv.data),
         {
             "file": {
-                "name": "cvrs.csv",
+                "name": asserts_startswith("cvrs"),
                 "uploadedAt": assert_is_date,
                 "cvrFileType": "DOMINION",
             },
@@ -1115,20 +1084,17 @@ def test_cvr_reprocess_after_manifest_reupload(
     assert Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata is None
 
     # Fix the manifest
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
-        data={
-            "manifest": (
-                io.BytesIO(
-                    b"Tabulator,Batch Name,Number of Ballots\n"
-                    b"TABULATOR1,BATCH1,3\n"
-                    b"TABULATOR1,BATCH2,3\n"
-                    b"TABULATOR2,BATCH1,3\n"
-                    b"TABULATOR2,BATCH2,6"
-                ),
-                "manifest.csv",
-            )
-        },
+    rv = upload_ballot_manifest(
+        client,
+        io.BytesIO(
+            b"Tabulator,Batch Name,Number of Ballots\n"
+            b"TABULATOR1,BATCH1,3\n"
+            b"TABULATOR1,BATCH2,3\n"
+            b"TABULATOR2,BATCH1,3\n"
+            b"TABULATOR2,BATCH2,6"
+        ),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
@@ -1148,7 +1114,7 @@ def test_cvr_reprocess_after_manifest_reupload(
         json.loads(rv.data),
         {
             "file": {
-                "name": "cvrs.csv",
+                "name": asserts_startswith("cvrs"),
                 "uploadedAt": assert_is_date,
                 "cvrFileType": "DOMINION",
             },
@@ -1208,15 +1174,12 @@ def test_clearballot_cvr_upload(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={
-            "cvrs": (
-                io.BytesIO(CLEARBALLOT_CVRS.encode()),
-                "cvrs.csv",
-            ),
-            "cvrFileType": "CLEARBALLOT",
-        },
+    rv = upload_cvrs(
+        client,
+        io.BytesIO(CLEARBALLOT_CVRS.encode()),
+        election_id,
+        jurisdiction_ids[0],
+        "CLEARBALLOT",
     )
     assert_ok(rv)
 
@@ -1235,7 +1198,7 @@ def test_clearballot_cvr_upload(
         json.loads(rv.data),
         {
             "file": {
-                "name": "cvrs.csv",
+                "name": asserts_startswith("cvrs"),
                 "uploadedAt": assert_is_date,
                 "cvrFileType": "CLEARBALLOT",
             },
@@ -1284,15 +1247,12 @@ def test_clearballot_cvr_upload_invalid(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={
-            "cvrs": (
-                io.BytesIO(CLEARBALLOT_CVRS_INVALID.encode()),
-                "cvrs.csv",
-            ),
-            "cvrFileType": "CLEARBALLOT",
-        },
+    rv = upload_cvrs(
+        client,
+        io.BytesIO(CLEARBALLOT_CVRS_INVALID.encode()),
+        election_id,
+        jurisdiction_ids[0],
+        "CLEARBALLOT",
     )
     assert_ok(rv)
 
@@ -1312,7 +1272,7 @@ def test_clearballot_cvr_upload_invalid(
         {
             "file": {
                 "cvrFileType": "CLEARBALLOT",
-                "name": "cvrs.csv",
+                "name": asserts_startswith("cvrs"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -1495,9 +1455,13 @@ def test_ess_cvr_upload(
     )
 
     for cvrs in test_cases:
-        rv = client.put(
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-            data={"cvrs": cvrs, "cvrFileType": "ESS"},
+        rv = upload_cvrs(
+            client,
+            zip_cvrs(cvrs),
+            election_id,
+            jurisdiction_ids[0],
+            "ESS",
+            "application/zip",
         )
         assert_ok(rv)
 
@@ -1509,7 +1473,7 @@ def test_ess_cvr_upload(
             {
                 "file": {
                     "cvrFileType": "ESS",
-                    "name": "cvr-files.zip",
+                    "name": asserts_startswith("cvrs"),
                     "uploadedAt": assert_is_date,
                 },
                 "processing": {
@@ -1843,9 +1807,13 @@ def test_ess_cvr_upload_invalid(
     )
 
     for invalid_cvrs, expected_error in test_cases:
-        rv = client.put(
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-            data={"cvrs": invalid_cvrs, "cvrFileType": "ESS"},
+        rv = upload_cvrs(
+            client,
+            zip_cvrs(invalid_cvrs),
+            election_id,
+            jurisdiction_ids[0],
+            "ESS",
+            "application/zip",
         )
         assert_ok(rv)
 
@@ -1857,7 +1825,7 @@ def test_ess_cvr_upload_invalid(
             {
                 "file": {
                     "cvrFileType": "ESS",
-                    "name": "cvr-files.zip",
+                    "name": asserts_startswith("cvrs"),
                     "uploadedAt": assert_is_date,
                 },
                 "processing": {
@@ -1902,9 +1870,13 @@ def test_ess_cvr_upload_cvr_file_with_tabulator_cvr_column(
         (io.BytesIO(ESS_BALLOTS_2.encode()), "ess_ballots_2.csv"),
     ]
 
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={"cvrs": cvrs, "cvrFileType": "ESS"},
+    rv = upload_cvrs(
+        client,
+        zip_cvrs(cvrs),
+        election_id,
+        jurisdiction_ids[0],
+        "ESS",
+        "application/zip",
     )
     assert_ok(rv)
 
@@ -1916,7 +1888,7 @@ def test_ess_cvr_upload_cvr_file_with_tabulator_cvr_column(
         {
             "file": {
                 "cvrFileType": "ESS",
-                "name": "cvr-files.zip",
+                "name": asserts_startswith("cvrs"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -1932,9 +1904,13 @@ def test_ess_cvr_upload_cvr_file_with_tabulator_cvr_column(
         },
     )
 
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={"cvrs": cvrs_with_override_cvr_file_name, "cvrFileType": "ESS"},
+    rv = upload_cvrs(
+        client,
+        zip_cvrs(cvrs_with_override_cvr_file_name),
+        election_id,
+        jurisdiction_ids[0],
+        "ESS",
+        "application/zip",
     )
     assert_ok(rv)
 
@@ -1946,7 +1922,7 @@ def test_ess_cvr_upload_cvr_file_with_tabulator_cvr_column(
         {
             "file": {
                 "cvrFileType": "ESS",
-                "name": "cvr-files.zip",
+                "name": asserts_startswith("cvrs"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -2170,16 +2146,6 @@ HART_SCANNED_BALLOT_INFORMATION_CONFLICTING_WITH_MINIMAL = """#FormatVersion 1
 """
 
 
-def zip_hart_cvrs(cvrs: List[str]):
-    files: Dict[str, BinaryIO] = {
-        f"cvr-{i}.xml": io.BytesIO(cvr.encode()) for i, cvr in enumerate(cvrs)
-    }
-    # There's usually a WriteIns directory in the zip file - simulate that to
-    # make sure it gets skipped
-    files["WriteIns"] = io.BytesIO()
-    return io.BytesIO(zip_files(files).read())
-
-
 def test_hart_cvr_upload(
     client: FlaskClient,
     election_id: str,
@@ -2188,12 +2154,13 @@ def test_hart_cvr_upload(
     snapshot,
 ):
     # Upload CVRs
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={
-            "cvrs": [(zip_hart_cvrs(HART_CVRS), "cvrs.zip")],
-            "cvrFileType": "HART",
-        },
+    rv = upload_cvrs(
+        client,
+        zip_hart_cvrs(HART_CVRS),
+        election_id,
+        jurisdiction_ids[0],
+        "HART",
+        "application/zip",
     )
     assert_ok(rv)
 
@@ -2212,7 +2179,7 @@ def test_hart_cvr_upload(
         json.loads(rv.data),
         {
             "file": {
-                "name": "cvr-files.zip",
+                "name": asserts_startswith("cvrs"),
                 "uploadedAt": assert_is_date,
                 "cvrFileType": "HART",
             },
@@ -2366,21 +2333,25 @@ def test_hart_cvr_upload_with_scanned_ballot_information(
     ]
 
     for test_case in test_cases:
+        print("on test case ", test_case)
         scanned_ballot_information_files = [
             (string_to_bytes_io(file_contents), f"scanned-ballot-information-{i}.csv")
             for i, file_contents in enumerate(
                 test_case["scanned_ballot_information_file_contents"]
             )
         ]
-        rv = client.put(
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-            data={
-                "cvrs": [
+        rv = upload_cvrs(
+            client,
+            zip_cvrs(
+                [
                     (zip_hart_cvrs(HART_CVRS), "cvrs.zip"),
                     *scanned_ballot_information_files,
-                ],
-                "cvrFileType": "HART",
-            },
+                ]
+            ),
+            election_id,
+            jurisdiction_ids[0],
+            "HART",
+            "application/zip",
         )
         assert_ok(rv)
 
@@ -2392,7 +2363,7 @@ def test_hart_cvr_upload_with_scanned_ballot_information(
             {
                 "file": {
                     "cvrFileType": "HART",
-                    "name": "cvr-files.zip",
+                    "name": asserts_startswith("cvrs"),
                     "uploadedAt": assert_is_date,
                 },
                 "processing": {
@@ -2453,7 +2424,7 @@ def test_hart_cvr_upload_with_duplicate_batch_names(
     )
 
     class TestCase(TypedDict):
-        files: List[Tuple[BinaryIO, str]]
+        files: List[Tuple[io.BytesIO, str]]
         expected_processing_status: ProcessingStatus
         expected_processing_error: Optional[str]
 
@@ -2540,12 +2511,13 @@ def test_hart_cvr_upload_with_duplicate_batch_names(
     ]
 
     for test_case in test_cases:
-        rv = client.put(
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-            data={
-                "cvrs": test_case["files"],
-                "cvrFileType": "HART",
-            },
+        rv = upload_cvrs(
+            client,
+            zip_cvrs(test_case["files"]),
+            election_id,
+            jurisdiction_ids[0],
+            "HART",
+            "application/zip",
         )
         assert_ok(rv)
 
@@ -2557,7 +2529,7 @@ def test_hart_cvr_upload_with_duplicate_batch_names(
             {
                 "file": {
                     "cvrFileType": "HART",
-                    "name": "cvr-files.zip",
+                    "name": asserts_startswith("cvrs"),
                     "uploadedAt": assert_is_date,
                 },
                 "processing": {
@@ -2623,12 +2595,14 @@ def test_hart_cvr_upload_no_batch_match(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
     for invalid_cvr, expected_error in invalid_cvrs:
-        rv = client.put(
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-            data={
-                "cvrs": [(zip_hart_cvrs(invalid_cvr), "cvrs.zip")],
-                "cvrFileType": "HART",
-            },
+        rv = upload_cvrs(
+            client,
+            zip_hart_cvrs(invalid_cvr),
+            election_id,
+            jurisdiction_ids[0],
+            "HART",
+            "application/zip",
+            "cvrs.zip",
         )
         assert_ok(rv)
 
@@ -2639,7 +2613,7 @@ def test_hart_cvr_upload_no_batch_match(
             json.loads(rv.data),
             {
                 "file": {
-                    "name": "cvr-files.zip",
+                    "name": asserts_startswith("cvrs"),
                     "uploadedAt": assert_is_date,
                     "cvrFileType": "HART",
                 },
@@ -2706,12 +2680,13 @@ def test_hart_cvr_upload_no_tabulator_plus_batch_match(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
     for cvr_upload, expected_error in cvr_uploads:
-        rv = client.put(
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-            data={
-                "cvrs": cvr_upload,
-                "cvrFileType": "HART",
-            },
+        rv = upload_cvrs(
+            client,
+            zip_cvrs(cvr_upload),
+            election_id,
+            jurisdiction_ids[0],
+            "HART",
+            "application/zip",
         )
         assert_ok(rv)
 
@@ -2722,7 +2697,7 @@ def test_hart_cvr_upload_no_tabulator_plus_batch_match(
             json.loads(rv.data),
             {
                 "file": {
-                    "name": "cvr-files.zip",
+                    "name": asserts_startswith("cvrs"),
                     "uploadedAt": assert_is_date,
                     "cvrFileType": "HART",
                 },
@@ -2749,80 +2724,122 @@ def test_hart_cvr_upload_basic_input_validation(
     )
 
     class TestCase(TypedDict):
-        cvrs: List
+        cvrs: io.BytesIO
+        file_type: str
         expected_status_code: int
         expected_response: Any
 
     test_cases: List[TestCase] = [
         {
-            "cvrs": [(zip_hart_cvrs(HART_CVRS), "cvrs.csv")],
+            "cvrs": zip_hart_cvrs(HART_CVRS),
+            "file_type": "text/csv",
             "expected_status_code": 400,
             "expected_response": {
                 "errors": [
                     {
                         "errorType": "Bad Request",
-                        "message": "Please submit at least one ZIP file.",
+                        "message": "Please submit a valid ZIP file.",
                     }
                 ]
             },
         },
         {
-            "cvrs": [
-                (zip_hart_cvrs(HART_CVRS), "cvrs.csv"),
-                (
-                    string_to_bytes_io(HART_SCANNED_BALLOT_INFORMATION),
-                    "scanned-ballot-information.csv",
-                ),
-            ],
-            "expected_status_code": 400,
-            "expected_response": {
-                "errors": [
-                    {
-                        "errorType": "Bad Request",
-                        "message": "Please submit at least one ZIP file.",
-                    }
-                ]
-            },
-        },
-        {
-            "cvrs": [
-                (zip_hart_cvrs(HART_CVRS), "cvrs.zip"),
-                (
-                    string_to_bytes_io(HART_SCANNED_BALLOT_INFORMATION),
-                    "scanned-ballot-information.jpg",
-                ),
-            ],
-            "expected_status_code": 400,
-            "expected_response": {
-                "errors": [
-                    {
-                        "errorType": "Bad Request",
-                        "message": "Please submit only ZIP files and CSVs.",
-                    }
-                ]
-            },
-        },
-        {
-            "cvrs": [
-                (
-                    zip_hart_cvrs(HART_CVRS),
-                    "cvrs.zip",
-                    # Verify that the Windows ZIP mimetype works
-                    "application/x-zip-compressed",
-                ),
-            ],
+            "cvrs": zip_hart_cvrs(HART_CVRS),
+            "file_type": "application/x-zip-compressed",  # Verify that the Windows ZIP mimetype works
             "expected_status_code": 200,
             "expected_response": {"status": "ok"},
         },
     ]
 
     for test_case in test_cases:
-        rv = client.put(
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-            data={"cvrFileType": "HART", "cvrs": test_case["cvrs"]},
+        rv = upload_cvrs(
+            client,
+            test_case["cvrs"],
+            election_id,
+            jurisdiction_ids[0],
+            "HART",
+            test_case["file_type"],
         )
         assert rv.status_code == test_case["expected_status_code"]
         assert json.loads(rv.data) == test_case["expected_response"]
+
+
+def test_hart_cvr_upload_processing_validation(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    hart_manifests,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+
+    class TestCase(TypedDict):
+        cvrs: io.BytesIO
+        expected_status_code: int
+        expected_response: Any
+
+    test_cases: List[TestCase] = [
+        {
+            "cvrs": zip_cvrs(
+                [
+                    (zip_hart_cvrs(HART_CVRS), "cvrs.csv"),
+                    (
+                        string_to_bytes_io(HART_SCANNED_BALLOT_INFORMATION),
+                        "scanned-ballot-information.csv",
+                    ),
+                ]
+            ),
+            "expected_status_code": 400,
+            "expected_response": "Expected first line of scanned ballot information CSV to contain '#FormatVersion'.",
+        },
+        {
+            "cvrs": zip_cvrs(
+                [
+                    (zip_hart_cvrs(HART_CVRS), "cvrs.zip"),
+                    (
+                        string_to_bytes_io(HART_SCANNED_BALLOT_INFORMATION),
+                        "scanned-ballot-information.jpg",
+                    ),
+                ]
+            ),
+            "expected_status_code": 400,
+            "expected_response": "Unsupported file type. Expected either a ZIP file or a CSV file, but found scanned-ballot-information.jpg.",
+        },
+    ]
+
+    for test_case in test_cases:
+        rv = upload_cvrs(
+            client,
+            test_case["cvrs"],
+            election_id,
+            jurisdiction_ids[0],
+            "HART",
+            "application/zip",
+        )
+        # these test cases will fail when being processed not uploaded
+        assert_ok(rv)
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
+        )
+        compare_json(
+            json.loads(rv.data),
+            {
+                "file": {
+                    "name": asserts_startswith("cvrs"),
+                    "uploadedAt": assert_is_date,
+                    "cvrFileType": "HART",
+                },
+                "processing": {
+                    "status": ProcessingStatus.ERRORED,
+                    "startedAt": assert_is_date,
+                    "completedAt": assert_is_date,
+                    "error": test_case["expected_response"],
+                    "workProgress": 0,
+                    "workTotal": assert_is_int,
+                },
+            },
+        )
 
 
 def test_cvrs_unexpected_error(
@@ -2847,15 +2864,12 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={
-            "cvrs": (
-                io.BytesIO(cvrs.encode()),
-                "cvrs.csv",
-            ),
-            "cvrFileType": "DOMINION",
-        },
+    rv = upload_cvrs(
+        client,
+        io.BytesIO(cvrs.encode()),
+        election_id,
+        jurisdiction_ids[0],
+        "DOMINION",
     )
     assert_ok(rv)
 
@@ -2866,7 +2880,7 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
         json.loads(rv.data),
         {
             "file": {
-                "name": "cvrs.csv",
+                "name": asserts_startswith("cvrs"),
                 "uploadedAt": assert_is_date,
                 "cvrFileType": "DOMINION",
             },
@@ -2899,15 +2913,12 @@ def test_cvr_invalid_file_type(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={
-            "cvrs": (
-                io.BytesIO(TEST_CVRS.encode()),
-                "cvrs.csv",
-            ),
-            "cvrFileType": "WRONG",
-        },
+    rv = upload_cvrs(
+        client,
+        io.BytesIO(TEST_CVRS.encode()),
+        election_id,
+        jurisdiction_ids[0],
+        "WRONG",
     )
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
@@ -2918,3 +2929,63 @@ def test_cvr_invalid_file_type(
             }
         ]
     }
+
+
+def test_cvrs_get_upload_url_missing_file_type(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs/upload-url"
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "Missing expected query parameter: fileType",
+            }
+        ]
+    }
+
+
+def test_cvrs_get_upload_url(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+):
+    allowed_users = [
+        (UserType.JURISDICTION_ADMIN, default_ja_email(election_id)),
+        (UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL),
+    ]
+    for user, email in allowed_users:
+        set_logged_in_user(client, user, email)
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs/upload-url",
+            query_string={"fileType": "text/csv", "cvrFileType": "DOMINION"},
+        )
+        assert rv.status_code == 200
+
+        response_data = json.loads(rv.data)
+        expected_url = "/api/file-upload"
+
+        assert response_data["url"] == expected_url
+        assert response_data["fields"]["key"].startswith(
+            f"audits/{election_id}/jurisdictions/{jurisdiction_ids[0]}/cvrs_"
+        )
+        assert response_data["fields"]["key"].endswith(".csv")
+
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs/upload-url",
+            query_string={"fileType": "text/csv", "cvrFileType": "HART"},
+        )
+        assert rv.status_code == 200
+
+        response_data = json.loads(rv.data)
+        expected_url = "/api/file-upload"
+
+        assert response_data["url"] == expected_url
+        assert response_data["fields"]["key"].startswith(
+            f"audits/{election_id}/jurisdictions/{jurisdiction_ids[0]}/cvrs_"
+        )
+        assert response_data["fields"]["key"].endswith(".zip")

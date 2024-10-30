@@ -36,11 +36,7 @@ const TestFileUpload = ({
   const fileUpload: IFileUpload = {
     uploadedFile,
     uploadFiles: files => {
-      const formData = new FormData()
-      for (const file of files) {
-        formData.append('files', file, file.name)
-      }
-      return uploadFiles.mutateAsync(formData)
+      return uploadFiles.mutateAsync({ file: files[0] })
     },
     uploadProgress: uploadFiles.progress,
     deleteFile: () => deleteFile.mutateAsync(),
@@ -66,16 +62,50 @@ const render = (element: React.ReactElement) =>
 const testFile = new File(['test content'], 'test-file.csv', {
   type: 'text/csv',
 })
-const formData = new FormData()
-formData.append('files', testFile, testFile.name)
+const uploadFormData = new FormData()
+uploadFormData.append('key', 'path/to/file/file.csv')
+uploadFormData.append('otherField', 'canBePassedThrough')
+uploadFormData.append('Content-Type', testFile.type)
+uploadFormData.append('file', testFile, testFile.name)
+
+const uploadCompleteJSONData = {
+  fileName: testFile.name,
+  fileType: testFile.type,
+  storagePathKey: 'path/to/file/file.csv',
+}
+
+const getUploadUrlMock = {
+  url: '/test/file-upload',
+  fields: {
+    key: 'path/to/file/file.csv',
+    otherField: 'canBePassedThrough',
+  },
+}
 
 describe('FileUpload + useFileUpload', () => {
   it('when no file is uploaded, shows a form to upload a file', async () => {
     const expectedCalls = [
       { url: '/test', response: fileInfoMocks.empty },
       {
-        url: '/test',
-        options: { method: 'PUT', body: formData },
+        url: '/test/upload-url',
+        options: {
+          method: 'GET',
+          params: { fileType: testFile.type },
+        },
+        response: getUploadUrlMock,
+      },
+      {
+        url: '/test/file-upload',
+        options: { method: 'POST', body: uploadFormData },
+        response: { status: 'ok' },
+      },
+      {
+        url: '/test/upload-complete',
+        options: {
+          method: 'POST',
+          body: (uploadCompleteJSONData as unknown) as BodyInit,
+          headers: { 'Content-Type': 'application/json' },
+        },
         response: { status: 'ok' },
       },
       { url: '/test', response: fileInfoMocks.processing },
@@ -138,8 +168,25 @@ describe('FileUpload + useFileUpload', () => {
     const expectedCalls = [
       { url: '/test', response: fileInfoMocks.empty },
       {
-        url: '/test',
-        options: { method: 'PUT', body: formData },
+        url: '/test/upload-url',
+        options: {
+          method: 'GET',
+          params: { fileType: testFile.type },
+        },
+        response: getUploadUrlMock,
+      },
+      {
+        url: '/test/file-upload',
+        options: { method: 'POST', body: uploadFormData },
+        response: { status: 'ok' },
+      },
+      {
+        url: '/test/upload-complete',
+        options: {
+          method: 'POST',
+          body: (uploadCompleteJSONData as unknown) as BodyInit,
+          headers: { 'Content-Type': 'application/json' },
+        },
         response: { status: 'ok' },
       },
       { url: '/test', response: fileInfoMocks.errored },
@@ -175,8 +222,25 @@ describe('FileUpload + useFileUpload', () => {
     const expectedCalls = [
       { url: '/test', response: fileInfoMocks.empty },
       {
-        url: '/test',
-        options: { method: 'PUT', body: formData2 },
+        url: '/test/upload-url',
+        options: {
+          method: 'GET',
+          params: { fileType: testFile.type },
+        },
+        response: getUploadUrlMock,
+      },
+      {
+        url: '/test/file-upload',
+        options: { method: 'POST', body: uploadFormData },
+        response: { status: 'ok' },
+      },
+      {
+        url: '/test/upload-complete',
+        options: {
+          method: 'POST',
+          body: (uploadCompleteJSONData as unknown) as BodyInit,
+          headers: { 'Content-Type': 'application/json' },
+        },
         response: { status: 'ok' },
       },
       { url: '/test', response: fileInfoMocks.processed },
@@ -232,14 +296,48 @@ describe('FileUpload + useFileUpload', () => {
     })
   })
 
-  it('handles an API error on put', async () => {
+  it('handles an API error on get', async () => {
     const expectedCalls = [
       { url: '/test', response: fileInfoMocks.empty },
-      serverError('putFile', {
-        url: '/test',
+      serverError('getFile', {
+        url: '/test/upload-url',
         options: {
-          method: 'PUT',
-          body: formData,
+          method: 'GET',
+          params: { fileType: testFile.type },
+        } as RequestInit,
+      }),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      render(
+        <>
+          <TestFileUpload />
+          <ToastContainer />
+        </>
+      )
+      await screen.findByText('Test File')
+      userEvent.upload(screen.getByLabelText('Select a file...'), testFile)
+      await screen.findByText('test-file.csv')
+      userEvent.click(screen.getByRole('button', { name: /Upload/ }))
+      await findAndCloseToast('getFile')
+    })
+  })
+
+  it('handles an API error on file upload', async () => {
+    const expectedCalls = [
+      { url: '/test', response: fileInfoMocks.empty },
+      {
+        url: '/test/upload-url',
+        options: {
+          method: 'GET',
+          params: { fileType: testFile.type },
+        },
+        response: getUploadUrlMock,
+      },
+      serverError('postFileUpload', {
+        url: '/test/file-upload',
+        options: {
+          method: 'POST',
+          body: uploadFormData,
         },
       }),
     ]
@@ -254,7 +352,47 @@ describe('FileUpload + useFileUpload', () => {
       userEvent.upload(screen.getByLabelText('Select a file...'), testFile)
       await screen.findByText('test-file.csv')
       userEvent.click(screen.getByRole('button', { name: /Upload/ }))
-      await findAndCloseToast('putFile')
+      await findAndCloseToast('postFileUpload')
+    })
+  })
+
+  it('handles an API error on file upload completion', async () => {
+    const expectedCalls = [
+      { url: '/test', response: fileInfoMocks.empty },
+      {
+        url: '/test/upload-url',
+        options: {
+          method: 'GET',
+          params: { fileType: testFile.type },
+        },
+        response: getUploadUrlMock,
+      },
+      {
+        url: '/test/file-upload',
+        options: { method: 'POST', body: uploadFormData },
+        response: { status: 'ok' },
+      },
+      serverError('postFileComplete', {
+        url: '/test/upload-complete',
+        options: {
+          method: 'POST',
+          body: (uploadCompleteJSONData as unknown) as BodyInit,
+          headers: { 'Content-Type': 'application/json' },
+        },
+      }),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      render(
+        <>
+          <TestFileUpload />
+          <ToastContainer />
+        </>
+      )
+      await screen.findByText('Test File')
+      userEvent.upload(screen.getByLabelText('Select a file...'), testFile)
+      await screen.findByText('test-file.csv')
+      userEvent.click(screen.getByRole('button', { name: /Upload/ }))
+      await findAndCloseToast('postFileComplete')
     })
   })
 

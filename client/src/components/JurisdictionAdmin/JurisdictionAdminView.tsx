@@ -131,7 +131,7 @@ const JurisdictionAdminView: React.FC = () => {
             <Card elevation={1}>
               <CSVFile
                 csvFile={ballotManifest}
-                uploadCSVFiles={uploadBallotManifest}
+                uploadCSVFile={uploadBallotManifest}
                 deleteCSVFile={deleteBallotManifest}
                 title={
                   isHybrid ? 'Ballot Manifest (All ballots)' : 'Ballot Manifest'
@@ -173,7 +173,7 @@ const JurisdictionAdminView: React.FC = () => {
                     ballotManifest.processing.status ===
                       FileProcessingStatus.PROCESSED
                   }
-                  uploadCSVFiles={uploadBatchTallies}
+                  uploadCSVFile={uploadBatchTallies}
                   deleteCSVFile={deleteBatchTallies}
                   title="Candidate Totals by Batch"
                   description='Click "Browse" to choose the appropriate Candidate
@@ -198,7 +198,7 @@ const JurisdictionAdminView: React.FC = () => {
                     ballotManifest.processing.status ===
                       FileProcessingStatus.PROCESSED
                   }
-                  uploadCSVFiles={uploadCVRS}
+                  uploadCSVFile={uploadCVRS}
                   deleteCSVFile={deleteCVRS}
                   title={
                     isHybrid

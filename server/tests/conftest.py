@@ -71,30 +71,30 @@ def election_id(client: FlaskClient, org_id: str, request) -> str:
 
 @pytest.fixture
 def jurisdiction_ids(client: FlaskClient, election_id: str) -> List[str]:
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/file",
-        data={
-            "jurisdictions": (
-                # We expect the API to order the jurisdictions by name, so we
-                # upload them out of order.
-                io.BytesIO(
-                    (
-                        "Jurisdiction,Admin Email\n"
-                        f"J2,{default_ja_email(election_id)}\n"
-                        f"J3,j3-{election_id}@example.com\n"
-                        f"J1,{default_ja_email(election_id)}\n"
-                    ).encode()
-                ),
-                "jurisdictions.csv",
-            )
-        },
+    rv = upload_jurisdictions_file(
+        client,
+        # We expect the API to order the jurisdictions by name, so we
+        # upload them out of order.
+        io.BytesIO(
+            (
+                "Jurisdiction,Admin Email\n"
+                f"J2,{default_ja_email(election_id)}\n"
+                f"J3,j3-{election_id}@example.com\n"
+                f"J1,{default_ja_email(election_id)}\n"
+            ).encode()
+        ),
+        election_id,
     )
     assert_ok(rv)
+
     jurisdictions = (
         Jurisdiction.query.filter_by(election_id=election_id)
         .order_by(Jurisdiction.name)
         .all()
     )
+
+    # verify jurisdictions processed correctly
+    assert len(jurisdictions) == 3
     return [j.id for j in jurisdictions]
 
 
@@ -175,36 +175,22 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
-        data={
-            "manifest": (
-                io.BytesIO(
-                    b"Batch Name,Number of Ballots\n"
-                    b"1,23\n"
-                    b"2,101\n"
-                    b"3,122\n"
-                    b"4,400"
-                ),
-                "manifest.csv",
-            )
-        },
+    rv = upload_ballot_manifest(
+        client,
+        io.BytesIO(
+            b"Batch Name,Number of Ballots\n" b"1,23\n" b"2,101\n" b"3,122\n" b"4,400"
+        ),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/ballot-manifest",
-        data={
-            "manifest": (
-                io.BytesIO(
-                    b"Batch Name,Number of Ballots\n"
-                    b"1,20\n"
-                    b"2,10\n"
-                    b"3,220\n"
-                    b"4,40"
-                ),
-                "manifest.csv",
-            )
-        },
+    rv = upload_ballot_manifest(
+        client,
+        io.BytesIO(
+            b"Batch Name,Number of Ballots\n" b"1,20\n" b"2,10\n" b"3,220\n" b"4,40"
+        ),
+        election_id,
+        jurisdiction_ids[1],
     )
     assert_ok(rv)
 

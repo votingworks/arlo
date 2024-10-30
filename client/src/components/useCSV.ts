@@ -37,7 +37,7 @@ export interface IFileInfo {
 }
 
 interface IUpload {
-  files: File[]
+  file: File
   progress: number
 }
 
@@ -47,29 +47,70 @@ export const isFileProcessed = (file: IFileInfo): boolean =>
 const loadCSVFile = async (url: string): Promise<IFileInfo | null> =>
   api<IFileInfo>(url)
 
-const putCSVFiles = async (
+const putCSVFile = async (
   url: string,
-  files: File[],
+  file: File,
   formKey: string,
   trackProgress: (progress: number) => void,
   cvrFileType?: CvrFileType
 ): Promise<boolean> => {
-  const formData: FormData = new FormData()
-  for (const f of files) formData.append(formKey, f, f.name)
-  if (cvrFileType) formData.append('cvrFileType', cvrFileType)
   try {
-    await axios(
-      `/api${url}`,
+    // Get the signed s3 URL for the file upload
+    const params = cvrFileType
+      ? {
+          fileType: file.type,
+          cvrFileType,
+        }
+      : {
+          fileType: file.type,
+        }
+    const getUploadResponse = await axios(
+      `/api${url}/upload-url`,
       addCSRFToken({
-        method: 'PUT',
-        data: formData,
+        method: 'GET',
+        params,
+      }) as AxiosRequestConfig
+    )
+
+    // Upload the file to s3
+    const uploadFileFormData = new FormData()
+    Object.entries(getUploadResponse.data.fields).forEach(([key, value]) => {
+      uploadFileFormData.append(key, value as string)
+    })
+    uploadFileFormData.append('Content-Type', file.type)
+    uploadFileFormData.append('file', file, file.name)
+
+    await axios(
+      getUploadResponse.data.url,
+      addCSRFToken({
+        method: 'POST',
+        data: uploadFileFormData,
         onUploadProgress: progress =>
           trackProgress(progress.loaded / progress.total),
       }) as AxiosRequestConfig
     )
+
+    // Tell the server that the upload has finished to save the file path reference and kick off processing
+    const jsonData = {
+      fileName: file.name,
+      fileType: file.type,
+      ...(cvrFileType && { cvrFileType }),
+      storagePathKey: getUploadResponse.data.fields.key,
+    }
+
+    await axios(
+      `/api${url}/upload-complete`,
+      addCSRFToken({
+        method: 'POST',
+        data: jsonData,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }) as AxiosRequestConfig
+    )
     return true
   } catch (error) {
-    const { errors } = error.response.data
+    const { errors } = error.response ? error.response.data : error
     const message =
       errors && errors.length ? errors[0].message : error.response.statusText
     toast.error(message)
@@ -89,7 +130,7 @@ const useCSV = (
   dependencyFile?: IFileInfo | null
 ): [
   IFileInfo | null,
-  (csv: File[]) => Promise<boolean>,
+  (csv: File) => Promise<boolean>,
   () => Promise<boolean>
 ] => {
   const [csv, setCSV] = useState<IFileInfo | null>(null)
@@ -119,18 +160,18 @@ const useCSV = (
     dependencyNotProcessing,
   ])
 
-  const uploadCSVs = async (
-    files: File[],
+  const uploadCSV = async (
+    file: File,
     cvrFileType?: CvrFileType
   ): Promise<boolean> => {
     if (!shouldFetch) return false
-    setUpload({ files, progress: 0 })
+    setUpload({ file, progress: 0 })
     if (
-      await putCSVFiles(
+      await putCSVFile(
         url,
-        files,
+        file,
         formKey,
-        progress => setUpload({ files, progress }),
+        progress => setUpload({ file, progress }),
         cvrFileType
       )
     ) {
@@ -160,12 +201,12 @@ const useCSV = (
     shouldPoll ? 1000 : null
   )
 
-  return [csv && { ...csv, upload }, uploadCSVs, deleteCSV]
+  return [csv && { ...csv, upload }, uploadCSV, deleteCSV]
 }
 
 export const useJurisdictionsFile = (
   electionId: string
-): [IFileInfo | null, (csv: File[]) => Promise<boolean>] => {
+): [IFileInfo | null, (csv: File) => Promise<boolean>] => {
   const [csv, uploadCSV] = useCSV(
     `/election/${electionId}/jurisdiction/file`,
     'jurisdictions'
@@ -178,7 +219,7 @@ export const useStandardizedContestsFile = (
   electionId: string,
   auditType: IAuditSettings['auditType'],
   jurisdictionsFile?: IFileInfo | null
-): [IFileInfo | null, (csv: File[]) => Promise<boolean>] => {
+): [IFileInfo | null, (csv: File) => Promise<boolean>] => {
   const [csv, uploadCSV] = useCSV(
     `/election/${electionId}/standardized-contests/file`,
     'standardized-contests',
@@ -194,7 +235,7 @@ export const useBallotManifest = (
   jurisdictionId: string
 ): [
   IFileInfo | null,
-  (csv: File[]) => Promise<boolean>,
+  (csv: File) => Promise<boolean>,
   () => Promise<boolean>
 ] =>
   useCSV(
@@ -209,7 +250,7 @@ export const useBatchTallies = (
   ballotManifest: IFileInfo | null
 ): [
   IFileInfo | null,
-  (csv: File[]) => Promise<boolean>,
+  (csv: File) => Promise<boolean>,
   () => Promise<boolean>
 ] =>
   useCSV(
@@ -226,7 +267,7 @@ export const useCVRs = (
   ballotManifest: IFileInfo | null
 ): [
   IFileInfo | null,
-  (csv: File[]) => Promise<boolean>,
+  (csv: File) => Promise<boolean>,
   () => Promise<boolean>
 ] =>
   useCSV(

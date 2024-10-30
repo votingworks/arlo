@@ -179,14 +179,11 @@ def test_batch_inventory_happy_path(
     compare_json(json.loads(rv.data), {"systemType": CvrFileType.DOMINION})
 
     # Upload CVR file
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr",
-        data={
-            "cvr": (
-                io.BytesIO(TEST_CVR.encode()),
-                "cvrs.csv",
-            ),
-        },
+    rv = upload_batch_inventory_cvr(
+        client,
+        io.BytesIO(TEST_CVR.encode()),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
@@ -196,7 +193,10 @@ def test_batch_inventory_happy_path(
     compare_json(
         json.loads(rv.data),
         {
-            "file": {"name": "cvrs.csv", "uploadedAt": assert_is_date},
+            "file": {
+                "name": asserts_startswith("batchInventoryCvr"),
+                "uploadedAt": assert_is_date,
+            },
             "processing": {
                 "status": ProcessingStatus.PROCESSED,
                 "startedAt": assert_is_date,
@@ -207,14 +207,11 @@ def test_batch_inventory_happy_path(
     )
 
     # Upload tabulator status file
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/tabulator-status",
-        data={
-            "tabulatorStatus": (
-                io.BytesIO(TEST_TABULATOR_STATUS.encode()),
-                "tabulator-status.xml",
-            ),
-        },
+    rv = upload_batch_inventory_tabulator_status(
+        client,
+        io.BytesIO(TEST_TABULATOR_STATUS.encode()),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
@@ -224,7 +221,10 @@ def test_batch_inventory_happy_path(
     compare_json(
         json.loads(rv.data),
         {
-            "file": {"name": "tabulator-status.xml", "uploadedAt": assert_is_date},
+            "file": {
+                "name": asserts_startswith("tabulator-status"),
+                "uploadedAt": assert_is_date,
+            },
             "processing": {
                 "status": ProcessingStatus.PROCESSED,
                 "startedAt": assert_is_date,
@@ -271,14 +271,11 @@ def test_batch_inventory_happy_path(
     snapshot.assert_match(batch_tallies)
 
     # Upload manifest
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
-        data={
-            "manifest": (
-                io.BytesIO(ballot_manifest.encode()),
-                "ballot-manifest.csv",
-            ),
-        },
+    rv = upload_ballot_manifest(
+        client,
+        io.BytesIO(ballot_manifest.encode()),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
@@ -288,7 +285,10 @@ def test_batch_inventory_happy_path(
     compare_json(
         json.loads(rv.data),
         {
-            "file": {"name": "ballot-manifest.csv", "uploadedAt": assert_is_date},
+            "file": {
+                "name": asserts_startswith("manifest"),
+                "uploadedAt": assert_is_date,
+            },
             "processing": {
                 "status": ProcessingStatus.PROCESSED,
                 "startedAt": assert_is_date,
@@ -299,14 +299,11 @@ def test_batch_inventory_happy_path(
     )
 
     # Upload batch tallies
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
-        data={
-            "batchTallies": (
-                io.BytesIO(batch_tallies.encode()),
-                "batch-tallies.csv",
-            )
-        },
+    rv = upload_batch_tallies(
+        client,
+        io.BytesIO(batch_tallies.encode()),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
@@ -316,7 +313,10 @@ def test_batch_inventory_happy_path(
     compare_json(
         json.loads(rv.data),
         {
-            "file": {"name": "batch-tallies.csv", "uploadedAt": assert_is_date},
+            "file": {
+                "name": asserts_startswith("batchTallies"),
+                "uploadedAt": assert_is_date,
+            },
             "processing": {
                 "status": ProcessingStatus.PROCESSED,
                 "startedAt": assert_is_date,
@@ -390,14 +390,11 @@ def test_batch_inventory_happy_path_cvrs_with_leading_equal_signs(
     compare_json(json.loads(rv.data), {"systemType": CvrFileType.DOMINION})
 
     # Upload CVR file
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr",
-        data={
-            "cvr": (
-                io.BytesIO(TEST_CVRS_WITH_LEADING_EQUAL_SIGNS.encode()),
-                "cvrs.csv",
-            ),
-        },
+    rv = upload_batch_inventory_cvr(
+        client,
+        io.BytesIO(TEST_CVRS_WITH_LEADING_EQUAL_SIGNS.encode()),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
@@ -407,7 +404,10 @@ def test_batch_inventory_happy_path_cvrs_with_leading_equal_signs(
     compare_json(
         json.loads(rv.data),
         {
-            "file": {"name": "cvrs.csv", "uploadedAt": assert_is_date},
+            "file": {
+                "name": asserts_startswith("batchInventoryCvr"),
+                "uploadedAt": assert_is_date,
+            },
             "processing": {
                 "status": ProcessingStatus.PROCESSED,
                 "startedAt": assert_is_date,
@@ -418,14 +418,11 @@ def test_batch_inventory_happy_path_cvrs_with_leading_equal_signs(
     )
 
     # Upload tabulator status file
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/tabulator-status",
-        data={
-            "tabulatorStatus": (
-                io.BytesIO(TEST_TABULATOR_STATUS.encode()),
-                "tabulator-status.xml",
-            ),
-        },
+    rv = upload_batch_inventory_tabulator_status(
+        client,
+        io.BytesIO(TEST_TABULATOR_STATUS.encode()),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
@@ -435,7 +432,10 @@ def test_batch_inventory_happy_path_cvrs_with_leading_equal_signs(
     compare_json(
         json.loads(rv.data),
         {
-            "file": {"name": "tabulator-status.xml", "uploadedAt": assert_is_date},
+            "file": {
+                "name": asserts_startswith("tabulator-status"),
+                "uploadedAt": assert_is_date,
+            },
             "processing": {
                 "status": ProcessingStatus.PROCESSED,
                 "startedAt": assert_is_date,
@@ -482,14 +482,11 @@ def test_batch_inventory_happy_path_cvrs_with_leading_equal_signs(
     snapshot.assert_match(batch_tallies)
 
     # Upload manifest
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
-        data={
-            "manifest": (
-                io.BytesIO(ballot_manifest.encode()),
-                "ballot-manifest.csv",
-            ),
-        },
+    rv = upload_ballot_manifest(
+        client,
+        io.BytesIO(ballot_manifest.encode()),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
@@ -499,7 +496,10 @@ def test_batch_inventory_happy_path_cvrs_with_leading_equal_signs(
     compare_json(
         json.loads(rv.data),
         {
-            "file": {"name": "ballot-manifest.csv", "uploadedAt": assert_is_date},
+            "file": {
+                "name": asserts_startswith("manifest"),
+                "uploadedAt": assert_is_date,
+            },
             "processing": {
                 "status": ProcessingStatus.PROCESSED,
                 "startedAt": assert_is_date,
@@ -510,14 +510,11 @@ def test_batch_inventory_happy_path_cvrs_with_leading_equal_signs(
     )
 
     # Upload batch tallies
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
-        data={
-            "batchTallies": (
-                io.BytesIO(batch_tallies.encode()),
-                "batch-tallies.csv",
-            )
-        },
+    rv = upload_batch_tallies(
+        client,
+        io.BytesIO(batch_tallies.encode()),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
@@ -527,7 +524,10 @@ def test_batch_inventory_happy_path_cvrs_with_leading_equal_signs(
     compare_json(
         json.loads(rv.data),
         {
-            "file": {"name": "batch-tallies.csv", "uploadedAt": assert_is_date},
+            "file": {
+                "name": asserts_startswith("batchTallies"),
+                "uploadedAt": assert_is_date,
+            },
             "processing": {
                 "status": ProcessingStatus.PROCESSED,
                 "startedAt": assert_is_date,
@@ -601,14 +601,11 @@ def test_batch_inventory_happy_path_multi_contest_batch_comparison(
     compare_json(json.loads(rv.data), {"systemType": CvrFileType.DOMINION})
 
     # Upload CVR file
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr",
-        data={
-            "cvr": (
-                io.BytesIO(TEST_CVR.encode()),
-                "cvrs.csv",
-            ),
-        },
+    rv = upload_batch_inventory_cvr(
+        client,
+        io.BytesIO(TEST_CVR.encode()),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
@@ -618,7 +615,10 @@ def test_batch_inventory_happy_path_multi_contest_batch_comparison(
     compare_json(
         json.loads(rv.data),
         {
-            "file": {"name": "cvrs.csv", "uploadedAt": assert_is_date},
+            "file": {
+                "name": asserts_startswith("batchInventoryCvr"),
+                "uploadedAt": assert_is_date,
+            },
             "processing": {
                 "status": ProcessingStatus.PROCESSED,
                 "startedAt": assert_is_date,
@@ -629,14 +629,11 @@ def test_batch_inventory_happy_path_multi_contest_batch_comparison(
     )
 
     # Upload tabulator status file
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/tabulator-status",
-        data={
-            "tabulatorStatus": (
-                io.BytesIO(TEST_TABULATOR_STATUS.encode()),
-                "tabulator-status.xml",
-            ),
-        },
+    rv = upload_batch_inventory_tabulator_status(
+        client,
+        io.BytesIO(TEST_TABULATOR_STATUS.encode()),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
@@ -646,7 +643,10 @@ def test_batch_inventory_happy_path_multi_contest_batch_comparison(
     compare_json(
         json.loads(rv.data),
         {
-            "file": {"name": "tabulator-status.xml", "uploadedAt": assert_is_date},
+            "file": {
+                "name": asserts_startswith("tabulator-status"),
+                "uploadedAt": assert_is_date,
+            },
             "processing": {
                 "status": ProcessingStatus.PROCESSED,
                 "startedAt": assert_is_date,
@@ -693,14 +693,11 @@ def test_batch_inventory_happy_path_multi_contest_batch_comparison(
     snapshot.assert_match(batch_tallies)
 
     # Upload manifest
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
-        data={
-            "manifest": (
-                io.BytesIO(ballot_manifest.encode()),
-                "ballot-manifest.csv",
-            ),
-        },
+    rv = upload_ballot_manifest(
+        client,
+        io.BytesIO(ballot_manifest.encode()),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
@@ -710,7 +707,10 @@ def test_batch_inventory_happy_path_multi_contest_batch_comparison(
     compare_json(
         json.loads(rv.data),
         {
-            "file": {"name": "ballot-manifest.csv", "uploadedAt": assert_is_date},
+            "file": {
+                "name": asserts_startswith("manifest"),
+                "uploadedAt": assert_is_date,
+            },
             "processing": {
                 "status": ProcessingStatus.PROCESSED,
                 "startedAt": assert_is_date,
@@ -721,14 +721,11 @@ def test_batch_inventory_happy_path_multi_contest_batch_comparison(
     )
 
     # Upload batch tallies
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
-        data={
-            "batchTallies": (
-                io.BytesIO(batch_tallies.encode()),
-                "batch-tallies.csv",
-            )
-        },
+    rv = upload_batch_tallies(
+        client,
+        io.BytesIO(batch_tallies.encode()),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
@@ -738,7 +735,10 @@ def test_batch_inventory_happy_path_multi_contest_batch_comparison(
     compare_json(
         json.loads(rv.data),
         {
-            "file": {"name": "batch-tallies.csv", "uploadedAt": assert_is_date},
+            "file": {
+                "name": asserts_startswith("batchTallies"),
+                "uploadedAt": assert_is_date,
+            },
             "processing": {
                 "status": ProcessingStatus.PROCESSED,
                 "startedAt": assert_is_date,
@@ -826,14 +826,11 @@ def test_batch_inventory_invalid_file_uploads(
         ),
     ]
     for invalid_cvr, expected_error in invalid_cvrs:
-        rv = client.put(
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr",
-            data={
-                "cvr": (
-                    io.BytesIO(invalid_cvr.encode()),
-                    "cvrs.csv",
-                )
-            },
+        rv = upload_batch_inventory_cvr(
+            client,
+            io.BytesIO(invalid_cvr.encode()),
+            election_id,
+            jurisdiction_ids[0],
         )
         assert_ok(rv)
 
@@ -850,14 +847,11 @@ def test_batch_inventory_invalid_file_uploads(
         assert_ok(rv)
 
     # Upload valid CVR file
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr",
-        data={
-            "cvr": (
-                io.BytesIO(TEST_CVR.encode()),
-                "cvrs.csv",
-            ),
-        },
+    rv = upload_batch_inventory_cvr(
+        client,
+        io.BytesIO(TEST_CVR.encode()),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
@@ -868,18 +862,15 @@ def test_batch_inventory_invalid_file_uploads(
     assert cvr["processing"]["status"] == ProcessingStatus.PROCESSED
 
     # Upload tabulator status file with missing tabulator
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/tabulator-status",
-        data={
-            "tabulatorStatus": (
-                io.BytesIO(
-                    TEST_TABULATOR_STATUS.replace(
-                        '<tb id="1" tid="TABULATOR1" name="Tabulator 1" />', ""
-                    ).encode()
-                ),
-                "tabulator-status.xml",
-            ),
-        },
+    rv = upload_batch_inventory_tabulator_status(
+        client,
+        io.BytesIO(
+            TEST_TABULATOR_STATUS.replace(
+                '<tb id="1" tid="TABULATOR1" name="Tabulator 1" />', ""
+            ).encode()
+        ),
+        election_id,
+        jurisdiction_ids[0],
     )
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/tabulator-status"
@@ -897,25 +888,22 @@ def test_batch_inventory_invalid_file_uploads(
     )
     assert_ok(rv)
 
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr",
-        data={
-            "cvr": (
-                io.BytesIO(
-                    TEST_CVR.replace(
-                        """1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,1,1,1,0
+    rv = upload_batch_inventory_cvr(
+        client,
+        io.BytesIO(
+            TEST_CVR.replace(
+                """1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,1,1,1,0
 2,TABULATOR1,BATCH1,2,1-1-2,Election Day,12345,COUNTY,1,0,1,0,1
 3,TABULATOR1,BATCH1,3,1-1-3,Election Day,12345,COUNTY,0,1,1,1,0
 4,TABULATOR1,BATCH2,1,1-2-1,Election Day,12345,COUNTY,1,0,1,0,1
 5,TABULATOR1,BATCH2,2,1-2-2,Election Day,12345,COUNTY,0,1,1,1,0
 6,TABULATOR1,BATCH2,3,1-2-3,Election Day,12345,COUNTY,1,0,1,0,1
 """,
-                        "",
-                    ).encode()
-                ),
-                "cvrs.csv",
-            ),
-        },
+                "",
+            ).encode()
+        ),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
@@ -967,14 +955,11 @@ def test_batch_inventory_missing_data_multi_contest_batch_comparison(
         ),
     ]
     for invalid_cvr, expected_error in invalid_cvrs:
-        rv = client.put(
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr",
-            data={
-                "cvr": (
-                    io.BytesIO(invalid_cvr.encode()),
-                    "cvrs.csv",
-                )
-            },
+        rv = upload_batch_inventory_cvr(
+            client,
+            io.BytesIO(invalid_cvr.encode()),
+            election_id,
+            jurisdiction_ids[0],
         )
         assert_ok(rv)
 
@@ -1011,24 +996,19 @@ def test_batch_inventory_excel_tabulator_status_file(
     assert_ok(rv)
 
     # Upload CVR file
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr",
-        data={
-            "cvr": (
-                io.BytesIO(TEST_CVR.encode()),
-                "cvrs.csv",
-            ),
-        },
+    rv = upload_batch_inventory_cvr(
+        client,
+        io.BytesIO(TEST_CVR.encode()),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
     # Upload tabulator status "To Excel" version
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/tabulator-status",
-        data={
-            "tabulatorStatus": (
-                io.BytesIO(
-                    b"""<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" xmlns:html="http://www.w3.org/TR/REC-html40" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+    rv = upload_batch_inventory_tabulator_status(
+        client,
+        io.BytesIO(
+            b"""<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" xmlns:html="http://www.w3.org/TR/REC-html40" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
 <Styles>
 <Style ss:ID="Number">
 <NumberFormat ss:Format="###,###,##0"/>
@@ -1147,10 +1127,9 @@ def test_batch_inventory_excel_tabulator_status_file(
 </Worksheet>
 </Workbook>
 """
-                ),
-                "tabulator-status.xml",
-            ),
-        },
+        ),
+        election_id,
+        jurisdiction_ids[0],
     )
 
     rv = client.get(
@@ -1159,7 +1138,10 @@ def test_batch_inventory_excel_tabulator_status_file(
     compare_json(
         json.loads(rv.data),
         {
-            "file": {"name": "tabulator-status.xml", "uploadedAt": assert_is_date},
+            "file": {
+                "name": asserts_startswith("tabulator-status"),
+                "uploadedAt": assert_is_date,
+            },
             "processing": {
                 "status": ProcessingStatus.PROCESSED,
                 "startedAt": assert_is_date,
@@ -1195,24 +1177,19 @@ def test_batch_inventory_wrong_tabulator_status_file(
     assert_ok(rv)
 
     # Upload CVR file
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr",
-        data={
-            "cvr": (
-                io.BytesIO(TEST_CVR.encode()),
-                "cvrs.csv",
-            ),
-        },
+    rv = upload_batch_inventory_cvr(
+        client,
+        io.BytesIO(TEST_CVR.encode()),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
     # Upload tabulator status HTML version
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/tabulator-status",
-        data={
-            "tabulatorStatus": (
-                io.BytesIO(
-                    b"""<html xmlns:msxsl="urn:schemas-microsoft-com:xslt" xmlns:user="http://www.contoso.com">
+    rv = upload_batch_inventory_tabulator_status(
+        client,
+        io.BytesIO(
+            b"""<html xmlns:msxsl="urn:schemas-microsoft-com:xslt" xmlns:user="http://www.contoso.com">
   <head>
     <META http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Tabulator Status</title>
@@ -1293,10 +1270,9 @@ p { line-height=100%}
   </body>
 </html>
 """
-                ),
-                "tabulator-status.xml",
-            ),
-        },
+        ),
+        election_id,
+        jurisdiction_ids[0],
     )
 
     rv = client.get(
@@ -1329,26 +1305,20 @@ def test_batch_inventory_undo_sign_off(
     assert_ok(rv)
 
     # Upload CVR file
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr",
-        data={
-            "cvr": (
-                io.BytesIO(TEST_CVR.encode()),
-                "cvrs.csv",
-            ),
-        },
+    rv = upload_batch_inventory_cvr(
+        client,
+        io.BytesIO(TEST_CVR.encode()),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
     # Upload tabulator status file
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/tabulator-status",
-        data={
-            "tabulatorStatus": (
-                io.BytesIO(TEST_TABULATOR_STATUS.encode()),
-                "tabulator-status.xml",
-            ),
-        },
+    rv = upload_batch_inventory_tabulator_status(
+        client,
+        io.BytesIO(TEST_TABULATOR_STATUS.encode()),
+        election_id,
+        jurisdiction_ids[0],
     )
 
     # Sign off
@@ -1390,26 +1360,20 @@ def test_batch_inventory_delete_cvr_after_sign_off(
     assert_ok(rv)
 
     # Upload CVR file
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr",
-        data={
-            "cvr": (
-                io.BytesIO(TEST_CVR.encode()),
-                "cvrs.csv",
-            ),
-        },
+    rv = upload_batch_inventory_cvr(
+        client,
+        io.BytesIO(TEST_CVR.encode()),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
     # Upload tabulator status file
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/tabulator-status",
-        data={
-            "tabulatorStatus": (
-                io.BytesIO(TEST_TABULATOR_STATUS.encode()),
-                "tabulator-status.xml",
-            ),
-        },
+    rv = upload_batch_inventory_tabulator_status(
+        client,
+        io.BytesIO(TEST_TABULATOR_STATUS.encode()),
+        election_id,
+        jurisdiction_ids[0],
     )
 
     # Sign off
@@ -1451,26 +1415,20 @@ def test_batch_inventory_delete_tabulator_status_after_sign_off(
     assert_ok(rv)
 
     # Upload CVR file
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr",
-        data={
-            "cvr": (
-                io.BytesIO(TEST_CVR.encode()),
-                "cvrs.csv",
-            ),
-        },
+    rv = upload_batch_inventory_cvr(
+        client,
+        io.BytesIO(TEST_CVR.encode()),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
     # Upload tabulator status file
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/tabulator-status",
-        data={
-            "tabulatorStatus": (
-                io.BytesIO(TEST_TABULATOR_STATUS.encode()),
-                "tabulator-status.xml",
-            ),
-        },
+    rv = upload_batch_inventory_tabulator_status(
+        client,
+        io.BytesIO(TEST_TABULATOR_STATUS.encode()),
+        election_id,
+        jurisdiction_ids[0],
     )
 
     # Sign off
@@ -1510,14 +1468,11 @@ def test_batch_inventory_upload_cvr_before_contests(
     )
     assert_ok(rv)
 
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr",
-        data={
-            "cvr": (
-                io.BytesIO(TEST_CVR.encode()),
-                "cvrs.csv",
-            ),
-        },
+    rv = upload_batch_inventory_cvr(
+        client,
+        io.BytesIO(TEST_CVR.encode()),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert json.loads(rv.data) == {
         "errors": [
@@ -1547,14 +1502,11 @@ def test_batch_inventory_upload_tabulator_status_before_cvr(
     )
     assert_ok(rv)
 
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/tabulator-status",
-        data={
-            "tabulatorStatus": (
-                io.BytesIO(TEST_TABULATOR_STATUS.encode()),
-                "tabulator-status.xml",
-            ),
-        },
+    rv = upload_batch_inventory_tabulator_status(
+        client,
+        io.BytesIO(TEST_TABULATOR_STATUS.encode()),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert json.loads(rv.data) == {
         "errors": [
@@ -1564,3 +1516,87 @@ def test_batch_inventory_upload_tabulator_status_before_cvr(
             }
         ]
     }
+
+
+def test_batch_inventory_cvr_get_upload_url_missing_file_type(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr/upload-url"
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "Missing expected query parameter: fileType",
+            }
+        ]
+    }
+
+
+def test_batch_inventory_cvr_get_upload_url(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr/upload-url",
+        query_string={"fileType": "text/csv"},
+    )
+    assert rv.status_code == 200
+
+    response_data = json.loads(rv.data)
+    expected_url = "/api/file-upload"
+
+    assert response_data["url"] == expected_url
+    assert response_data["fields"]["key"].startswith(
+        f"audits/{election_id}/jurisdictions/{jurisdiction_ids[0]}/batch-inventory-cvrs_"
+    )
+    assert response_data["fields"]["key"].endswith(".csv")
+
+
+def test_batch_inventory_tabulator_status_get_upload_url_missing_file_type(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/tabulator-status/upload-url"
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "Missing expected query parameter: fileType",
+            }
+        ]
+    }
+
+
+def test_batch_inventory_tabulator_status_get_upload_url(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/tabulator-status/upload-url",
+        query_string={"fileType": "application/xml"},
+    )
+    assert rv.status_code == 200
+
+    response_data = json.loads(rv.data)
+    expected_url = "/api/file-upload"
+
+    assert response_data["url"] == expected_url
+    assert response_data["fields"]["key"].startswith(
+        f"audits/{election_id}/jurisdictions/{jurisdiction_ids[0]}/batch-inventory-tabulator-status_"
+    )
+    assert response_data["fields"]["key"].endswith(".xml")

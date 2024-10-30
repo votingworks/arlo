@@ -19,32 +19,29 @@ def test_hybrid_manifest(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
-        data={
-            "manifest": (
-                io.BytesIO(
-                    b"Container,Tabulator,Batch Name,Number of Ballots,CVR\n"
-                    b"CONTAINER1,TABULATOR1,BATCH1,50,Y\n"
-                    b"CONTAINER1,TABULATOR1,BATCH2,50,Y\n"
-                    b"CONTAINER1,TABULATOR2,BATCH1,50,Y\n"
-                    b"CONTAINER1,TABULATOR2,BATCH2,50,Y\n"
-                    b"CONTAINER2,TABULATOR1,BATCH3,50,Y\n"
-                    b"CONTAINER2,TABULATOR1,BATCH4,50,Y\n"
-                    b"CONTAINER2,TABULATOR2,BATCH3,50,Y\n"
-                    b"CONTAINER2,TABULATOR2,BATCH4,50,Y\n"
-                    b"CONTAINER3,TABULATOR1,BATCH5,50,N\n"
-                    b"CONTAINER3,TABULATOR1,BATCH6,50,N\n"
-                    b"CONTAINER3,TABULATOR2,BATCH5,50,N\n"
-                    b"CONTAINER3,TABULATOR2,BATCH6,50,N\n"
-                    b"CONTAINER4,TABULATOR1,BATCH7,50,N\n"
-                    b"CONTAINER4,TABULATOR1,BATCH8,50,N\n"
-                    b"CONTAINER4,TABULATOR2,BATCH7,50,N\n"
-                    b"CONTAINER4,TABULATOR2,BATCH8,50,N\n"
-                ),
-                "manifest.csv",
-            )
-        },
+    rv = upload_ballot_manifest(
+        client,
+        io.BytesIO(
+            b"Container,Tabulator,Batch Name,Number of Ballots,CVR\n"
+            b"CONTAINER1,TABULATOR1,BATCH1,50,Y\n"
+            b"CONTAINER1,TABULATOR1,BATCH2,50,Y\n"
+            b"CONTAINER1,TABULATOR2,BATCH1,50,Y\n"
+            b"CONTAINER1,TABULATOR2,BATCH2,50,Y\n"
+            b"CONTAINER2,TABULATOR1,BATCH3,50,Y\n"
+            b"CONTAINER2,TABULATOR1,BATCH4,50,Y\n"
+            b"CONTAINER2,TABULATOR2,BATCH3,50,Y\n"
+            b"CONTAINER2,TABULATOR2,BATCH4,50,Y\n"
+            b"CONTAINER3,TABULATOR1,BATCH5,50,N\n"
+            b"CONTAINER3,TABULATOR1,BATCH6,50,N\n"
+            b"CONTAINER3,TABULATOR2,BATCH5,50,N\n"
+            b"CONTAINER3,TABULATOR2,BATCH6,50,N\n"
+            b"CONTAINER4,TABULATOR1,BATCH7,50,N\n"
+            b"CONTAINER4,TABULATOR1,BATCH8,50,N\n"
+            b"CONTAINER4,TABULATOR2,BATCH7,50,N\n"
+            b"CONTAINER4,TABULATOR2,BATCH8,50,N\n"
+        ),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
@@ -74,17 +71,14 @@ def test_hybrid_manifest_missing_cvr_column(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
-        data={
-            "manifest": (
-                io.BytesIO(
-                    b"Container,Tabulator,Batch Name,Number of Ballots\n"
-                    b"CONTAINER1,TABULATOR1,BATCH1,50\n"
-                ),
-                "manifest.csv",
-            )
-        },
+    rv = upload_ballot_manifest(
+        client,
+        io.BytesIO(
+            b"Container,Tabulator,Batch Name,Number of Ballots\n"
+            b"CONTAINER1,TABULATOR1,BATCH1,50\n"
+        ),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
@@ -95,7 +89,7 @@ def test_hybrid_manifest_missing_cvr_column(
         json.loads(rv.data),
         {
             "file": {
-                "name": "manifest.csv",
+                "name": asserts_startswith("manifest"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -117,17 +111,14 @@ def test_hybrid_manifest_missing_cvr_column(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
-        data={
-            "manifest": (
-                io.BytesIO(
-                    b"Container,Tabulator,Batch Name,Number of Ballots,CVR\n"
-                    b"CONTAINER1,TABULATOR1,BATCH1,50,yy\n"
-                ),
-                "manifest.csv",
-            )
-        },
+    rv = upload_ballot_manifest(
+        client,
+        io.BytesIO(
+            b"Container,Tabulator,Batch Name,Number of Ballots,CVR\n"
+            b"CONTAINER1,TABULATOR1,BATCH1,50,yy\n"
+        ),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
@@ -138,7 +129,7 @@ def test_hybrid_manifest_missing_cvr_column(
         json.loads(rv.data),
         {
             "file": {
-                "name": "manifest.csv",
+                "name": asserts_startswith("manifest"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {

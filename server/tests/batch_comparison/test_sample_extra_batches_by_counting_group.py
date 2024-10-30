@@ -30,45 +30,37 @@ def manifests(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
-        data={
-            "manifest": (
-                # Mostly HMPB counting groups
-                io.BytesIO(
-                    b"Container,Batch Name,Number of Ballots\n"
-                    b"Absentee by Mail,Batch 1,500\n"
-                    b"Absentee by Mail,Batch 2,500\n"
-                    b"Absentee by Mail,Batch 3,500\n"
-                    b"Absentee by Mail,Batch 4,500\n"
-                    b"Provisional,Batch 5,100\n"
-                    b"Provisional,Batch 6,100\n"
-                    b"Provisional,Batch 7,100\n"
-                    b"Provisional,Batch 8,100\n"
-                    b"Election Day,Batch 9,100\n"
-                ),
-                "manifest.csv",
-            )
-        },
+    rv = upload_ballot_manifest(
+        client,
+        io.BytesIO(
+            b"Container,Batch Name,Number of Ballots\n"
+            b"Absentee by Mail,Batch 1,500\n"
+            b"Absentee by Mail,Batch 2,500\n"
+            b"Absentee by Mail,Batch 3,500\n"
+            b"Absentee by Mail,Batch 4,500\n"
+            b"Provisional,Batch 5,100\n"
+            b"Provisional,Batch 6,100\n"
+            b"Provisional,Batch 7,100\n"
+            b"Provisional,Batch 8,100\n"
+            b"Election Day,Batch 9,100\n"
+        ),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/ballot-manifest",
-        data={
-            "manifest": (
-                # Mostly BMD counting groups
-                io.BytesIO(
-                    b"Container,Batch Name,Number of Ballots\n"
-                    b"Election Day,Batch 1,500\n"
-                    b"Elections Day,Batch 2,500\n"
-                    b"Advance Voting,Batch 3,500\n"
-                    b"Advanced Voting,Batch 4,500\n"
-                    b"Advanced Voting,Batch 5,250\n"
-                    b"Provisional,Batch 6,250\n"
-                ),
-                "manifest.csv",
-            )
-        },
+    rv = upload_ballot_manifest(
+        client,
+        io.BytesIO(
+            b"Container,Batch Name,Number of Ballots\n"
+            b"Election Day,Batch 1,500\n"
+            b"Elections Day,Batch 2,500\n"
+            b"Advance Voting,Batch 3,500\n"
+            b"Advanced Voting,Batch 4,500\n"
+            b"Advanced Voting,Batch 5,250\n"
+            b"Provisional,Batch 6,250\n"
+        ),
+        election_id,
+        jurisdiction_ids[1],
     )
     assert_ok(rv)
 
@@ -96,15 +88,10 @@ def batch_tallies(
         b"Batch 8,100,50,50\n"
         b"Batch 9,100,50,50\n"
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
-        data={
-            "batchTallies": (
-                io.BytesIO(batch_tallies_file),
-                "batchTallies.csv",
-            )
-        },
+    rv = upload_batch_tallies(
+        client, io.BytesIO(batch_tallies_file), election_id, jurisdiction_ids[0]
     )
+    assert_ok(rv)
     batch_tallies_file = (
         b"Batch Name,candidate 1,candidate 2,candidate 3\n"
         b"Batch 1,500,250,250\n"
@@ -114,14 +101,11 @@ def batch_tallies(
         b"Batch 5,100,50,50\n"
         b"Batch 6,100,50,50\n"
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/batch-tallies",
-        data={
-            "batchTallies": (
-                io.BytesIO(batch_tallies_file),
-                "batchTallies.csv",
-            )
-        },
+    rv = upload_batch_tallies(
+        client,
+        io.BytesIO(batch_tallies_file),
+        election_id,
+        jurisdiction_ids[1],
     )
     assert_ok(rv)
 
@@ -309,45 +293,37 @@ def test_sample_extra_batches_with_no_extra_batches_to_sample(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
-        data={
-            "manifest": (
-                # Only HMPB counting groups
-                io.BytesIO(
-                    b"Container,Batch Name,Number of Ballots\n"
-                    b"Absentee by Mail,Batch 1,500\n"
-                    b"Absentee by Mail,Batch 2,500\n"
-                    b"Absentee by Mail,Batch 3,500\n"
-                    b"Absentee by Mail,Batch 4,500\n"
-                    b"Provisional,Batch 5,100\n"
-                    b"Provisional,Batch 6,100\n"
-                    b"Provisional,Batch 7,100\n"
-                    b"Provisional,Batch 8,100\n"
-                    b"Provisional,Batch 9,100\n"
-                ),
-                "manifest.csv",
-            )
-        },
+    rv = upload_ballot_manifest(
+        client,
+        io.BytesIO(
+            b"Container,Batch Name,Number of Ballots\n"
+            b"Absentee by Mail,Batch 1,500\n"
+            b"Absentee by Mail,Batch 2,500\n"
+            b"Absentee by Mail,Batch 3,500\n"
+            b"Absentee by Mail,Batch 4,500\n"
+            b"Provisional,Batch 5,100\n"
+            b"Provisional,Batch 6,100\n"
+            b"Provisional,Batch 7,100\n"
+            b"Provisional,Batch 8,100\n"
+            b"Provisional,Batch 9,100\n"
+        ),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/ballot-manifest",
-        data={
-            "manifest": (
-                # Only BMD counting groups
-                io.BytesIO(
-                    b"Container,Batch Name,Number of Ballots\n"
-                    b"Election Day,Batch 1,500\n"
-                    b"Election Day,Batch 2,500\n"
-                    b"Advanced Voting,Batch 3,500\n"
-                    b"Advanced Voting,Batch 4,500\n"
-                    b"Advanced Voting,Batch 5,250\n"
-                    b"Advanced Voting,Batch 6,250\n"
-                ),
-                "manifest.csv",
-            )
-        },
+    rv = upload_ballot_manifest(
+        client,
+        io.BytesIO(
+            b"Container,Batch Name,Number of Ballots\n"
+            b"Election Day,Batch 1,500\n"
+            b"Election Day,Batch 2,500\n"
+            b"Advanced Voting,Batch 3,500\n"
+            b"Advanced Voting,Batch 4,500\n"
+            b"Advanced Voting,Batch 5,250\n"
+            b"Advanced Voting,Batch 6,250\n"
+        ),
+        election_id,
+        jurisdiction_ids[1],
     )
     assert_ok(rv)
 
@@ -413,25 +389,22 @@ def test_sample_extra_batches_min_percentage_of_jurisdiction_ballots_selected(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
-        data={
-            "manifest": (
-                io.BytesIO(
-                    b"Container,Batch Name,Number of Ballots\n"
-                    b"Absentee by Mail,Batch 1,500\n"  # HMPB group
-                    b"Election Day,Batch 2,500\n"
-                    b"Election Day,Batch 3,500\n"
-                    b"Election Day,Batch 4,500\n"
-                    b"Election Day,Batch 5,100\n"
-                    b"Election Day,Batch 6,100\n"
-                    b"Election Day,Batch 7,100\n"
-                    b"Election Day,Batch 8,100\n"
-                    b"Election Day,Batch 9,1000000\n"  # Must be selected to hit the 2% selection threshold
-                ),
-                "manifest.csv",
-            )
-        },
+    rv = upload_ballot_manifest(
+        client,
+        io.BytesIO(
+            b"Container,Batch Name,Number of Ballots\n"
+            b"Absentee by Mail,Batch 1,500\n"  # HMPB group
+            b"Election Day,Batch 2,500\n"
+            b"Election Day,Batch 3,500\n"
+            b"Election Day,Batch 4,500\n"
+            b"Election Day,Batch 5,100\n"
+            b"Election Day,Batch 6,100\n"
+            b"Election Day,Batch 7,100\n"
+            b"Election Day,Batch 8,100\n"
+            b"Election Day,Batch 9,1000000\n"  # Must be selected to hit the 2% selection threshold
+        ),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
@@ -489,25 +462,22 @@ def test_sample_extra_batches_hmpb_and_bmd_groups_selected(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
-        data={
-            "manifest": (
-                io.BytesIO(
-                    b"Container,Batch Name,Number of Ballots\n"
-                    b"Absentee by Mail,Batch 1,500\n"  # HMPB group
-                    b"Absentee by Mail,Batch 2,500\n"
-                    b"Election Day,Batch 3,500\n"  # BMD group
-                    b"Election Day,Batch 4,500\n"
-                    b"Election Day,Batch 5,100\n"
-                    b"Election Day,Batch 6,100\n"
-                    b"Election Day,Batch 7,100\n"
-                    b"Election Day,Batch 8,100\n"
-                    b"Election Day,Batch 9,100\n"
-                ),
-                "manifest.csv",
-            )
-        },
+    rv = upload_ballot_manifest(
+        client,
+        io.BytesIO(
+            b"Container,Batch Name,Number of Ballots\n"
+            b"Absentee by Mail,Batch 1,500\n"  # HMPB group
+            b"Absentee by Mail,Batch 2,500\n"
+            b"Election Day,Batch 3,500\n"  # BMD group
+            b"Election Day,Batch 4,500\n"
+            b"Election Day,Batch 5,100\n"
+            b"Election Day,Batch 6,100\n"
+            b"Election Day,Batch 7,100\n"
+            b"Election Day,Batch 8,100\n"
+            b"Election Day,Batch 9,100\n"
+        ),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
@@ -588,17 +558,14 @@ def test_sample_extra_batches_with_invalid_counting_group(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
-        data={
-            "manifest": (
-                io.BytesIO(
-                    b"Container,Batch Name,Number of Ballots\n"
-                    b"Invalid Counting Group,Batch 1,500\n"
-                ),
-                "manifest.csv",
-            )
-        },
+    rv = upload_ballot_manifest(
+        client,
+        io.BytesIO(
+            b"Container,Batch Name,Number of Ballots\n"
+            b"Invalid Counting Group,Batch 1,500\n"
+        ),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
@@ -609,7 +576,7 @@ def test_sample_extra_batches_with_invalid_counting_group(
         json.loads(rv.data),
         {
             "file": {
-                "name": "manifest.csv",
+                "name": asserts_startswith("manifest"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {

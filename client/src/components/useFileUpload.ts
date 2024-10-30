@@ -57,21 +57,71 @@ export const useUploadedFile = (
   })
 }
 
+type CompleteFileUploadArgs = {
+  file: File
+  cvrFileType?: CvrFileType
+}
+
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const useUploadFiles = (key: string[], url: string) => {
   const [progress, setProgress] = useState<number>()
 
-  const putFiles = async (formData: FormData) => {
+  const completeFileUpload = async ({
+    file,
+    cvrFileType,
+  }: CompleteFileUploadArgs): Promise<void> => {
     try {
-      await axios(
-        url,
+      // Get the signed s3 URL for the file upload
+      const params = cvrFileType
+        ? {
+            fileType: file.type,
+            cvrFileType,
+          }
+        : {
+            fileType: file.type,
+          }
+      const getUploadResponse = await axios(
+        `${url}/upload-url`,
         addCSRFToken({
-          method: 'PUT',
-          data: formData,
-          onUploadProgress: progressEvent =>
-            setProgress(progressEvent.loaded / progressEvent.total),
+          method: 'GET',
+          params,
         }) as AxiosRequestConfig
       )
+
+      // Upload the file to s3
+      const uploadFileFormData = new FormData()
+      Object.entries(getUploadResponse.data.fields).forEach(([k, v]) => {
+        uploadFileFormData.append(k, v as string)
+      })
+      uploadFileFormData.append('Content-Type', file.type)
+      uploadFileFormData.append('file', file, file.name)
+
+      await axios(
+        getUploadResponse.data.url,
+        addCSRFToken({
+          method: 'POST',
+          data: uploadFileFormData,
+          onUploadProgress: p => setProgress(p.loaded / p.total),
+        }) as AxiosRequestConfig
+      )
+
+      const jsonData = {
+        fileName: file.name,
+        fileType: file.type,
+        ...(cvrFileType && { cvrFileType }),
+        storagePathKey: getUploadResponse.data.fields.key,
+      }
+      await axios(
+        `${url}/upload-complete`,
+        addCSRFToken({
+          method: 'POST',
+          data: jsonData,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }) as AxiosRequestConfig
+      )
+      return
     } catch (error) {
       const { errors } = error.response.data
       const message =
@@ -85,7 +135,7 @@ export const useUploadFiles = (key: string[], url: string) => {
   const queryClient = useQueryClient()
 
   return {
-    ...useMutation<void, ApiError, FormData>(putFiles, {
+    ...useMutation<void, ApiError, CompleteFileUploadArgs>(completeFileUpload, {
       onSuccess: () => queryClient.invalidateQueries(key),
     }),
     progress,
@@ -121,9 +171,7 @@ export const useJurisdictionsFile = (electionId: string): IFileUpload => {
       },
     }),
     uploadFiles: async (files: File[]) => {
-      const formData = new FormData()
-      formData.append('jurisdictions', files[0])
-      await uploadFiles.mutateAsync(formData)
+      await uploadFiles.mutateAsync({ file: files[0] })
     },
     uploadProgress: uploadFiles.progress,
     deleteFile: () => deleteFile.mutateAsync(),
@@ -151,9 +199,7 @@ export const useStandardizedContestsFile = (
       },
     }),
     uploadFiles: async (files: File[]) => {
-      const formData = new FormData()
-      formData.append('standardized-contests', files[0])
-      await uploadFiles.mutateAsync(formData)
+      await uploadFiles.mutateAsync({ file: files[0] })
     },
     uploadProgress: uploadFiles.progress,
     deleteFile: () => deleteFile.mutateAsync(),
@@ -189,9 +235,7 @@ export const useBallotManifest = (
       },
     }),
     uploadFiles: files => {
-      const formData = new FormData()
-      formData.append('manifest', files[0], files[0].name)
-      return uploadFiles.mutateAsync(formData)
+      return uploadFiles.mutateAsync({ file: files[0] })
     },
     uploadProgress: uploadFiles.progress,
     deleteFile: () => deleteFile.mutateAsync(),
@@ -222,9 +266,7 @@ export const useBatchTallies = (
       },
     }),
     uploadFiles: files => {
-      const formData = new FormData()
-      formData.append('batchTallies', files[0], files[0].name)
-      return uploadFiles.mutateAsync(formData)
+      return uploadFiles.mutateAsync({ file: files[0] })
     },
     uploadProgress: uploadFiles.progress,
     deleteFile: () => deleteFile.mutateAsync(),
@@ -259,12 +301,7 @@ export const useCVRs = (
       },
     }),
     uploadFiles: (files, cvrFileType) => {
-      const formData = new FormData()
-      for (const file of files) {
-        formData.append('cvrs', file, file.name)
-      }
-      formData.append('cvrFileType', cvrFileType)
-      return uploadFiles.mutateAsync(formData)
+      return uploadFiles.mutateAsync({ file: files[0], cvrFileType })
     },
     uploadProgress: uploadFiles.progress,
     deleteFile: () => deleteFile.mutateAsync(),

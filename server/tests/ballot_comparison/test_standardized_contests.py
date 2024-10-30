@@ -15,14 +15,10 @@ def test_upload_standardized_contests(
         'Contest 2,"J1, J3"\n'
         "Contest 3,J2 \n"
     )
-    rv = client.put(
-        f"/api/election/{election_id}/standardized-contests/file",
-        data={
-            "standardized-contests": (
-                io.BytesIO(standardized_contests_file.encode()),
-                "standardized-contests.csv",
-            )
-        },
+    rv = upload_standardized_contests(
+        client,
+        io.BytesIO(standardized_contests_file.encode()),
+        election_id,
     )
     assert_ok(rv)
 
@@ -31,7 +27,7 @@ def test_upload_standardized_contests(
         json.loads(rv.data),
         {
             "file": {
-                "name": "standardized-contests.csv",
+                "name": asserts_startswith("standardizedContests"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -54,9 +50,8 @@ def test_upload_standardized_contests(
     ]
 
     rv = client.get(f"/api/election/{election_id}/standardized-contests/file/csv")
-    assert (
-        rv.headers["Content-Disposition"]
-        == 'attachment; filename="standardized-contests.csv"'
+    assert rv.headers["Content-Disposition"].startswith(
+        'attachment; filename="standardizedContests'
     )
     assert rv.data.decode("utf-8") == standardized_contests_file
 
@@ -71,19 +66,15 @@ def test_download_standardized_contests_file_before_upload(
 def test_standardized_contests_replace(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 ):
-    rv = client.put(
-        f"/api/election/{election_id}/standardized-contests/file",
-        data={
-            "standardized-contests": (
-                io.BytesIO(
-                    b"Contest Name,Jurisdictions\n"
-                    b"Contest 1,all\n"
-                    b'Contest 2,"J1, J3"\n'
-                    b"Contest 3,J2 \n"
-                ),
-                "standardized-contests.csv",
-            )
-        },
+    rv = upload_standardized_contests(
+        client,
+        io.BytesIO(
+            b"Contest Name,Jurisdictions\n"
+            b"Contest 1,all\n"
+            b'Contest 2,"J1, J3"\n'
+            b"Contest 3,J2 \n"
+        ),
+        election_id,
     )
     assert_ok(rv)
 
@@ -91,14 +82,10 @@ def test_standardized_contests_replace(
     file_id = election.standardized_contests_file_id
     standardized_contests = election.standardized_contests
 
-    rv = client.put(
-        f"/api/election/{election_id}/standardized-contests/file",
-        data={
-            "standardized-contests": (
-                io.BytesIO(b"Contest Name,Jurisdictions\n" b"Contest 4,all\n"),
-                "standardized-contests.csv",
-            )
-        },
+    rv = upload_standardized_contests(
+        client,
+        io.BytesIO(b"Contest Name,Jurisdictions\n" b"Contest 4,all\n"),
+        election_id,
     )
     assert_ok(rv)
 
@@ -120,17 +107,13 @@ def test_standardized_contests_bad_jurisdiction(
     election_id: str,
     jurisdiction_ids: List[str],  # pylint: disable=unused-argument
 ):
-    rv = client.put(
-        f"/api/election/{election_id}/standardized-contests/file",
-        data={
-            "standardized-contests": (
-                io.BytesIO(
-                    b"Contest Name,Jurisdictions\n"
-                    b'Contest 1,"J1,not a real jurisdiction,another bad one"\n"'
-                ),
-                "standardized-contests.csv",
-            )
-        },
+    rv = upload_standardized_contests(
+        client,
+        io.BytesIO(
+            b"Contest Name,Jurisdictions\n"
+            b'Contest 1,"J1,not a real jurisdiction,another bad one"\n"'
+        ),
+        election_id,
     )
     assert_ok(rv)
 
@@ -139,7 +122,7 @@ def test_standardized_contests_bad_jurisdiction(
         json.loads(rv.data),
         {
             "file": {
-                "name": "standardized-contests.csv",
+                "name": asserts_startswith("standardizedContests"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -160,14 +143,10 @@ def test_standardized_contests_no_jurisdictions(
     election_id: str,
     jurisdiction_ids: List[str],  # pylint: disable=unused-argument
 ):
-    rv = client.put(
-        f"/api/election/{election_id}/standardized-contests/file",
-        data={
-            "standardized-contests": (
-                io.BytesIO(b"Contest Name,Jurisdictions\n" b"Contest 1,"),
-                "standardized-contests.csv",
-            )
-        },
+    rv = upload_standardized_contests(
+        client,
+        io.BytesIO(b"Contest Name,Jurisdictions\n" b"Contest 1,"),
+        election_id,
     )
     assert_ok(rv)
 
@@ -176,7 +155,7 @@ def test_standardized_contests_no_jurisdictions(
         json.loads(rv.data),
         {
             "file": {
-                "name": "standardized-contests.csv",
+                "name": asserts_startswith("standardizedContests"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -197,16 +176,16 @@ def test_standardized_contests_missing_file(
     election_id: str,
     jurisdiction_ids: List[str],  # pylint: disable=unused-argument
 ):
-    rv = client.put(
-        f"/api/election/{election_id}/standardized-contests/file",
-        data={},
+    rv = client.post(
+        f"/api/election/{election_id}/standardized-contests/file/upload-complete",
+        json={},
     )
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
         "errors": [
             {
                 "errorType": "Bad Request",
-                "message": "Missing required file parameter 'standardized-contests'",
+                "message": "Missing required JSON parameter: storagePathKey",
             }
         ]
     }
@@ -217,13 +196,12 @@ def test_standardized_contests_bad_csv(
     election_id: str,
     jurisdiction_ids: List[str],  # pylint: disable=unused-argument
 ):
-    rv = client.put(
-        f"/api/election/{election_id}/standardized-contests/file",
-        data={
-            "standardized-contests": (
-                io.BytesIO(b"not a csv"),
-                "standardized-contests.txt",
-            )
+    rv = client.post(
+        f"/api/election/{election_id}/standardized-contests/file/upload-complete",
+        json={
+            "storagePathKey": "test_dir/random.txt",
+            "fileName": "random.txt",
+            "fileType": "text/plain",
         },
     )
     assert rv.status_code == 400
@@ -249,21 +227,17 @@ def test_standardized_contests_wrong_audit_type(
         db_session.add(election)
         db_session.commit()
 
-        rv = client.put(
-            f"/api/election/{election_id}/standardized-contests/file",
-            data={
-                "standardized-contests": (
-                    io.BytesIO(b"Contest Name,Jurisdictions\n" b"Contest 1,all\n"),
-                    "standardized-contests.csv",
-                )
-            },
+        rv = upload_standardized_contests(
+            client,
+            io.BytesIO(b"Contest Name,Jurisdictions\n" b"Contest 1,all\n"),
+            election_id,
         )
         assert rv.status_code == 409
         assert json.loads(rv.data) == {
             "errors": [
                 {
                     "errorType": "Conflict",
-                    "message": "Can't upload CVR file for this audit type.",
+                    "message": "Can't upload standardized contests file for this audit type.",
                 }
             ]
         }
@@ -272,14 +246,10 @@ def test_standardized_contests_wrong_audit_type(
 def test_standardized_contests_before_jurisdictions(
     client: FlaskClient, election_id: str
 ):
-    rv = client.put(
-        f"/api/election/{election_id}/standardized-contests/file",
-        data={
-            "standardized-contests": (
-                io.BytesIO(b"Contest Name,Jurisdictions\n" b"Contest 1,all\n"),
-                "standardized-contests.csv",
-            )
-        },
+    rv = upload_standardized_contests(
+        client,
+        io.BytesIO(b"Contest Name,Jurisdictions\n" b"Contest 1,all\n"),
+        election_id,
     )
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
@@ -295,19 +265,15 @@ def test_standardized_contests_before_jurisdictions(
 def test_standardized_contests_newlines(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 ):
-    rv = client.put(
-        f"/api/election/{election_id}/standardized-contests/file",
-        data={
-            "standardized-contests": (
-                io.BytesIO(
-                    b"Contest Name,Jurisdictions\n"
-                    b'"Contest\r\n1",all\n'
-                    b'Contest 2,"J1, J3"\n'
-                    b"Contest 3,J2\n"
-                ),
-                "standardized-contests.csv",
-            )
-        },
+    rv = upload_standardized_contests(
+        client,
+        io.BytesIO(
+            b"Contest Name,Jurisdictions\n"
+            b'"Contest\r\n1",all\n'
+            b'Contest 2,"J1, J3"\n'
+            b"Contest 3,J2\n"
+        ),
+        election_id,
     )
     assert_ok(rv)
 
@@ -325,19 +291,15 @@ def test_standardized_contests_newlines(
 def test_standardized_contests_dominion_vote_for(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 ):
-    rv = client.put(
-        f"/api/election/{election_id}/standardized-contests/file",
-        data={
-            "standardized-contests": (
-                io.BytesIO(
-                    b"Contest Name,Jurisdictions\n"
-                    b'"Contest\r\n1 (Vote For=2)",all\n'
-                    b'Contest 2,"J1, J3"\n'
-                    b"Contest 3,J2\n"
-                ),
-                "standardized-contests.csv",
-            )
-        },
+    rv = upload_standardized_contests(
+        client,
+        io.BytesIO(
+            b"Contest Name,Jurisdictions\n"
+            b'"Contest\r\n1 (Vote For=2)",all\n'
+            b'Contest 2,"J1, J3"\n'
+            b"Contest 3,J2\n"
+        ),
+        election_id,
     )
     assert_ok(rv)
 
@@ -361,14 +323,10 @@ def test_standardized_contests_change_jurisdictions_file(
         'Contest 2,"J1, J3"\n'
         "Contest 3,all \n"
     )
-    rv = client.put(
-        f"/api/election/{election_id}/standardized-contests/file",
-        data={
-            "standardized-contests": (
-                io.BytesIO(standardized_contests_file.encode()),
-                "standardized-contests.csv",
-            )
-        },
+    rv = upload_standardized_contests(
+        client,
+        io.BytesIO(standardized_contests_file.encode()),
+        election_id,
     )
     assert_ok(rv)
 
@@ -388,20 +346,16 @@ def test_standardized_contests_change_jurisdictions_file(
     assert_ok(rv)
 
     # Remove a jurisdiction that isn't referenced directly in standardized contests
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/file",
-        data={
-            "jurisdictions": (
-                io.BytesIO(
-                    (
-                        "Jurisdiction,Admin Email\n"
-                        f"J3,j3-{election_id}@example.com\n"
-                        f"J1,{default_ja_email(election_id)}\n"
-                    ).encode()
-                ),
-                "jurisdictions.csv",
-            )
-        },
+    rv = upload_jurisdictions_file(
+        client,
+        io.BytesIO(
+            (
+                "Jurisdiction,Admin Email\n"
+                f"J3,j3-{election_id}@example.com\n"
+                f"J1,{default_ja_email(election_id)}\n"
+            ).encode()
+        ),
+        election_id,
     )
     assert_ok(rv)
 
@@ -423,19 +377,14 @@ def test_standardized_contests_change_jurisdictions_file(
     ]
 
     # Now remove a jurisdiction that is referenced directly in standardized contests
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/file",
-        data={
-            "jurisdictions": (
-                io.BytesIO(
-                    (
-                        "Jurisdiction,Admin Email\n"
-                        f"J1,{default_ja_email(election_id)}\n"
-                    ).encode()
-                ),
-                "jurisdictions.csv",
-            )
-        },
+    rv = upload_jurisdictions_file(
+        client,
+        io.BytesIO(
+            (
+                "Jurisdiction,Admin Email\n" f"J1,{default_ja_email(election_id)}\n"
+            ).encode()
+        ),
+        election_id,
     )
     assert_ok(rv)
 
@@ -449,7 +398,7 @@ def test_standardized_contests_change_jurisdictions_file(
         json.loads(rv.data),
         {
             "file": {
-                "name": "standardized-contests.csv",
+                "name": asserts_startswith("standardizedContests"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -468,14 +417,10 @@ def test_standardized_contests_parse_all(
     standardized_contests_file = (
         "Contest Name,Jurisdictions\n" + "Contest 1,All\n" + "Contest 2,  aLL \n"
     )
-    rv = client.put(
-        f"/api/election/{election_id}/standardized-contests/file",
-        data={
-            "standardized-contests": (
-                io.BytesIO(standardized_contests_file.encode()),
-                "standardized-contests.csv",
-            )
-        },
+    rv = upload_standardized_contests(
+        client,
+        io.BytesIO(standardized_contests_file.encode()),
+        election_id,
     )
     assert_ok(rv)
 
@@ -504,14 +449,10 @@ def test_reupload_standardized_contests_after_contests_selected(
         'Contest 2,"J1, J3"\n'
         "Contest 3,J2 \n"
     )
-    rv = client.put(
-        f"/api/election/{election_id}/standardized-contests/file",
-        data={
-            "standardized-contests": (
-                io.BytesIO(standardized_contests_file.encode()),
-                "standardized-contests.csv",
-            )
-        },
+    rv = upload_standardized_contests(
+        client,
+        io.BytesIO(standardized_contests_file.encode()),
+        election_id,
     )
     assert_ok(rv)
 
@@ -577,14 +518,10 @@ def test_reupload_standardized_contests_after_contests_selected(
     standardized_contests_file = (
         "Contest Name,Jurisdictions\n" + 'Contest 1,"J1,J2"\n' + "Contest 3,J2 \n"
     )
-    rv = client.put(
-        f"/api/election/{election_id}/standardized-contests/file",
-        data={
-            "standardized-contests": (
-                io.BytesIO(standardized_contests_file.encode()),
-                "standardized-contests.csv",
-            )
-        },
+    rv = upload_standardized_contests(
+        client,
+        io.BytesIO(standardized_contests_file.encode()),
+        election_id,
     )
     assert_ok(rv)
 
@@ -610,3 +547,47 @@ def test_reupload_standardized_contests_after_contests_selected(
             ]
         },
     )
+
+
+def test_standardized_contests_get_upload_url_missing_file_type(
+    client: FlaskClient, election_id: str
+):
+    set_logged_in_user(
+        client,
+        UserType.AUDIT_ADMIN,
+        DEFAULT_AA_EMAIL,
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/standardized-contests/file/upload-url"
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "Missing expected query parameter: fileType",
+            }
+        ]
+    }
+
+
+def test_standardized_contests_get_upload_url(client: FlaskClient, election_id: str):
+    set_logged_in_user(
+        client,
+        UserType.AUDIT_ADMIN,
+        DEFAULT_AA_EMAIL,
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/standardized-contests/file/upload-url",
+        query_string={"fileType": "text/csv"},
+    )
+    assert rv.status_code == 200
+
+    response_data = json.loads(rv.data)
+    expected_url = "/api/file-upload"
+
+    assert response_data["url"] == expected_url
+    assert response_data["fields"]["key"].startswith(
+        f"audits/{election_id}/standardized_contests_"
+    )
+    assert response_data["fields"]["key"].endswith(".csv")

@@ -318,20 +318,16 @@ def test_file_upload_errors(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
-        data={"manifest": (io.BytesIO(b"invalid"), "manifest.csv")},
+    rv = upload_ballot_manifest(
+        client, io.BytesIO(b"invalid"), election_id, jurisdiction_ids[0]
     )
     assert_ok(rv)
 
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
-        data={
-            "manifest": (
-                io.BytesIO(b"Batch Name,Number of Ballots\n" b"A,1"),
-                "manifest.csv",
-            )
-        },
+    rv = upload_ballot_manifest(
+        client,
+        io.BytesIO(b"Batch Name,Number of Ballots\n" b"A,1"),
+        election_id,
+        jurisdiction_ids[0],
     )
     assert_ok(rv)
 
@@ -339,9 +335,8 @@ def test_file_upload_errors(
     election.audit_type = AuditType.BATCH_COMPARISON
     db_session.commit()
 
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
-        data={"batchTallies": (io.BytesIO(b"invalid"), "tallies.csv")},
+    rv = upload_batch_tallies(
+        client, io.BytesIO(b"invalid"), election_id, jurisdiction_ids[0]
     )
     assert rv.status_code == 200
 
@@ -349,12 +344,8 @@ def test_file_upload_errors(
     election.audit_type = AuditType.BALLOT_COMPARISON
     db_session.commit()
 
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={
-            "cvrs": (io.BytesIO(b""), "cvrs.csv"),
-            "cvrFileType": "DOMINION",
-        },
+    rv = upload_cvrs(
+        client, io.BytesIO(b""), election_id, jurisdiction_ids[0], "DOMINION"
     )
     assert_ok(rv)
 

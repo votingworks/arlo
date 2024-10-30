@@ -4,7 +4,7 @@ from typing import Dict, Optional, Tuple
 import csv
 import io
 import uuid
-from flask import request, jsonify, Request, session
+from flask import request, jsonify, session
 from werkzeug.exceptions import BadRequest, NotFound, Conflict
 from sqlalchemy.orm import Session
 
@@ -18,10 +18,11 @@ from ..worker.tasks import (
     create_background_task,
 )
 from ..util.file import (
+    get_file_upload_url,
+    get_standard_file_upload_request_params,
     retrieve_file,
     serialize_file,
     serialize_file_processing,
-    store_file,
     timestamp_filename,
 )
 from ..util.csv_download import (
@@ -185,9 +186,7 @@ def process_batch_tallies_file(
 
 
 # Raises if invalid
-def validate_batch_tallies_upload(
-    request: Request, election: Election, jurisdiction: Jurisdiction
-):
+def validate_batch_tallies_upload(election: Election, jurisdiction: Jurisdiction):
     if election.audit_type != AuditType.BATCH_COMPARISON:
         raise Conflict(
             "Can only upload batch tallies file for batch comparison audits."
@@ -198,11 +197,6 @@ def validate_batch_tallies_upload(
 
     if not jurisdiction.manifest_file_id:
         raise Conflict("Must upload ballot manifest before uploading batch tallies.")
-
-    if "batchTallies" not in request.files:
-        raise BadRequest("Missing required file parameter 'batchTallies'")
-
-    validate_csv_mimetype(request.files["batchTallies"])
 
 
 def clear_batch_tallies_data(jurisdiction: Jurisdiction):
@@ -227,27 +221,47 @@ def reprocess_batch_tallies_file_if_uploaded(
 
 
 @api.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-tallies",
-    methods=["PUT"],
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-tallies/upload-url",
+    methods=["GET"],
 )
 @restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
-def upload_batch_tallies(
-    election: Election,
-    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+def start_upload_for_batch_tallies(
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
-    validate_batch_tallies_upload(request, election, jurisdiction)
+    file_type = request.args.get("fileType")
+    if file_type is None:
+        raise BadRequest("Missing expected query parameter: fileType")
+
+    storage_path_prefix = (
+        f"audits/{jurisdiction.election_id}/jurisdictions/{jurisdiction.id}"
+    )
+    filename = timestamp_filename("batch_tallies", "csv")
+
+    return jsonify(get_file_upload_url(storage_path_prefix, filename, file_type))
+
+
+@api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-tallies/upload-complete",
+    methods=["POST"],
+)
+@restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
+def complete_upload_for_batch_tallies(
+    election: Election,
+    jurisdiction: Jurisdiction,
+):
+    validate_batch_tallies_upload(election, jurisdiction)
+
+    (storage_path, filename, file_type) = get_standard_file_upload_request_params(
+        request
+    )
+    validate_csv_mimetype(file_type)
 
     clear_batch_tallies_data(jurisdiction)
 
-    batch_tallies = request.files["batchTallies"]
-    storage_path = store_file(
-        batch_tallies.stream,
-        f"audits/{jurisdiction.election_id}/jurisdictions/{jurisdiction.id}/"
-        + timestamp_filename("batch_tallies", "csv"),
-    )
     jurisdiction.batch_tallies_file = File(
         id=str(uuid.uuid4()),
-        name=batch_tallies.filename,  # type: ignore
+        name=filename,
         storage_path=storage_path,
         uploaded_at=datetime.now(timezone.utc),
     )
@@ -259,7 +273,6 @@ def upload_batch_tallies(
             support_user_email=get_support_user(session),
         ),
     )
-
     db_session.commit()
     return jsonify(status="ok")
 
