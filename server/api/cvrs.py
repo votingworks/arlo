@@ -63,6 +63,7 @@ from ..util.csv_parse import (
     validate_csv_mimetype,
 )
 from ..util.collections import find_first_duplicate
+from ..util.hart_parse import find_xml, parse_contest_results
 from ..audit_math.suite import HybridPair
 from ..activity_log.activity_log import UploadFile, activity_base, record_activity
 
@@ -1157,33 +1158,6 @@ def parse_hart_cvrs(
                     sub_working_directory, cvr_file_name
                 )
 
-    namespace = "http://tempuri.org/CVRDesign.xsd"
-
-    def find(xml: Union[ET.ElementTree, ET.Element], tag: str):
-        return xml.find(f"{{{namespace}}}{tag}")
-
-    def findall(xml: Union[ET.ElementTree, ET.Element], tag: str):
-        return xml.findall(f"{{{namespace}}}{tag}")
-
-    def parse_contest_results(cvr_xml: ET.ElementTree):
-        # { contest_name: voted_for_choices }
-        results = defaultdict(set)
-        contests = findall(find(cvr_xml, "Contests"), "Contest")
-        for contest in contests:
-            contest_name = find(contest, "Name").text
-            # From what we've seen so far with Hart CVRs, the only choices
-            # listed are the ones with votes (i.e. with "Value" = 1), so if we
-            # see a choice, we can count it as a vote.
-            choices = findall(find(contest, "Options"), "Option")
-            for choice in choices:
-                if find(choice, "WriteInData"):
-                    choice_name = "Write-In"
-                else:
-                    choice_name = find(choice, "Name").text
-                results[contest_name].add(choice_name)
-
-        return results
-
     # Parse contests and choice names
     # { contest_name: choice_names }
     contest_choices = defaultdict(set)
@@ -1255,9 +1229,9 @@ def parse_hart_cvrs(
         for (cvr_zip_file_name, cvr_file_name), cvr_file_path in cvr_file_paths.items():
             cvr_zip_file_name_without_extension = cvr_zip_file_name[:-4]
             cvr_xml = ET.parse(cvr_file_path)
-            cvr_guid = find(cvr_xml, "CvrGuid").text
-            batch_number = find(cvr_xml, "BatchNumber").text
-            batch_sequence = find(cvr_xml, "BatchSequence").text
+            cvr_guid = find_xml(cvr_xml, "CvrGuid").text
+            batch_number = find_xml(cvr_xml, "BatchNumber").text
+            batch_sequence = find_xml(cvr_xml, "BatchSequence").text
 
             if use_tabulator_in_batch_key:
                 if use_cvr_zip_file_names_as_tabulator_names:
