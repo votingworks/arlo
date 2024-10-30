@@ -28,20 +28,17 @@ def run_worker(worker_id: str, db_session, pause_between_tasks_seconds):
         nonlocal task
         if task:
             reset_task(task, db_session)
-            task = None  # Guard against multiple interrupts
         sys.exit(1)
 
     signal.signal(signal.SIGTERM, interrupt_handler)
     # Also handle SIGINT for local development
     signal.signal(signal.SIGINT, interrupt_handler)
 
-    while True:
+    # If the database connection is closed due to sys.exit above, stop working.
+    while db_session.is_active:
         task = claim_next_task(worker_id, db_session)
         if task:
             run_task(task, db_session)
-            # Ensure we don't reset the task on interrupt once it completes
-            # successfully
-            task = None
 
         # Unrelated, we use the same worker process to clean up expired web
         # sessions, since it's a convenient place to essentially run a cron job.

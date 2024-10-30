@@ -153,7 +153,17 @@ def claim_next_task(worker_id: str, db_session) -> Optional[BackgroundTask]:
 
 
 def reset_task(task: BackgroundTask, db_session):
+    # If a task got interrupted during processing, rollback any database changes
+    # it made so far.
     db_session.rollback()
+
+    # If the task is not in progress (e.g. already completed or already reset),
+    # don't reset it.
+    db_session.refresh(task)
+    task_in_progress = task.started_at and not task.completed_at
+    if not task_in_progress:
+        return
+
     logger.info(f"TASK_RESET {task_log_data(task)}")
     task.worker_id = None
     task.started_at = None
