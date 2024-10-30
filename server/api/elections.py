@@ -21,6 +21,9 @@ from ..activity_log import (
     record_activity,
 )
 from ..util.get_json import safe_get_json_dict
+from ..util.isoformat import isoformat
+from .rounds import is_audit_complete
+from .shared import get_current_round
 
 ELECTION_SCHEMA = {
     "type": "object",
@@ -143,6 +146,10 @@ def list_organizations_and_elections(audit_admin_id: str):
                         "auditName": election.audit_name,
                         "electionName": election.election_name,
                         "state": election.state,
+                        "createdAt": isoformat(election.created_at),
+                        "isComplete": bool(
+                            is_audit_complete(get_current_round(election))
+                        ),
                     }
                     for election in org.elections
                     if election.deleted_at is None

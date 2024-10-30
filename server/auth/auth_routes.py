@@ -10,7 +10,6 @@ from flask import jsonify, request, session, render_template
 from authlib.integrations.flask_client import OAuth, OAuthError
 from werkzeug.exceptions import BadRequest, Conflict
 from xkcdpass import xkcd_password as xp
-from server.api.rounds import get_current_round
 
 from . import auth
 from ..models import *  # pylint: disable=wildcard-import
@@ -44,6 +43,7 @@ from ..config import (
 )
 from .. import config
 from ..util.get_json import safe_get_json_dict
+from ..api.rounds import get_current_round, is_audit_complete
 
 SUPPORT_OAUTH_CALLBACK_URL = "/auth/support/callback"
 AUDITADMIN_OAUTH_CALLBACK_URL = "/auth/auditadmin/callback"
@@ -80,6 +80,8 @@ def serialize_election(election):
         "electionName": election.election_name,
         "state": election.state,
         "organizationId": election.organization_id,
+        "createdAt": isoformat(election.created_at),
+        "isComplete": bool(is_audit_complete(get_current_round(election))),
     }
 
 

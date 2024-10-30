@@ -1,6 +1,7 @@
 import uuid
 from typing import (
     List,
+    Optional,
     Tuple,
     Dict,
 )
@@ -175,8 +176,8 @@ def is_round_ready_to_finish(election: Election, round: Round) -> bool:
         return num_jurisdictions_without_results == 0
 
 
-def is_audit_complete(round: Round):
-    if not round.ended_at:
+def is_audit_complete(round: Optional[Round]):
+    if not (round and round.ended_at):
         return None
     if is_enabled_automatically_end_audit_after_one_round(round.election):
         return True

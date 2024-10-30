@@ -218,6 +218,30 @@ def test_rounds_complete_audit(
     rounds = json.loads(rv.data)
     compare_json(rounds, expected_rounds)
 
+    # Test that the audit is marked as complete in the audit admin's home screen
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get("/api/me")
+    user_id = json.loads(rv.data)["user"]["id"]
+    rv = client.get(f"/api/audit_admins/{user_id}/organizations")
+    orgs = json.loads(rv.data)
+    election = next(
+        election
+        for org in orgs
+        for election in org["elections"]
+        if election["id"] == election_id
+    )
+    assert election["isComplete"] is True
+
+    # Test that the audit is marked as complete in the jurisdiction admin's home screen
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get("/api/me")
+    assert (
+        json.loads(rv.data)["user"]["jurisdictions"][0]["election"]["isComplete"]
+        is True
+    )
+
 
 def test_rounds_round_2_required_if_all_blanks(
     client: FlaskClient,
