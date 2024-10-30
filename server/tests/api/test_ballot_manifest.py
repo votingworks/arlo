@@ -142,7 +142,7 @@ def test_ballot_manifest_upload_missing_file_path(
     )
     rv = client.post(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest/upload-complete",
-        data={},
+        json={},
     )
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
@@ -174,7 +174,7 @@ def test_ballot_manifest_upload_bad_csv(
     assert_ok(rv)
     rv = client.post(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest/upload-complete",
-        data={
+        json={
             "storagePathKey": "test_dir/random.txt",
             "fileName": "random.txt",
             "fileType": "text/plain",

@@ -1552,7 +1552,8 @@ def validate_cvr_upload(
     if not jurisdiction.manifest_file_id:
         raise Conflict("Must upload ballot manifest before uploading CVR file.")
 
-    cvr_file_type = request.form.get("cvrFileType")
+    data = request.get_json()
+    cvr_file_type = data.get("cvrFileType") if data else None
     if cvr_file_type is None:
         raise BadRequest("CVR file type is required")
 
@@ -1648,7 +1649,8 @@ def complete_upload_for_cvrs(
     (storage_path, filename, file_type) = get_standard_file_upload_request_params(
         request
     )
-    cvr_file_type = request.form.get("cvrFileType")
+    data = request.get_json()
+    cvr_file_type = data.get("cvrFileType") if data else None
     if cvr_file_type in [CvrFileType.ESS, CvrFileType.HART]:
         validate_zip_mimetype(file_type)
     else:

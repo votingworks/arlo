@@ -443,7 +443,7 @@ def upload_file_helper(
 
     return client.post(
         f"{url}/upload-complete",
-        data={
+        json={
             "storagePathKey": f"test_dir/{filename}",
             "fileName": filename,
             "fileType": file_type,

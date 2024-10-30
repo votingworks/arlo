@@ -178,7 +178,7 @@ def test_standardized_contests_missing_file(
 ):
     rv = client.post(
         f"/api/election/{election_id}/standardized-contests/file/upload-complete",
-        data={},
+        json={},
     )
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
@@ -198,7 +198,7 @@ def test_standardized_contests_bad_csv(
 ):
     rv = client.post(
         f"/api/election/{election_id}/standardized-contests/file/upload-complete",
-        data={
+        json={
             "storagePathKey": "test_dir/random.txt",
             "fileName": "random.txt",
             "fileType": "text/plain",

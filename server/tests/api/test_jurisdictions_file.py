@@ -6,7 +6,9 @@ from ..helpers import *  # pylint: disable=wildcard-import
 
 
 def test_missing_file(client: FlaskClient, election_id: str):
-    rv = client.post(f"/api/election/{election_id}/jurisdiction/file/upload-complete")
+    rv = client.post(
+        f"/api/election/{election_id}/jurisdiction/file/upload-complete", json={}
+    )
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
         "errors": [
@@ -26,7 +28,7 @@ def test_bad_csv_file(client: FlaskClient, election_id: str):
     )
     rv = client.post(
         f"/api/election/{election_id}/jurisdiction/file/upload-complete",
-        data={
+        json={
             "storagePathKey": "test_dir/random.txt",
             "fileName": "random.txt",
             "fileType": "text/plain",

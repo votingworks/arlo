@@ -124,7 +124,7 @@ def test_file_storage_local_file():
 
 @patch("flask.Request", autospec=True)
 def test_get_standard_file_upload_request_params(mock_request):
-    mock_request.form = {
+    mock_request.get_json.return_value = {
         "storagePathKey": "test_dir/test_file.csv",
         "fileName": "test_file.csv",
         "fileType": "text/csv",
@@ -139,24 +139,28 @@ def test_get_standard_file_upload_request_params(mock_request):
     with pytest.raises(
         BadRequest, match="Missing required JSON parameter: storagePathKey"
     ):
-        mock_request.form = {
+        mock_request.get_json.return_value = {
             "fileName": "test_file.csv",
             "fileType": "text/csv",
         }
         get_standard_file_upload_request_params(mock_request)
 
     with pytest.raises(BadRequest, match="Missing required JSON parameter: fileName"):
-        mock_request.form = {
+        mock_request.get_json.return_value = {
             "storagePathKey": "test_dir/test_file.csv",
             "fileType": "text/csv",
         }
         get_standard_file_upload_request_params(mock_request)
 
     with pytest.raises(BadRequest, match="Missing required JSON parameter: fileType"):
-        mock_request.form = {
+        mock_request.get_json.return_value = {
             "storagePathKey": "test_dir/test_file.csv",
             "fileName": "test_file.csv",
         }
+        get_standard_file_upload_request_params(mock_request)
+
+    with pytest.raises(BadRequest, match="Missing JSON request body"):
+        mock_request.get_json.return_value = None
         get_standard_file_upload_request_params(mock_request)
 
 

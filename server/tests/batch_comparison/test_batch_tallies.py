@@ -277,7 +277,7 @@ def test_batch_tallies_upload_missing_file(
     )
     rv = client.post(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies/upload-complete",
-        data={},
+        json={},
     )
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
@@ -313,7 +313,7 @@ def test_batch_tallies_upload_bad_csv(
     assert_ok(rv)
     rv = client.post(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies/upload-complete",
-        data={
+        json={
             "storagePathKey": "test_dir/random.txt",
             "fileName": "random.txt",
             "fileType": "text/plain",

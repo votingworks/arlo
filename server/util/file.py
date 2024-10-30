@@ -139,9 +139,12 @@ def get_file_upload_url(
 
 
 def get_standard_file_upload_request_params(request: Request) -> Tuple[str, str, str]:
-    storage_path = request.form.get("storagePathKey")
-    filename = request.form.get("fileName")
-    file_type = request.form.get("fileType")
+    data = request.get_json()
+    if data is None:
+        raise BadRequest("Missing JSON request body")
+    storage_path = data.get("storagePathKey")
+    filename = data.get("fileName")
+    file_type = data.get("fileType")
     if not storage_path:
         raise BadRequest("Missing required JSON parameter: storagePathKey")
     if not filename:
