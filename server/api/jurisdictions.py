@@ -729,7 +729,7 @@ def get_discrepancy_counts_by_jurisdiction(election: Election):
     )
 
 
-DiscrepanciesByJurisdiction = Dict[str, Dict[str, Dict[str, Dict[str, int]]]]
+DiscrepanciesByJurisdiction = Dict[str, Dict[str, Dict[str, Dict[str, Dict[str, int]]]]]
 # DiscrepanciesByJurisdiction = {
 #     jurisdictionID: {
 #         batchName: {
@@ -739,12 +739,6 @@ DiscrepanciesByJurisdiction = Dict[str, Dict[str, Dict[str, Dict[str, int]]]]
 #                 discrepancies:  {choiceID: int},
 #     }
 # }
-
-
-def create_nested_discrepancies_dict():
-    return defaultdict(
-        lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
-    )
 
 
 @api.route("/election/<election_id>/discrepancy", methods=["GET"])
@@ -770,8 +764,10 @@ def get_discrepancies_by_jurisdiction(election: Election):
 
 def get_batch_comparison_audit_discrepancies_by_jurisdiction(
     election: Election, round_id: str
-):
-    discrepancies_by_jurisdiction = create_nested_discrepancies_dict()
+) -> DiscrepanciesByJurisdiction:
+    discrepancies_by_jurisdiction: DiscrepanciesByJurisdiction = defaultdict(
+        lambda: defaultdict(dict)
+    )
 
     # TODO: Add support for combined batches
     batch_keys_in_round = set(
