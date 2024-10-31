@@ -35,6 +35,7 @@ import { sum } from '../../../utils/number'
 import { apiDownload, assert } from '../../utilities'
 import AsyncButton from '../../Atoms/AsyncButton'
 import useSearchParams from '../../useSearchParams'
+import { JurisdictionDiscrepancies } from './JurisdictionDiscrepancies'
 
 const Wrapper = styled.div`
   flex-grow: 1;
@@ -75,6 +76,8 @@ const Progress: React.FC<IProgressProps> = ({
   const showDiscrepancies =
     Boolean(round) &&
     (auditType === 'BALLOT_COMPARISON' || auditType === 'BATCH_COMPARISON')
+  const showDiscrepanciesReview =
+    Boolean(round) && auditType === 'BATCH_COMPARISON'
   const discrepancyCountsQuery = useDiscrepancyCountsByJurisdiction(
     electionId,
     { enabled: showDiscrepancies }
@@ -90,12 +93,16 @@ const Progress: React.FC<IProgressProps> = ({
   const [jurisdictionDetailId, setJurisdictionDetailId] = useState<
     string | null
   >(null)
+  const [
+    jurisdictionDiscrepanciesId,
+    setJurisdictionDiscrepanciesId,
+  ] = useState<string | null>(null)
 
   const ballotsOrBatches =
     auditType === 'BATCH_COMPARISON' ? 'Batches' : 'Ballots'
 
   const someJurisdictionHasDiscrepancies = Object.values(
-    discrepancyCountsQuery.data ?? {}
+    discrepancyCountsQuery.data ? discrepancyCountsQuery.data : {}
   ).some(count => count > 0)
 
   const columns: Column<IJurisdiction>[] = [
@@ -315,7 +322,10 @@ const Progress: React.FC<IProgressProps> = ({
           s &&
           s.status === JurisdictionRoundStatus.COMPLETE &&
           discrepancyCountsQuery.data?.[id],
-        Cell: ({ value }: { value: number | null }) => {
+        Cell: ({
+          value,
+          row: { original: jurisdiction },
+        }: Cell<IJurisdiction>) => {
           if (discrepancyCountsQuery.isLoading) {
             return (
               <div style={{ display: 'flex', justifyContent: 'start' }}>
@@ -324,10 +334,23 @@ const Progress: React.FC<IProgressProps> = ({
             )
           }
           if (!value) return null
+          if (!showDiscrepanciesReview)
+            return (
+              <>
+                <Icon icon="flag" intent="danger" /> {value.toLocaleString()}
+              </>
+            )
           return (
-            <>
-              <Icon icon="flag" intent="danger" /> {value.toLocaleString()}
-            </>
+            <Button
+              onClick={() => setJurisdictionDiscrepanciesId(jurisdiction.id)}
+            >
+              <Icon
+                icon="flag"
+                intent="danger"
+                style={{ marginRight: '4px' }}
+              />
+              Review {value.toLocaleString()}
+            </Button>
           )
         },
         Footer: discrepancyCountsQuery.isLoading
@@ -499,6 +522,17 @@ const Progress: React.FC<IProgressProps> = ({
           round={round}
           handleClose={() => setJurisdictionDetailId(null)}
           auditSettings={auditSettings}
+        />
+      )}
+      {jurisdictionDiscrepanciesId && round && (
+        <JurisdictionDiscrepancies
+          jurisdiction={
+            jurisdictions.find(
+              jurisdiction => jurisdiction.id === jurisdictionDiscrepanciesId
+            )!
+          }
+          electionId={electionId}
+          handleClose={() => setJurisdictionDiscrepanciesId(null)}
         />
       )}
     </Wrapper>
