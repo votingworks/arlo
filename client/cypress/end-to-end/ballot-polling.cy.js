@@ -102,7 +102,7 @@ describe('Ballot Polling', () => {
     cy.findByRole('button', { name: /All Audits/ }).click()
     cy.findByRole('button', { name: 'Delete Audit' }).click()
     cy.findByRole('button', { name: 'Delete' }).click()
-    cy.findByText(/You haven't created any audits yet/)
+    cy.findByText(/You have no active audits at this time./)
   })
 
   it('online audit', () => {
