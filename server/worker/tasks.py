@@ -182,7 +182,8 @@ def claim_next_task(worker_id: str, db_session) -> Optional[BackgroundTask]:
         )
     )
     in_progress_task_lock_keys = (
-        BackgroundTask.query.filter(BackgroundTask.started_at.isnot(None))
+        db_session.query(BackgroundTask)
+        .filter(BackgroundTask.started_at.isnot(None))
         .filter_by(completed_at=None)
         .with_entities(BackgroundTask.lock_key)
         .subquery()
@@ -199,9 +200,9 @@ def claim_next_task(worker_id: str, db_session) -> Optional[BackgroundTask]:
     if task:
         task.worker_id = worker_id
         task.started_at = datetime.now(timezone.utc)
-        # Commit the transaction to release the lock before running the task,
-        # allowing other workers to claim tasks in the meantime.
-        db_session.commit()
+    # Commit the transaction to release the table lock, regardless of whether we
+    # claimed a task.
+    db_session.commit()
     return task
 
 
