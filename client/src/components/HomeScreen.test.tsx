@@ -215,11 +215,14 @@ describe('Home screen', () => {
     await withMockFetch(expectedCalls, async () => {
       const { history } = renderView('/')
       await screen.findByRole('heading', {
-        name: 'Audits - State of California',
+        name: 'Active Audits — State of California',
       })
-      screen.getByText(
-        "You haven't created any audits yet for State of California"
-      )
+      screen.getByText('You have no active audits at this time.')
+      expect(
+        screen.queryByRole('heading', {
+          name: 'Completed Audits — State of California',
+        })
+      ).not.toBeInTheDocument()
 
       // Try to create an audit without typing in an audit name
       screen.getByRole('heading', { name: 'New Audit' })
@@ -274,18 +277,45 @@ describe('Home screen', () => {
       renderView('/')
 
       // Two orgs and their audits get displayed
-      const californiaHeading = await screen.findByRole('heading', {
-        name: 'Audits - State of California',
-      })
-      within(californiaHeading.closest('div')!).getByRole('button', {
+      const californiaActive = (
+        await screen.findByRole('heading', {
+          name: 'Active Audits — State of California',
+        })
+      ).closest('div')!
+      within(californiaActive).getByRole('button', {
         name: 'November Presidential Election 2020',
       })
+      within(californiaActive).getByRole('button', {
+        name: 'Most Recent Audit',
+      })
+      // Should be ordered with the most recent audit first
+      expect(
+        within(californiaActive)
+          .getAllByRole('button')
+          .map(button => button.textContent)
+          .filter(text => text !== 'trash') // Remove icons
+      ).toEqual(['Most Recent Audit', 'November Presidential Election 2020'])
+
+      const californiaCompleted = screen
+        .getByRole('heading', {
+          name: 'Completed Audits — State of California',
+        })
+        .closest('div')!
+      within(californiaCompleted).getByRole('button', {
+        name: 'May Primary Election 2020',
+      })
+
       const georgiaHeading = screen.getByRole('heading', {
-        name: 'Audits - State of Georgia',
+        name: 'Active Audits — State of Georgia',
       })
       within(georgiaHeading.closest('div')!).getByText(
-        "You haven't created any audits yet for State of Georgia"
+        'You have no active audits at this time.'
       )
+      expect(
+        screen.queryByRole('heading', {
+          name: 'Completed Audits — State of Georgia',
+        })
+      ).toBeNull()
 
       // Select an organization
       const orgSelect = screen.getByRole('combobox', { name: /Organization/ })
@@ -327,7 +357,7 @@ describe('Home screen', () => {
     await withMockFetch(expectedCalls, async () => {
       renderView('/')
       await screen.findByRole('heading', {
-        name: 'Audits - State of California',
+        name: 'Active Audits — State of California',
       })
       userEvent.click(screen.getByRole('button', { name: 'Delete Audit' }))
 
@@ -360,7 +390,7 @@ describe('Home screen', () => {
     await withMockFetch(expectedCalls, async () => {
       renderView('/')
       await screen.findByRole('heading', {
-        name: 'Audits - State of California',
+        name: 'Active Audits — State of California',
       })
       userEvent.click(screen.getByRole('button', { name: 'Delete Audit' }))
 
@@ -401,7 +431,7 @@ describe('Home screen', () => {
     await withMockFetch(expectedCalls, async () => {
       renderView('/')
       await screen.findByRole('heading', {
-        name: 'Audits - State of California',
+        name: 'Active Audits — State of California',
       })
 
       const createAuditButton = screen.getByRole('button', {
@@ -435,7 +465,7 @@ describe('Home screen', () => {
     await withMockFetch(expectedCalls, async () => {
       renderView('/')
       await screen.findByRole('heading', {
-        name: 'Audits - State of California',
+        name: 'Active Audits — State of California',
       })
 
       const createAuditButton = screen.getByRole('button', {
@@ -469,7 +499,7 @@ describe('Home screen', () => {
     await withMockFetch(expectedCalls, async () => {
       renderView('/')
       await screen.findByRole('heading', {
-        name: 'Audits - State of California',
+        name: 'Active Audits — State of California',
       })
 
       const createAuditButton = screen.getByRole('button', {
@@ -501,24 +531,38 @@ describe('Home screen', () => {
     await withMockFetch(expectedCalls, async () => {
       renderView('/')
 
-      // Two audits and their jurisdictions get displayed
-      const auditOneHeading = await screen.findByRole('heading', {
-        name: 'Jurisdictions - audit one',
+      const activeAudits = (
+        await screen.findByRole('heading', {
+          name: 'Active Audits',
+        })
+      ).closest('div')!
+      const j1Button = within(activeAudits).getByRole('button', {
+        name: 'Jurisdiction One — audit one',
       })
-      const j1Button = within(auditOneHeading.closest('div')!).getByRole(
-        'button',
-        {
-          name: 'Jurisdiction One',
-        }
-      )
-      within(auditOneHeading.closest('div')!).getByRole('button', {
-        name: 'Jurisdiction Three',
+      within(activeAudits).getByRole('button', {
+        name: 'Jurisdiction Three — audit one',
       })
-      const auditTwoHeading = await screen.findByRole('heading', {
-        name: 'Jurisdictions - audit two',
+      within(activeAudits).getByRole('button', {
+        name: 'Jurisdiction Four — audit three',
       })
-      within(auditTwoHeading.closest('div')!).getByRole('button', {
-        name: 'Jurisdiction Two',
+      // Should be ordered with the most recent audit first
+      expect(
+        within(activeAudits)
+          .getAllByRole('button')
+          .map(button => button.textContent)
+      ).toEqual([
+        'Jurisdiction Four — audit three',
+        'Jurisdiction One — audit one',
+        'Jurisdiction Three — audit one',
+      ])
+
+      const completedAudits = (
+        await screen.findByRole('heading', {
+          name: 'Completed Audits',
+        })
+      ).closest('div')!
+      within(completedAudits).getByRole('button', {
+        name: 'Jurisdiction Two — audit two',
       })
 
       // Click on a jurisdiction to go to the audit
@@ -534,12 +578,8 @@ describe('Home screen', () => {
     await withMockFetch(expectedCalls, async () => {
       renderView('/')
 
-      const auditOneHeading = await screen.findByRole('heading', {
-        name: 'Jurisdictions - audit one',
-      })
-
-      within(auditOneHeading.closest('div')!).getByRole('button', {
-        name: 'Jurisdiction One',
+      await screen.findByRole('button', {
+        name: 'Jurisdiction One — audit one',
       })
 
       await waitFor(() =>
@@ -550,14 +590,16 @@ describe('Home screen', () => {
     })
   })
 
-  it('show note if no audits for ja user', async () => {
+  it('shows note if no audits for ja user', async () => {
     const expectedCalls = [jaApiCalls.getUserWithoutElections]
     await withMockFetch(expectedCalls, async () => {
       renderView('/')
 
-      await screen.findByText(
-        "You don't have any available audits at the moment"
-      )
+      await screen.findByRole('heading', { name: 'Active Audits' })
+      screen.getByText('You have no active audits at this time.')
+      expect(
+        screen.queryByRole('heading', { name: 'Completed Audits' })
+      ).not.toBeInTheDocument()
     })
   })
 

@@ -1193,27 +1193,32 @@ def test_auth_me_jurisdiction_admin(
     db_session.expunge(election)
 
     rv = client.get("/api/me")
-    assert json.loads(rv.data) == {
-        "user": {
-            "type": UserType.JURISDICTION_ADMIN,
-            "email": ja_email,
-            "jurisdictions": [
-                {
-                    "id": jurisdiction_id,
-                    "name": "Test Jurisdiction",
-                    "election": {
-                        "id": election_id,
-                        "auditName": election.audit_name,
-                        "electionName": None,
-                        "state": None,
-                        "organizationId": election.organization_id,
-                    },
-                    "numBallots": None,
-                }
-            ],
+    compare_json(
+        json.loads(rv.data),
+        {
+            "user": {
+                "type": UserType.JURISDICTION_ADMIN,
+                "email": ja_email,
+                "jurisdictions": [
+                    {
+                        "id": jurisdiction_id,
+                        "name": "Test Jurisdiction",
+                        "election": {
+                            "id": election_id,
+                            "auditName": election.audit_name,
+                            "electionName": None,
+                            "state": None,
+                            "organizationId": election.organization_id,
+                            "createdAt": assert_is_date,
+                            "isComplete": False,
+                        },
+                        "numBallots": None,
+                    }
+                ],
+            },
+            "supportUser": None,
         },
-        "supportUser": None,
-    }
+    )
 
 
 def test_auth_me_audit_board(

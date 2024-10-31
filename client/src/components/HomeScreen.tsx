@@ -30,7 +30,7 @@ import FormSection from './Atoms/Form/FormSection'
 import FormButton from './Atoms/Form/FormButton'
 import { Wrapper, Inner } from './Atoms/Wrapper'
 import FormField from './Atoms/Form/FormField'
-import { groupBy, sortBy } from '../utils/array'
+import { groupBy, sortBy, partition } from '../utils/array'
 import { IAuditSettings } from './useAuditSettings'
 import { useConfirm, Confirm } from './Atoms/Confirm'
 import { ErrorLabel } from './Atoms/Form/_helpers'
@@ -254,6 +254,39 @@ const LoginScreen: React.FC = () => {
   )
 }
 
+const OrganizationAuditList = ({
+  elections,
+  onClickDeleteAudit,
+}: {
+  elections: IElection[]
+  onClickDeleteAudit: (election: IElection) => void
+}) => {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      {sortBy(elections, election => new Date(election.createdAt).valueOf())
+        .reverse()
+        .map(election => (
+          <ButtonGroup key={election.id} fill large>
+            <LinkButton
+              style={{ justifyContent: 'start' }}
+              to={`/election/${election.id}`}
+              intent={election.isComplete ? 'none' : 'primary'}
+              fill
+            >
+              {election.auditName}
+            </LinkButton>
+            <Button
+              icon="trash"
+              intent={election.isComplete ? 'none' : 'primary'}
+              aria-label="Delete Audit"
+              onClick={() => onClickDeleteAudit(election)}
+            />
+          </ButtonGroup>
+        ))}
+    </div>
+  )
+}
+
 const AuditAdminHomeScreen = ({ user }: { user: IAuditAdmin }) => {
   const queryClient = useQueryClient()
   const organizations = useQuery<IOrganization[]>('orgs', () =>
@@ -292,40 +325,36 @@ const AuditAdminHomeScreen = ({ user }: { user: IAuditAdmin }) => {
   return (
     <>
       <div style={{ width: '50%', padding: '30px 30px 30px 0' }}>
-        {sortBy(organizations.data, o => o.name).map(organization => (
-          <div key={organization.id}>
-            <h2>Audits - {organization.name}</h2>
-            {organization.elections.length === 0 ? (
-              <p>
-                You haven&apos;t created any audits yet for {organization.name}
-              </p>
-            ) : (
-              sortBy(organization.elections, e => e.auditName).map(election => (
-                <ButtonGroup
-                  key={election.id}
-                  fill
-                  large
-                  style={{ marginBottom: '15px' }}
-                >
-                  <LinkButton
-                    style={{ justifyContent: 'start' }}
-                    to={`/election/${election.id}`}
-                    intent="primary"
-                    fill
-                  >
-                    {election.auditName}
-                  </LinkButton>
-                  <Button
-                    icon="trash"
-                    intent="primary"
-                    aria-label="Delete Audit"
-                    onClick={() => onClickDeleteAudit(election)}
+        {sortBy(organizations.data, o => o.name).map(organization => {
+          const [activeElections, completedElections] = partition(
+            organization.elections,
+            election => !election.isComplete
+          )
+          return (
+            <div key={organization.id}>
+              <div>
+                <h2>Active Audits &mdash; {organization.name}</h2>
+                {activeElections.length === 0 ? (
+                  <p>You have no active audits at this time.</p>
+                ) : (
+                  <OrganizationAuditList
+                    elections={activeElections}
+                    onClickDeleteAudit={onClickDeleteAudit}
                   />
-                </ButtonGroup>
-              ))
-            )}
-          </div>
-        ))}
+                )}
+              </div>
+              {completedElections.length > 0 && (
+                <div>
+                  <h2>Completed Audits &mdash; {organization.name}</h2>
+                  <OrganizationAuditList
+                    elections={completedElections}
+                    onClickDeleteAudit={onClickDeleteAudit}
+                  />
+                </div>
+              )}
+            </div>
+          )
+        })}
         <Confirm {...confirmProps} />
       </div>
       <div style={{ width: '50%' }}>
@@ -337,7 +366,39 @@ const AuditAdminHomeScreen = ({ user }: { user: IAuditAdmin }) => {
 
 const ListAuditsWrapper = styled.div`
   padding: 30px 30px 30px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 `
+
+const JurisdictionAuditList = ({
+  auditJurisdictions,
+}: {
+  auditJurisdictions: [string, IJurisdictionAdmin['jurisdictions']][]
+}) => {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      {sortBy(auditJurisdictions, ([_, jurisdictions]) =>
+        new Date(jurisdictions[0].election.createdAt).valueOf()
+      )
+        .reverse()
+        .flatMap(([electionId, jurisdictions]) =>
+          sortBy(jurisdictions, j => j.name).map(jurisdiction => (
+            <LinkButton
+              key={jurisdiction.id}
+              to={`/election/${electionId}/jurisdiction/${jurisdiction.id}`}
+              intent={jurisdiction.election.isComplete ? 'none' : 'primary'}
+              large
+              fill
+              style={{ justifyContent: 'start' }}
+            >
+              {jurisdiction.name} &mdash; {jurisdiction.election.auditName}
+            </LinkButton>
+          ))
+        )}
+    </div>
+  )
+}
 
 const ListAuditsJurisdictionAdmin = ({
   user,
@@ -345,38 +406,32 @@ const ListAuditsJurisdictionAdmin = ({
   user: IJurisdictionAdmin
 }) => {
   const jurisdictionsByAudit = groupBy(user.jurisdictions, j => j.election.id)
+  const [activeAuditJurisdictions, completedAuditJurisdictions] = partition(
+    Object.entries(jurisdictionsByAudit),
+    ([_, jurisdictions]) => !jurisdictions[0].election.isComplete
+  )
+
   return (
     <ListAuditsWrapper>
-      {Object.entries(jurisdictionsByAudit).length === 0 ? (
-        <Callout intent="warning">
-          You don&apos;t have any available audits at the moment
-        </Callout>
-      ) : (
-        sortBy(
-          Object.entries(jurisdictionsByAudit),
-          ([_, jurisdictions]) => jurisdictions[0].election.auditName
-        ).map(([electionId, jurisdictions]) => (
-          <div key={electionId}>
-            <h2>Jurisdictions - {jurisdictions[0].election.auditName}</h2>
-            {sortBy(jurisdictions, j => j.name).map(
-              ({ id, name, election }) => (
-                <LinkButton
-                  key={id}
-                  to={`/election/${election.id}/jurisdiction/${id}`}
-                  intent="primary"
-                  large
-                  fill
-                  style={{
-                    justifyContent: 'start',
-                    marginBottom: '15px',
-                  }}
-                >
-                  {name}
-                </LinkButton>
-              )
-            )}
-          </div>
-        ))
+      <div>
+        <h2>Active Audits</h2>
+        {activeAuditJurisdictions.length === 0 ? (
+          <p>You have no active audits at this time.</p>
+        ) : (
+          <JurisdictionAuditList
+            key="active"
+            auditJurisdictions={activeAuditJurisdictions}
+          />
+        )}
+      </div>
+      {completedAuditJurisdictions.length > 0 && (
+        <div>
+          <h2>Completed Audits</h2>
+          <JurisdictionAuditList
+            key="completed"
+            auditJurisdictions={completedAuditJurisdictions}
+          />
+        </div>
       )}
     </ListAuditsWrapper>
   )

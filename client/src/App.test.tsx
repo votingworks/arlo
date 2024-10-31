@@ -47,9 +47,7 @@ describe('App', () => {
       const expectedCalls = [jaApiCalls.getUser]
       await withMockFetch(expectedCalls, async () => {
         renderView('/')
-        await screen.findByRole('heading', {
-          name: 'Jurisdictions - audit one',
-        })
+        await screen.findByRole('heading', { name: 'Active Audits' })
       })
     })
 
@@ -61,7 +59,7 @@ describe('App', () => {
       await withMockFetch(expectedCalls, async () => {
         renderView('/')
         await screen.findByRole('heading', {
-          name: 'Audits - State of California',
+          name: 'Active Audits — State of California',
         })
       })
     })
@@ -129,7 +127,7 @@ describe('App', () => {
           '/election/1/jurisdiction/jurisdiction-id-1'
         )
         await screen.findByRole('heading', {
-          name: 'Audits - State of California',
+          name: 'Active Audits — State of California',
         })
         expect(history.location.pathname).toEqual('/')
       })
@@ -179,9 +177,7 @@ describe('App', () => {
       const expectedCalls = [jaApiCalls.getUser]
       await withMockFetch(expectedCalls, async () => {
         const { history } = renderView('/election/1/audit-board/audit-board-1')
-        await screen.findByRole('heading', {
-          name: 'Jurisdictions - audit one',
-        })
+        await screen.findByRole('heading', { name: 'Active Audits' })
         expect(history.location.pathname).toEqual('/')
       })
     })
@@ -194,7 +190,7 @@ describe('App', () => {
       await withMockFetch(expectedCalls, async () => {
         const { history } = renderView('/election/1/audit-board/audit-board-1')
         await screen.findByRole('heading', {
-          name: 'Audits - State of California',
+          name: 'Active Audits — State of California',
         })
         expect(history.location.pathname).toEqual('/')
       })
@@ -252,7 +248,7 @@ describe('App', () => {
       await withMockFetch(expectedCalls, async () => {
         const { history } = renderView('/tally-entry')
         await screen.findByRole('heading', {
-          name: 'Audits - State of California',
+          name: 'Active Audits — State of California',
         })
         expect(history.location.pathname).toEqual('/')
       })
@@ -262,9 +258,7 @@ describe('App', () => {
       const expectedCalls = [jaApiCalls.getUser, jaApiCalls.getUser]
       await withMockFetch(expectedCalls, async () => {
         const { history } = renderView('/tally-entry')
-        await screen.findByRole('heading', {
-          name: 'Jurisdictions - audit one',
-        })
+        await screen.findByRole('heading', { name: 'Active Audits' })
         expect(history.location.pathname).toEqual('/')
       })
     })

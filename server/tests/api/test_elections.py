@@ -411,21 +411,26 @@ def test_list_organizations(client: FlaskClient):
     election_id = create_election(client, "Test Audit Org List", organization_id=org_id)
     org_id_2, _ = create_org_and_admin("Test Org List 2", aa_email)
     rv = client.get(f"/api/audit_admins/{aa_id}/organizations")
-    assert json.loads(rv.data) == [
-        {
-            "name": "Test Org List",
-            "id": org_id,
-            "elections": [
-                {
-                    "id": election_id,
-                    "auditName": "Test Audit Org List",
-                    "electionName": None,
-                    "state": None,
-                }
-            ],
-        },
-        {"name": "Test Org List 2", "id": org_id_2, "elections": []},
-    ]
+    compare_json(
+        json.loads(rv.data),
+        [
+            {
+                "name": "Test Org List",
+                "id": org_id,
+                "elections": [
+                    {
+                        "id": election_id,
+                        "auditName": "Test Audit Org List",
+                        "electionName": None,
+                        "state": None,
+                        "createdAt": assert_is_date,
+                        "isComplete": False,
+                    }
+                ],
+            },
+            {"name": "Test Org List 2", "id": org_id_2, "elections": []},
+        ],
+    )
 
 
 def test_list_organizations_not_authorized(

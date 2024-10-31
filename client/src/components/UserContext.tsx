@@ -12,6 +12,8 @@ export interface IElection {
   auditName: string
   electionName: string
   state: string
+  createdAt: string
+  isComplete: boolean
 }
 
 export interface IOrganization {
