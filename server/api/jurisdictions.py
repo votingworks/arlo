@@ -1,5 +1,4 @@
 from collections import Counter, defaultdict
-from dataclasses import dataclass
 import logging
 from typing import Dict, List, Optional, Mapping, cast as typing_cast
 import enum
@@ -730,19 +729,22 @@ def get_discrepancy_counts_by_jurisdiction(election: Election):
     )
 
 
-@dataclass
-class Discrepancy:
-    audit_count: int
-    reported_count: int
-    candidate_name: str
+DiscrepanciesByJurisdiction = Dict[str, Dict[str, Dict[str, Dict[str, int]]]]
+# DiscrepanciesByJurisdiction = {
+#     jurisdictionID: {
+#         batchName: {
+#             contestID: {
+#                 reportedVotes:  {choiceID: int},
+#                 auditedVotes:   {choiceID: int},
+#                 discrepancies:  {choiceID: int},
+#     }
+# }
 
 
-@dataclass
-class ContestDiscrepancies:
-    contest_id: str
-    jurisdiction_id: str
-    batch_name: str
-    discrepancies: List[Discrepancy]
+def create_nested_discrepancies_dict():
+    return defaultdict(
+        lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
+    )
 
 
 @api.route("/election/<election_id>/discrepancy", methods=["GET"])
@@ -752,7 +754,7 @@ def get_discrepancies_by_jurisdiction(election: Election):
     if not current_round:
         raise Conflict("Audit not started")
 
-    discrepancies_by_jurisdiction: Dict[str, List[ContestDiscrepancies]] = defaultdict()
+    discrepancies_by_jurisdiction: DiscrepanciesByJurisdiction = {}
 
     if election.audit_type == AuditType.BATCH_COMPARISON:
         discrepancies_by_jurisdiction = (
@@ -769,8 +771,9 @@ def get_discrepancies_by_jurisdiction(election: Election):
 def get_batch_comparison_audit_discrepancies_by_jurisdiction(
     election: Election, round_id: str
 ):
-    discrepancies_by_jurisdiction: Dict[str, List[ContestDiscrepancies]] = defaultdict()
+    discrepancies_by_jurisdiction = create_nested_discrepancies_dict()
 
+    # TODO: Add support for combined batches
     batch_keys_in_round = set(
         SampledBatchDraw.query.filter_by(round_id=round_id)
         .join(Batch)
@@ -794,31 +797,20 @@ def get_batch_comparison_audit_discrepancies_by_jurisdiction(
             if batch_key not in batch_keys_in_round:
                 continue
 
+            audited_contest_result = audited_batch_result[contest.id]
+            reported_contest_result = reported_batch_results[batch_key][contest.id]
             vote_deltas = batch_vote_deltas(
-                reported_batch_results[batch_key][contest.id],
-                audited_batch_result[contest.id],
+                reported_contest_result, audited_contest_result
             )
             if not vote_deltas:
                 continue
 
             jurisdiction_name, batch_name = batch_key
             jurisdiction_id = jurisdiction_name_to_id[jurisdiction_name]
-            if jurisdiction_id not in discrepancies_by_jurisdiction:
-                discrepancies_by_jurisdiction[jurisdiction_id] = []
+            discrepancies_by_jurisdiction[jurisdiction_id][batch_name][contest.id] = {
+                "reportedVotes": reported_contest_result,
+                "auditedVotes": audited_contest_result,
+                "discrepancies": vote_deltas,
+            }
 
-            discrepancies: List[Discrepancy] = []
-            for choice in contest.choices:
-                audit_count = audited_batch_result[contest.id][choice.id]
-                reported_count = reported_batch_results[batch_key][contest.id][
-                    choice.id
-                ]
-                if audit_count == reported_count:
-                    continue
-                discrepancy = Discrepancy(audit_count, reported_count, choice.name)
-                discrepancies.append(discrepancy)
-
-            contest_discrepancies = ContestDiscrepancies(
-                contest.id, jurisdiction_id, batch_name, discrepancies
-            )
-            discrepancies_by_jurisdiction[jurisdiction_id].append(contest_discrepancies)
     return discrepancies_by_jurisdiction
