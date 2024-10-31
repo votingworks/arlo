@@ -1,5 +1,5 @@
 import React from 'react'
-import { waitFor, screen, render } from '@testing-library/react'
+import { waitFor, screen, render, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QueryClientProvider } from 'react-query'
 import Settings from './Settings'
@@ -74,9 +74,7 @@ describe('Setup > Settings', () => {
 
       screen.getByRole('heading', { name: 'Random Seed' })
       userEvent.type(
-        screen.getByLabelText(
-          'Enter the random characters to seed the pseudo-random number generator.'
-        ),
+        screen.getByLabelText(/Enter a series of random numbers/),
         '12345'
       )
 
@@ -143,6 +141,69 @@ describe('Setup > Settings', () => {
 
     await waitFor(() => {
       expect(screen.queryAllByText('Required').length).toBe(3)
+    })
+  })
+
+  it('shows a presentation mode modal for random seed entry', async () => {
+    const expectedSettings = {
+      ...auditSettingsMocks.blank,
+      randomSeed: '12345',
+      // Default values
+      riskLimit: 10,
+      electionName: '',
+      state: '',
+    }
+    const expectedCalls = [
+      aaApiCalls.getSettings(auditSettingsMocks.blank),
+      aaApiCalls.putSettings(expectedSettings),
+      aaApiCalls.getSettings(expectedSettings),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderSettings()
+
+      await screen.findByRole('heading', { name: 'Audit Settings' })
+
+      userEvent.click(screen.getByRole('button', { name: 'Presentation Mode' }))
+      let modal = screen
+        .getByRole('heading', { name: 'Enter Random Seed' })
+        .closest('div.bp3-dialog')! as HTMLElement
+      const saveButton = within(modal).getByRole('button', {
+        name: /Set Random Seed/,
+      })
+      expect(saveButton).toBeDisabled()
+
+      const modalSeedInput = within(modal).getByLabelText(
+        /Enter a series of random numbers/
+      )
+      expect(modalSeedInput).toHaveValue('')
+
+      userEvent.type(modalSeedInput, '12345')
+      expect(modalSeedInput).toHaveValue('12345')
+
+      userEvent.click(saveButton)
+      expect(saveButton).toBeDisabled()
+      await waitFor(() => {
+        expect(modal).not.toBeInTheDocument()
+      })
+
+      const seedInput = screen.getByLabelText(
+        /Enter a series of random numbers/
+      )
+      expect(seedInput).toHaveValue('12345')
+      userEvent.type(seedInput, '6')
+
+      userEvent.click(screen.getByRole('button', { name: 'Presentation Mode' }))
+      modal = screen
+        .getByRole('heading', { name: 'Enter Random Seed' })
+        .closest('div.bp3-dialog')! as HTMLElement
+      expect(
+        within(modal).getByLabelText(/Enter a series of random numbers/)
+      ).toHaveValue('123456')
+
+      userEvent.click(within(modal).getByRole('button', { name: 'Close' }))
+      await waitFor(() => {
+        expect(modal).not.toBeInTheDocument()
+      })
     })
   })
 })
