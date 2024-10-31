@@ -155,6 +155,11 @@ def claim_next_task(worker_id: str, db_session) -> Optional[BackgroundTask]:
     # already locked the queued task, this query will block (though it shouldn't
     # take long to claim a task, so this shouldn't cause problems).
     #
+    # If new tasks are added after we lock the queued tasks, they won't be
+    # accessible by this worker, but another worker also won't be able to claim
+    # them (since it will also be trying to lock _all_ queued tasks, including
+    # the ones we already locked).
+    #
     # Importantly, this also ensures that we get a safe view of which lock_keys
     # are currently in use by in-progress tasks. If we're the only worker that
     # can claim a task right now, then no additional lock_keys can be locked. It
@@ -162,6 +167,9 @@ def claim_next_task(worker_id: str, db_session) -> Optional[BackgroundTask]:
     # lock_key while we're running this query, but that's fine because even if
     # we don't see that change and wanted to claim that lock_key, we'll just fail
     # and try again later.
+    #
+    # Another approach to this would be to lock the entire table, but that would
+    # also prevent in-progress tasks from completing.
     #
     # We don't actually need to load the queued tasks into the app, so we just
     # execute the query.
