@@ -165,3 +165,34 @@ export const useDiscrepancyCountsByJurisdiction = (
     options
   )
 }
+
+// { jurisidictionId: { batchName: { contestId: { "reportedVotes": {choiceId: int}, "auditedVotes":  {choiceId: int}, "discrepancies": {choiceId: int}}}}
+export type DiscrepanciesByJurisdiction = Record<
+  string,
+  Record<string, Record<string, ContestDiscrepancies>>
+>
+
+type ContestDiscrepancies = {
+  reportedVotes: Record<string, number>
+  auditedVotes: Record<string, number>
+  discrepancies: Record<string, number>
+}
+
+const discrepanciesByJurisdictionQueryKey = (electionId: string): string[] =>
+  jurisdictionsQueryKey(electionId).concat('discrepanciesByJurisdiction')
+
+export const useDiscrepanciesByJurisdiction = (
+  electionId: string,
+  options: { enabled?: boolean }
+): UseQueryResult<DiscrepanciesByJurisdiction, ApiError> => {
+  return useQuery(
+    discrepanciesByJurisdictionQueryKey(electionId),
+    async () => {
+      const response: DiscrepanciesByJurisdiction = await fetchApi(
+        `/api/election/${electionId}/discrepancy`
+      )
+      return response
+    },
+    options
+  )
+}
