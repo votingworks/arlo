@@ -1,4 +1,4 @@
-from collections import Counter
+from collections import Counter, defaultdict
 import logging
 from typing import Dict, List, Optional, Mapping, cast as typing_cast
 import enum
@@ -727,3 +727,86 @@ def get_discrepancy_counts_by_jurisdiction(election: Election):
             for jurisdiction in election.jurisdictions
         }
     )
+
+
+DiscrepanciesByJurisdiction = Dict[str, Dict[str, Dict[str, Dict[str, Dict[str, int]]]]]
+# DiscrepanciesByJurisdiction = {
+#     jurisdictionID: {
+#         batchName: {
+#             contestID: {
+#                 reportedVotes:  {choiceID: int},
+#                 auditedVotes:   {choiceID: int},
+#                 discrepancies:  {choiceID: int},
+#     }
+# }
+
+
+@api.route("/election/<election_id>/discrepancy", methods=["GET"])
+@restrict_access([UserType.AUDIT_ADMIN])
+def get_discrepancies_by_jurisdiction(election: Election):
+    current_round = get_current_round(election)
+    if not current_round:
+        raise Conflict("Audit not started")
+
+    discrepancies_by_jurisdiction: DiscrepanciesByJurisdiction = {}
+
+    if election.audit_type == AuditType.BATCH_COMPARISON:
+        discrepancies_by_jurisdiction = (
+            get_batch_comparison_audit_discrepancies_by_jurisdiction(
+                election, current_round.id
+            )
+        )
+    else:
+        raise Conflict("Discrepancies are only implemented for batch comparison audits")
+
+    return jsonify(discrepancies_by_jurisdiction)
+
+
+def get_batch_comparison_audit_discrepancies_by_jurisdiction(
+    election: Election, round_id: str
+) -> DiscrepanciesByJurisdiction:
+    discrepancies_by_jurisdiction: DiscrepanciesByJurisdiction = defaultdict(
+        lambda: defaultdict(dict)
+    )
+
+    # TODO: Add support for combined batches
+    batch_keys_in_round = set(
+        SampledBatchDraw.query.filter_by(round_id=round_id)
+        .join(Batch)
+        .join(Jurisdiction)
+        .with_entities(Jurisdiction.name, Batch.name)
+        .all()
+    )
+    jurisdiction_name_to_id = dict(
+        Jurisdiction.query.filter_by(election_id=election.id).with_entities(
+            Jurisdiction.name, Jurisdiction.id
+        )
+    )
+
+    for contest in list(election.contests):
+        audited_batch_results = sampled_batch_results(
+            contest, include_non_rla_batches=True
+        )
+        reported_batch_results = batch_tallies(contest)
+
+        for batch_key, audited_batch_result in audited_batch_results.items():
+            if batch_key not in batch_keys_in_round:
+                continue
+
+            audited_contest_result = audited_batch_result[contest.id]
+            reported_contest_result = reported_batch_results[batch_key][contest.id]
+            vote_deltas = batch_vote_deltas(
+                reported_contest_result, audited_contest_result
+            )
+            if not vote_deltas:
+                continue
+
+            jurisdiction_name, batch_name = batch_key
+            jurisdiction_id = jurisdiction_name_to_id[jurisdiction_name]
+            discrepancies_by_jurisdiction[jurisdiction_id][batch_name][contest.id] = {
+                "reportedVotes": reported_contest_result,
+                "auditedVotes": audited_contest_result,
+                "discrepancies": vote_deltas,
+            }
+
+    return discrepancies_by_jurisdiction

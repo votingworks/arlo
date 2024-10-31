@@ -429,3 +429,38 @@ def test_discrepancy_counts_before_audit_launch(
             }
         ]
     }
+
+
+def test_discrepancy_before_audit_launch(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+):
+    rv = client.get(f"/api/election/{election_id}/discrepancy")
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Audit not started",
+            }
+        ]
+    }
+
+
+def test_discrepancy_non_batch_comparison_enabled(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    round_1_id: str,  # pylint: disable=unused-argument
+):
+    rv = client.get(f"/api/election/{election_id}/discrepancy")
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Discrepancies are only implemented for batch comparison audits",
+            }
+        ]
+    }

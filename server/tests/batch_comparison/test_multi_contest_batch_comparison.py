@@ -692,6 +692,28 @@ def test_multi_contest_batch_comparison_end_to_end(
     assert discrepancy_counts[jurisdictions[1]["id"]] == 0
     assert discrepancy_counts[jurisdictions[2]["id"]] == 1
 
+    # Check discrepancies
+    rv = client.get(f"/api/election/{election_id}/discrepancy")
+    discrepancies = json.loads(rv.data)
+    assert (
+        discrepancies[jurisdictions[0]["id"]]["Batch 6"][contest_ids[0]][
+            "reportedVotes"
+        ][contest_1_choice_ids[0]]
+        == 50
+    )
+    assert (
+        discrepancies[jurisdictions[0]["id"]]["Batch 6"][contest_ids[0]][
+            "auditedVotes"
+        ][contest_1_choice_ids[0]]
+        == 49
+    )
+    assert (
+        discrepancies[jurisdictions[0]["id"]]["Batch 6"][contest_ids[0]][
+            "discrepancies"
+        ][contest_1_choice_ids[0]]
+        == 1
+    )
+
     #
     # Finish audit
     #
@@ -880,6 +902,31 @@ def test_multi_contest_batch_comparison_round_2(
     assert discrepancy_counts[jurisdiction_ids[1]] == 0
     assert discrepancy_counts[jurisdiction_ids[2]] == 0
 
+    # Check discrepancies
+    rv = client.get(f"/api/election/{election_id}/discrepancy")
+    discrepancies = json.loads(rv.data)
+
+    assert (
+        discrepancies[jurisdiction_ids[0]]["Batch 7"][contest_ids[0]]["reportedVotes"][
+            contest_1_choice_ids[0]
+        ]
+        == 50
+    )
+    assert (
+        discrepancies[jurisdiction_ids[0]]["Batch 7"][contest_ids[0]]["auditedVotes"][
+            contest_1_choice_ids[0]
+        ]
+        == 0
+    )
+    assert (
+        discrepancies[jurisdiction_ids[0]]["Batch 7"][contest_ids[0]]["discrepancies"][
+            contest_1_choice_ids[0]
+        ]
+        == 50
+    )
+    assert jurisdiction_ids[1] not in discrepancies
+    assert jurisdiction_ids[2] not in discrepancies
+
     #
     # End round 1
     #
@@ -1011,6 +1058,14 @@ def test_multi_contest_batch_comparison_round_2(
     assert discrepancy_counts[jurisdiction_ids[0]] == 0
     assert discrepancy_counts[jurisdiction_ids[1]] == 0
     assert discrepancy_counts[jurisdiction_ids[2]] == 0
+
+    # Check discrepancies
+    rv = client.get(f"/api/election/{election_id}/discrepancy")
+    discrepancies = json.loads(rv.data)
+
+    assert jurisdiction_ids[0] not in discrepancies
+    assert jurisdiction_ids[1] not in discrepancies
+    assert jurisdiction_ids[2] not in discrepancies
 
     #
     # End round 2 / finish audit
