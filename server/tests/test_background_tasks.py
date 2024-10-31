@@ -1,4 +1,6 @@
+from collections import defaultdict
 import logging
+import math
 import multiprocessing
 import random
 import time
@@ -483,22 +485,21 @@ def test_multiple_workers(db_session):
     for worker in workers:
         worker.start()
 
-    def num_completed_tasks():
+    def num_incomplete_tasks():
         return (
             db_session.query(BackgroundTask)
-            .filter_by(task_name="count")
-            .filter(BackgroundTask.completed_at.isnot(None))
+            .filter_by(task_name="count", completed_at=None)
             .count()
         )
 
-    while num_completed_tasks() < num_tasks / 2:
+    while num_incomplete_tasks() > num_tasks / 2:
         time.sleep(0.1)
 
     # Terminate some workers to make sure their tasks are reset and picked up by others
     workers[0].terminate()
     workers[1].terminate()
 
-    while num_completed_tasks() < num_tasks:
+    while num_incomplete_tasks() > 0:
         time.sleep(0.1)
 
     for worker in workers:
@@ -555,14 +556,13 @@ def test_multiple_workers_lock_on_election(db_session):
     num_tasks_per_election = 20
     num_workers = 4
 
-    election_id_1 = "election-1"
-    election_id_2 = "election-2"
+    election_ids = [f"election-{i}" for i in range(3)]
 
     db_session.execute(
         "CREATE TABLE IF NOT EXISTS election_count (election_id TEXT, count INT)"
     )
     db_session.execute("TRUNCATE TABLE election_count")
-    for election_id in [election_id_1, election_id_2]:
+    for election_id in election_ids:
         db_session.execute(
             "INSERT INTO election_count (election_id, count) VALUES (:election_id, 0)",
             dict(election_id=election_id),
@@ -582,10 +582,13 @@ def test_multiple_workers_lock_on_election(db_session):
         )
         db_session.commit()
 
-    # Enqueue tasks
-    for _ in range(num_tasks_per_election):
-        for election_id in [election_id_1, election_id_2]:
+    created_tasks_per_election = defaultdict(int)
+
+    # Enqueue some tasks to start
+    for _ in range(math.floor(num_tasks_per_election / 2)):
+        for election_id in election_ids:
             create_background_task(add1, dict(election_id=election_id), db_session)
+            created_tasks_per_election[election_id] += 1
     db_session.commit()
 
     db_url = db_session.bind.url
@@ -612,17 +615,31 @@ def test_multiple_workers_lock_on_election(db_session):
             .count()
         )
 
-    while num_incomplete_tasks() > 0:
+    while num_incomplete_tasks() > 0 or any(
+        num_tasks < num_tasks_per_election
+        for num_tasks in created_tasks_per_election.values()
+    ):
         time.sleep(0.1)
+
+        # Enqueue more tasks as we go
+        for election_id in random.choices(
+            election_ids,
+            k=random.randint(1, len(election_ids)),
+        ):
+            if created_tasks_per_election[election_id] < num_tasks_per_election:
+                create_background_task(add1, dict(election_id=election_id), db_session)
+                created_tasks_per_election[election_id] += 1
+        db_session.commit()
 
     for worker in workers:
         worker.terminate()
 
-    [(election_1_count,), (election_2_count,)] = db_session.execute(
-        "SELECT count FROM election_count ORDER BY election_id"
-    ).fetchall()
-    assert election_1_count == num_tasks_per_election
-    assert election_2_count == num_tasks_per_election
+    for election_id, count in db_session.execute(
+        "SELECT election_id, count FROM election_count"
+    ):
+        assert (
+            count == num_tasks_per_election
+        ), f"Expected count {count} for {election_id} to equal {num_tasks_per_election}"
 
 
 def test_task_missing_election_id():
