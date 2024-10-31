@@ -1,4 +1,5 @@
 from datetime import datetime
+import pathlib
 import shutil
 import io
 import os
@@ -48,6 +49,15 @@ def s3():  # pylint: disable=invalid-name
     )
 
 
+def s3Resource():  # pylint: disable=invalid-name
+    return boto3.resource(
+        "s3",
+        aws_access_key_id=config.AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=config.AWS_SECRET_ACCESS_KEY,
+        region_name=config.AWS_DEFAULT_REGION,
+    )
+
+
 def store_file(file: IO[bytes], storage_path: str) -> str:
     assert not os.path.isabs(storage_path)
     full_path = get_full_storage_path(storage_path)
@@ -70,6 +80,24 @@ def retrieve_file(storage_path: str) -> BinaryIO:
         s3().download_fileobj(bucket_name, key, file)
         file.seek(0)
         return file
+    else:
+        return open(storage_path, "rb")
+
+
+def retrieve_file_streaming(storage_path: str, working_directory: str) -> BinaryIO:
+    if config.FILE_UPLOAD_STORAGE_PATH.startswith("s3://"):
+        assert storage_path.startswith(config.FILE_UPLOAD_STORAGE_PATH)
+        parsed_path = urlparse(storage_path)
+        bucket_name = parsed_path.netloc
+        key = parsed_path.path[1:]
+        temp_file_path = os.path.join(working_directory, key)
+        # make sure the path exists
+        pathlib.Path(temp_file_path).parent.mkdir(parents=True, exist_ok=True)
+        obj = s3Resource().Object(bucket_name, key)
+        body = obj.get()["Body"]
+        with open(temp_file_path, "wb") as temp_file:
+            shutil.copyfileobj(body, temp_file)
+        return open(temp_file_path, "rb")
     else:
         return open(storage_path, "rb")
 

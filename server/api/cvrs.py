@@ -47,6 +47,7 @@ from ..util.file import (
     get_file_upload_url,
     get_standard_file_upload_request_params,
     retrieve_file,
+    retrieve_file_streaming,
     serialize_file,
     serialize_file_processing,
     timestamp_filename,
@@ -314,8 +315,11 @@ def column_value(
 
 def parse_clearballot_cvrs(
     jurisdiction: Jurisdiction,
+    working_directory: str,
 ) -> Tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
-    cvr_file = retrieve_file(jurisdiction.cvr_file.storage_path)
+    cvr_file = retrieve_file_streaming(
+        jurisdiction.cvr_file.storage_path, working_directory
+    )
     cvrs = csv_reader_for_cvr(cvr_file)
     headers = next(cvrs)
 
@@ -412,8 +416,11 @@ def parse_clearballot_cvrs(
 
 def parse_dominion_cvrs(
     jurisdiction: Jurisdiction,
+    working_directory: str,
 ) -> Tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
-    cvr_file = retrieve_file(jurisdiction.cvr_file.storage_path)
+    cvr_file = retrieve_file_streaming(
+        jurisdiction.cvr_file.storage_path, working_directory
+    )
     cvrs = csv_reader_for_cvr(cvr_file)
 
     # Parse out all the initial metadata
@@ -677,7 +684,9 @@ def parse_ess_cvrs(
     #   - Second, parse out the interpretations.
     # 5. Concatenate the parsed CVRBallot lists and join that to the parsed interpretation
 
-    zip_file = retrieve_file(jurisdiction.cvr_file.storage_path)
+    zip_file = retrieve_file_streaming(
+        jurisdiction.cvr_file.storage_path, working_directory
+    )
     file_names = unzip_files(zip_file, working_directory)
     zip_file.close()
 
@@ -1027,7 +1036,9 @@ def parse_hart_cvrs(
        scheme for interpretations requires knowing all of the contest and choice names up front.
     6. Parse the interpretations.
     """
-    wrapper_zip_file = retrieve_file(jurisdiction.cvr_file.storage_path)
+    wrapper_zip_file = retrieve_file_streaming(
+        jurisdiction.cvr_file.storage_path, working_directory
+    )
     file_names = unzip_files(wrapper_zip_file, working_directory)
     wrapper_zip_file.close()
 
@@ -1050,9 +1061,12 @@ def parse_hart_cvrs(
 
     # If there are no zip files inside the "wrapper" we assume it was not a wrapper and there was only one cvr zip file uploaded, unwrapped.
     if len(cvr_zip_files) == 0 and len(scanned_ballot_information_files) == 0:
-        cvr_zip_files[jurisdiction.cvr_file.name] = retrieve_file(
-            jurisdiction.cvr_file.storage_path
+        # We need to re open the file since it was closed after unzipping
+        # pylint: disable=consider-using-with
+        cvr_zip_files[jurisdiction.cvr_file.name] = open(
+            os.path.join(working_directory, wrapper_zip_file.name), "rb"
         )
+
     # If the wrapper was a "wrapper" zip it should only contain csv and zip files
     elif len(nonCsvZipFiles) > 0:
         raise UserError(
@@ -1327,9 +1341,9 @@ def process_cvr_file(
         # Parse ballot rows and contest metadata
         def parse_cvrs():
             if jurisdiction.cvr_file_type == CvrFileType.DOMINION:
-                return parse_dominion_cvrs(jurisdiction)
+                return parse_dominion_cvrs(jurisdiction, working_directory)
             elif jurisdiction.cvr_file_type == CvrFileType.CLEARBALLOT:
-                return parse_clearballot_cvrs(jurisdiction)
+                return parse_clearballot_cvrs(jurisdiction, working_directory)
             elif jurisdiction.cvr_file_type == CvrFileType.ESS:
                 return parse_ess_cvrs(jurisdiction, working_directory)
             elif jurisdiction.cvr_file_type == CvrFileType.HART:
