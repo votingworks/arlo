@@ -328,6 +328,28 @@ def test_batch_comparison_round_2(
     # In J2, single sampled batch hasn't been audited yet. The frontend won't show this to the user.
     assert discrepancy_counts[jurisdictions[1]["id"]] == 1
 
+    # Check discrepancies
+    rv = client.get(f"/api/election/{election_id}/discrepancy")
+    discrepancies = json.loads(rv.data)
+    assert (
+        discrepancies[jurisdictions[0]["id"]]["Batch 1"][contests[0]["id"]][
+            "reportedVotes"
+        ][choice_ids[0]]
+        == 500
+    )
+    assert (
+        discrepancies[jurisdictions[0]["id"]]["Batch 1"][contests[0]["id"]][
+            "auditedVotes"
+        ][choice_ids[0]]
+        == 400
+    )
+    assert (
+        discrepancies[jurisdictions[0]["id"]]["Batch 1"][contests[0]["id"]][
+            "discrepancies"
+        ][choice_ids[0]]
+        == 100
+    )
+
     # Now do the second jurisdiction
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -652,9 +674,14 @@ def test_batch_comparison_batches_sampled_multiple_times(
     # Check discrepancy counts
     rv = client.get(f"/api/election/{election_id}/discrepancy-counts")
     discrepancy_counts = json.loads(rv.data)
-    print(discrepancy_counts)
     assert discrepancy_counts[jurisdictions[0]["id"]] == 0
     assert discrepancy_counts[jurisdictions[1]["id"]] == 0
+
+    # Check discrepancies
+    rv = client.get(f"/api/election/{election_id}/discrepancy")
+    discrepancies = json.loads(rv.data)
+    assert jurisdictions[0]["id"] not in discrepancies
+    assert jurisdictions[1]["id"] not in discrepancies
 
     # End the round
     rv = client.post(f"/api/election/{election_id}/round/current/finish")
