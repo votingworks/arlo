@@ -1,6 +1,6 @@
 from collections import Counter, defaultdict
 import logging
-from typing import Dict, List, Optional, Mapping, cast as typing_cast
+from typing import Dict, List, Optional, Mapping, Union, cast as typing_cast
 import enum
 import uuid
 import datetime
@@ -729,14 +729,16 @@ def get_discrepancy_counts_by_jurisdiction(election: Election):
     )
 
 
-DiscrepanciesByJurisdiction = Dict[str, Dict[str, Dict[str, Dict[str, Dict[str, int]]]]]
+DiscrepanciesByJurisdiction = Dict[
+    str, Dict[str, Dict[str, Dict[str, Dict[str, Union[str, int]]]]]
+]
 # DiscrepanciesByJurisdiction = {
 #     jurisdictionID: {
-#         batchName: {
+#         batchName/ballotReadableIdentifier: {
 #             contestID: {
-#                 reportedVotes:  {choiceID: int},
-#                 auditedVotes:   {choiceID: int},
-#                 discrepancies:  {choiceID: int},
+#                 reportedVotes:  {choiceID: int/str}, // 8, -1, o, u
+#                 auditedVotes:   {choiceID: int/str},
+#                 discrepancies:  {choiceID: int/str}, // only int
 #     }
 # }
 
@@ -756,8 +758,16 @@ def get_discrepancies_by_jurisdiction(election: Election):
                 election, current_round.id
             )
         )
+    elif election.audit_type == AuditType.BALLOT_COMPARISON:
+        discrepancies_by_jurisdiction = (
+            get_ballot_comparison_audit_discrepancies_by_jurisdiction(
+                election, current_round.id
+            )
+        )
     else:
-        raise Conflict("Discrepancies are only implemented for batch comparison audits")
+        raise Conflict(
+            "Discrepancies are only implemented for batch and ballot comparison audits"
+        )
 
     return jsonify(discrepancies_by_jurisdiction)
 
@@ -804,9 +814,110 @@ def get_batch_comparison_audit_discrepancies_by_jurisdiction(
             jurisdiction_name, batch_name = batch_key
             jurisdiction_id = jurisdiction_name_to_id[jurisdiction_name]
             discrepancies_by_jurisdiction[jurisdiction_id][batch_name][contest.id] = {
-                "reportedVotes": reported_contest_result,
-                "auditedVotes": audited_contest_result,
-                "discrepancies": vote_deltas,
+                "reportedVotes": normalize_vals_for_discrepancies(
+                    reported_contest_result
+                ),
+                "auditedVotes": normalize_vals_for_discrepancies(
+                    audited_contest_result
+                ),
+                "discrepancies": normalize_vals_for_discrepancies(vote_deltas),
             }
 
     return discrepancies_by_jurisdiction
+
+
+def get_ballot_comparison_audit_discrepancies_by_jurisdiction(
+    election: Election, round_id: str
+) -> DiscrepanciesByJurisdiction:
+    discrepancies_by_jurisdiction: DiscrepanciesByJurisdiction = defaultdict(
+        lambda: defaultdict(dict)
+    )
+
+    ballots_in_round = (
+        SampledBallot.query.join(SampledBallotDraw)
+        .filter_by(round_id=round_id)
+        .distinct(SampledBallot.id)
+        .with_entities(SampledBallot.id)
+        .subquery()
+    )
+    sampled_ballot_id_to_jurisdiction_id = dict(
+        SampledBallot.query.filter(SampledBallot.id.in_(ballots_in_round))
+        .join(Batch)
+        .with_entities(SampledBallot.id, Batch.jurisdiction_id)
+    )
+    # make a readable identifier - it is the same default format as the ImprintedID
+    # but some sampled ballots have ImprintedIDs of a different format that are
+    # very long and unreadable, so here we ensure they all have the same format
+    # Ex. "Tabulator X, Batch Y, Ballot Position Z, Container 0"
+    sampled_ballot_id_to_readable_identifier = dict(
+        (
+            sampled_ballot_id,
+            f"{tabulator}, {name}, Ballot Position {ballot_position}"
+            + (f", Container {container}" if container is not None else ""),
+        )
+        for sampled_ballot_id, tabulator, name, ballot_position, container in SampledBallot.query.filter(
+            SampledBallot.id.in_(ballots_in_round)
+        )
+        .join(Batch)
+        .with_entities(
+            SampledBallot.id,
+            Batch.tabulator,
+            Batch.name,
+            SampledBallot.ballot_position,
+            Batch.container,
+        )
+    )
+
+    for contest in election.contests:
+        audited_results = sampled_ballot_interpretations_to_cvrs(contest)
+        reported_results = cvrs_for_contest(contest)
+        for ballot_id, audited_result in audited_results.items():
+            audited_cvr = audited_result["cvr"]
+            reported_cvr = reported_results.get(ballot_id)
+            vote_deltas = ballot_vote_deltas(contest, reported_cvr, audited_cvr)
+            if not vote_deltas or isinstance(vote_deltas, str):
+                continue
+
+            reported_votes = {}
+            if reported_cvr and contest.id in reported_cvr:
+                reported_votes = reported_cvr[contest.id]
+
+            audited_votes = {}
+            if audited_cvr and contest.id in audited_cvr:
+                audited_votes = audited_cvr[contest.id]
+
+            if ballot_id in sampled_ballot_id_to_jurisdiction_id:
+                if not reported_cvr:
+                    reported_cvr = {}
+                jurisdiction_id = sampled_ballot_id_to_jurisdiction_id[ballot_id]
+                readable_ballot_identifier = sampled_ballot_id_to_readable_identifier[
+                    ballot_id
+                ]
+                discrepancies_by_jurisdiction[jurisdiction_id][
+                    readable_ballot_identifier
+                ][contest.id] = {
+                    "reportedVotes": normalize_vals_for_discrepancies(reported_votes),
+                    "auditedVotes": normalize_vals_for_discrepancies(audited_votes),
+                    "discrepancies": normalize_vals_for_discrepancies(vote_deltas),
+                }
+
+    return discrepancies_by_jurisdiction
+
+
+# normalize_vals_for_discrepancies normalizes the return type for batch and ballot comparison discrepanices.
+# It converts string numbers to int numbers, leaving non-numbers as is (i.e. 'o', 'u'). This is useful for
+# ballot CVRs to ensure that numbers are always returned as numbers, to match the behavior of batch discrepancies
+# and of vote deltas
+def normalize_vals_for_discrepancies(
+    cvr: Union[Dict[str, str], Dict[str, int]]
+) -> Dict[str, Union[str, int]]:
+    normalized_cvr: Dict[str, Union[str, int]] = {}
+    for key, value in cvr.items():
+        normalized_value: Union[str, int] = value
+        if isinstance(value, str):
+            try:
+                normalized_value = int(value)
+            except ValueError:  # pragma: no cover
+                normalized_value = value  # pragma: no cover
+        normalized_cvr[key] = normalized_value
+    return normalized_cvr
