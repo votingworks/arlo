@@ -22,6 +22,7 @@ import {
   IBatchTalliesFileInfo,
   IJurisdiction,
   DiscrepancyCountsByJurisdiction,
+  DiscrepanciesByJurisdiction,
 } from './useJurisdictions'
 import { IStandardizedContest } from './useStandardizedContests'
 import { ISampleSizesResponse } from './AuditAdmin/Setup/Review/useSampleSizes'
@@ -1822,8 +1823,11 @@ export const jaApiCalls = {
     },
     response: { status: 'ok' },
   },
-  getJurisdictionContests: (contests: IContest[]) => ({
-    url: `/api/election/1/jurisdiction/jurisdiction-id-1/contest`,
+  getJurisdictionContests: (
+    contests: IContest[],
+    jurisdictionID = 'jurisdiction-id-1'
+  ) => ({
+    url: `/api/election/1/jurisdiction/${jurisdictionID}/contest`,
     response: { contests },
   }),
   getTallyEntryAccountStatus: (status: ITallyEntryAccountStatus) => ({
@@ -2178,6 +2182,10 @@ export const aaApiCalls = {
   },
   getDiscrepancyCounts: (response: DiscrepancyCountsByJurisdiction) => ({
     url: '/api/election/1/discrepancy-counts',
+    response,
+  }),
+  getDiscrepancies: (response: DiscrepanciesByJurisdiction) => ({
+    url: '/api/election/1/discrepancy',
     response,
   }),
   reopenAuditBoard: {
