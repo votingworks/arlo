@@ -460,7 +460,7 @@ def test_discrepancy_non_batch_comparison_enabled(
         "errors": [
             {
                 "errorType": "Conflict",
-                "message": "Discrepancies are only implemented for batch comparison audits",
+                "message": "Discrepancies are only implemented for batch and ballot comparison audits",
             }
         ]
     }
