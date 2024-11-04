@@ -80,26 +80,6 @@ def batch_key_to_name(
     )
 
 
-def validate_choice_name_and_get_choice_id(
-    contest: Contest, choice_name: str
-) -> Optional[str]:
-    choice_id = None
-    for choice in contest.choices:
-        if choice.name == choice_name:
-            choice_id = choice.id
-            break
-
-    if (
-        not choice_id
-        and choice_name
-        and choice_name.lower() != "overvote"
-        and choice_name.lower() != "undervote"
-        and choice_name.lower() != "write-in"
-    ):
-        raise UserError(f"Unrecognized choice in CVR file: {choice_name}")
-    return choice_id
-
-
 class ElectionResults(TypedDict):
     ballot_count_by_batch: Dict[BatchKey, int]
     ballot_count_by_group: Optional[Dict[str, int]]
@@ -283,6 +263,23 @@ def process_batch_inventory_cvr_file(
             lambda: defaultdict(int)
         )
 
+        def validate_choice_name_and_get_choice_id(choice_name: str) -> Optional[str]:
+            choice_id = None
+            for choice in contest.choices:
+                if choice.name == choice_name:
+                    choice_id = choice.id
+                    break
+
+            if (
+                not choice_id
+                and choice_name
+                and choice_name != "overvote"
+                and choice_name != "undervote"
+                and choice_name != "Write-in"
+            ):
+                raise UserError(f"Unrecognized choice in CVR file: {choice_name}")
+            return choice_id
+
         # ZIP file with multiple CSVs
         if batch_inventory_data.cvr_file.storage_path.endswith(".zip"):
             entry_names = unzip_files(cvr_file, working_directory)
@@ -351,9 +348,7 @@ def process_batch_inventory_cvr_file(
                         )
                     batch = cvr_number_to_batch[cvr_number]
                     batch_key: BatchKey = ("", batch)
-                    choice_id = validate_choice_name_and_get_choice_id(
-                        contest, choice_name
-                    )
+                    choice_id = validate_choice_name_and_get_choice_id(choice_name)
 
                     ballot_count_by_batch[batch_key] += 1
                     if choice_id:
@@ -382,9 +377,7 @@ def process_batch_inventory_cvr_file(
                     )
 
                     batch_key: BatchKey = ("", batch)
-                    choice_id = validate_choice_name_and_get_choice_id(
-                        contest, choice_name
-                    )
+                    choice_id = validate_choice_name_and_get_choice_id(choice_name)
 
                     ballot_count_by_batch[batch_key] += 1
                     if choice_id:
@@ -415,6 +408,26 @@ def process_batch_inventory_cvr_file(
             lambda: defaultdict(int)
         )
 
+        def validate_choice_name_and_get_choice_id(choice_name: str) -> Optional[str]:
+            choice_id = None
+            for choice in contest.choices:
+                if choice.name == choice_name:
+                    choice_id = choice.id
+                    break
+                # handle capitalization mismatches for the write in column
+                if choice.name.lower() == choice_name.lower() == "write-in":
+                    choice_id = choice.id
+                    break
+            if (
+                not choice_id
+                and choice_name
+                # If the user configured a write-in candidate choice when setting up the audit choice_id
+                # will be set in the for loop above. If the audit wasn't configured for write-ins we can parse them out.
+                and choice_name.lower() != "write-in"
+            ):
+                raise UserError(f"Unrecognized choice in CVR file: {choice_name}")
+            return choice_id
+
         # cvr_file is a ZIP file with multiple XMLs
         zip_entry_names = unzip_files(cvr_file, working_directory)
         cvr_file_names = [
@@ -429,7 +442,7 @@ def process_batch_inventory_cvr_file(
             batch_number = find_text_xml(cvr_xml, "BatchNumber")
             precinct_name = find_text_xml(find_xml(cvr_xml, "PrecinctSplit"), "Name")
             batch_key_value = (
-                batch_number if batch_number is not None else precinct_name,
+                batch_number if batch_number is not None else precinct_name
             )
             if batch_key_value is None:
                 raise UserError(
@@ -443,11 +456,9 @@ def process_batch_inventory_cvr_file(
             ballot_count_by_batch[batch_key] += 1
             contest_results = parse_contest_results(cvr_xml)
             for contest in contests:
-                choices = contest_results.get(contest.name) or set()
+                choices = contest_results.get(contest.name, set())
                 for choice_name in choices:
-                    choice_id = validate_choice_name_and_get_choice_id(
-                        contest, choice_name
-                    )
+                    choice_id = validate_choice_name_and_get_choice_id(choice_name)
                     if choice_id is not None:
                         batch_tallies[batch_key][choice_id] += 1
 

@@ -1654,7 +1654,8 @@ def test_batch_inventory_hart_cvr_upload(
         build_hart_cvr("BATCH2", "3", "1-2-3", "1,0,0,0,1"),
         build_hart_cvr("BATCH3", "1", "1-3-1", ",,1,0,0"),
         build_hart_cvr("BATCH3", "2", "1-3-2", ",,1,0,0"),
-        build_hart_cvr("BATCH4", "1", "1-4-1", "1,1,0,0,1", add_write_in=True),
+        build_hart_cvr("BATCH4", "1", "1-4-1", "1,0,0,0,1"),
+        build_hart_cvr("BATCH4", "1", "1-4-1", "1,0,0,0,1", add_write_in=True),
     ]
     hart_zip = zip_hart_cvrs(hart_cvrs)
 
