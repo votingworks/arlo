@@ -7,20 +7,19 @@ import {
 } from '../../useJurisdictions'
 import useContestsJurisdictionAdmin from '../../JurisdictionAdmin/useContestsJurisdictionAdmin'
 import { IContest } from '../../../types'
+import { assert } from '../../utilities'
 
 const ContestDiscrepanciesTable = styled(HTMLTable).attrs({
   bordered: true,
   striped: true,
 })`
-  &.${Classes.HTML_TABLE} {
-    background: #ffffff;
-    border: 1px solid ${Colors.LIGHT_GRAY1};
-    margin-bottom: 32px;
-    table-layout: fixed;
-    width: 100%;
-  }
+  background: #ffffff;
+  border: 1px solid ${Colors.LIGHT_GRAY1};
+  margin-bottom: 32px;
+  table-layout: fixed;
+  width: 100%;
 
-  &.${Classes.HTML_TABLE} td {
+  td {
     vertical-align: middle;
   }
 `
@@ -31,22 +30,22 @@ const TableHeader = styled(H6)`
   }
 `
 
-/* istanbul ignore next */
 function getContestName(contests: IContest[], contestId: string) {
   const contest = contests.find(c => c.id === contestId)
-  return contest ? contest.name : `Contest Unknown: ID ${contestId}`
+  assert(contest !== undefined)
+  return contest.name
 }
 
-/* istanbul ignore next */
 function getChoiceName(
   contests: IContest[],
   contestId: string,
   choiceId: string
 ) {
   const contest = contests.find(c => c.id === contestId)
-  if (!contest) return `Contest Unknown: ID ${choiceId}`
+  assert(contest !== undefined)
   const choice = contest.choices.find(c => c.id === choiceId)
-  return choice ? choice.name : `Choice Unknown: ID ${choiceId}`
+  assert(choice !== undefined)
+  return choice.name
 }
 
 export interface IJurisdictionDiscrepanciesProps {

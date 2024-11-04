@@ -101,10 +101,6 @@ const Progress: React.FC<IProgressProps> = ({
   const ballotsOrBatches =
     auditType === 'BATCH_COMPARISON' ? 'Batches' : 'Ballots'
 
-  const someJurisdictionHasDiscrepancies = Object.values(
-    discrepancyCountsQuery.data ? discrepancyCountsQuery.data : {}
-  ).some(count => count > 0)
-
   const columns: Column<IJurisdiction>[] = [
     {
       Header: 'Jurisdiction',
@@ -442,12 +438,6 @@ const Progress: React.FC<IProgressProps> = ({
         <AsyncButton
           onClick={() =>
             apiDownload(`/election/${electionId}/discrepancy-report`)
-          }
-          icon={
-            <Icon
-              icon="flag"
-              intent={someJurisdictionHasDiscrepancies ? 'danger' : 'none'}
-            />
           }
         >
           Download Discrepancy Report
