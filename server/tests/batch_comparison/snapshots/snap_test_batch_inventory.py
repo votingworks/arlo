@@ -7,9 +7,7 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
-snapshots[
-    "test_batch_inventory_excel_tabulator_status_file 1"
-] = """Batch Inventory Worksheet\r
+snapshots['test_batch_inventory_excel_tabulator_status_file 1'] = '''Batch Inventory Worksheet\r
 \r
 Section 1: Check Ballot Groups\r
 1. Compare the CVR Ballot Count for each ballot group to your voter check-in data.\r
@@ -29,11 +27,9 @@ Tabulator 1 - BATCH1,3,\r
 Tabulator 1 - BATCH2,3,\r
 Tabulator 2 - BATCH1,3,\r
 Tabulator 2 - BATCH2,6,\r
-"""
+'''
 
-snapshots[
-    "test_batch_inventory_happy_path 1"
-] = """Batch Inventory Worksheet\r
+snapshots['test_batch_inventory_happy_path 1'] = '''Batch Inventory Worksheet\r
 \r
 Section 1: Check Ballot Groups\r
 1. Compare the CVR Ballot Count for each ballot group to your voter check-in data.\r
@@ -53,29 +49,23 @@ Tabulator 1 - BATCH1,3,\r
 Tabulator 1 - BATCH2,3,\r
 Tabulator 2 - BATCH1,3,\r
 Tabulator 2 - BATCH2,6,\r
-"""
+'''
 
-snapshots[
-    "test_batch_inventory_happy_path 2"
-] = """Container,Batch Name,Number of Ballots\r
+snapshots['test_batch_inventory_happy_path 2'] = '''Container,Batch Name,Number of Ballots\r
 Election Day,Tabulator 1 - BATCH1,3\r
 Election Day,Tabulator 1 - BATCH2,3\r
 Mail,Tabulator 2 - BATCH1,3\r
 Election Day,Tabulator 2 - BATCH2,6\r
-"""
+'''
 
-snapshots[
-    "test_batch_inventory_happy_path 3"
-] = """Batch Name,Choice 1-1,Choice 1-2\r
-Tabulator 1 - BATCH1,1,2\r
-Tabulator 1 - BATCH2,2,1\r
-Tabulator 2 - BATCH1,2,1\r
-Tabulator 2 - BATCH2,2,0\r
-"""
+snapshots['test_batch_inventory_happy_path 3'] = '''Batch Name,Choice 1-1,Choice 1-2,Write-In\r
+Tabulator 1 - BATCH1,1,1,1\r
+Tabulator 1 - BATCH2,2,1,0\r
+Tabulator 2 - BATCH1,2,1,0\r
+Tabulator 2 - BATCH2,2,0,0\r
+'''
 
-snapshots[
-    "test_batch_inventory_happy_path_cvrs_with_leading_equal_signs 1"
-] = """Batch Inventory Worksheet\r
+snapshots['test_batch_inventory_happy_path_cvrs_with_leading_equal_signs 1'] = '''Batch Inventory Worksheet\r
 \r
 Section 1: Check Ballot Groups\r
 1. Compare the CVR Ballot Count for each ballot group to your voter check-in data.\r
@@ -95,29 +85,23 @@ Tabulator 1 - BATCH1,3,\r
 Tabulator 1 - BATCH2,3,\r
 Tabulator 2 - BATCH1,3,\r
 Tabulator 2 - BATCH2,6,\r
-"""
+'''
 
-snapshots[
-    "test_batch_inventory_happy_path_cvrs_with_leading_equal_signs 2"
-] = """Container,Batch Name,Number of Ballots\r
+snapshots['test_batch_inventory_happy_path_cvrs_with_leading_equal_signs 2'] = '''Container,Batch Name,Number of Ballots\r
 Election Day,Tabulator 1 - BATCH1,3\r
 Election Day,Tabulator 1 - BATCH2,3\r
 Mail,Tabulator 2 - BATCH1,3\r
 Election Day,Tabulator 2 - BATCH2,6\r
-"""
+'''
 
-snapshots[
-    "test_batch_inventory_happy_path_cvrs_with_leading_equal_signs 3"
-] = """Batch Name,Choice 1-1,Choice 1-2\r
-Tabulator 1 - BATCH1,1,2\r
-Tabulator 1 - BATCH2,2,1\r
-Tabulator 2 - BATCH1,2,1\r
-Tabulator 2 - BATCH2,2,0\r
-"""
+snapshots['test_batch_inventory_happy_path_cvrs_with_leading_equal_signs 3'] = '''Batch Name,Choice 1-1,Choice 1-2,Write-In\r
+Tabulator 1 - BATCH1,1,1,1\r
+Tabulator 1 - BATCH2,2,1,0\r
+Tabulator 2 - BATCH1,2,1,0\r
+Tabulator 2 - BATCH2,2,0,0\r
+'''
 
-snapshots[
-    "test_batch_inventory_happy_path_multi_contest_batch_comparison 1"
-] = """Batch Inventory Worksheet\r
+snapshots['test_batch_inventory_happy_path_multi_contest_batch_comparison 1'] = '''Batch Inventory Worksheet\r
 \r
 Section 1: Check Ballot Groups\r
 1. Compare the CVR Ballot Count for each ballot group to your voter check-in data.\r

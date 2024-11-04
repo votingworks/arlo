@@ -4,48 +4,47 @@ from ..helpers import *  # pylint: disable=wildcard-import
 from ...models import BatchInventoryData
 from ..ballot_comparison.test_cvrs import build_hart_cvr
 
-# Overvote for contest Contest 1 in row 11
-TEST_CVR = """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
-,,,,,,,,Contest 1 (Vote For=1),Contest 1 (Vote For=1),Contest 2 (Vote For=2),Contest 2 (Vote For=2),Contest 2 (Vote For=2)
-,,,,,,,,Choice 1-1,Choice 1-2,Choice 2-1,Choice 2-2,Choice 2-3
+TEST_CVR = """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,,,,,,
+,,,,,,,,Contest 1 (Vote For=1),Contest 1 (Vote For=1),Contest 1 (Vote For=1),Contest 2 (Vote For=2),Contest 2 (Vote For=2),Contest 2 (Vote For=2),Contest 2 (Vote For=2)
+,,,,,,,,Choice 1-1,Choice 1-2,Write-In,Choice 2-1,Choice 2-2,Choice 2-3,Write-In
 CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM,LBR,IND,,
-1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,1,1,1,0
-2,TABULATOR1,BATCH1,2,1-1-2,Election Day,12345,COUNTY,1,0,1,0,1
-3,TABULATOR1,BATCH1,3,1-1-3,Election Day,12345,COUNTY,0,1,1,1,0
-4,TABULATOR1,BATCH2,1,1-2-1,Election Day,12345,COUNTY,1,0,1,0,1
-5,TABULATOR1,BATCH2,2,1-2-2,Election Day,12345,COUNTY,0,1,1,1,0
-6,TABULATOR1,BATCH2,3,1-2-3,Election Day,12345,COUNTY,1,0,1,0,1
-7,TABULATOR2,BATCH1,1,2-1-1,Election Day,12345,COUNTY,0,1,1,1,0
-8,TABULATOR2,BATCH1,2,2-1-2,Mail,12345,COUNTY,1,0,1,0,1
-9,TABULATOR2,BATCH1,3,2-1-3,Mail,12345,COUNTY,1,0,1,1,0
-10,TABULATOR2,BATCH2,1,2-2-1,Election Day,12345,COUNTY,1,0,1,0,1
-11,TABULATOR2,BATCH2,2,2-2-2,Election Day,12345,COUNTY,1,1,1,1,0
-12,TABULATOR2,BATCH2,3,2-2-3,Election Day,12345,COUNTY,1,0,1,0,1
-13,TABULATOR2,BATCH2,4,2-2-4,Election Day,12345,CITY,,,1,0,1
-14,TABULATOR2,BATCH2,5,2-2-5,Election Day,12345,CITY,,,1,1,0
-15,TABULATOR2,BATCH2,6,2-2-6,Election Day,12345,CITY,,,1,0,1
+1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,0,1,1,1,0,0
+2,TABULATOR1,BATCH1,2,1-1-2,Election Day,12345,COUNTY,1,0,0,1,0,1,0
+3,TABULATOR1,BATCH1,3,1-1-3,Election Day,12345,COUNTY,0,1,0,1,1,0,0
+4,TABULATOR1,BATCH2,1,1-2-1,Election Day,12345,COUNTY,1,0,0,1,0,1,0
+5,TABULATOR1,BATCH2,2,1-2-2,Election Day,12345,COUNTY,0,1,0,1,1,0,0
+6,TABULATOR1,BATCH2,3,1-2-3,Election Day,12345,COUNTY,1,0,0,1,0,1,0
+7,TABULATOR2,BATCH1,1,2-1-1,Election Day,12345,COUNTY,0,1,0,1,1,0,0
+8,TABULATOR2,BATCH1,2,2-1-2,Mail,12345,COUNTY,1,0,0,1,0,1,0
+9,TABULATOR2,BATCH1,3,2-1-3,Mail,12345,COUNTY,1,0,0,1,1,0,0
+10,TABULATOR2,BATCH2,1,2-2-1,Election Day,12345,COUNTY,1,0,0,1,0,1,0
+11,TABULATOR2,BATCH2,2,2-2-2,Election Day,12345,COUNTY,1,1,0,1,1,0,0
+12,TABULATOR2,BATCH2,3,2-2-3,Election Day,12345,COUNTY,1,0,0,1,0,1,0
+13,TABULATOR2,BATCH2,4,2-2-4,Election Day,12345,CITY,,,,1,0,1,0
+14,TABULATOR2,BATCH2,5,2-2-5,Election Day,12345,CITY,,,,1,1,0,0
+15,TABULATOR2,BATCH2,6,2-2-6,Election Day,12345,CITY,,,,1,0,1,0
 """
 
 # Overvote for contest Contest 1 in row 11
-TEST_CVRS_WITH_LEADING_EQUAL_SIGNS = """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
-,,,,,,,,Contest 1 (Vote For=1),Contest 1 (Vote For=1),Contest 2 (Vote For=2),Contest 2 (Vote For=2),Contest 2 (Vote For=2)
-,,,,,,,,Choice 1-1,Choice 1-2,Choice 2-1,Choice 2-2,Choice 2-3
+TEST_CVRS_WITH_LEADING_EQUAL_SIGNS = """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,,,,,,
+,,,,,,,,Contest 1 (Vote For=1),Contest 1 (Vote For=1),Contest 1 (Vote For=1),Contest 2 (Vote For=2),Contest 2 (Vote For=2),Contest 2 (Vote For=2),Contest 2 (Vote For=2)
+,,,,,,,,Choice 1-1,Choice 1-2,Write-In,Choice 2-1,Choice 2-2,Choice 2-3,Write-In
 CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM,LBR,IND,,
-="1",="TABULATOR1",="BATCH1",="1",="1-1-1",Election Day,12345,COUNTY,0,1,1,1,0
-="2",="TABULATOR1",="BATCH1",="2",="1-1-2",Election Day,12345,COUNTY,1,0,1,0,1
-="3",="TABULATOR1",="BATCH1",="3",="1-1-3",Election Day,12345,COUNTY,0,1,1,1,0
-="4",="TABULATOR1",="BATCH2",="1",="1-2-1",Election Day,12345,COUNTY,1,0,1,0,1
-="5",="TABULATOR1",="BATCH2",="2",="1-2-2",Election Day,12345,COUNTY,0,1,1,1,0
-="6",="TABULATOR1",="BATCH2",="3",="1-2-3",Election Day,12345,COUNTY,1,0,1,0,1
-="7",="TABULATOR2",="BATCH1",="1",="2-1-1",Election Day,12345,COUNTY,0,1,1,1,0
-="8",="TABULATOR2",="BATCH1",="2",="2-1-2",Mail,12345,COUNTY,1,0,1,0,1
-="9",="TABULATOR2",="BATCH1",="3",="2-1-3",Mail,12345,COUNTY,1,0,1,1,0
-="10",="TABULATOR2",="BATCH2",="1",="2-2-1",Election Day,12345,COUNTY,1,0,1,0,1
-="11",="TABULATOR2",="BATCH2",="2",="2-2-2",Election Day,12345,COUNTY,1,1,1,1,0
-="12",="TABULATOR2",="BATCH2",="3",="2-2-3",Election Day,12345,COUNTY,1,0,1,0,1
-="13",="TABULATOR2",="BATCH2",="4",="2-2-4",Election Day,12345,CITY,,,1,0,1
-="14",="TABULATOR2",="BATCH2",="5",="2-2-5",Election Day,12345,CITY,,,1,1,0
-="15",="TABULATOR2",="BATCH2",="6",="2-2-6",Election Day,12345,CITY,,,1,0,1
+="1",="TABULATOR1",="BATCH1",="1",="1-1-1",Election Day,12345,COUNTY,0,0,1,1,1,0,0
+="2",="TABULATOR1",="BATCH1",="2",="1-1-2",Election Day,12345,COUNTY,1,0,0,1,0,1,0
+="3",="TABULATOR1",="BATCH1",="3",="1-1-3",Election Day,12345,COUNTY,0,1,0,1,1,0,0
+="4",="TABULATOR1",="BATCH2",="1",="1-2-1",Election Day,12345,COUNTY,1,0,0,1,0,1,0
+="5",="TABULATOR1",="BATCH2",="2",="1-2-2",Election Day,12345,COUNTY,0,1,0,1,1,0,0
+="6",="TABULATOR1",="BATCH2",="3",="1-2-3",Election Day,12345,COUNTY,1,0,0,1,0,1,0
+="7",="TABULATOR2",="BATCH1",="1",="2-1-1",Election Day,12345,COUNTY,0,1,0,1,1,0,0
+="8",="TABULATOR2",="BATCH1",="2",="2-1-2",Mail,12345,COUNTY,1,0,0,1,0,1,0
+="9",="TABULATOR2",="BATCH1",="3",="2-1-3",Mail,12345,COUNTY,1,0,0,1,1,0,0
+="10",="TABULATOR2",="BATCH2",="1",="2-2-1",Election Day,12345,COUNTY,1,0,0,1,0,1,0
+="11",="TABULATOR2",="BATCH2",="2",="2-2-2",Election Day,12345,COUNTY,1,1,0,1,1,0,0
+="12",="TABULATOR2",="BATCH2",="3",="2-2-3",Election Day,12345,COUNTY,1,0,0,1,0,1,0
+="13",="TABULATOR2",="BATCH2",="4",="2-2-4",Election Day,12345,CITY,,,,1,0,1,0
+="14",="TABULATOR2",="BATCH2",="5",="2-2-5",Election Day,12345,CITY,,,,1,1,0,0
+="15",="TABULATOR2",="BATCH2",="6",="2-2-6",Election Day,12345,CITY,,,,1,0,1,0
 """
 
 TEST_TABULATOR_STATUS = """<?xml version="1.0" standalone="yes"?>
@@ -82,7 +81,8 @@ def contest_id(client: FlaskClient, election_id: str, jurisdiction_ids: List[str
         "choices": [
             # Double the actual number of votes in TEST_CVR to account for the two jurisdictions
             {"id": str(uuid.uuid4()), "name": "Choice 1-1", "numVotes": 14},
-            {"id": str(uuid.uuid4()), "name": "Choice 1-2", "numVotes": 8},
+            {"id": str(uuid.uuid4()), "name": "Choice 1-2", "numVotes": 6},
+            {"id": str(uuid.uuid4()), "name": "Write-In", "numVotes": 2},
         ],
         "numWinners": 1,
         "votesAllowed": 1,
@@ -103,7 +103,8 @@ def contest_ids(client: FlaskClient, election_id: str, jurisdiction_ids: List[st
         "choices": [
             # Double the actual number of votes in TEST_CVR to account for the two jurisdictions
             {"id": str(uuid.uuid4()), "name": "Choice 1-1", "numVotes": 14},
-            {"id": str(uuid.uuid4()), "name": "Choice 1-2", "numVotes": 8},
+            {"id": str(uuid.uuid4()), "name": "Choice 1-2", "numVotes": 6},
+            {"id": str(uuid.uuid4()), "name": "Write-In", "numVotes": 0},
         ],
         "numWinners": 1,
         "votesAllowed": 1,
@@ -117,7 +118,7 @@ def contest_ids(client: FlaskClient, election_id: str, jurisdiction_ids: List[st
             # Double the actual number of votes in TEST_CVR to account for the two jurisdictions
             {"id": str(uuid.uuid4()), "name": "Choice 2-1", "numVotes": 30},
             {"id": str(uuid.uuid4()), "name": "Choice 2-2", "numVotes": 14},
-            {"id": str(uuid.uuid4()), "name": "Choice 2-3", "numVotes": 16},
+            {"id": str(uuid.uuid4()), "name": "Write-In", "numVotes": 0},
         ],
         "numWinners": 1,
         "votesAllowed": 2,
@@ -893,12 +894,12 @@ def test_batch_inventory_invalid_file_uploads(
         client,
         io.BytesIO(
             TEST_CVR.replace(
-                """1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,1,1,1,0
-2,TABULATOR1,BATCH1,2,1-1-2,Election Day,12345,COUNTY,1,0,1,0,1
-3,TABULATOR1,BATCH1,3,1-1-3,Election Day,12345,COUNTY,0,1,1,1,0
-4,TABULATOR1,BATCH2,1,1-2-1,Election Day,12345,COUNTY,1,0,1,0,1
-5,TABULATOR1,BATCH2,2,1-2-2,Election Day,12345,COUNTY,0,1,1,1,0
-6,TABULATOR1,BATCH2,3,1-2-3,Election Day,12345,COUNTY,1,0,1,0,1
+                """1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,0,1,1,1,0,0
+2,TABULATOR1,BATCH1,2,1-1-2,Election Day,12345,COUNTY,1,0,0,1,0,1,0
+3,TABULATOR1,BATCH1,3,1-1-3,Election Day,12345,COUNTY,0,1,0,1,1,0,0
+4,TABULATOR1,BATCH2,1,1-2-1,Election Day,12345,COUNTY,1,0,0,1,0,1,0
+5,TABULATOR1,BATCH2,2,1-2-2,Election Day,12345,COUNTY,0,1,0,1,1,0,0
+6,TABULATOR1,BATCH2,3,1-2-3,Election Day,12345,COUNTY,1,0,0,1,0,1,0
 """,
                 "",
             ).encode()
