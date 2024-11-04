@@ -145,9 +145,7 @@ describe('Ballot Polling', () => {
     cy.findByRole('combobox', {
       name: /Set the risk limit for the audit/,
     }).select('10')
-    cy.findByLabelText(
-      'Enter the random characters to seed the pseudo-random number generator.'
-    ).type('543210')
+    cy.findByLabelText(/Enter a series of random numbers/).type('543210')
     cy.findByText('Save & Next').click()
     cy.findAllByText('Review & Launch').should('have.length', 2)
     cy.logout(auditAdmin)
