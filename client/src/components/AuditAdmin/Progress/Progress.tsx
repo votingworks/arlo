@@ -524,7 +524,7 @@ const Progress: React.FC<IProgressProps> = ({
           auditSettings={auditSettings}
         />
       )}
-      {jurisdictionDiscrepanciesId && round && (
+      {jurisdictionDiscrepanciesId && (
         <JurisdictionDiscrepancies
           jurisdiction={
             jurisdictions.find(

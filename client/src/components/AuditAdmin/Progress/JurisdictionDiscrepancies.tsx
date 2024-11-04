@@ -25,10 +25,16 @@ const ContestDiscrepanciesTable = styled(HTMLTable).attrs({
   }
 `
 
+const TableHeader = styled(H6)`
+  &:first-child {
+    margin-top: 8px;
+  }
+`
+
 /* istanbul ignore next */
 function getContestName(contests: IContest[], contestId: string) {
   const contest = contests.find(c => c.id === contestId)
-  return contest ? contest.name : 'Contest not found'
+  return contest ? contest.name : `Contest Unknown: ID ${contestId}`
 }
 
 /* istanbul ignore next */
@@ -38,9 +44,9 @@ function getChoiceName(
   choiceId: string
 ) {
   const contest = contests.find(c => c.id === contestId)
-  if (!contest) return 'Choice not found'
+  if (!contest) return `Contest Unknown: ID ${choiceId}`
   const choice = contest.choices.find(c => c.id === choiceId)
-  return choice ? choice.name : 'Choice not found'
+  return choice ? choice.name : `Choice Unknown: ID ${choiceId}`
 }
 
 export interface IJurisdictionDiscrepanciesProps {
@@ -78,11 +84,11 @@ const JurisdictionDiscrepancies: React.FC<IJurisdictionDiscrepanciesProps> = ({
         {Object.entries(discrepanciesByBatch).map(
           ([batchName, discrepanciesByContest]) => {
             return Object.entries(discrepanciesByContest).map(
-              ([contestId, contestDiscrepancies], idx) => (
+              ([contestId, contestDiscrepancies]) => (
                 <div key={contestId}>
-                  <H6 style={idx === 0 ? { marginTop: '8px' } : {}}>
+                  <TableHeader>
                     {batchName} - {getContestName(contests, contestId)}
-                  </H6>
+                  </TableHeader>
                   <ContestDiscrepanciesTable>
                     <thead>
                       <tr>
