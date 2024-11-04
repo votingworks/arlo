@@ -176,7 +176,7 @@ export type DiscrepanciesByJurisdiction = Record<
 
 type ContestDiscrepancies = {
   reportedVotes: Record<string, number | string> // `Record` keys are choiceId
-  auditedVotes: Record<string, number | string> // `Record` values are discrepancy counts or "o" (overvote), "u" (undervote)
+  auditedVotes: Record<string, number | string> // `Record` values are counts, "o" (overvote), "u" (undervote)
   discrepancies: Record<string, number | string>
 }
 
