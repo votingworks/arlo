@@ -192,7 +192,10 @@ def support_login_callback():
     if (
         userinfo
         and userinfo["email"]
-        and userinfo["email"].split("@")[-1] in config.SUPPORT_EMAIL_DOMAINS
+        and (
+            userinfo["email"].split("@")[-1] in config.SUPPORT_EMAIL_DOMAINS
+            or userinfo["email"] in config.SUPPORT_EMAIL_ADDRESSES
+        )
     ):
         set_support_user(session, userinfo["email"])
         return redirect("/support")

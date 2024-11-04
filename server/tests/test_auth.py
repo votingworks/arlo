@@ -219,6 +219,39 @@ def test_support_callback_multiple_allowed_domains(
     config.SUPPORT_EMAIL_DOMAINS = ["voting.works"]
 
 
+def test_support_callback_specific_email(
+    client: FlaskClient,
+    org_id: str,  # pylint: disable=unused-argument
+):
+    config.SUPPORT_EMAIL_DOMAINS = ["voting.works"]
+    config.SUPPORT_EMAIL_ADDRESSES = ["user@example.gov"]
+    with patch.object(auth0_sa, "authorize_access_token", return_value=None):
+        mock_response = Mock()
+        mock_response.json = MagicMock(return_value={"email": "user@example.gov"})
+        with patch.object(auth0_sa, "get", return_value=mock_response):
+            rv = client.get("/auth/support/callback?code=foobar")
+            assert rv.status_code == 302
+            assert urlparse(rv.location).path == "/support"
+
+            with client.session_transaction() as session:  # type: ignore
+                assert session["_support_user"] == "user@example.gov"
+
+    with patch.object(auth0_sa, "authorize_access_token", return_value=None):
+        mock_response = Mock()
+        mock_response.json = MagicMock(return_value={"email": "user2@example.gov"})
+        with patch.object(auth0_sa, "get", return_value=mock_response):
+            rv = client.get("/auth/support/callback?code=foobar")
+            assert rv.status_code == 302
+            assert urlparse(rv.location).path == "/"  # bad login
+
+            with client.session_transaction() as session:  # type: ignore
+                assert (
+                    session["_support_user"] == "user@example.gov"
+                )  # still the old user
+
+    config.SUPPORT_EMAIL_ADDRESSES = []
+
+
 def test_auditadmin_start(client: FlaskClient):
     rv = client.get("/auth/auditadmin/start")
     check_redirect_contains_redirect_uri(rv, "/auth/auditadmin/callback")

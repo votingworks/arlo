@@ -97,6 +97,13 @@ SUPPORT_EMAIL_DOMAINS = read_env_var(
     "ARLO_SUPPORT_EMAIL_DOMAIN", default="voting.works"
 ).split(",")
 
+# allow a few specific email addresses
+SUPPORT_EMAIL_ADDRESSES = [
+    email
+    for email in read_env_var("ARLO_SUPPORT_EMAIL_ADDRESSES", default="").split(",")
+    if email != ""
+]
+
 # Audit admin OAuth login config
 AUDITADMIN_AUTH0_BASE_URL = read_env_var(
     "ARLO_AUDITADMIN_AUTH0_BASE_URL",
