@@ -1028,6 +1028,7 @@ class BackgroundTask(BaseModel):
     id = Column(String(200), primary_key=True)
     task_name = Column(String(200), nullable=False)
     payload = Column(JSON, nullable=False)
+    lock_key = Column(String(200))
 
     worker_id = Column(String(200))
     started_at = Column(UTCDateTime)
