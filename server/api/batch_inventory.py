@@ -287,11 +287,7 @@ def process_batch_inventory_cvr_file(
         if batch_inventory_data.cvr_file.storage_path.endswith(".zip"):
             entry_names = unzip_files(cvr_file, working_directory)
             file_names = [
-                entry_name
-                for entry_name in entry_names
-                if entry_name.endswith(".csv") and not entry_name.startswith(".")
-                # ZIP files created on Macs include a hidden __MACOSX folder
-                and not entry_name.startswith("__")
+                entry_name for entry_name in entry_names if entry_name.endswith(".csv")
             ]
             cvr_file.close()
 
@@ -424,9 +420,7 @@ def process_batch_inventory_cvr_file(
         cvr_file_names = [
             entry_name
             for entry_name in zip_entry_names
-            if entry_name.lower().endswith(".xml") and not entry_name.startswith(".")
-            # ZIP files created on Macs include a hidden __MACOSX folder
-            and not entry_name.startswith("__")
+            if entry_name.lower().endswith(".xml")
         ]
         cvr_file.close()
 
