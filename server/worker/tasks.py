@@ -161,12 +161,18 @@ def claim_next_task(worker_id: str, db_session) -> Optional[BackgroundTask]:
     # the ones we already locked).
     #
     # Importantly, this also ensures that we get a safe view of which lock_keys
-    # are currently in use by in-progress tasks. If we're the only worker that
-    # can claim a task right now, then no additional lock_keys can be locked. It
-    # is possible for another worker to finish an in-progress task and release a
-    # lock_key while we're running this query, but that's fine because even if
-    # we don't see that change and wanted to claim that lock_key, we'll just fail
-    # and try again later.
+    # are currently in use by in-progress tasks.  Importantly, this also ensures
+    # that we get a safe view of which lock_keys are currently in use by
+    # in-progress tasks. If this worker has successfully locked all queued
+    # tasks, then it's the only worker that can claim a task right now, so no
+    # additional tasks can be started. That means the current set of in-progress
+    # lock_keys won't change until this worker releases the lock on the queued
+    # tasks.
+    #
+    # It is possible for another worker to finish an in-progress task and
+    # release a lock_key while we're running this query, but that's fine because
+    # even if we don't see that change and wanted to claim that lock_key, we'll
+    # just fail and try again later.
     #
     # Another approach to this would be to lock the entire table, but that would
     # also prevent in-progress tasks from completing.
