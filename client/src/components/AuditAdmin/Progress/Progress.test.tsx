@@ -17,6 +17,7 @@ import {
   roundMocks,
   auditBoardMocks,
   manifestMocks,
+  contestMocks,
 } from '../../_mocks'
 import Progress, { IProgressProps } from './Progress'
 import { dummyBallots } from '../../AuditBoard/_mocks'
@@ -325,7 +326,7 @@ describe('Progress screen', () => {
     })
   })
 
-  it('shows round status for batch comparison', async () => {
+  it('shows round and discrepancy status for batch comparison', async () => {
     const expectedCalls = [
       aaApiCalls.getMapData,
       aaApiCalls.getDiscrepancyCounts({
@@ -333,6 +334,21 @@ describe('Progress screen', () => {
         [jurisdictionMocks.oneComplete[1].id]: 2,
         [jurisdictionMocks.oneComplete[2].id]: 1,
       }),
+      aaApiCalls.getDiscrepancies({
+        [jurisdictionMocks.oneComplete[2].id]: {
+          batch1: {
+            [contestMocks.one[0].id]: {
+              reportedVotes: { [contestMocks.one[0].choices[0].id]: 5 },
+              auditedVotes: { [contestMocks.one[0].choices[0].id]: 6 },
+              discrepancies: { [contestMocks.one[0].choices[0].id]: 1 },
+            },
+          },
+        },
+      }),
+      jaApiCalls.getJurisdictionContests(
+        [contestMocks.one[0]],
+        jurisdictionMocks.oneComplete[2].id
+      ),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({
@@ -380,9 +396,41 @@ describe('Progress screen', () => {
       expect(row3[0]).toHaveTextContent('Jurisdiction 3')
       expectStatusTag(row3[1], 'Complete', 'success')
       expect(row3[2]).toHaveTextContent('2,117')
-      expect(row3[3]).toHaveTextContent('1')
+      expect(row3[3]).toHaveTextContent('Review 1')
       expect(row3[4]).toHaveTextContent('30')
       expect(row3[5]).toHaveTextContent('0')
+
+      const reviewDiscrepanciesButton = screen.getByRole('button', {
+        name: /Review 1/,
+      })
+      userEvent.click(reviewDiscrepanciesButton)
+      await waitFor(() => {
+        screen.getByText('Jurisdiction 3 Discrepancies')
+      })
+      const dialog = (
+        await screen.findByRole('heading', {
+          name: /Jurisdiction 3 Discrepancies/,
+        })
+      ).closest('.bp3-dialog')! as HTMLElement
+      within(dialog).getByText('batch1 - Contest 1')
+      const discrepancyTableHeaders = within(dialog).getAllByRole(
+        'columnheader'
+      )
+      expect(discrepancyTableHeaders).toHaveLength(4)
+      expect(discrepancyTableHeaders[0]).toHaveTextContent('Choice')
+      expect(discrepancyTableHeaders[1]).toHaveTextContent('Reported Votes')
+      expect(discrepancyTableHeaders[2]).toHaveTextContent('Audited Votes')
+      expect(discrepancyTableHeaders[3]).toHaveTextContent('Discrepancy')
+
+      const discrepancyTableRows = within(dialog).getAllByRole('row')
+      expect(discrepancyTableRows).toHaveLength(2)
+      const discrepancyTableRow1 = within(discrepancyTableRows[1]).getAllByRole(
+        'cell'
+      )
+      expect(discrepancyTableRow1[0]).toHaveTextContent('Choice One')
+      expect(discrepancyTableRow1[1]).toHaveTextContent('5')
+      expect(discrepancyTableRow1[2]).toHaveTextContent('6')
+      expect(discrepancyTableRow1[3]).toHaveTextContent('1')
 
       const footers = within(rows[4]).getAllByRole('cell')
       expect(footers[0]).toHaveTextContent('Total')
