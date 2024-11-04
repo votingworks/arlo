@@ -32,6 +32,9 @@ resettestdb:
 resetdb:
 	FLASK_ENV=$${FLASK_ENV:-development} poetry run python -m scripts.resetdb
 
+migratedb:
+	FLASK_ENV=$${FLASK_ENV:-development} poetry run alembic upgrade head
+
 dev-environment: deps initdevdb install-development setup-git-hooks resetdb
 
 typecheck-server:
