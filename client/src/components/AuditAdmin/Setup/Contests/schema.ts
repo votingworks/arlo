@@ -47,6 +47,12 @@ const contestsSchema = (auditType: IAuditSettings['auditType']) =>
               .required('Required')
               .of(Yup.string()),
           }),
+          ...(auditType === 'BATCH_COMPARISON' && {
+            pendingBallots: number()
+              .typeError('Must be a number')
+              .integer('Must be an integer')
+              .min(0, 'Must be a positive number'),
+          }),
           choices: Yup.array()
             .required()
             .of(

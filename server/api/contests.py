@@ -35,6 +35,9 @@ CONTEST_SCHEMA = {
         "choices": {"type": "array", "items": CONTEST_CHOICE_SCHEMA},
         "numWinners": {"type": "integer", "minimum": 1},
         "votesAllowed": {"type": "integer", "minimum": 1},
+        "pendingBallots": {
+            "anyOf": [{"type": "integer", "minimum": 0}, {"type": "null"}]
+        },
         "jurisdictionIds": {
             "type": "array",
             "items": {"type": "string"},
@@ -133,6 +136,9 @@ def serialize_contest(contest: Contest) -> JSONDict:
         "jurisdictionIds": [j.id for j in contest.jurisdictions],
     }
 
+    if contest.election.audit_type == AuditType.BATCH_COMPARISON:
+        serialized_contest["pendingBallots"] = contest.pending_ballots
+
     # Validate CVR choice names across jurisdictions in ballot comparison audits. Load error
     # details, if any, onto the contest object.
     if contest.election.audit_type == AuditType.BALLOT_COMPARISON:
@@ -223,6 +229,7 @@ def deserialize_contest(contest: JSONDict, election_id: str) -> Contest:
         total_ballots_cast=contest.get("totalBallotsCast", None),
         num_winners=contest.get("numWinners", None),
         votes_allowed=contest.get("votesAllowed", None),
+        pending_ballots=contest.get("pendingBallots", None),
         jurisdictions=jurisdictions,
     )
 

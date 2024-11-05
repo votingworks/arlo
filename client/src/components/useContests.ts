@@ -36,6 +36,10 @@ export const useUpdateContests = (
           .map(({ totalBallotsCast, ...c }) =>
             auditType === 'BALLOT_POLLING' ? { totalBallotsCast, ...c } : c
           )
+          // Remove pendingBallots unless this is a batch comparison audit
+          .map(({ pendingBallots, ...c }) =>
+            auditType === 'BATCH_COMPARISON' ? { pendingBallots, ...c } : c
+          )
       ),
       headers: { 'Content-Type': 'application/json' },
     })
