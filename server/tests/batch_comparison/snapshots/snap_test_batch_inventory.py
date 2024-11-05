@@ -66,11 +66,11 @@ Election Day,Tabulator 2 - BATCH2,6\r
 
 snapshots[
     "test_batch_inventory_happy_path 3"
-] = """Batch Name,Choice 1-1,Choice 1-2\r
-Tabulator 1 - BATCH1,1,2\r
-Tabulator 1 - BATCH2,2,1\r
-Tabulator 2 - BATCH1,2,1\r
-Tabulator 2 - BATCH2,2,0\r
+] = """Batch Name,Choice 1-1,Choice 1-2,Write-In\r
+Tabulator 1 - BATCH1,1,1,1\r
+Tabulator 1 - BATCH2,2,1,0\r
+Tabulator 2 - BATCH1,2,1,0\r
+Tabulator 2 - BATCH2,2,0,0\r
 """
 
 snapshots[
@@ -108,11 +108,11 @@ Election Day,Tabulator 2 - BATCH2,6\r
 
 snapshots[
     "test_batch_inventory_happy_path_cvrs_with_leading_equal_signs 3"
-] = """Batch Name,Choice 1-1,Choice 1-2\r
-Tabulator 1 - BATCH1,1,2\r
-Tabulator 1 - BATCH2,2,1\r
-Tabulator 2 - BATCH1,2,1\r
-Tabulator 2 - BATCH2,2,0\r
+] = """Batch Name,Choice 1-1,Choice 1-2,Write-In\r
+Tabulator 1 - BATCH1,1,1,1\r
+Tabulator 1 - BATCH2,2,1,0\r
+Tabulator 2 - BATCH1,2,1,0\r
+Tabulator 2 - BATCH2,2,0,0\r
 """
 
 snapshots[
@@ -150,9 +150,27 @@ Election Day,Tabulator 2 - BATCH2,6\r
 
 snapshots[
     "test_batch_inventory_happy_path_multi_contest_batch_comparison 3"
-] = """Batch Name,Contest 1 - Choice 1-1,Contest 1 - Choice 1-2,Contest 2 - Choice 2-1,Contest 2 - Choice 2-2,Contest 2 - Choice 2-3\r
-Tabulator 1 - BATCH1,1,2,3,2,1\r
-Tabulator 1 - BATCH2,2,1,3,1,2\r
-Tabulator 2 - BATCH1,2,1,3,2,1\r
-Tabulator 2 - BATCH2,2,0,6,2,4\r
+] = """Batch Name,Contest 1 - Choice 1-1,Contest 1 - Choice 1-2,Contest 1 - Write-In,Contest 2 - Choice 2-1,Contest 2 - Choice 2-2,Contest 2 - Write-In\r
+Tabulator 1 - BATCH1,1,1,1,3,2,0\r
+Tabulator 1 - BATCH2,2,1,0,3,1,0\r
+Tabulator 2 - BATCH1,2,1,0,3,2,0\r
+Tabulator 2 - BATCH2,2,0,0,6,2,0\r
+"""
+
+snapshots[
+    "test_batch_inventory_hart_cvr_upload 1"
+] = """Batch Name,Number of Ballots\r
+BATCH1,3\r
+BATCH2,3\r
+BATCH3,2\r
+BATCH4,2\r
+"""
+
+snapshots[
+    "test_batch_inventory_hart_cvr_upload 2"
+] = """Batch Name,Choice 1-1,Choice 1-2,Write-In\r
+BATCH1,1,2,0\r
+BATCH2,2,1,0\r
+BATCH4,1,0,1\r
+BATCH3,0,0,0\r
 """

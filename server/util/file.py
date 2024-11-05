@@ -100,7 +100,12 @@ def zip_files(files: Mapping[str, IO[bytes]]) -> IO[bytes]:
 def unzip_files(zip_file: BinaryIO, directory_to_extract_to: str) -> List[str]:
     with ZipFile(zip_file, "r") as zip_archive:
         zip_archive.extractall(directory_to_extract_to)
-        return zip_archive.namelist()
+        return [
+            entry_name
+            for entry_name in zip_archive.namelist()
+            # ZIP files created on Macs include a hidden __MACOSX folder
+            if not entry_name.startswith("__") and not entry_name.startswith(".")
+        ]
 
 
 def get_full_storage_path(file_path: str) -> str:

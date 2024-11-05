@@ -46,8 +46,10 @@ from ..util.file import (
     timestamp_filename,
     unzip_files,
     validate_csv_or_zip_mimetype,
+    validate_zip_mimetype,
     validate_xml_mimetype,
 )
+from ..util.hart_parse import find_xml, parse_contest_results, find_text_xml
 from ..worker.tasks import UserError, background_task, create_background_task
 from ..util.csv_download import csv_response, jurisdiction_timestamp_name
 from ..util.isoformat import isoformat
@@ -276,18 +278,13 @@ def process_batch_inventory_cvr_file(
                 and choice_name != "Write-in"
             ):
                 raise UserError(f"Unrecognized choice in CVR file: {choice_name}")
-
             return choice_id
 
         # ZIP file with multiple CSVs
         if batch_inventory_data.cvr_file.storage_path.endswith(".zip"):
             entry_names = unzip_files(cvr_file, working_directory)
             file_names = [
-                entry_name
-                for entry_name in entry_names
-                if entry_name.endswith(".csv") and not entry_name.startswith(".")
-                # ZIP files created on Macs include a hidden __MACOSX folder
-                and not entry_name.startswith("__")
+                entry_name for entry_name in entry_names if entry_name.endswith(".csv")
             ]
             cvr_file.close()
 
@@ -388,6 +385,88 @@ def process_batch_inventory_cvr_file(
 
         # Set explicit zeros for choices with zero votes in a batch to avoid KeyErrors when
         # generating files
+        for batch_key in ballot_count_by_batch.keys():
+            if batch_key not in batch_tallies:
+                batch_tallies[batch_key] = defaultdict(int)
+        for tallies in batch_tallies.values():
+            for contest in contests:
+                for choice in contest.choices:
+                    if choice.id not in tallies:
+                        tallies[choice.id] = 0
+
+        election_results: ElectionResults = dict(
+            ballot_count_by_batch=dict_to_items_list(ballot_count_by_batch),
+            ballot_count_by_group=None,
+            batch_to_counting_group=None,
+            batch_tallies=dict_to_items_list(batch_tallies),
+        )
+        batch_inventory_data.election_results = election_results
+
+    def process_hart():
+        ballot_count_by_batch: Dict[BatchKey, int] = defaultdict(int)
+        batch_tallies: Dict[BatchKey, Dict[str, int]] = defaultdict(
+            lambda: defaultdict(int)
+        )
+
+        def validate_choice_name_and_get_choice_id(choice_name: str) -> Optional[str]:
+            choice_id = None
+            for choice in contest.choices:
+                if choice.name == choice_name:
+                    choice_id = choice.id
+                    break
+                # handle capitalization mismatches for the write in column
+                if choice.name.lower() == choice_name.lower() == "write-in":
+                    choice_id = choice.id
+                    break
+            if (
+                not choice_id
+                and choice_name
+                # If the user configured a write-in candidate choice when setting up the audit choice_id
+                # will be set in the for loop above. If the audit wasn't configured for write-ins we can parse them out.
+                and choice_name.lower() != "write-in"
+            ):
+                raise UserError(f"Unrecognized choice in CVR file: {choice_name}")
+            return choice_id
+
+        # cvr_file is a ZIP file with multiple XMLs
+        zip_entry_names = unzip_files(cvr_file, working_directory)
+        cvr_file_names = [
+            entry_name
+            for entry_name in zip_entry_names
+            if entry_name.lower().endswith(".xml")
+        ]
+        cvr_file.close()
+
+        for cvr_file_name in cvr_file_names:
+            cvr_xml = ElementTree.parse(os.path.join(working_directory, cvr_file_name))
+            batch_number = find_text_xml(cvr_xml, "BatchNumber")
+            precinct_name = find_text_xml(find_xml(cvr_xml, "PrecinctSplit"), "Name")
+            batch_key_value = (
+                batch_number if batch_number is not None else precinct_name
+            )
+            if batch_key_value is None:
+                raise UserError(
+                    "Could not find batch number or precinct name in CVR file."
+                )
+            batch_key: BatchKey = (
+                "",
+                batch_key_value,
+            )  # Tabulator ID is not present in Hart CVRs
+
+            ballot_count_by_batch[batch_key] += 1
+            contest_results = parse_contest_results(cvr_xml)
+            for contest in contests:
+                choices = contest_results.get(contest.name, set())
+                for choice_name in choices:
+                    choice_id = validate_choice_name_and_get_choice_id(choice_name)
+                    if choice_id is not None:
+                        batch_tallies[batch_key][choice_id] += 1
+
+        # Set explicit zeros for choices with zero votes in a batch to avoid KeyErrors when
+        # generating files and to make sure every batch is included even if it has no votes for the contest(s)
+        for batch_key in ballot_count_by_batch.keys():
+            if batch_key not in batch_tallies:
+                batch_tallies[batch_key] = defaultdict(int)
         for tallies in batch_tallies.values():
             for contest in contests:
                 for choice in contest.choices:
@@ -407,6 +486,8 @@ def process_batch_inventory_cvr_file(
             process_dominion()
         elif batch_inventory_data.system_type == CvrFileType.ESS:
             process_ess()
+        elif batch_inventory_data.system_type == CvrFileType.HART:
+            process_hart()
         else:
             raise Exception(
                 f"Unrecognized system type: {batch_inventory_data.system_type}"
@@ -588,7 +669,7 @@ def set_batch_inventory_system_type(
     system_type = safe_get_json_dict(request)["systemType"]
     if system_type is None:
         raise BadRequest("Missing systemType param")
-    if system_type not in [CvrFileType.DOMINION, CvrFileType.ESS]:
+    if system_type not in [CvrFileType.DOMINION, CvrFileType.ESS, CvrFileType.HART]:
         raise BadRequest(f"Unrecognized systemType param: {system_type}")
 
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
@@ -666,10 +747,13 @@ def complete_upload_for_batch_inventory_cvr(
     (storage_path, filename, file_type) = get_standard_file_upload_request_params(
         request
     )
+
     if batch_inventory_data.system_type == CvrFileType.DOMINION:
         validate_csv_mimetype(file_type)
     elif batch_inventory_data.system_type == CvrFileType.ESS:
         validate_csv_or_zip_mimetype(file_type)
+    elif batch_inventory_data.system_type == CvrFileType.HART:
+        validate_zip_mimetype(file_type)
     else:
         raise Conflict(
             f"Batch Inventory CVR uploads not supported for cvr file type: {batch_inventory_data.system_type}"

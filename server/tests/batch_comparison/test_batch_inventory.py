@@ -2,49 +2,49 @@ import pytest
 from flask.testing import FlaskClient
 from ..helpers import *  # pylint: disable=wildcard-import
 from ...models import BatchInventoryData
+from ..ballot_comparison.test_cvrs import build_hart_cvr
 
-# Overvote for contest Contest 1 in row 11
-TEST_CVR = """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
-,,,,,,,,Contest 1 (Vote For=1),Contest 1 (Vote For=1),Contest 2 (Vote For=2),Contest 2 (Vote For=2),Contest 2 (Vote For=2)
-,,,,,,,,Choice 1-1,Choice 1-2,Choice 2-1,Choice 2-2,Choice 2-3
+TEST_CVR = """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,,,,,,
+,,,,,,,,Contest 1 (Vote For=1),Contest 1 (Vote For=1),Contest 1 (Vote For=1),Contest 2 (Vote For=2),Contest 2 (Vote For=2),Contest 2 (Vote For=2),Contest 2 (Vote For=2)
+,,,,,,,,Choice 1-1,Choice 1-2,Write-In,Choice 2-1,Choice 2-2,Choice 2-3,Write-In
 CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM,LBR,IND,,
-1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,1,1,1,0
-2,TABULATOR1,BATCH1,2,1-1-2,Election Day,12345,COUNTY,1,0,1,0,1
-3,TABULATOR1,BATCH1,3,1-1-3,Election Day,12345,COUNTY,0,1,1,1,0
-4,TABULATOR1,BATCH2,1,1-2-1,Election Day,12345,COUNTY,1,0,1,0,1
-5,TABULATOR1,BATCH2,2,1-2-2,Election Day,12345,COUNTY,0,1,1,1,0
-6,TABULATOR1,BATCH2,3,1-2-3,Election Day,12345,COUNTY,1,0,1,0,1
-7,TABULATOR2,BATCH1,1,2-1-1,Election Day,12345,COUNTY,0,1,1,1,0
-8,TABULATOR2,BATCH1,2,2-1-2,Mail,12345,COUNTY,1,0,1,0,1
-9,TABULATOR2,BATCH1,3,2-1-3,Mail,12345,COUNTY,1,0,1,1,0
-10,TABULATOR2,BATCH2,1,2-2-1,Election Day,12345,COUNTY,1,0,1,0,1
-11,TABULATOR2,BATCH2,2,2-2-2,Election Day,12345,COUNTY,1,1,1,1,0
-12,TABULATOR2,BATCH2,3,2-2-3,Election Day,12345,COUNTY,1,0,1,0,1
-13,TABULATOR2,BATCH2,4,2-2-4,Election Day,12345,CITY,,,1,0,1
-14,TABULATOR2,BATCH2,5,2-2-5,Election Day,12345,CITY,,,1,1,0
-15,TABULATOR2,BATCH2,6,2-2-6,Election Day,12345,CITY,,,1,0,1
+1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,0,1,1,1,0,0
+2,TABULATOR1,BATCH1,2,1-1-2,Election Day,12345,COUNTY,1,0,0,1,0,1,0
+3,TABULATOR1,BATCH1,3,1-1-3,Election Day,12345,COUNTY,0,1,0,1,1,0,0
+4,TABULATOR1,BATCH2,1,1-2-1,Election Day,12345,COUNTY,1,0,0,1,0,1,0
+5,TABULATOR1,BATCH2,2,1-2-2,Election Day,12345,COUNTY,0,1,0,1,1,0,0
+6,TABULATOR1,BATCH2,3,1-2-3,Election Day,12345,COUNTY,1,0,0,1,0,1,0
+7,TABULATOR2,BATCH1,1,2-1-1,Election Day,12345,COUNTY,0,1,0,1,1,0,0
+8,TABULATOR2,BATCH1,2,2-1-2,Mail,12345,COUNTY,1,0,0,1,0,1,0
+9,TABULATOR2,BATCH1,3,2-1-3,Mail,12345,COUNTY,1,0,0,1,1,0,0
+10,TABULATOR2,BATCH2,1,2-2-1,Election Day,12345,COUNTY,1,0,0,1,0,1,0
+11,TABULATOR2,BATCH2,2,2-2-2,Election Day,12345,COUNTY,1,1,0,1,1,0,0
+12,TABULATOR2,BATCH2,3,2-2-3,Election Day,12345,COUNTY,1,0,0,1,0,1,0
+13,TABULATOR2,BATCH2,4,2-2-4,Election Day,12345,CITY,,,,1,0,1,0
+14,TABULATOR2,BATCH2,5,2-2-5,Election Day,12345,CITY,,,,1,1,0,0
+15,TABULATOR2,BATCH2,6,2-2-6,Election Day,12345,CITY,,,,1,0,1,0
 """
 
 # Overvote for contest Contest 1 in row 11
-TEST_CVRS_WITH_LEADING_EQUAL_SIGNS = """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
-,,,,,,,,Contest 1 (Vote For=1),Contest 1 (Vote For=1),Contest 2 (Vote For=2),Contest 2 (Vote For=2),Contest 2 (Vote For=2)
-,,,,,,,,Choice 1-1,Choice 1-2,Choice 2-1,Choice 2-2,Choice 2-3
+TEST_CVRS_WITH_LEADING_EQUAL_SIGNS = """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,,,,,,
+,,,,,,,,Contest 1 (Vote For=1),Contest 1 (Vote For=1),Contest 1 (Vote For=1),Contest 2 (Vote For=2),Contest 2 (Vote For=2),Contest 2 (Vote For=2),Contest 2 (Vote For=2)
+,,,,,,,,Choice 1-1,Choice 1-2,Write-In,Choice 2-1,Choice 2-2,Choice 2-3,Write-In
 CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM,LBR,IND,,
-="1",="TABULATOR1",="BATCH1",="1",="1-1-1",Election Day,12345,COUNTY,0,1,1,1,0
-="2",="TABULATOR1",="BATCH1",="2",="1-1-2",Election Day,12345,COUNTY,1,0,1,0,1
-="3",="TABULATOR1",="BATCH1",="3",="1-1-3",Election Day,12345,COUNTY,0,1,1,1,0
-="4",="TABULATOR1",="BATCH2",="1",="1-2-1",Election Day,12345,COUNTY,1,0,1,0,1
-="5",="TABULATOR1",="BATCH2",="2",="1-2-2",Election Day,12345,COUNTY,0,1,1,1,0
-="6",="TABULATOR1",="BATCH2",="3",="1-2-3",Election Day,12345,COUNTY,1,0,1,0,1
-="7",="TABULATOR2",="BATCH1",="1",="2-1-1",Election Day,12345,COUNTY,0,1,1,1,0
-="8",="TABULATOR2",="BATCH1",="2",="2-1-2",Mail,12345,COUNTY,1,0,1,0,1
-="9",="TABULATOR2",="BATCH1",="3",="2-1-3",Mail,12345,COUNTY,1,0,1,1,0
-="10",="TABULATOR2",="BATCH2",="1",="2-2-1",Election Day,12345,COUNTY,1,0,1,0,1
-="11",="TABULATOR2",="BATCH2",="2",="2-2-2",Election Day,12345,COUNTY,1,1,1,1,0
-="12",="TABULATOR2",="BATCH2",="3",="2-2-3",Election Day,12345,COUNTY,1,0,1,0,1
-="13",="TABULATOR2",="BATCH2",="4",="2-2-4",Election Day,12345,CITY,,,1,0,1
-="14",="TABULATOR2",="BATCH2",="5",="2-2-5",Election Day,12345,CITY,,,1,1,0
-="15",="TABULATOR2",="BATCH2",="6",="2-2-6",Election Day,12345,CITY,,,1,0,1
+="1",="TABULATOR1",="BATCH1",="1",="1-1-1",Election Day,12345,COUNTY,0,0,1,1,1,0,0
+="2",="TABULATOR1",="BATCH1",="2",="1-1-2",Election Day,12345,COUNTY,1,0,0,1,0,1,0
+="3",="TABULATOR1",="BATCH1",="3",="1-1-3",Election Day,12345,COUNTY,0,1,0,1,1,0,0
+="4",="TABULATOR1",="BATCH2",="1",="1-2-1",Election Day,12345,COUNTY,1,0,0,1,0,1,0
+="5",="TABULATOR1",="BATCH2",="2",="1-2-2",Election Day,12345,COUNTY,0,1,0,1,1,0,0
+="6",="TABULATOR1",="BATCH2",="3",="1-2-3",Election Day,12345,COUNTY,1,0,0,1,0,1,0
+="7",="TABULATOR2",="BATCH1",="1",="2-1-1",Election Day,12345,COUNTY,0,1,0,1,1,0,0
+="8",="TABULATOR2",="BATCH1",="2",="2-1-2",Mail,12345,COUNTY,1,0,0,1,0,1,0
+="9",="TABULATOR2",="BATCH1",="3",="2-1-3",Mail,12345,COUNTY,1,0,0,1,1,0,0
+="10",="TABULATOR2",="BATCH2",="1",="2-2-1",Election Day,12345,COUNTY,1,0,0,1,0,1,0
+="11",="TABULATOR2",="BATCH2",="2",="2-2-2",Election Day,12345,COUNTY,1,1,0,1,1,0,0
+="12",="TABULATOR2",="BATCH2",="3",="2-2-3",Election Day,12345,COUNTY,1,0,0,1,0,1,0
+="13",="TABULATOR2",="BATCH2",="4",="2-2-4",Election Day,12345,CITY,,,,1,0,1,0
+="14",="TABULATOR2",="BATCH2",="5",="2-2-5",Election Day,12345,CITY,,,,1,1,0,0
+="15",="TABULATOR2",="BATCH2",="6",="2-2-6",Election Day,12345,CITY,,,,1,0,1,0
 """
 
 TEST_TABULATOR_STATUS = """<?xml version="1.0" standalone="yes"?>
@@ -81,7 +81,8 @@ def contest_id(client: FlaskClient, election_id: str, jurisdiction_ids: List[str
         "choices": [
             # Double the actual number of votes in TEST_CVR to account for the two jurisdictions
             {"id": str(uuid.uuid4()), "name": "Choice 1-1", "numVotes": 14},
-            {"id": str(uuid.uuid4()), "name": "Choice 1-2", "numVotes": 8},
+            {"id": str(uuid.uuid4()), "name": "Choice 1-2", "numVotes": 6},
+            {"id": str(uuid.uuid4()), "name": "Write-In", "numVotes": 2},
         ],
         "numWinners": 1,
         "votesAllowed": 1,
@@ -102,7 +103,8 @@ def contest_ids(client: FlaskClient, election_id: str, jurisdiction_ids: List[st
         "choices": [
             # Double the actual number of votes in TEST_CVR to account for the two jurisdictions
             {"id": str(uuid.uuid4()), "name": "Choice 1-1", "numVotes": 14},
-            {"id": str(uuid.uuid4()), "name": "Choice 1-2", "numVotes": 8},
+            {"id": str(uuid.uuid4()), "name": "Choice 1-2", "numVotes": 6},
+            {"id": str(uuid.uuid4()), "name": "Write-In", "numVotes": 0},
         ],
         "numWinners": 1,
         "votesAllowed": 1,
@@ -116,7 +118,7 @@ def contest_ids(client: FlaskClient, election_id: str, jurisdiction_ids: List[st
             # Double the actual number of votes in TEST_CVR to account for the two jurisdictions
             {"id": str(uuid.uuid4()), "name": "Choice 2-1", "numVotes": 30},
             {"id": str(uuid.uuid4()), "name": "Choice 2-2", "numVotes": 14},
-            {"id": str(uuid.uuid4()), "name": "Choice 2-3", "numVotes": 16},
+            {"id": str(uuid.uuid4()), "name": "Write-In", "numVotes": 0},
         ],
         "numWinners": 1,
         "votesAllowed": 2,
@@ -892,12 +894,12 @@ def test_batch_inventory_invalid_file_uploads(
         client,
         io.BytesIO(
             TEST_CVR.replace(
-                """1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,1,1,1,0
-2,TABULATOR1,BATCH1,2,1-1-2,Election Day,12345,COUNTY,1,0,1,0,1
-3,TABULATOR1,BATCH1,3,1-1-3,Election Day,12345,COUNTY,0,1,1,1,0
-4,TABULATOR1,BATCH2,1,1-2-1,Election Day,12345,COUNTY,1,0,1,0,1
-5,TABULATOR1,BATCH2,2,1-2-2,Election Day,12345,COUNTY,0,1,1,1,0
-6,TABULATOR1,BATCH2,3,1-2-3,Election Day,12345,COUNTY,1,0,1,0,1
+                """1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,0,1,1,1,0,0
+2,TABULATOR1,BATCH1,2,1-1-2,Election Day,12345,COUNTY,1,0,0,1,0,1,0
+3,TABULATOR1,BATCH1,3,1-1-3,Election Day,12345,COUNTY,0,1,0,1,1,0,0
+4,TABULATOR1,BATCH2,1,1-2-1,Election Day,12345,COUNTY,1,0,0,1,0,1,0
+5,TABULATOR1,BATCH2,2,1-2-2,Election Day,12345,COUNTY,0,1,0,1,1,0,0
+6,TABULATOR1,BATCH2,3,1-2-3,Election Day,12345,COUNTY,1,0,0,1,0,1,0
 """,
                 "",
             ).encode()
@@ -1600,3 +1602,139 @@ def test_batch_inventory_tabulator_status_get_upload_url(
         f"audits/{election_id}/jurisdictions/{jurisdiction_ids[0]}/batch-inventory-tabulator-status_"
     )
     assert response_data["fields"]["key"].endswith(".xml")
+
+
+def test_batch_inventory_hart_cvr_upload(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_id: str,  # pylint: disable=unused-argument
+    snapshot,
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type"
+    )
+    response = json.loads(rv.data)
+    assert response == dict(systemType=None)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr"
+    )
+    cvr = json.loads(rv.data)
+    assert cvr == dict(file=None, processing=None)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/sign-off"
+    )
+    sign_off = json.loads(rv.data)
+    assert sign_off == dict(signedOffAt=None)
+
+    # Set system type
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type",
+        {"systemType": CvrFileType.HART},
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type"
+    )
+    compare_json(json.loads(rv.data), {"systemType": CvrFileType.HART})
+
+    hart_cvrs = [
+        build_hart_cvr("BATCH1", "1", "1-1-1", "0,1,1,0,0"),
+        build_hart_cvr("BATCH1", "2", "1-1-2", "1,0,1,0,0"),
+        build_hart_cvr("BATCH1", "3", "1-1-3", "0,1,1,0,0"),
+        build_hart_cvr("BATCH2", "1", "1-2-1", "1,0,1,0,0"),
+        build_hart_cvr("BATCH2", "2", "1-2-2", "0,1,0,1,0"),
+        build_hart_cvr("BATCH2", "3", "1-2-3", "1,0,0,0,1"),
+        build_hart_cvr("BATCH3", "1", "1-3-1", ",,1,0,0"),
+        build_hart_cvr("BATCH3", "2", "1-3-2", ",,1,0,0"),
+        build_hart_cvr("BATCH4", "1", "1-4-1", "1,0,0,0,1"),
+        build_hart_cvr("BATCH4", "1", "1-4-1", "1,0,0,0,1", add_write_in=True),
+    ]
+    hart_zip = zip_hart_cvrs(hart_cvrs)
+
+    # Upload HART CVR file
+    rv = upload_batch_inventory_cvr(
+        client,
+        hart_zip,
+        election_id,
+        jurisdiction_ids[0],
+        "application/zip",
+    )
+    assert_ok(rv)
+
+    # Download manifest
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/ballot-manifest"
+    )
+    ballot_manifest = rv.data.decode("utf-8")
+    snapshot.assert_match(ballot_manifest)
+
+    # Download batch tallies
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/batch-tallies"
+    )
+    batch_tallies = rv.data.decode("utf-8")
+    snapshot.assert_match(batch_tallies)
+
+    # Upload manifest - should be a valid file
+    rv = upload_ballot_manifest(
+        client,
+        io.BytesIO(ballot_manifest.encode()),
+        election_id,
+        jurisdiction_ids[0],
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
+    )
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {
+                "name": asserts_startswith("manifest"),
+                "uploadedAt": assert_is_date,
+            },
+            "processing": {
+                "status": ProcessingStatus.PROCESSED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": None,
+            },
+        },
+    )
+
+    # Upload batch tallies - should be a valid file
+    rv = upload_batch_tallies(
+        client,
+        io.BytesIO(batch_tallies.encode()),
+        election_id,
+        jurisdiction_ids[0],
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies"
+    )
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {
+                "name": asserts_startswith("batchTallies"),
+                "uploadedAt": assert_is_date,
+            },
+            "processing": {
+                "status": ProcessingStatus.PROCESSED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": None,
+            },
+        },
+    )

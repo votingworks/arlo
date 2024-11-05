@@ -547,13 +547,17 @@ def upload_batch_inventory_cvr(
     file_content: io.BytesIO,
     election_id: str,
     jurisdiction_id: str,
+    file_type: str = "text/csv",
 ):
-    filename = timestamp_filename("batchInventoryCvr", "csv")
+    if file_type in ["application/zip", "application/x-zip-compressed"]:
+        filename = timestamp_filename("batchInventoryCvr", "zip")
+    else:
+        filename = timestamp_filename("batchInventoryCvr", "csv")
     return upload_file_helper(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/batch-inventory/cvr",
         filename,
-        "text/csv",
+        file_type,
         file_content,
     )
 
