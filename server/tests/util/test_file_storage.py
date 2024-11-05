@@ -10,7 +10,7 @@ import pytest
 from ...util.file import (
     delete_file,
     retrieve_file,
-    retrieve_file_streaming,
+    retrieve_file_to_buffer,
     store_file,
     get_file_upload_url,
     get_standard_file_upload_request_params,
@@ -106,7 +106,7 @@ def test_retrieve_file_streaming(mock_boto_client):
     )
 
     with tempfile.TemporaryDirectory() as working_dir:
-        file = retrieve_file_streaming("s3://test_bucket/test_file.csv", working_dir)
+        file = retrieve_file_to_buffer("s3://test_bucket/test_file.csv", working_dir)
         assert file.read() == b"test data"
         temp_file_path = os.path.join(working_dir, file.name)
 

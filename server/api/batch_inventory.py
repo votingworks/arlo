@@ -41,7 +41,7 @@ from ..util.file import (
     get_file_upload_url,
     get_standard_file_upload_request_params,
     retrieve_file,
-    retrieve_file_streaming,
+    retrieve_file_to_buffer,
     serialize_file,
     serialize_file_processing,
     timestamp_filename,
@@ -120,7 +120,7 @@ def process_batch_inventory_cvr_file(
         jurisdiction_id
     )
     contests = list(jurisdiction.contests)
-    cvr_file = retrieve_file_streaming(
+    cvr_file = retrieve_file_to_buffer(
         batch_inventory_data.cvr_file.storage_path, working_directory
     )
 

@@ -47,7 +47,7 @@ from ..util.file import (
     get_file_upload_url,
     get_standard_file_upload_request_params,
     retrieve_file,
-    retrieve_file_streaming,
+    retrieve_file_to_buffer,
     serialize_file,
     serialize_file_processing,
     timestamp_filename,
@@ -317,7 +317,7 @@ def parse_clearballot_cvrs(
     jurisdiction: Jurisdiction,
     working_directory: str,
 ) -> Tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
-    cvr_file = retrieve_file_streaming(
+    cvr_file = retrieve_file_to_buffer(
         jurisdiction.cvr_file.storage_path, working_directory
     )
     cvrs = csv_reader_for_cvr(cvr_file)
@@ -418,7 +418,7 @@ def parse_dominion_cvrs(
     jurisdiction: Jurisdiction,
     working_directory: str,
 ) -> Tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
-    cvr_file = retrieve_file_streaming(
+    cvr_file = retrieve_file_to_buffer(
         jurisdiction.cvr_file.storage_path, working_directory
     )
     cvrs = csv_reader_for_cvr(cvr_file)
@@ -684,7 +684,7 @@ def parse_ess_cvrs(
     #   - Second, parse out the interpretations.
     # 5. Concatenate the parsed CVRBallot lists and join that to the parsed interpretation
 
-    zip_file = retrieve_file_streaming(
+    zip_file = retrieve_file_to_buffer(
         jurisdiction.cvr_file.storage_path, working_directory
     )
     file_names = unzip_files(zip_file, working_directory)
@@ -1036,7 +1036,7 @@ def parse_hart_cvrs(
        scheme for interpretations requires knowing all of the contest and choice names up front.
     6. Parse the interpretations.
     """
-    wrapper_zip_file = retrieve_file_streaming(
+    wrapper_zip_file = retrieve_file_to_buffer(
         jurisdiction.cvr_file.storage_path, working_directory
     )
     file_names = unzip_files(wrapper_zip_file, working_directory)
@@ -1060,8 +1060,6 @@ def parse_hart_cvrs(
 
     # If there are no zip files inside the "wrapper" we assume it was not a wrapper and there was only one cvr zip file uploaded, unwrapped.
     if len(cvr_zip_files) == 0 and len(scanned_ballot_information_files) == 0:
-        # We need to re open the file since it was closed after unzipping
-        # pylint: disable=consider-using-with
         wrapper_zip_file.seek(0)
         cvr_zip_files[jurisdiction.cvr_file.name] = wrapper_zip_file
     else:
