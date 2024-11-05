@@ -199,6 +199,9 @@ def validate_batch_tallies_upload(election: Election, jurisdiction: Jurisdiction
     if not jurisdiction.manifest_file_id:
         raise Conflict("Must upload ballot manifest before uploading batch tallies.")
 
+    if jurisdiction.manifest_file.is_processing():
+        raise Conflict("Cannot update batch tallies while manifest file is processing.")
+
 
 def clear_batch_tallies_data(jurisdiction: Jurisdiction):
     jurisdiction.batch_tallies = None

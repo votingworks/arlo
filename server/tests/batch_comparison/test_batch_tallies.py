@@ -750,3 +750,42 @@ def test_batch_tallies_get_upload_url(
             f"audits/{election_id}/jurisdictions/{jurisdiction_ids[0]}/batch_tallies_"
         )
         assert response_data["fields"]["key"].endswith(".csv")
+
+def test_replace_batch_tallies_fails_while_processing_jurisdiction_file(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_id: str,
+    manifests,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(
+        client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL
+    )
+
+    with no_automatic_task_execution():
+        # replace the ballot manifest file, but don't process it yet
+        rv = upload_ballot_manifest(
+            client,
+            io.BytesIO(b"does not matter"),
+            election_id,
+            jurisdiction_ids[0],
+        )
+        assert_ok(rv)
+
+        # try to replace the batch tallies file
+        rv = upload_batch_tallies(
+            client,
+            io.BytesIO(b"does not matter"),
+            election_id,
+            jurisdiction_ids[0],
+        )
+
+        assert rv.status_code == 409
+        assert json.loads(rv.data) == {
+            "errors": [
+                {
+                    "errorType": "Conflict",
+                    "message": "Cannot update batch tallies while manifest file is processing.",
+                }
+            ]
+        }

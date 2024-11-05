@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 import io
 import uuid, json, re
 from datetime import datetime
@@ -7,6 +8,7 @@ from flask.testing import FlaskClient
 from werkzeug.wrappers import Response
 from sqlalchemy.exc import IntegrityError
 
+from .. import config
 from ..util.file import zip_files, timestamp_filename
 from ..auth.auth_helpers import UserType
 from ..auth import auth_helpers
@@ -595,3 +597,11 @@ def zip_hart_cvrs(cvrs: List[str]):
     # make sure it gets skipped
     files["WriteIns"] = io.BytesIO()
     return io.BytesIO(zip_files(files).read())
+
+@contextmanager
+def no_automatic_task_execution():
+    config.RUN_BACKGROUND_TASKS_IMMEDIATELY = False
+    try:
+        yield
+    finally:
+        config.RUN_BACKGROUND_TASKS_IMMEDIATELY = True
