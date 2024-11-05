@@ -253,6 +253,11 @@ def contest_rows(election: Election):
             "Tabulated Votes",
         ]
         + (
+            ["Pending Ballots"]
+            if election.audit_type == AuditType.BATCH_COMPARISON
+            else []
+        )
+        + (
             [
                 "Total Ballots Cast: CVR",
                 "Total Ballots Cast: Non-CVR",
@@ -275,6 +280,10 @@ def contest_rows(election: Election):
                 {choice.name: choice.num_votes for choice in contest.choices}
             ),
         ]
+
+        if election.audit_type == AuditType.BATCH_COMPARISON:
+            row.append(contest.pending_ballots or 0)
+
         if election.audit_type == AuditType.HYBRID:
             total_ballots = hybrid_contest_total_ballots(contest)
             vote_counts = hybrid_contest_choice_vote_counts(contest)

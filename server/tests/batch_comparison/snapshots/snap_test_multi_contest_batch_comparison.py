@@ -28,9 +28,9 @@ Organization,Election Name,State\r
 Test Org test_multi_contest_batch_comparison_end_to_end,Test Election,CA\r
 \r
 ######## CONTESTS ########\r
-Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes\r
-Contest 1,Targeted,1,1,1500,Candidate 1: 750; Candidate 2: 250\r
-Contest 2,Targeted,1,2,1000,Candidate 3: 450; Candidate 4: 50\r
+Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes,Pending Ballots\r
+Contest 1,Targeted,1,1,1500,Candidate 1: 750; Candidate 2: 250,0\r
+Contest 2,Targeted,1,2,1000,Candidate 3: 450; Candidate 4: 50,0\r
 \r
 ######## AUDIT SETTINGS ########\r
 Audit Name,Audit Type,Audit Math Type,Risk Limit,Random Seed,Online Data Entry?\r
@@ -62,9 +62,9 @@ Organization,Election Name,State\r
 Test Org test_multi_contest_batch_comparison_end_to_end,Test Election,CA\r
 \r
 ######## CONTESTS ########\r
-Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes\r
-Contest 1,Targeted,1,1,1500,Candidate 1: 750; Candidate 2: 250\r
-Contest 2,Targeted,1,2,1000,Candidate 3: 450; Candidate 4: 50\r
+Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes,Pending Ballots\r
+Contest 1,Targeted,1,1,1500,Candidate 1: 750; Candidate 2: 250,0\r
+Contest 2,Targeted,1,2,1000,Candidate 3: 450; Candidate 4: 50,0\r
 \r
 ######## AUDIT SETTINGS ########\r
 Audit Name,Audit Type,Audit Math Type,Risk Limit,Random Seed,Online Data Entry?\r
@@ -96,9 +96,9 @@ Organization,Election Name,State\r
 Test Org test_multi_contest_batch_comparison_round_2,Test Election,CA\r
 \r
 ######## CONTESTS ########\r
-Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes\r
-Contest 1,Targeted,1,1,1500,Candidate 1: 750; Candidate 2: 250\r
-Contest 2,Targeted,1,2,1000,Candidate 3: 450; Candidate 4: 50\r
+Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes,Pending Ballots\r
+Contest 1,Targeted,1,1,1500,Candidate 1: 750; Candidate 2: 250,0\r
+Contest 2,Targeted,1,2,1000,Candidate 3: 450; Candidate 4: 50,0\r
 \r
 ######## AUDIT SETTINGS ########\r
 Audit Name,Audit Type,Audit Math Type,Risk Limit,Random Seed,Online Data Entry?\r
@@ -130,9 +130,9 @@ Organization,Election Name,State\r
 Test Org test_multi_contest_batch_comparison_round_2,Test Election,CA\r
 \r
 ######## CONTESTS ########\r
-Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes\r
-Contest 1,Targeted,1,1,1500,Candidate 1: 750; Candidate 2: 250\r
-Contest 2,Targeted,1,2,1000,Candidate 3: 450; Candidate 4: 50\r
+Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes,Pending Ballots\r
+Contest 1,Targeted,1,1,1500,Candidate 1: 750; Candidate 2: 250,0\r
+Contest 2,Targeted,1,2,1000,Candidate 3: 450; Candidate 4: 50,0\r
 \r
 ######## AUDIT SETTINGS ########\r
 Audit Name,Audit Type,Audit Math Type,Risk Limit,Random Seed,Online Data Entry?\r
@@ -166,9 +166,9 @@ Organization,Election Name,State\r
 Test Org test_multi_contest_batch_comparison_round_2,Test Election,CA\r
 \r
 ######## CONTESTS ########\r
-Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes\r
-Contest 1,Targeted,1,1,1500,Candidate 1: 750; Candidate 2: 250\r
-Contest 2,Targeted,1,2,1000,Candidate 3: 450; Candidate 4: 50\r
+Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes,Pending Ballots\r
+Contest 1,Targeted,1,1,1500,Candidate 1: 750; Candidate 2: 250,0\r
+Contest 2,Targeted,1,2,1000,Candidate 3: 450; Candidate 4: 50,0\r
 \r
 ######## AUDIT SETTINGS ########\r
 Audit Name,Audit Type,Audit Math Type,Risk Limit,Random Seed,Online Data Entry?\r

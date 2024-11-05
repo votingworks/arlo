@@ -14,8 +14,8 @@ Organization,Election Name,State\r
 TEST-ORG/sample-extra-batches-by-counting-group/automatically-end-audit-after-one-round,Test Election,CA\r
 \r
 ######## CONTESTS ########\r
-Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes\r
-Contest 1,Targeted,1,2,5000,candidate 1: 5000; candidate 2: 2500; candidate 3: 2500\r
+Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes,Pending Ballots\r
+Contest 1,Targeted,1,2,5000,candidate 1: 5000; candidate 2: 2500; candidate 3: 2500,0\r
 \r
 ######## AUDIT SETTINGS ########\r
 Audit Name,Audit Type,Audit Math Type,Risk Limit,Random Seed,Online Data Entry?\r
