@@ -663,3 +663,29 @@ def test_task_missing_parameter(db_session):
         match="Payload for task missing_parameters must match the handler's parameters.",
     ):
         create_background_task(missing_parameters, dict(arg2=2), db_session)
+
+def test_file_is_processing(db_session):
+    file = File(
+        id=1,
+        name="test_file.csv",
+        storage_path="test_dir/test_file.csv",
+    )
+
+    db_session.commit()
+
+    assert file.is_processing() == False
+
+    @background_task
+    def process_file(election_id):
+        pass
+    
+    # queue the task
+    file.task = create_background_task(
+        process_file, dict(election_id="election-01"), db_session
+    )
+    assert file.is_processing() == True
+    db_session.commit()
+
+    # run the task
+    run_task(claim_next_task("test_worker", db_session), db_session)
+    assert file.is_processing() == False
