@@ -1040,7 +1040,6 @@ def parse_hart_cvrs(
         jurisdiction.cvr_file.storage_path, working_directory
     )
     file_names = unzip_files(wrapper_zip_file, working_directory)
-    wrapper_zip_file.close()
 
     cvr_zip_files: Dict[str, BinaryIO] = {}  # { file_name: file }
     scanned_ballot_information_files: List[BinaryIO] = []
@@ -1063,15 +1062,15 @@ def parse_hart_cvrs(
     if len(cvr_zip_files) == 0 and len(scanned_ballot_information_files) == 0:
         # We need to re open the file since it was closed after unzipping
         # pylint: disable=consider-using-with
-        cvr_zip_files[jurisdiction.cvr_file.name] = open(
-            os.path.join(working_directory, wrapper_zip_file.name), "rb"
-        )
-
-    # If the wrapper was a "wrapper" zip it should only contain csv and zip files
-    elif len(nonCsvZipFiles) > 0:
-        raise UserError(
-            f"Unsupported file type. Expected either a ZIP file or a CSV file, but found {(','.join(nonCsvZipFiles))}."
-        )
+        wrapper_zip_file.seek(0)
+        cvr_zip_files[jurisdiction.cvr_file.name] = wrapper_zip_file
+    else:
+        # The user submitted a wrapper zip file, so we close it and make sure it only contained zip and csv files.
+        wrapper_zip_file.close()
+        if len(nonCsvZipFiles) > 0:
+            raise UserError(
+                f"Unsupported file type. Expected either a ZIP file or a CSV file, but found {(','.join(nonCsvZipFiles))}."
+            )
 
     def parse_scanned_ballot_information_file(
         scanned_ballot_information_file: BinaryIO,

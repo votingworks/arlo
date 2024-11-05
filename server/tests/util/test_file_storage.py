@@ -3,7 +3,7 @@ import os.path
 import shutil
 import tempfile
 import io
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from werkzeug.exceptions import BadRequest
 import pytest
 
@@ -92,24 +92,23 @@ def test_store_file_raises_with_s3_config(mock_boto_client):
     config.FILE_UPLOAD_STORAGE_PATH = original_file_upload_storage_path
 
 
-@patch("boto3.resource")
-def test_retrieve_file_streaming(mock_boto3_resource):
+@patch("boto3.client", autospec=True)
+def test_retrieve_file_streaming(mock_boto_client):
     config.AWS_ACCESS_KEY_ID = "test access key id"
     config.AWS_SECRET_ACCESS_KEY = "test secret access key"
     config.AWS_DEFAULT_REGION = "test region"
     original_file_upload_storage_path = config.FILE_UPLOAD_STORAGE_PATH
     config.FILE_UPLOAD_STORAGE_PATH = "s3://test_bucket"
-    mock_s3 = MagicMock()
-    mock_boto3_resource.return_value = mock_s3
-    mock_object = mock_s3.Object.return_value
-    mock_body = MagicMock()
-    mock_body.read.side_effect = [b"test data", b""]
-    mock_object.get.return_value = {"Body": mock_body}
+
+    file = io.BytesIO(b"test data")
+    mock_boto_client.return_value.download_fileobj.side_effect = (
+        lambda bucket, key, stream: stream.write(file.read())
+    )
 
     with tempfile.TemporaryDirectory() as working_dir:
-        temp_file_path = os.path.join(working_dir, "test_file.csv")
         file = retrieve_file_streaming("s3://test_bucket/test_file.csv", working_dir)
         assert file.read() == b"test data"
+        temp_file_path = os.path.join(working_dir, file.name)
 
         with open(temp_file_path, "rb") as temp_file:
             assert temp_file.read() == b"test data"
