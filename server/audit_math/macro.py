@@ -127,7 +127,7 @@ def compute_max_error(batch_results: BatchResults, contest: Contest) -> Decimal:
             if contest.pending_ballots:
                 V_wl -= contest.pending_ballots
 
-            if V_wl == 0:
+            if V_wl <= 0:
                 return Decimal("inf")
 
             u_pwl = Decimal((v_wp - v_lp) + b_cp) / Decimal(V_wl)
