@@ -1108,3 +1108,165 @@ def test_batch_comparison_combined_batches(
     # Check the audit report
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)
+
+
+def test_batch_comparison_pending_ballots(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_id: str,
+    election_settings,  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+    batch_tallies,  # pylint: disable=unused-argument
+    snapshot,
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+
+    # Get sample size options
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
+    assert rv.status_code == 200
+    sample_size_options = json.loads(rv.data)["sampleSizes"][contest_id]
+    assert len(sample_size_options) == 1
+
+    # Check that pending ballots wasn't set by initial contest creation
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contest = json.loads(rv.data)["contests"][0]
+    assert contest["pendingBallots"] is None
+
+    # Add pending ballots to the target contest
+    num_pending_ballots = 250
+    del contest["totalBallotsCast"]
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/contest",
+        [{**contest, "pendingBallots": num_pending_ballots}],
+    )
+    assert_ok(rv)
+
+    # Check that pending ballots was set
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contest = json.loads(rv.data)["contests"][0]
+    assert contest["pendingBallots"] == num_pending_ballots
+
+    # Delete the cached sample size options
+    SampleSizeOptions.query.filter_by(election_id=election_id, round_num=1).delete()
+    db_session.commit()
+
+    # Get sample size options again
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
+    sample_size_options_with_pending_ballots = json.loads(rv.data)["sampleSizes"][
+        contest_id
+    ]
+    assert len(sample_size_options_with_pending_ballots) == 1
+
+    # Confirm that the sample size increased, indicating that the pending
+    # ballots were included in the sample size calculation
+    assert (
+        sample_size_options_with_pending_ballots[0]["size"]
+        > sample_size_options[0]["size"]
+    )
+    snapshot.assert_match(sample_size_options_with_pending_ballots)
+
+    # Launch the audit
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 1,
+            "sampleSizes": {contest_id: sample_size_options_with_pending_ballots[0]},
+        },
+    )
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/round")
+    rounds = json.loads(rv.data)["rounds"]
+    round_1_id = rounds[0]["id"]
+
+    # Audit all of the sampled batches correctly
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    for jurisdiction_id in jurisdiction_ids[:2]:
+        batch_tallies = Jurisdiction.query.get(jurisdiction_id).batch_tallies
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/batches"
+        )
+        batches = json.loads(rv.data)["batches"]
+        for batch in batches:
+            tallies = batch_tallies[batch["name"]][contest_id]
+            del tallies["ballots"]
+            rv = put_json(
+                client,
+                f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/batches/{batch['id']}/results",
+                [
+                    {
+                        "name": "Tally Sheet #1",
+                        "results": tallies,
+                    }
+                ],
+            )
+            assert_ok(rv)
+
+        rv = post_json(
+            client,
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/batches/finalize",
+        )
+        assert_ok(rv)
+
+    # End the round
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
+    assert_ok(rv)
+
+    # Check the audit report
+    rv = client.get(f"/api/election/{election_id}/report")
+    assert_match_report(rv.data, snapshot)
+
+    # Check the p-value against a p-value without pending ballots
+    round = Round.query.get(round_1_id)
+    assert len(round.round_contests) == 1
+    round_contest = round.round_contests[0]
+    p_value = round_contest.end_p_value
+
+    # Hackily edit the contest to remove pending ballots
+    Contest.query.filter_by(id=contest_id).update({"pending_ballots": 0})
+    # Re-open the round
+    round.ended_at = None
+    round_contest.end_p_value = None
+    round_contest.results = []
+    round_contest.is_complete = False
+    db_session.commit()
+    # End the round again
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
+    assert_ok(rv)
+    # Check the p-value again
+    round = Round.query.get(round_1_id)
+    p_value_without_pending_ballots = round.round_contests[0].end_p_value
+
+    # The p-value should be higher with pending ballots, proving that we did in
+    # fact incorporate the pending ballots into the risk measurement
+    # calculation, worst-casing them as votes for the loser.
+    assert p_value > p_value_without_pending_ballots
+
+
+def test_batch_comparison_contests_pending_ballots_validation(
+    client: FlaskClient,
+    election_id: str,
+    contest_id: str,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contest = json.loads(rv.data)["contests"][0]
+    del contest["totalBallotsCast"]
+
+    invalid_pending_ballots = [
+        "not a number",
+        -1,
+    ]
+    for invalid_value in invalid_pending_ballots:
+        rv = put_json(
+            client,
+            f"/api/election/{election_id}/contest",
+            [{**contest, "pendingBallots": invalid_value}],
+        )
+        assert rv.status_code == 400
