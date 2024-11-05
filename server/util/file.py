@@ -74,6 +74,26 @@ def retrieve_file(storage_path: str) -> BinaryIO:
         return open(storage_path, "rb")
 
 
+# Similar functionality to retrieve_file expect when retrieving s3 files they are streamed
+# to a temporary file on disk to avoid loading the file in memory. Should be used for large file retrieval
+# The caller of this function is repsonsible for making sure that the working_directory is cleaned up and removed.
+def retrieve_file_to_buffer(storage_path: str, working_directory: str) -> BinaryIO:
+    if config.FILE_UPLOAD_STORAGE_PATH.startswith("s3://"):
+        assert storage_path.startswith(config.FILE_UPLOAD_STORAGE_PATH)
+        parsed_path = urlparse(storage_path)
+        bucket_name = parsed_path.netloc
+        key = parsed_path.path[1:]
+        with tempfile.NamedTemporaryFile(
+            dir=working_directory, delete=False
+        ) as temp_file:
+            s3().download_fileobj(bucket_name, key, temp_file)
+            temp_file_path = temp_file.name
+        # reopen the file to have a read only pointer
+        return open(temp_file_path, "rb")
+    else:
+        return open(storage_path, "rb")
+
+
 def delete_file(storage_path: str):
     if config.FILE_UPLOAD_STORAGE_PATH.startswith("s3://"):
         assert storage_path.startswith("s3://")
