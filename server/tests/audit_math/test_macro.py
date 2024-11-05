@@ -919,3 +919,113 @@ def test_combined_batches_sampled_and_unsampled():
     )
     assert computed_p == float(expected_p)
     assert res is (expected_p < ALPHA)
+
+
+def test_pending_ballots():
+    num_pending_ballots = 2
+    contest_data = {
+        "winner": 200,
+        "loser": 100,
+        "third": 50,
+        # Total ballots cast is calculated from reported batch tallies, so
+        # doesn't include pending ballots
+        "ballots": 350,
+        "numWinners": 1,
+        "votesAllowed": 1,
+        "pendingBallots": num_pending_ballots,
+    }
+
+    contest = Contest("Contest", contest_data)
+    contest_without_pending_ballots = Contest(
+        "Contest", {**contest_data, "pendingBallots": None}
+    )
+
+    batches = {}
+    batches["Batch 1"] = {
+        contest.name: {
+            "winner": 60,
+            "loser": 40,
+            "third": 0,
+            "ballots": 100,
+        }
+    }
+    batches["Batch 2"] = {
+        contest.name: {
+            "winner": 0,
+            "loser": 60,
+            "third": 40,
+            "ballots": 100,
+        }
+    }
+    batches["Batch 3"] = {
+        contest.name: {
+            "winner": 90,
+            "loser": 0,
+            "third": 10,
+            "ballots": 100,
+        }
+    }
+    batches["Batch 4"] = {
+        contest.name: {
+            "winner": 50,
+            "loser": 0,
+            "third": 0,
+            "ballots": 50,
+        }
+    }
+
+    # With pending ballots, we want to increase the max possible error (U) so
+    # that our calculations are more conservative.
+    U = macro.compute_U(batches, contest)
+    U_without_pending = macro.compute_U(batches, contest_without_pending_ballots)
+    assert U > U_without_pending
+
+    sample_size = macro.get_sample_sizes(RISK_LIMIT, contest, batches, {}, {}, [])
+    assert sample_size == len(batches)
+
+    # Don't actually do a full recount so we can assess a computed p-value,
+    # rather than an automatic 0 p-value
+    num_sampled_batches = len(batches) - 1
+    # No discrepancies
+    sample_results = dict(list(batches.items())[:num_sampled_batches])
+    sample_ticket_numbers = {
+        str(i): batch_name for i, batch_name in enumerate(sample_results.keys())
+    }
+
+    computed_p, res = macro.compute_risk(
+        RISK_LIMIT, contest, batches, sample_results, sample_ticket_numbers, []
+    )
+
+    expected_p = ((1 - 1 / U) / 1) ** num_sampled_batches
+    assert computed_p == float(expected_p)
+    assert res is (expected_p < ALPHA)
+
+    # 1 discrepancy
+    discrepancy_votes = 2
+    sample_results = {
+        **sample_results,
+        "Batch 3": {
+            contest.name: {
+                **sample_results["Batch 3"][contest.name],
+                "winner": sample_results["Batch 3"][contest.name]["winner"],
+                "loser": sample_results["Batch 3"][contest.name]["loser"]
+                + discrepancy_votes,
+            }
+        },
+    }
+
+    computed_p, res = macro.compute_risk(
+        RISK_LIMIT, contest, batches, sample_results, sample_ticket_numbers, []
+    )
+
+    max_error_batch_3 = (
+        batches["Batch 3"][contest.name]["winner"]
+        - batches["Batch 3"][contest.name]["loser"]
+        + batches["Batch 3"][contest.name]["ballots"]
+    )
+    taint_batch_3 = discrepancy_votes / max_error_batch_3
+    expected_p = (((1 - 1 / U) / 1) ** (num_sampled_batches - 1)) * (
+        (1 - 1 / U) / (1 - Decimal(taint_batch_3))
+    )
+    assert computed_p == float(expected_p)
+    assert res is (expected_p < ALPHA)
