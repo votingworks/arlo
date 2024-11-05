@@ -61,6 +61,12 @@ def compute_error(
         a_lp = sampled_results[contest.name][loser]
 
         V_wl = contest.candidates[winner] - contest.candidates[loser]
+
+        # Conservatively assume that any pending ballots would be tallied as
+        # votes for the loser, reducing the reported margin.
+        if contest.pending_ballots:
+            V_wl -= contest.pending_ballots
+
         error = (v_wp - v_lp) - (a_wp - a_lp)
         if error == 0:
             return None
@@ -115,6 +121,11 @@ def compute_max_error(batch_results: BatchResults, contest: Contest) -> Decimal:
             b_cp = batch_results[contest.name]["ballots"]
 
             V_wl = contest.candidates[winner] - contest.candidates[loser]
+
+            # Conservatively assume that any pending ballots would be tallied as
+            # votes for the loser, reducing the reported margin.
+            if contest.pending_ballots:
+                V_wl -= contest.pending_ballots
 
             if V_wl == 0:
                 return Decimal("inf")

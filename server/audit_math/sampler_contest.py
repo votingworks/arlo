@@ -22,6 +22,7 @@ def from_db_contest(db_contest):
         "ballots": db_contest.total_ballots_cast,
         "numWinners": db_contest.num_winners,
         "votesAllowed": db_contest.votes_allowed,
+        "pendingBallots": db_contest.pending_ballots,
     }
 
     # Initialize the choices in this contest and how many votes each received
@@ -41,6 +42,8 @@ class Contest:
     num_winners: int  # How many winners this contest had
     votes_allowed: int  # How many voters are allowed in this contest
     ballots: int  # The total number of ballots cast in this contest
+    # Ballots that weren't tallied yet and thus not included in reported results (batch comparison only)
+    pending_ballots: Optional[int]
     name: str  # The name of the contest
 
     winners: Dict[str, int]  # List of all the winners
@@ -66,6 +69,7 @@ class Contest:
         self.ballots = contest_info_dict["ballots"]
         self.num_winners = contest_info_dict["numWinners"]
         self.votes_allowed = contest_info_dict["votesAllowed"]
+        self.pending_ballots = contest_info_dict.get("pendingBallots")
 
         self.candidates = {}
 
@@ -73,7 +77,7 @@ class Contest:
         self.losers = {}
 
         for cand in contest_info_dict:
-            if cand in ["ballots", "numWinners", "votesAllowed"]:
+            if cand in ["ballots", "numWinners", "votesAllowed", "pendingBallots"]:
                 continue
 
             self.candidates[cand] = contest_info_dict[cand]
