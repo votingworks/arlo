@@ -18,20 +18,12 @@ import {
   Position,
   Button,
   Colors,
+  HTMLTable,
 } from '@blueprintjs/core'
 import uuidv4 from 'uuidv4'
 import FormWrapper from '../../../Atoms/Form/FormWrapper'
-import FormSection, {
-  FormSectionDescription,
-} from '../../../Atoms/Form/FormSection'
+import FormSection from '../../../Atoms/Form/FormSection'
 import FormField from '../../../Atoms/Form/FormField'
-import {
-  TwoColumnSection,
-  InputFieldRow,
-  InputLabel,
-  FlexField,
-  Action,
-} from '../../../Atoms/Form/styledBits'
 import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
 import schema from './schema'
@@ -46,6 +38,10 @@ import { ErrorLabel } from '../../../Atoms/Form/_helpers'
 import { partition } from '../../../../utils/array'
 import { AuditType } from '../../../useAuditSettings'
 import { parse as parseNumber } from '../../../../utils/number-schema'
+
+export const WideField = styled(FormField)`
+  width: 100%;
+`
 
 const CustomMenuItem = styled.li`
   .bp3-menu-item {
@@ -326,67 +322,55 @@ const ContestForm: React.FC<IProps> = ({
                           label={`Contest ${
                             values.contests.length > 1 ? i + 1 : ''
                           } Info`}
-                          style={{ marginTop: 0 }}
+                          style={{
+                            marginTop: 0,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '10px',
+                          }}
                         >
                           {isHybrid && standardizedContests ? (
-                            <div>
-                              <FormSectionDescription>
-                                Select the name of the contest that will drive
-                                the audit.
-                              </FormSectionDescription>
-                              <label htmlFor={`contests[${i}].name`}>
-                                Contest{' '}
-                                {values.contests.length > 1 ? i + 1 : ''} Name
-                                <br />
-                                <Field
-                                  component={Select}
-                                  id={`contests[${i}].name`}
-                                  name={`contests[${i}].name`}
-                                  onChange={(
-                                    e: React.FormEvent<HTMLSelectElement>
-                                  ) =>
-                                    setFieldValue(
-                                      `contests[${i}].name`,
-                                      e.currentTarget.value
-                                    )
-                                  }
-                                  value={values.contests[i].name}
-                                  options={[
-                                    { value: '' },
-                                    ...standardizedContests.map(({ name }) => ({
-                                      label: name,
-                                      value: name,
-                                    })),
-                                  ]}
-                                />
-                                <ErrorMessage
-                                  name={`contests[${i}].name`}
-                                  component={ErrorLabel}
-                                />
-                              </label>
-                            </div>
+                            <label htmlFor={`contests[${i}].name`}>
+                              <b>Contest Name</b>
+                              <br />
+                              <Field
+                                component={Select}
+                                id={`contests[${i}].name`}
+                                name={`contests[${i}].name`}
+                                onChange={(
+                                  e: React.FormEvent<HTMLSelectElement>
+                                ) =>
+                                  setFieldValue(
+                                    `contests[${i}].name`,
+                                    e.currentTarget.value
+                                  )
+                                }
+                                value={values.contests[i].name}
+                                options={[
+                                  { value: '' },
+                                  ...standardizedContests.map(({ name }) => ({
+                                    label: name,
+                                    value: name,
+                                  })),
+                                ]}
+                              />
+                              <ErrorMessage
+                                name={`contests[${i}].name`}
+                                component={ErrorLabel}
+                              />
+                            </label>
                           ) : (
-                            <div>
-                              <FormSectionDescription>
-                                Enter the name of the contest that will drive
-                                the audit.
-                              </FormSectionDescription>
-                              <label htmlFor={`contests[${i}].name`}>
-                                Contest{' '}
-                                {values.contests.length > 1 ? i + 1 : ''} Name
-                                <Field
-                                  id={`contests[${i}].name`}
-                                  name={`contests[${i}].name`}
-                                  component={FormField}
-                                />
-                              </label>
-                            </div>
+                            <label htmlFor={`contests[${i}].name`}>
+                              <b>Name</b>
+                              <Field
+                                id={`contests[${i}].name`}
+                                name={`contests[${i}].name`}
+                                component={FormField}
+                              />
+                            </label>
                           )}
-                          <FormSectionDescription>
-                            Enter the number of winners for the contest.
-                          </FormSectionDescription>
                           <label htmlFor={`contests[${i}].numWinners`}>
-                            Winners
+                            <b>Number of Winners</b>
                             <Field
                               id={`contests[${i}].numWinners`}
                               name={`contests[${i}].numWinners`}
@@ -394,12 +378,8 @@ const ContestForm: React.FC<IProps> = ({
                               validate={testNumber()}
                             />
                           </label>
-                          <FormSectionDescription>
-                            Number of selections the voter can make in the
-                            contest.
-                          </FormSectionDescription>
                           <label htmlFor={`contests[${i}].votesAllowed`}>
-                            Votes Allowed
+                            <b>Votes Allowed</b>
                             <Field
                               id={`contests[${i}].votesAllowed`}
                               name={`contests[${i}].votesAllowed`}
@@ -412,54 +392,70 @@ const ContestForm: React.FC<IProps> = ({
                           name={`contests[${i}].choices`}
                           render={choicesArrayHelpers => (
                             <FormSection
-                              label="Candidates/Choices & Vote Totals"
-                              description="Enter the name of each candidate choice that appears on the ballot for this contest."
+                              label="Vote Totals"
+                              description="Enter the name and vote total for each contest choice on the ballot."
                             >
-                              <TwoColumnSection>
-                                {contest.choices.map(
-                                  (choice: IChoiceValues, j: number) => (
-                                    /* eslint-disable react/no-array-index-key */
-                                    <React.Fragment key={j}>
-                                      <InputFieldRow>
-                                        <InputLabel>
-                                          Name of Candidate/Choice {j + 1}
+                              <HTMLTable
+                                striped
+                                bordered
+                                style={{
+                                  width: '100%',
+                                  border: `1px solid ${Colors.LIGHT_GRAY1}`,
+                                }}
+                              >
+                                <thead>
+                                  <th>Choice Name</th>
+                                  <th>Votes</th>
+                                  <th />
+                                </thead>
+                                <tbody>
+                                  {contest.choices.map(
+                                    (choice: IChoiceValues, j: number) => (
+                                      <tr key={j}>
+                                        <td>
                                           <Field
                                             name={`contests[${i}].choices[${j}].name`}
-                                            component={FlexField}
+                                            component={WideField}
                                           />
-                                        </InputLabel>
-                                        <InputLabel>
-                                          Votes for Candidate/Choice {j + 1}
+                                        </td>
+                                        <td>
                                           <Field
                                             name={`contests[${i}].choices[${j}].numVotes`}
-                                            component={FlexField}
-                                            validate={testNumber()}
+                                            component={WideField}
                                           />
-                                        </InputLabel>
-                                        {contest.choices.length > 2 && (
-                                          <Action
+                                        </td>
+                                        <td>
+                                          <Button
                                             onClick={() =>
                                               choicesArrayHelpers.remove(j)
                                             }
+                                            intent="danger"
+                                            icon="remove"
+                                            disabled={
+                                              contest.choices.length < 2
+                                            }
+                                            minimal
                                           >
-                                            Remove choice {j + 1}
-                                          </Action>
-                                        )}
-                                      </InputFieldRow>
-                                    </React.Fragment>
-                                  )
-                                )}
-                                <Action
-                                  onClick={() =>
-                                    choicesArrayHelpers.push({
-                                      name: '',
-                                      numVotes: '',
-                                    })
-                                  }
-                                >
-                                  Add a new candidate/choice
-                                </Action>
-                              </TwoColumnSection>
+                                            Remove
+                                          </Button>
+                                        </td>
+                                      </tr>
+                                    )
+                                  )}
+                                </tbody>
+                              </HTMLTable>
+                              <Button
+                                style={{ marginTop: '10px' }}
+                                onClick={() =>
+                                  choicesArrayHelpers.push({
+                                    name: '',
+                                    numVotes: '',
+                                  })
+                                }
+                                icon="add"
+                              >
+                                Add Choice
+                              </Button>
                             </FormSection>
                           )}
                         />
@@ -493,6 +489,11 @@ const ContestForm: React.FC<IProps> = ({
                               formikBag={{ values, setFieldValue }}
                               contestIndex={i}
                             />
+                            <span style={{ marginLeft: '10px' }}>
+                              {values.contests[i].jurisdictionIds.length === 0
+                                ? 'No jurisdictions selected'
+                                : `${values.contests[i].jurisdictionIds.length} jurisdictions selected`}
+                            </span>
                             <ErrorMessage
                               name={`contests[${i}].jurisdictionIds`}
                               component={ErrorLabel}
