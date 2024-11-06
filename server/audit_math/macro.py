@@ -11,6 +11,7 @@ https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1443314 for the
 publication).
 """
 from decimal import Decimal, ROUND_CEILING
+import math
 from typing import Dict, Set, Tuple, TypeVar, TypedDict, Optional, List
 from .sampler_contest import Contest
 
@@ -26,10 +27,32 @@ class BatchError(TypedDict):
     weighted_error: Decimal
 
 
+def compute_unauditable_ballots(
+    batch_results: Dict[BatchKey, BatchResults],
+    contest: Contest,
+) -> int:
+    """
+    Computes the number of ballots that were included in the contest vote totals
+    entered by the audit admin, but were not reflected in the batch tallies
+    uploaded by jurisdictions. We assume these ballots are for some reason not
+    auditable, and adjust the reported margin accordingly.
+    """
+    total_votes_from_batches = sum(
+        results.get(contest.name, {}).get(choice, 0)
+        for results in batch_results.values()
+        for choice in contest.candidates.keys()
+    )
+    total_votes_from_contest = sum(contest.candidates.values())
+    return math.ceil(
+        (total_votes_from_contest - total_votes_from_batches) / contest.votes_allowed
+    )
+
+
 def compute_error(
     batch_results: BatchResults,
     sampled_results: BatchResults,
     contest: Contest,
+    unauditable_ballots: int,
 ) -> Optional[BatchError]:
     """
     Computes the error in this batch
@@ -66,6 +89,10 @@ def compute_error(
         # votes for the loser, reducing the reported margin.
         V_wl -= contest.pending_ballots
 
+        # Conservatively assume that any unauditable ballots would be tallied as
+        # votes for the loser, reducing the reported margin.
+        V_wl -= unauditable_ballots
+
         error = (v_wp - v_lp) - (a_wp - a_lp)
         if error == 0:
             return None
@@ -84,7 +111,9 @@ def compute_error(
     return max(errors, key=lambda error: error["weighted_error"])
 
 
-def compute_max_error(batch_results: BatchResults, contest: Contest) -> Decimal:
+def compute_max_error(
+    batch_results: BatchResults, contest: Contest, unauditable_ballots: int
+) -> Decimal:
     """
     Computes the maximum possible error in this batch for this contest
 
@@ -125,6 +154,10 @@ def compute_max_error(batch_results: BatchResults, contest: Contest) -> Decimal:
             # votes for the loser, reducing the reported margin.
             V_wl -= contest.pending_ballots
 
+            # Conservatively assume that any unauditable ballots would be tallied as
+            # votes for the loser, reducing the reported margin.
+            V_wl -= unauditable_ballots
+
             if V_wl <= 0:
                 return Decimal("inf")
 
@@ -162,9 +195,10 @@ def compute_U(
     Outputs:
         U - the sum of the maximum possible overstatement for each batch
     """
+    unauditable_ballots = compute_unauditable_ballots(reported_results, contest)
     U = Decimal(0.0)
     for batch in reported_results:
-        U += compute_max_error(reported_results[batch], contest)
+        U += compute_max_error(reported_results[batch], contest, unauditable_ballots)
 
     return U
 
@@ -299,6 +333,8 @@ def compute_risk(
 
     U = compute_U(reported_results, contest)
 
+    unauditable_ballots = compute_unauditable_ballots(reported_results, contest)
+
     for _, batch in sorted(
         sample_ticket_numbers.items(), key=lambda entry: entry[0]  # ticket_number
     ):
@@ -332,13 +368,15 @@ def compute_risk(
         else:
             batch_reported_results = reported_results[batch]
 
-        error = compute_error(batch_reported_results, sample_results[batch], contest)
+        error = compute_error(
+            batch_reported_results, sample_results[batch], contest, unauditable_ballots
+        )
         # Count negative errors (errors in favor of the winner) as 0 to be conservative
         e_p = (
             error["weighted_error"] if error and error["counted_as"] > 0 else Decimal(0)
         )
 
-        u_p = compute_max_error(reported_results[batch], contest)
+        u_p = compute_max_error(reported_results[batch], contest, unauditable_ballots)
 
         # If this happens, we need a full hand recount
         if e_p == Decimal("inf") or u_p == Decimal("inf"):

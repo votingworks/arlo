@@ -980,6 +980,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
                     {contest.id: reported_results},
                     {contest.id: audit_results},
                     sampler_contest.from_db_contest(contest),
+                    0,
                 )
                 if is_audited and audit_results and not is_combined
                 else None
@@ -1066,6 +1067,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
                         {contest.id: reported_results},
                         {contest.id: audit_results},
                         sampler_contest.from_db_contest(contest),
+                        0,
                     )
                     if is_audited and audit_results and not is_combined
                     else None
