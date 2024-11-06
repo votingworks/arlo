@@ -27,6 +27,7 @@ from .jurisdictions import (
 from .shared import (
     ContestVoteDeltas,
     ballot_vote_deltas,
+    batch_tallies,
     batch_vote_deltas,
     cvrs_for_contest,
     group_combined_batches,
@@ -250,10 +251,10 @@ def contest_rows(election: Election):
             "Number of Winners",
             "Votes Allowed",
             "Total Ballots Cast",
-            "Tabulated Votes",
+            "Vote Totals",
         ]
         + (
-            ["Pending Ballots"]
+            ["Vote Totals from Batches", "Pending Ballots"]
             if election.audit_type == AuditType.BATCH_COMPARISON
             else []
         )
@@ -282,6 +283,18 @@ def contest_rows(election: Election):
         ]
 
         if election.audit_type == AuditType.BATCH_COMPARISON:
+            tallies = batch_tallies(contest)
+            row.append(
+                pretty_choice_votes(
+                    {
+                        choice.name: sum(
+                            tally.get(contest.id, {}).get(choice.id, 0)
+                            for tally in tallies.values()
+                        )
+                        for choice in contest.choices
+                    }
+                )
+            )
             row.append(contest.pending_ballots or 0)
 
         if election.audit_type == AuditType.HYBRID:
