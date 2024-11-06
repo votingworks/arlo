@@ -36,6 +36,9 @@ def compute_unauditable_ballots(
     entered by the audit admin, but were not reflected in the batch tallies
     uploaded by jurisdictions. We assume these ballots are for some reason not
     auditable, and adjust the reported margin accordingly.
+
+    Note that this doesn't take into account undervoted ballots, so these should
+    be conservatively estimated and incorporated in the pending count.
     """
     total_votes_from_batches = sum(
         results.get(contest.name, {}).get(choice, 0)
