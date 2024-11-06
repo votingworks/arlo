@@ -8,6 +8,62 @@ from snapshottest import Snapshot
 snapshots = Snapshot()
 
 snapshots[
+    "test_batch_inventory_ess_cvr_upload 1"
+] = """Batch Name,Number of Ballots\r
+BATCH1,6\r
+BATCH2,8\r
+"""
+
+snapshots[
+    "test_batch_inventory_ess_cvr_upload 2"
+] = """Batch Name,Choice 1-1,Choice 1-2,Write-In\r
+BATCH1,2,2,0\r
+BATCH2,4,4,0\r
+"""
+
+snapshots[
+    "test_batch_inventory_ess_cvr_upload 3"
+] = """Batch Name,Number of Ballots\r
+BATCH1,6\r
+BATCH2,8\r
+"""
+
+snapshots[
+    "test_batch_inventory_ess_cvr_upload 4"
+] = """Batch Name,Choice 1-1,Choice 1-2,Write-In\r
+BATCH1,2,2,0\r
+BATCH2,4,4,0\r
+"""
+
+snapshots[
+    "test_batch_inventory_ess_cvr_upload 5"
+] = """Batch Name,Number of Ballots\r
+BATCH1,6\r
+BATCH2,8\r
+"""
+
+snapshots[
+    "test_batch_inventory_ess_cvr_upload 6"
+] = """Batch Name,Choice 1-1,Choice 1-2,Write-In\r
+BATCH1,2,2,0\r
+BATCH2,4,4,0\r
+"""
+
+snapshots[
+    "test_batch_inventory_ess_cvr_upload 7"
+] = """Batch Name,Number of Ballots\r
+BATCH1,6\r
+BATCH2,8\r
+"""
+
+snapshots[
+    "test_batch_inventory_ess_cvr_upload 8"
+] = """Batch Name,Choice 1-1,Choice 1-2,Write-In\r
+BATCH1,2,2,0\r
+BATCH2,4,4,0\r
+"""
+
+snapshots[
     "test_batch_inventory_excel_tabulator_status_file 1"
 ] = """Batch Inventory Worksheet\r
 \r

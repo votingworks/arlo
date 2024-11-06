@@ -2,7 +2,15 @@ import pytest
 from flask.testing import FlaskClient
 from ..helpers import *  # pylint: disable=wildcard-import
 from ...models import BatchInventoryData
-from ..ballot_comparison.test_cvrs import build_hart_cvr
+from ..ballot_comparison.test_cvrs import (
+    ESS_BALLOTS_1,
+    ESS_BALLOTS_2,
+    ESS_BALLOTS_WITH_MACHINE_COLUMN,
+    ESS_BALLOTS_WITH_MACHINE_COLUMN_AND_NO_METADATA_ROWS,
+    ESS_BALLOTS_WITH_NO_METADATA_ROWS,
+    ESS_CVR,
+    build_hart_cvr,
+)
 
 TEST_CVR = """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,,,,,,
 ,,,,,,,,Contest 1 (Vote For=1),Contest 1 (Vote For=1),Contest 1 (Vote For=1),Contest 2 (Vote For=2),Contest 2 (Vote For=2),Contest 2 (Vote For=2),Contest 2 (Vote For=2)
@@ -118,6 +126,7 @@ def contest_ids(client: FlaskClient, election_id: str, jurisdiction_ids: List[st
             # Double the actual number of votes in TEST_CVR to account for the two jurisdictions
             {"id": str(uuid.uuid4()), "name": "Choice 2-1", "numVotes": 30},
             {"id": str(uuid.uuid4()), "name": "Choice 2-2", "numVotes": 14},
+            {"id": str(uuid.uuid4()), "name": "Choice 2-3", "numVotes": 14},
             {"id": str(uuid.uuid4()), "name": "Write-In", "numVotes": 0},
         ],
         "numWinners": 1,
@@ -1740,12 +1749,150 @@ def test_batch_inventory_hart_cvr_upload(
     )
 
 
-def test_replace_tabulator_status_file_while_cvr_file_is_processing_fails(
+def test_batch_inventory_hart_cvr_upload_multi_contest(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_ids: str,  # pylint: disable=unused-argument
+    snapshot,
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type"
+    )
+    response = json.loads(rv.data)
+    assert response == dict(systemType=None)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr"
+    )
+    cvr = json.loads(rv.data)
+    assert cvr == dict(file=None, processing=None)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/sign-off"
+    )
+    sign_off = json.loads(rv.data)
+    assert sign_off == dict(signedOffAt=None)
+
+    # Set system type
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type",
+        {"systemType": CvrFileType.HART},
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type"
+    )
+    compare_json(json.loads(rv.data), {"systemType": CvrFileType.HART})
+
+    hart_cvrs = [
+        build_hart_cvr("BATCH1", "1", "1-1-1", "0,1,1,1,0"),
+        build_hart_cvr("BATCH1", "2", "1-1-2", "1,0,1,0,1"),
+        build_hart_cvr("BATCH1", "3", "1-1-3", "0,1,1,1,0"),
+        build_hart_cvr("BATCH2", "1", "1-2-1", "1,0,1,0,1"),
+        build_hart_cvr("BATCH2", "2", "1-2-2", "0,1,1,1,0"),
+        build_hart_cvr("BATCH2", "3", "1-2-3", "1,0,1,0,1"),
+        build_hart_cvr("BATCH3", "1", "1-3-1", ",,0,1,0"),
+        build_hart_cvr("BATCH3", "2", "1-3-2", ",,0,0,1"),
+        build_hart_cvr("BATCH4", "1", "1-4-1", "1,0,0,0,1"),
+        build_hart_cvr("BATCH4", "1", "1-4-1", "1,0,0,0,1", add_write_in=True),
+    ]
+    hart_zip = zip_hart_cvrs(hart_cvrs)
+
+    # Upload HART CVR file
+    rv = upload_batch_inventory_cvr(
+        client,
+        hart_zip,
+        election_id,
+        jurisdiction_ids[0],
+        "application/zip",
+    )
+    assert_ok(rv)
+
+    # Download manifest
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/ballot-manifest"
+    )
+    ballot_manifest = rv.data.decode("utf-8")
+    snapshot.assert_match(ballot_manifest)
+
+    # Download batch tallies
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/batch-tallies"
+    )
+    batch_tallies = rv.data.decode("utf-8")
+    snapshot.assert_match(batch_tallies)
+
+    # Upload manifest - should be a valid file
+    rv = upload_ballot_manifest(
+        client,
+        io.BytesIO(ballot_manifest.encode()),
+        election_id,
+        jurisdiction_ids[0],
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
+    )
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {
+                "name": asserts_startswith("manifest"),
+                "uploadedAt": assert_is_date,
+            },
+            "processing": {
+                "status": ProcessingStatus.PROCESSED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": None,
+            },
+        },
+    )
+
+    # Upload batch tallies - should be a valid file
+    rv = upload_batch_tallies(
+        client,
+        io.BytesIO(batch_tallies.encode()),
+        election_id,
+        jurisdiction_ids[0],
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies"
+    )
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {
+                "name": asserts_startswith("batchTallies"),
+                "uploadedAt": assert_is_date,
+            },
+            "processing": {
+                "status": ProcessingStatus.PROCESSED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": None,
+            },
+        },
+    )
+
+
+def test_batch_inventory_ess_cvr_upload(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
     contest_id: str,  # pylint: disable=unused-argument
+    snapshot,
 ):
+    # Set the logged-in user to Jurisdiction Admin
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
@@ -1754,34 +1901,259 @@ def test_replace_tabulator_status_file_while_cvr_file_is_processing_fails(
     rv = put_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type",
-        {"systemType": CvrFileType.DOMINION},
+        {"systemType": CvrFileType.ESS},
     )
     assert_ok(rv)
 
-    with no_automatic_task_execution():
-        # upload CVR file, but don't process it
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type"
+    )
+    compare_json(json.loads(rv.data), {"systemType": CvrFileType.ESS})
+
+    test_cases = [
+        [
+            (io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv"),
+            (io.BytesIO(ESS_BALLOTS_1.encode()), "ess_ballots_1.csv"),
+            (io.BytesIO(ESS_BALLOTS_2.encode()), "ess_ballots_2.csv"),
+        ],
+        [
+            (io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv"),
+            (io.BytesIO(ESS_BALLOTS_WITH_NO_METADATA_ROWS.encode()), "ess_ballots.csv"),
+        ],
+        [
+            (io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv"),
+            (io.BytesIO(ESS_BALLOTS_WITH_MACHINE_COLUMN.encode()), "ess_ballots.csv"),
+        ],
+        [
+            (io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv"),
+            (
+                io.BytesIO(
+                    ESS_BALLOTS_WITH_MACHINE_COLUMN_AND_NO_METADATA_ROWS.encode()
+                ),
+                "ess_ballots.csv",
+            ),
+        ],
+    ]
+    for cvrs in test_cases:
+
+        # Upload ESS CVR file
         rv = upload_batch_inventory_cvr(
             client,
-            io.BytesIO(b"does not matter"),
+            zip_cvrs(cvrs),
+            election_id,
+            jurisdiction_ids[0],
+            "application/zip",
+        )
+        assert_ok(rv)
+
+        # Verify the uploaded CVR file
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type"
+        )
+        compare_json(json.loads(rv.data), {"systemType": CvrFileType.ESS})
+
+        # Download manifest
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/ballot-manifest"
+        )
+        ballot_manifest = rv.data.decode("utf-8")
+        snapshot.assert_match(ballot_manifest)
+
+        # Download batch tallies
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/batch-tallies"
+        )
+        batch_tallies = rv.data.decode("utf-8")
+        snapshot.assert_match(batch_tallies)
+
+        # Upload manifest - should be a valid file
+        rv = upload_ballot_manifest(
+            client,
+            io.BytesIO(ballot_manifest.encode()),
             election_id,
             jurisdiction_ids[0],
         )
         assert_ok(rv)
 
-        # upload tabulator status file
-        rv = upload_batch_inventory_tabulator_status(
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
+        )
+        compare_json(
+            json.loads(rv.data),
+            {
+                "file": {
+                    "name": asserts_startswith("manifest"),
+                    "uploadedAt": assert_is_date,
+                },
+                "processing": {
+                    "status": ProcessingStatus.PROCESSED,
+                    "startedAt": assert_is_date,
+                    "completedAt": assert_is_date,
+                    "error": None,
+                },
+            },
+        )
+
+        # Upload batch tallies - should be a valid file
+        rv = upload_batch_tallies(
             client,
-            io.BytesIO(b"does not matter"),
+            io.BytesIO(batch_tallies.encode()),
             election_id,
             jurisdiction_ids[0],
         )
+        assert_ok(rv)
 
-        assert rv.status_code == 409
-        assert json.loads(rv.data) == {
-            "errors": [
-                {
-                    "errorType": "Conflict",
-                    "message": "Cannot update tabulator status while CVR file is being processed.",
-                }
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies"
+        )
+        compare_json(
+            json.loads(rv.data),
+            {
+                "file": {
+                    "name": asserts_startswith("batchTallies"),
+                    "uploadedAt": assert_is_date,
+                },
+                "processing": {
+                    "status": ProcessingStatus.PROCESSED,
+                    "startedAt": assert_is_date,
+                    "completedAt": assert_is_date,
+                    "error": None,
+                },
+            },
+        )
+
+        # Delete CVR file
+        rv = client.delete(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr"
+        )
+        assert_ok(rv)
+
+        # Delete ballot manifest
+        rv = client.delete(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
+        )
+        assert_ok(rv)
+
+        # Delete batch tallies
+        rv = client.delete(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies"
+        )
+        assert_ok(rv)
+
+
+def test_batch_inventory_ess_cvr_upload_multi_contest(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_ids: str,  # pylint: disable=unused-argument
+    snapshot,
+):
+    # Set the logged-in user to Jurisdiction Admin
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+
+    # Set system type
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type",
+        {"systemType": CvrFileType.ESS},
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type"
+    )
+    compare_json(json.loads(rv.data), {"systemType": CvrFileType.ESS})
+
+    # Upload ESS CVR file
+    rv = upload_batch_inventory_cvr(
+        client,
+        zip_cvrs(
+            [
+                (io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv"),
+                (io.BytesIO(ESS_BALLOTS_1.encode()), "ess_ballots_1.csv"),
+                (io.BytesIO(ESS_BALLOTS_2.encode()), "ess_ballots_2.csv"),
             ]
-        }
+        ),
+        election_id,
+        jurisdiction_ids[0],
+        "application/zip",
+    )
+    assert_ok(rv)
+
+    # Verify the uploaded CVR file
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type"
+    )
+    compare_json(json.loads(rv.data), {"systemType": CvrFileType.ESS})
+
+    # Download manifest
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/ballot-manifest"
+    )
+    ballot_manifest = rv.data.decode("utf-8")
+    snapshot.assert_match(ballot_manifest)
+
+    # Download batch tallies
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/batch-tallies"
+    )
+    batch_tallies = rv.data.decode("utf-8")
+    snapshot.assert_match(batch_tallies)
+
+    # Upload manifest - should be a valid file
+    rv = upload_ballot_manifest(
+        client,
+        io.BytesIO(ballot_manifest.encode()),
+        election_id,
+        jurisdiction_ids[0],
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
+    )
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {
+                "name": asserts_startswith("manifest"),
+                "uploadedAt": assert_is_date,
+            },
+            "processing": {
+                "status": ProcessingStatus.PROCESSED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": None,
+            },
+        },
+    )
+
+    # Upload batch tallies - should be a valid file
+    rv = upload_batch_tallies(
+        client,
+        io.BytesIO(batch_tallies.encode()),
+        election_id,
+        jurisdiction_ids[0],
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies"
+    )
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {
+                "name": asserts_startswith("batchTallies"),
+                "uploadedAt": assert_is_date,
+            },
+            "processing": {
+                "status": ProcessingStatus.PROCESSED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": None,
+            },
+        },
+    )
