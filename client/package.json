@@ -141,6 +141,6 @@
     "stylelint-config-palantir": "^4.0.0",
     "stylelint-config-prettier": "^5.1.0",
     "stylelint-config-styled-components": "^0.1.1",
-    "stylelint-processor-styled-components": "^1.7.0"
+    "stylelint-processor-styled-components": "^1.10.0"
   }
 }
