@@ -239,7 +239,7 @@ describe('Progress screen', () => {
     })
   })
 
-  it('shows round status for ballot comparison', async () => {
+  it('shows round and discrepancy status for ballot comparison', async () => {
     const expectedCalls = [
       aaApiCalls.getMapData,
       aaApiCalls.getDiscrepancyCounts({
@@ -247,6 +247,26 @@ describe('Progress screen', () => {
         [jurisdictionMocks.allComplete[1].id]: 2,
         [jurisdictionMocks.allComplete[2].id]: 1,
       }),
+      aaApiCalls.getDiscrepancies({
+        [jurisdictionMocks.oneComplete[1].id]: {
+          ballot1: {
+            [contestMocks.two[0].id]: {
+              reportedVotes: { [contestMocks.two[0].choices[0].id]: '1' },
+              auditedVotes: { [contestMocks.two[0].choices[0].id]: 'u' },
+              discrepancies: { [contestMocks.two[0].choices[0].id]: 1 },
+            },
+            [contestMocks.two[1].id]: {
+              reportedVotes: {}, // undefined, seemingly can occur if no vote was reported
+              auditedVotes: { [contestMocks.two[1].choices[0].id]: 'o' },
+              discrepancies: { [contestMocks.two[1].choices[0].id]: 1 },
+            },
+          },
+        },
+      }),
+      jaApiCalls.getJurisdictionContests(
+        contestMocks.two,
+        jurisdictionMocks.oneComplete[1].id
+      ),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({
@@ -289,16 +309,57 @@ describe('Progress screen', () => {
       expect(row2[0]).toHaveTextContent('Jurisdiction 2')
       expectStatusTag(row2[1], 'Complete', 'success')
       expect(row2[2]).toHaveTextContent('2,117')
-      expect(row2[3]).toHaveTextContent('2')
+      expect(row2[3]).toHaveTextContent('Review 2')
       expect(row2[4]).toHaveTextContent('20')
       expect(row2[5]).toHaveTextContent('0')
       const row3 = within(rows[3]).getAllByRole('cell')
       expect(row3[0]).toHaveTextContent('Jurisdiction 3')
       expectStatusTag(row3[1], 'Complete', 'success')
       expect(row3[2]).toHaveTextContent('2,117')
-      expect(row3[3]).toHaveTextContent('1')
+      expect(row3[3]).toHaveTextContent('Review 1')
       expect(row3[4]).toHaveTextContent('30')
       expect(row3[5]).toHaveTextContent('0')
+
+      const reviewDiscrepanciesButton = screen.getByRole('button', {
+        name: /Review 2/,
+      })
+      userEvent.click(reviewDiscrepanciesButton)
+      await waitFor(() => {
+        screen.getByText('Jurisdiction 2 Discrepancies')
+      })
+      const dialog = (
+        await screen.findByRole('heading', {
+          name: /Jurisdiction 2 Discrepancies/,
+        })
+      ).closest('.bp3-dialog')! as HTMLElement
+      within(dialog).getByText('ballot1 - Contest 1')
+
+      const discrepancyTableHeaders = within(dialog).getAllByRole(
+        'columnheader'
+      )
+      expect(discrepancyTableHeaders).toHaveLength(8) // 4 headers * 2 tables
+      expect(discrepancyTableHeaders[0]).toHaveTextContent('Choice')
+      expect(discrepancyTableHeaders[1]).toHaveTextContent('Reported Votes')
+      expect(discrepancyTableHeaders[2]).toHaveTextContent('Audited Votes')
+      expect(discrepancyTableHeaders[3]).toHaveTextContent('Discrepancy')
+
+      const discrepancyTablesRows = within(dialog).getAllByRole('row')
+      expect(discrepancyTablesRows).toHaveLength(4)
+      const discrepancyTable1Row1 = within(
+        discrepancyTablesRows[1]
+      ).getAllByRole('cell')
+      expect(discrepancyTable1Row1[0]).toHaveTextContent('Choice One')
+      expect(discrepancyTable1Row1[1]).toHaveTextContent('1')
+      expect(discrepancyTable1Row1[2]).toHaveTextContent('Undervote')
+      expect(discrepancyTable1Row1[3]).toHaveTextContent('1')
+
+      const discrepancyTable2Row1 = within(
+        discrepancyTablesRows[3]
+      ).getAllByRole('cell')
+      expect(discrepancyTable2Row1[0]).toHaveTextContent('Choice Three')
+      expect(discrepancyTable2Row1[1]).toHaveTextContent('0')
+      expect(discrepancyTable2Row1[2]).toHaveTextContent('Overvote')
+      expect(discrepancyTable2Row1[3]).toHaveTextContent('1')
 
       const footers = within(rows[4]).getAllByRole('cell')
       expect(footers[0]).toHaveTextContent('Total')

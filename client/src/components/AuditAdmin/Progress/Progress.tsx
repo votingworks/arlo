@@ -76,8 +76,6 @@ const Progress: React.FC<IProgressProps> = ({
   const showDiscrepancies =
     Boolean(round) &&
     (auditType === 'BALLOT_COMPARISON' || auditType === 'BATCH_COMPARISON')
-  const showDiscrepanciesReview =
-    Boolean(round) && auditType === 'BATCH_COMPARISON'
   const discrepancyCountsQuery = useDiscrepancyCountsByJurisdiction(
     electionId,
     { enabled: showDiscrepancies }
@@ -330,12 +328,6 @@ const Progress: React.FC<IProgressProps> = ({
             )
           }
           if (!value) return null
-          if (!showDiscrepanciesReview)
-            return (
-              <>
-                <Icon icon="flag" intent="danger" /> {value.toLocaleString()}
-              </>
-            )
           return (
             <Button
               onClick={() => setJurisdictionDiscrepanciesId(jurisdiction.id)}

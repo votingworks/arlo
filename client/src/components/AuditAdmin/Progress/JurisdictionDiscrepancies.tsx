@@ -48,6 +48,22 @@ function getChoiceName(
   return choice.name
 }
 
+function formatVoteCount(val: string | number | undefined): string {
+  switch (val) {
+    case 'o':
+      return 'Overvote'
+    case 'u':
+      return 'Undervote'
+    case undefined: // Seen on 'reportedVotes' when a candidate did not have a vote originally
+      return '0'
+    default:
+      if (typeof val === 'string') {
+        return val
+      }
+      return val.toLocaleString()
+  }
+}
+
 export interface IJurisdictionDiscrepanciesProps {
   electionId: string
   handleClose: () => void
@@ -69,7 +85,7 @@ const JurisdictionDiscrepancies: React.FC<IJurisdictionDiscrepanciesProps> = ({
     return null
   }
 
-  const discrepanciesByBatch = discrepancyQuery.data[jurisdiction.id]
+  const discrepanciesByBatchOrBallot = discrepancyQuery.data[jurisdiction.id]
   const contests = contestsQuery.data
 
   return (
@@ -80,13 +96,13 @@ const JurisdictionDiscrepancies: React.FC<IJurisdictionDiscrepanciesProps> = ({
       title={`${jurisdiction.name} Discrepancies`}
     >
       <div className={Classes.DIALOG_BODY} style={{ marginBottom: 0 }}>
-        {Object.entries(discrepanciesByBatch).map(
-          ([batchName, discrepanciesByContest]) => {
+        {Object.entries(discrepanciesByBatchOrBallot).map(
+          ([batchOrBallotName, discrepanciesByContest]) => {
             return Object.entries(discrepanciesByContest).map(
               ([contestId, contestDiscrepancies]) => (
                 <div key={contestId}>
                   <TableHeader>
-                    {batchName} - {getContestName(contests, contestId)}
+                    {batchOrBallotName} - {getContestName(contests, contestId)}
                   </TableHeader>
                   <ContestDiscrepanciesTable>
                     <thead>
@@ -98,24 +114,33 @@ const JurisdictionDiscrepancies: React.FC<IJurisdictionDiscrepanciesProps> = ({
                       </tr>
                     </thead>
                     <tbody>
-                      {Object.keys(contestDiscrepancies.discrepancies).map(
-                        choiceId => (
+                      {Object.keys(contestDiscrepancies.discrepancies)
+                        .filter(
+                          choiceID =>
+                            contestDiscrepancies.discrepancies[choiceID] !== 0
+                        )
+                        .map(choiceId => (
                           <tr key={choiceId}>
                             <td>
                               {getChoiceName(contests, contestId, choiceId)}
                             </td>
                             <td>
-                              {contestDiscrepancies.reportedVotes[choiceId]}
+                              {formatVoteCount(
+                                contestDiscrepancies.reportedVotes[choiceId]
+                              )}
                             </td>
                             <td>
-                              {contestDiscrepancies.auditedVotes[choiceId]}
+                              {formatVoteCount(
+                                contestDiscrepancies.auditedVotes[choiceId]
+                              )}
                             </td>
                             <td>
-                              {contestDiscrepancies.discrepancies[choiceId]}
+                              {formatVoteCount(
+                                contestDiscrepancies.discrepancies[choiceId]
+                              )}
                             </td>
                           </tr>
-                        )
-                      )}
+                        ))}
                     </tbody>
                   </ContestDiscrepanciesTable>
                 </div>
