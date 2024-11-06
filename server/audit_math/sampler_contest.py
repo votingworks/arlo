@@ -43,7 +43,7 @@ class Contest:
     votes_allowed: int  # How many voters are allowed in this contest
     ballots: int  # The total number of ballots cast in this contest
     # Ballots that weren't tallied yet and thus not included in reported results (batch comparison only)
-    pending_ballots: Optional[int]
+    pending_ballots: int
     name: str  # The name of the contest
 
     winners: Dict[str, int]  # List of all the winners
@@ -69,7 +69,7 @@ class Contest:
         self.ballots = contest_info_dict["ballots"]
         self.num_winners = contest_info_dict["numWinners"]
         self.votes_allowed = contest_info_dict["votesAllowed"]
-        self.pending_ballots = contest_info_dict.get("pendingBallots")
+        self.pending_ballots = contest_info_dict.get("pendingBallots") or 0
 
         self.candidates = {}
 
