@@ -927,8 +927,8 @@ def test_pending_ballots(snapshot):
         "winner": 200,
         "loser": 100,
         "third": 50,
-        # Total ballots cast is calculated from reported batch tallies, so
-        # doesn't include pending ballots
+        # Total ballots cast is calculated from ballot manifests, so doesn't
+        # include pending ballots
         "ballots": 350,
         "numWinners": 1,
         "votesAllowed": 1,
