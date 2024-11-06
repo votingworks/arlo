@@ -845,17 +845,15 @@ def get_ballot_comparison_audit_discrepancies_by_jurisdiction(
         .join(Batch)
         .with_entities(SampledBallot.id, Batch.jurisdiction_id)
     )
-    # make a readable identifier - it is the same default format as the ImprintedID
-    # but some sampled ballots have ImprintedIDs of a different format that are
-    # very long and unreadable, so here we ensure they all have the same format
-    # Ex. "Tabulator X, Batch Y, Ballot Position Z, Container 0"
+    # make a readable identifier of the same format for all ballots
+    # Ex. "Container 0, Tabulator X, Batch Y, Ballot Z" or "Tabulator X, Batch Y, Ballot Z"
     sampled_ballot_id_to_readable_identifier = dict(
         (
             sampled_ballot_id,
-            f"{tabulator}, {name}, Ballot Position {ballot_position}"
-            + (f", Container {container}" if container is not None else ""),
+            (f"Container {container}, " if container is not None else "")
+            + f"{tabulator}, {batch_name}, Ballot {ballot_position}",
         )
-        for sampled_ballot_id, tabulator, name, ballot_position, container in SampledBallot.query.filter(
+        for sampled_ballot_id, tabulator, batch_name, ballot_position, container in SampledBallot.query.filter(
             SampledBallot.id.in_(ballots_in_round)
         )
         .join(Batch)
@@ -872,34 +870,31 @@ def get_ballot_comparison_audit_discrepancies_by_jurisdiction(
         audited_results = sampled_ballot_interpretations_to_cvrs(contest)
         reported_results = cvrs_for_contest(contest)
         for ballot_id, audited_result in audited_results.items():
+            if ballot_id not in sampled_ballot_id_to_jurisdiction_id:
+                continue
             audited_cvr = audited_result["cvr"]
             reported_cvr = reported_results.get(ballot_id)
             vote_deltas = ballot_vote_deltas(contest, reported_cvr, audited_cvr)
             if not vote_deltas or isinstance(vote_deltas, str):
                 continue
 
-            reported_votes = {}
-            if reported_cvr and contest.id in reported_cvr:
-                reported_votes = reported_cvr[contest.id]
-
             audited_votes = {}
-            if audited_cvr and contest.id in audited_cvr:
-                audited_votes = audited_cvr[contest.id]
-
-            if ballot_id in sampled_ballot_id_to_jurisdiction_id:
-                if not reported_cvr:
-                    reported_cvr = {}
-                jurisdiction_id = sampled_ballot_id_to_jurisdiction_id[ballot_id]
-                readable_ballot_identifier = sampled_ballot_id_to_readable_identifier[
-                    ballot_id
-                ]
-                discrepancies_by_jurisdiction[jurisdiction_id][
-                    readable_ballot_identifier
-                ][contest.id] = {
-                    "reportedVotes": normalize_vals_for_discrepancies(reported_votes),
-                    "auditedVotes": normalize_vals_for_discrepancies(audited_votes),
-                    "discrepancies": normalize_vals_for_discrepancies(vote_deltas),
-                }
+            if audited_cvr:
+                audited_votes = audited_cvr.get(contest.id, {})
+            reported_votes = {}
+            if reported_cvr:
+                reported_votes = reported_cvr.get(contest.id, {})
+            jurisdiction_id = sampled_ballot_id_to_jurisdiction_id[ballot_id]
+            readable_ballot_identifier = sampled_ballot_id_to_readable_identifier[
+                ballot_id
+            ]
+            discrepancies_by_jurisdiction[jurisdiction_id][readable_ballot_identifier][
+                contest.id
+            ] = {
+                "reportedVotes": normalize_vals_for_discrepancies(reported_votes),
+                "auditedVotes": normalize_vals_for_discrepancies(audited_votes),
+                "discrepancies": normalize_vals_for_discrepancies(vote_deltas),
+            }
 
     return discrepancies_by_jurisdiction
 

@@ -48,16 +48,16 @@ function getChoiceName(
   return choice.name
 }
 
-function displayDiscrepancy(val: string | number | undefined): string | number {
+function formatVoteCount(val: string | number | undefined): string | number {
   switch (val) {
     case 'o':
       return 'Overvote'
     case 'u':
       return 'Undervote'
-    case undefined:
+    case undefined: // Seen on 'reportedVotes' when a candidate did not have a vote originally
       return 0
     default:
-      return val
+      return val.toLocaleString()
   }
 }
 
@@ -122,17 +122,17 @@ const JurisdictionDiscrepancies: React.FC<IJurisdictionDiscrepanciesProps> = ({
                               {getChoiceName(contests, contestId, choiceId)}
                             </td>
                             <td>
-                              {displayDiscrepancy(
+                              {formatVoteCount(
                                 contestDiscrepancies.reportedVotes[choiceId]
                               )}
                             </td>
                             <td>
-                              {displayDiscrepancy(
+                              {formatVoteCount(
                                 contestDiscrepancies.auditedVotes[choiceId]
                               )}
                             </td>
                             <td>
-                              {displayDiscrepancy(
+                              {formatVoteCount(
                                 contestDiscrepancies.discrepancies[choiceId]
                               )}
                             </td>
