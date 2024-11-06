@@ -2,7 +2,15 @@ import pytest
 from flask.testing import FlaskClient
 from ..helpers import *  # pylint: disable=wildcard-import
 from ...models import BatchInventoryData
-from ..ballot_comparison.test_cvrs import build_hart_cvr
+from ..ballot_comparison.test_cvrs import (
+    ESS_BALLOTS_1,
+    ESS_BALLOTS_2,
+    ESS_BALLOTS_WITH_MACHINE_COLUMN,
+    ESS_BALLOTS_WITH_MACHINE_COLUMN_AND_NO_METADATA_ROWS,
+    ESS_BALLOTS_WITH_NO_METADATA_ROWS,
+    ESS_CVR,
+    build_hart_cvr,
+)
 
 TEST_CVR = """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,,,,,,
 ,,,,,,,,Contest 1 (Vote For=1),Contest 1 (Vote For=1),Contest 1 (Vote For=1),Contest 2 (Vote For=2),Contest 2 (Vote For=2),Contest 2 (Vote For=2),Contest 2 (Vote For=2)
@@ -1738,3 +1746,159 @@ def test_batch_inventory_hart_cvr_upload(
             },
         },
     )
+
+
+def test_batch_inventory_ess_cvr_upload(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_id: str,  # pylint: disable=unused-argument
+    snapshot,
+):
+    # Set the logged-in user to Jurisdiction Admin
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+
+    # Set system type
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type",
+        {"systemType": CvrFileType.ESS},
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type"
+    )
+    compare_json(json.loads(rv.data), {"systemType": CvrFileType.ESS})
+
+    test_cases = [
+        [
+            (io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv"),
+            (io.BytesIO(ESS_BALLOTS_1.encode()), "ess_ballots_1.csv"),
+            (io.BytesIO(ESS_BALLOTS_2.encode()), "ess_ballots_2.csv"),
+        ],
+        [
+            (io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv"),
+            (io.BytesIO(ESS_BALLOTS_WITH_NO_METADATA_ROWS.encode()), "ess_ballots.csv"),
+        ],
+        [
+            (io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv"),
+            (io.BytesIO(ESS_BALLOTS_WITH_MACHINE_COLUMN.encode()), "ess_ballots.csv"),
+        ],
+        [
+            (io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv"),
+            (
+                io.BytesIO(
+                    ESS_BALLOTS_WITH_MACHINE_COLUMN_AND_NO_METADATA_ROWS.encode()
+                ),
+                "ess_ballots.csv",
+            ),
+        ],
+    ]
+    for cvrs in test_cases:
+
+        # Upload ESS CVR file
+        rv = upload_batch_inventory_cvr(
+            client,
+            zip_cvrs(cvrs),
+            election_id,
+            jurisdiction_ids[0],
+            "application/zip",
+        )
+        assert_ok(rv)
+
+        # Verify the uploaded CVR file
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type"
+        )
+        compare_json(json.loads(rv.data), {"systemType": CvrFileType.ESS})
+
+        # Download manifest
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/ballot-manifest"
+        )
+        ballot_manifest = rv.data.decode("utf-8")
+        snapshot.assert_match(ballot_manifest)
+
+        # Download batch tallies
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/batch-tallies"
+        )
+        batch_tallies = rv.data.decode("utf-8")
+        snapshot.assert_match(batch_tallies)
+
+        # Upload manifest - should be a valid file
+        rv = upload_ballot_manifest(
+            client,
+            io.BytesIO(ballot_manifest.encode()),
+            election_id,
+            jurisdiction_ids[0],
+        )
+        assert_ok(rv)
+
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
+        )
+        compare_json(
+            json.loads(rv.data),
+            {
+                "file": {
+                    "name": asserts_startswith("manifest"),
+                    "uploadedAt": assert_is_date,
+                },
+                "processing": {
+                    "status": ProcessingStatus.PROCESSED,
+                    "startedAt": assert_is_date,
+                    "completedAt": assert_is_date,
+                    "error": None,
+                },
+            },
+        )
+
+        # Upload batch tallies - should be a valid file
+        rv = upload_batch_tallies(
+            client,
+            io.BytesIO(batch_tallies.encode()),
+            election_id,
+            jurisdiction_ids[0],
+        )
+        assert_ok(rv)
+
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies"
+        )
+        compare_json(
+            json.loads(rv.data),
+            {
+                "file": {
+                    "name": asserts_startswith("batchTallies"),
+                    "uploadedAt": assert_is_date,
+                },
+                "processing": {
+                    "status": ProcessingStatus.PROCESSED,
+                    "startedAt": assert_is_date,
+                    "completedAt": assert_is_date,
+                    "error": None,
+                },
+            },
+        )
+
+        # Delete CVR file
+        rv = client.delete(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr"
+        )
+        assert_ok(rv)
+
+        # Delete ballot manifest
+        rv = client.delete(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
+        )
+        assert_ok(rv)
+
+        # Delete batch tallies
+        rv = client.delete(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies"
+        )
+        assert_ok(rv)
