@@ -866,30 +866,28 @@ def get_ballot_comparison_audit_discrepancies_by_jurisdiction(
         audited_results = sampled_ballot_interpretations_to_cvrs(contest)
         reported_results = cvrs_for_contest(contest)
         for ballot_id, audited_result in audited_results.items():
-            if ballot_id not in sampled_ballot_id_to_jurisdiction_id:
-                continue
             audited_cvr = audited_result["cvr"]
             reported_cvr = reported_results.get(ballot_id)
             vote_deltas = ballot_vote_deltas(contest, reported_cvr, audited_cvr)
             if not vote_deltas or isinstance(vote_deltas, str):
                 continue
 
-            audited_votes = {}
-            if audited_cvr:
-                audited_votes = audited_cvr.get(contest.id, {})
-            reported_votes = {}
-            if reported_cvr:
-                reported_votes = reported_cvr.get(contest.id, {})
-            jurisdiction_id = sampled_ballot_id_to_jurisdiction_id[ballot_id]
-            readable_ballot_identifier = sampled_ballot_id_to_readable_identifier[
-                ballot_id
-            ]
-            discrepancies_by_jurisdiction[jurisdiction_id][readable_ballot_identifier][
-                contest.id
-            ] = {
-                "reportedVotes": reported_votes,
-                "auditedVotes": audited_votes,
-                "discrepancies": vote_deltas,
-            }
+            # CVRs are guaranteed to be non-null due to ballot_vote_deltas() checks
+            assert isinstance(audited_cvr, dict)
+            audited_votes = audited_cvr.get(contest.id, {})
+            assert isinstance(reported_cvr, dict)
+            reported_votes = reported_cvr.get(contest.id, {})
+            if ballot_id in sampled_ballot_id_to_jurisdiction_id:
+                jurisdiction_id = sampled_ballot_id_to_jurisdiction_id[ballot_id]
+                readable_ballot_identifier = sampled_ballot_id_to_readable_identifier[
+                    ballot_id
+                ]
+                discrepancies_by_jurisdiction[jurisdiction_id][
+                    readable_ballot_identifier
+                ][contest.id] = {
+                    "reportedVotes": reported_votes,
+                    "auditedVotes": audited_votes,
+                    "discrepancies": vote_deltas,
+                }
 
     return discrepancies_by_jurisdiction
