@@ -1245,7 +1245,8 @@ def test_batch_comparison_pending_ballots(
 
     # The p-value should be higher with pending ballots, proving that we did in
     # fact incorporate the pending ballots into the risk measurement
-    # calculation, worst-casing them as votes for the loser.
+    # calculation, worst-casing them as votes for the loser. The actual
+    # calculation correctness is tested in test_macro.py.
     assert p_value > p_value_without_pending_ballots
 
 

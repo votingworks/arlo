@@ -921,7 +921,7 @@ def test_combined_batches_sampled_and_unsampled():
     assert res is (expected_p < ALPHA)
 
 
-def test_pending_ballots():
+def test_pending_ballots(snapshot):
     num_pending_ballots = 2
     contest_data = {
         "winner": 200,
@@ -979,6 +979,7 @@ def test_pending_ballots():
     U = macro.compute_U(batches, contest)
     U_without_pending = macro.compute_U(batches, contest_without_pending_ballots)
     assert U > U_without_pending
+    snapshot.assert_match(U)
 
     sample_size = macro.get_sample_sizes(RISK_LIMIT, contest, batches, {}, {}, [])
     assert sample_size == len(batches)
@@ -999,6 +1000,7 @@ def test_pending_ballots():
     expected_p = ((1 - 1 / U) / 1) ** num_sampled_batches
     assert computed_p == float(expected_p)
     assert res is (expected_p < ALPHA)
+    snapshot.assert_match(computed_p)
 
     # 1 discrepancy
     discrepancy_votes = 2
@@ -1029,3 +1031,4 @@ def test_pending_ballots():
     )
     assert computed_p == float(expected_p)
     assert res is (expected_p < ALPHA)
+    snapshot.assert_match(computed_p)
