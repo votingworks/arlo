@@ -34,6 +34,7 @@ export interface IContest {
   totalBallotsCast: number
   jurisdictionIds: string[]
   cvrChoiceNameConsistencyError?: ICvrChoiceNameConsistencyError
+  pendingBallots?: number | null
 }
 
 export enum Interpretation {

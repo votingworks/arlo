@@ -478,6 +478,12 @@ class Contest(BaseModel):
     num_winners = Column(Integer)
     votes_allowed = Column(Integer)
 
+    # In batch comparison, the audit admin can enter how many ballots haven't
+    # yet been tallied or cannot be audited by the time the audit launches so
+    # that we can include them in the audit math (worst-casing them as votes for
+    # the losing candidates).
+    pending_ballots = Column(Integer)
+
     choices = relationship(
         "ContestChoice",
         back_populates="contest",

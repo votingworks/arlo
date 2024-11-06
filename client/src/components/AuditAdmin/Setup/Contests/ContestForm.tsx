@@ -171,6 +171,7 @@ export interface IContestValues {
   votesAllowed: string
   choices: IChoiceValues[]
   totalBallotsCast?: string
+  pendingBallots?: string
   jurisdictionIds: string[]
 }
 
@@ -183,6 +184,7 @@ const contestToValues = (contest: IContest): IContestValues => ({
     numVotes: choice.numVotes.toString(),
   })),
   totalBallotsCast: contest.totalBallotsCast?.toString(),
+  pendingBallots: contest.pendingBallots?.toString() || '',
 })
 
 const contestFromValues = (contest: IContestValues): IContest => ({
@@ -196,6 +198,7 @@ const contestFromValues = (contest: IContestValues): IContest => ({
     id: choice.id || uuidv4(),
     numVotes: parseNumber(choice.numVotes),
   })),
+  pendingBallots: parseNumber(contest.pendingBallots),
 })
 
 const ContestForm: React.FC<IProps> = ({
@@ -214,6 +217,7 @@ const ContestForm: React.FC<IProps> = ({
       numWinners: '1',
       votesAllowed: '1',
       jurisdictionIds: [],
+      pendingBallots: '',
       choices: [
         {
           id: '',
@@ -231,6 +235,7 @@ const ContestForm: React.FC<IProps> = ({
 
   const isHybrid = auditType === 'HYBRID'
   const isBallotPolling = auditType === 'BALLOT_POLLING'
+  const isBatchComparison = auditType === 'BATCH_COMPARISON'
 
   const contestsQuery = useContests(electionId)
   const updateContestsMutation = useUpdateContests(electionId, auditType)
@@ -479,6 +484,18 @@ const ContestForm: React.FC<IProps> = ({
                                 component={FormField}
                               />
                             </label>
+                          </FormSection>
+                        )}
+                        {isBatchComparison && isTargeted && (
+                          <FormSection
+                            label="Pending Ballots"
+                            description="Enter a count of ballots that have not been tallied and will not be audited."
+                          >
+                            <Field
+                              aria-label="Pending Ballots"
+                              name={`contests[${i}].pendingBallots`}
+                              component={FormField}
+                            />
                           </FormSection>
                         )}
                         {!isHybrid && (

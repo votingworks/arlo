@@ -495,6 +495,7 @@ describe('Audit Setup > Contests', () => {
         name: 'Contest One',
         numWinners: 1,
         votesAllowed: 1,
+        pendingBallots: null,
       },
       {
         id: 'contest-id-2',
@@ -507,6 +508,7 @@ describe('Audit Setup > Contests', () => {
         name: 'Contest Two',
         numWinners: 1,
         votesAllowed: 1,
+        pendingBallots: null,
       },
     ]
     const expectedCalls = [
@@ -551,6 +553,61 @@ describe('Audit Setup > Contests', () => {
       )
       userEvent.click(
         screen.getAllByRole('checkbox', { name: 'Select all' })[1]
+      )
+
+      userEvent.click(screen.getByRole('button', { name: /Save & Next/ }))
+      await waitFor(() => {
+        expect(goToNextStage).toHaveBeenCalledTimes(1)
+      })
+    })
+  })
+
+  it('allows entering pending ballots for batch comparison audits', async () => {
+    const uuids = ['contest-id', 'choice-id-1', 'choice-id-2']
+    let uuidIndex = -1
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ;(uuidv4 as any).mockImplementation(() => {
+      uuidIndex += 1
+      return uuids[uuidIndex] || 'missing-uuid-in-mock'
+    })
+
+    const numPendingBallots = 10
+    const contestWithPendingBallots = {
+      ...contestMocks.filledTargeted[0],
+      totalBallotsCast: undefined,
+      pendingBallots: numPendingBallots,
+    }
+    const expectedCalls = [
+      aaApiCalls.getContests(contestMocks.empty),
+      aaApiCalls.getJurisdictions,
+      aaApiCalls.getStandardizedContests(null),
+      aaApiCalls.putContests([contestWithPendingBallots]),
+      aaApiCalls.getContests([contestWithPendingBallots]),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { goToNextStage } = renderContests({
+        auditType: 'BATCH_COMPARISON',
+      })
+
+      await screen.findByText('Target Contests')
+
+      contestsInputMocks.inputs.forEach(inputData => {
+        if (inputData.key === 'Total Ballot Cards Cast for Contest') return
+        const input = screen.getByLabelText(inputData.key, {
+          selector: 'input',
+        })
+        userEvent.type(input, inputData.value)
+      })
+      userEvent.click(
+        screen.getByRole('button', { name: 'Select Jurisdictions' })
+      )
+      userEvent.click(
+        screen.getByRole('checkbox', { name: 'Jurisdiction One' })
+      )
+
+      userEvent.type(
+        screen.getByLabelText('Pending Ballots'),
+        numPendingBallots.toString()
       )
 
       userEvent.click(screen.getByRole('button', { name: /Save & Next/ }))

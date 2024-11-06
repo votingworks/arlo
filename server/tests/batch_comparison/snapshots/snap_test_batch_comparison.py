@@ -30,8 +30,8 @@ Organization,Election Name,State\r
 Test Org test_batch_comparison_batches_sampled_multiple_times,Test Election,CA\r
 \r
 ######## CONTESTS ########\r
-Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes\r
-Contest 1,Targeted,1,2,5000,candidate 1: 5000; candidate 2: 2500; candidate 3: 2500\r
+Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes,Pending Ballots\r
+Contest 1,Targeted,1,2,5000,candidate 1: 5000; candidate 2: 2500; candidate 3: 2500,0\r
 \r
 ######## AUDIT SETTINGS ########\r
 Audit Name,Audit Type,Audit Math Type,Risk Limit,Random Seed,Online Data Entry?\r
@@ -58,8 +58,8 @@ Organization,Election Name,State\r
 Test Org test_batch_comparison_combined_batches,Test Election,CA\r
 \r
 ######## CONTESTS ########\r
-Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes\r
-Contest 1,Targeted,1,2,5000,candidate 1: 5000; candidate 2: 2500; candidate 3: 2500\r
+Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes,Pending Ballots\r
+Contest 1,Targeted,1,2,5000,candidate 1: 5000; candidate 2: 2500; candidate 3: 2500,0\r
 \r
 ######## AUDIT SETTINGS ########\r
 Audit Name,Audit Type,Audit Math Type,Risk Limit,Random Seed,Online Data Entry?\r
@@ -78,6 +78,39 @@ J1,Batch 8,100,Round 1: 0.9723790677174592551,Yes,candidate 1: 100; candidate 2:
 J2,Batch 3,500,"Round 1: 0.368061935896261076, 0.733615858338543383",Yes,candidate 1: 500; candidate 2: 250; candidate 3: 250,candidate 1: 500; candidate 2: 250; candidate 3: 250,,,support@example.org,\r
 J1,Combined Batch,1500,,Yes,candidate 1: 1500; candidate 2: 745; candidate 3: 755,candidate 1: 1500; candidate 2: 750; candidate 3: 750,candidate 2: +5; candidate 3: -5,5,support@example.org,"Combines Batch 1, Batch 2, Batch 3"\r
 Totals,,1700,,,candidate 1: 2200; candidate 2: 1095; candidate 3: 1105,candidate 1: 2200; candidate 2: 1100; candidate 3: 1100,,\r
+"""
+
+snapshots["test_batch_comparison_pending_ballots 1"] = [
+    {"key": "macro", "prob": None, "size": 8}
+]
+
+snapshots[
+    "test_batch_comparison_pending_ballots 2"
+] = """######## ELECTION INFO ########\r
+Organization,Election Name,State\r
+Test Org test_batch_comparison_pending_ballots,Test Election,CA\r
+\r
+######## CONTESTS ########\r
+Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes,Pending Ballots\r
+Contest 1,Targeted,1,2,5000,candidate 1: 5000; candidate 2: 2500; candidate 3: 2500,250\r
+\r
+######## AUDIT SETTINGS ########\r
+Audit Name,Audit Type,Audit Math Type,Risk Limit,Random Seed,Online Data Entry?\r
+Test Audit test_batch_comparison_pending_ballots,BATCH_COMPARISON,MACRO,10%,1234567890,No\r
+\r
+######## ROUNDS ########\r
+Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes,Batches Sampled,Ballots Sampled,Reported Votes\r
+1,Contest 1,Targeted,8,Yes,0.0537356735,DATETIME,DATETIME,candidate 1: 2200; candidate 2: 1100; candidate 3: 1100,6,2200,candidate 1: 2200; candidate 2: 1100; candidate 3: 1100\r
+\r
+######## SAMPLED BATCHES ########\r
+Jurisdiction Name,Batch Name,Ballots in Batch,Ticket Numbers: Contest 1,Audited?,Audit Results: Contest 1,Reported Results: Contest 1,Change in Results: Contest 1,Change in Margin: Contest 1,Last Edited By\r
+J1,Batch 1,500,"Round 1: 0.720194360819624066, 0.777128466487428756",Yes,candidate 1: 500; candidate 2: 250; candidate 3: 250,candidate 1: 500; candidate 2: 250; candidate 3: 250,,,jurisdiction.admin-UUID@example.com\r
+J1,Batch 3,500,Round 1: 0.753710009967479876,Yes,candidate 1: 500; candidate 2: 250; candidate 3: 250,candidate 1: 500; candidate 2: 250; candidate 3: 250,,,jurisdiction.admin-UUID@example.com\r
+J1,Batch 6,100,Round 1: 0.899217854763070950,Yes,candidate 1: 100; candidate 2: 50; candidate 3: 50,candidate 1: 100; candidate 2: 50; candidate 3: 50,,,jurisdiction.admin-UUID@example.com\r
+J1,Batch 8,100,Round 1: 0.9723790677174592551,Yes,candidate 1: 100; candidate 2: 50; candidate 3: 50,candidate 1: 100; candidate 2: 50; candidate 3: 50,,,jurisdiction.admin-UUID@example.com\r
+J2,Batch 3,500,"Round 1: 0.368061935896261076, 0.733615858338543383",Yes,candidate 1: 500; candidate 2: 250; candidate 3: 250,candidate 1: 500; candidate 2: 250; candidate 3: 250,,,jurisdiction.admin-UUID@example.com\r
+J2,Batch 4,500,Round 1: 0.608147659546583410,Yes,candidate 1: 500; candidate 2: 250; candidate 3: 250,candidate 1: 500; candidate 2: 250; candidate 3: 250,,,jurisdiction.admin-UUID@example.com\r
+Totals,,2200,,,candidate 1: 2200; candidate 2: 1100; candidate 3: 1100,candidate 1: 2200; candidate 2: 1100; candidate 3: 1100,,\r
 """
 
 snapshots["test_batch_comparison_round_1 1"] = {
@@ -125,8 +158,8 @@ Organization,Election Name,State\r
 Test Org test_batch_comparison_round_2,Test Election,CA\r
 \r
 ######## CONTESTS ########\r
-Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes\r
-Contest 1,Targeted,1,2,5000,candidate 1: 5000; candidate 2: 2500; candidate 3: 2500\r
+Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes,Pending Ballots\r
+Contest 1,Targeted,1,2,5000,candidate 1: 5000; candidate 2: 2500; candidate 3: 2500,0\r
 \r
 ######## AUDIT SETTINGS ########\r
 Audit Name,Audit Type,Audit Math Type,Risk Limit,Random Seed,Online Data Entry?\r
