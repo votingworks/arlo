@@ -48,15 +48,18 @@ function getChoiceName(
   return choice.name
 }
 
-function formatVoteCount(val: string | number | undefined): string | number {
+function formatVoteCount(val: string | number | undefined): string {
   switch (val) {
     case 'o':
       return 'Overvote'
     case 'u':
       return 'Undervote'
     case undefined: // Seen on 'reportedVotes' when a candidate did not have a vote originally
-      return 0
+      return '0'
     default:
+      if (typeof val === 'string') {
+        return val
+      }
       return val.toLocaleString()
   }
 }

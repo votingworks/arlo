@@ -730,7 +730,7 @@ def get_discrepancy_counts_by_jurisdiction(election: Election):
 
 
 DiscrepanciesByJurisdiction = Dict[
-    str, Dict[str, Dict[str, Dict[str, Dict[str, Union[str, int]]]]]
+    str, Dict[str, Dict[str, Dict[str, Union[Dict[str, int], Dict[str, str]]]]]
 ]
 # DiscrepanciesByJurisdiction = {
 #     jurisdictionID: {
@@ -814,13 +814,9 @@ def get_batch_comparison_audit_discrepancies_by_jurisdiction(
             jurisdiction_name, batch_name = batch_key
             jurisdiction_id = jurisdiction_name_to_id[jurisdiction_name]
             discrepancies_by_jurisdiction[jurisdiction_id][batch_name][contest.id] = {
-                "reportedVotes": normalize_vals_for_discrepancies(
-                    reported_contest_result
-                ),
-                "auditedVotes": normalize_vals_for_discrepancies(
-                    audited_contest_result
-                ),
-                "discrepancies": normalize_vals_for_discrepancies(vote_deltas),
+                "reportedVotes": reported_contest_result,
+                "auditedVotes": audited_contest_result,
+                "discrepancies": vote_deltas,
             }
 
     return discrepancies_by_jurisdiction
@@ -891,28 +887,9 @@ def get_ballot_comparison_audit_discrepancies_by_jurisdiction(
             discrepancies_by_jurisdiction[jurisdiction_id][readable_ballot_identifier][
                 contest.id
             ] = {
-                "reportedVotes": normalize_vals_for_discrepancies(reported_votes),
-                "auditedVotes": normalize_vals_for_discrepancies(audited_votes),
-                "discrepancies": normalize_vals_for_discrepancies(vote_deltas),
+                "reportedVotes": reported_votes,
+                "auditedVotes": audited_votes,
+                "discrepancies": vote_deltas,
             }
 
     return discrepancies_by_jurisdiction
-
-
-# normalize_vals_for_discrepancies normalizes the return type for batch and ballot comparison discrepanices.
-# It converts string numbers to int numbers, leaving non-numbers as is (i.e. 'o', 'u'). This is useful for
-# ballot CVRs to ensure that numbers are always returned as numbers, to match the behavior of batch discrepancies
-# and of vote deltas
-def normalize_vals_for_discrepancies(
-    cvr: Union[Dict[str, str], Dict[str, int]]
-) -> Dict[str, Union[str, int]]:
-    normalized_cvr: Dict[str, Union[str, int]] = {}
-    for key, value in cvr.items():
-        normalized_value: Union[str, int] = value
-        if isinstance(value, str):
-            try:
-                normalized_value = int(value)
-            except ValueError:  # pragma: no cover
-                normalized_value = value  # pragma: no cover
-        normalized_cvr[key] = normalized_value
-    return normalized_cvr

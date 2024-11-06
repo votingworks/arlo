@@ -349,17 +349,17 @@ describe('Progress screen', () => {
         discrepancyTablesRows[1]
       ).getAllByRole('cell')
       expect(discrepancyTable1Row1[0]).toHaveTextContent('Choice One')
-      expect(discrepancyTable1Row1[1]).toHaveTextContent(1)
+      expect(discrepancyTable1Row1[1]).toHaveTextContent('1')
       expect(discrepancyTable1Row1[2]).toHaveTextContent('Undervote')
-      expect(discrepancyTable1Row1[3]).toHaveTextContent(1)
+      expect(discrepancyTable1Row1[3]).toHaveTextContent('1')
 
       const discrepancyTable2Row1 = within(
         discrepancyTablesRows[3]
       ).getAllByRole('cell')
       expect(discrepancyTable2Row1[0]).toHaveTextContent('Choice Three')
-      expect(discrepancyTable2Row1[1]).toHaveTextContent(0)
+      expect(discrepancyTable2Row1[1]).toHaveTextContent('0')
       expect(discrepancyTable2Row1[2]).toHaveTextContent('Overvote')
-      expect(discrepancyTable2Row1[3]).toHaveTextContent(1)
+      expect(discrepancyTable2Row1[3]).toHaveTextContent('1')
 
       const footers = within(rows[4]).getAllByRole('cell')
       expect(footers[0]).toHaveTextContent('Total')

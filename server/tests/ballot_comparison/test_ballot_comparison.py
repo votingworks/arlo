@@ -844,27 +844,31 @@ def test_ballot_comparison_two_rounds(
     rv = client.get(f"/api/election/{election_id}/discrepancy")
     discrepancies = json.loads(rv.data)
     target_contest_discrepancies = discrepancies[jurisdictions[0]["id"]][
-        "TABULATOR1, BATCH2, Ballot Position 3"
+        "TABULATOR1, BATCH2, Ballot 3"
     ][target_contest_id]
     contest_choices = contests[0]["choices"]
-    assert target_contest_discrepancies["auditedVotes"][contest_choices[0]["id"]] == 1
-    assert target_contest_discrepancies["reportedVotes"][contest_choices[0]["id"]] == 1
+    assert target_contest_discrepancies["auditedVotes"][contest_choices[0]["id"]] == "1"
+    assert (
+        target_contest_discrepancies["reportedVotes"][contest_choices[0]["id"]] == "1"
+    )
     assert target_contest_discrepancies["discrepancies"][contest_choices[0]["id"]] == 0
-    assert target_contest_discrepancies["auditedVotes"][contest_choices[1]["id"]] == 1
-    assert target_contest_discrepancies["reportedVotes"][contest_choices[1]["id"]] == 0
+    assert target_contest_discrepancies["auditedVotes"][contest_choices[1]["id"]] == "1"
+    assert (
+        target_contest_discrepancies["reportedVotes"][contest_choices[1]["id"]] == "0"
+    )
     assert target_contest_discrepancies["discrepancies"][contest_choices[1]["id"]] == -1
 
     opportunistic_contest_discrepancies = discrepancies[jurisdictions[0]["id"]][
-        "TABULATOR1, BATCH2, Ballot Position 3"
+        "TABULATOR1, BATCH2, Ballot 3"
     ][opportunistic_contest_id]
     contest_choices = contests[1]["choices"]
     assert (
         opportunistic_contest_discrepancies["auditedVotes"][contest_choices[0]["id"]]
-        == 0
+        == "0"
     )
     assert (
         opportunistic_contest_discrepancies["reportedVotes"][contest_choices[0]["id"]]
-        == 1
+        == "1"
     )
     assert (
         opportunistic_contest_discrepancies["discrepancies"][contest_choices[0]["id"]]
@@ -872,11 +876,11 @@ def test_ballot_comparison_two_rounds(
     )
     assert (
         opportunistic_contest_discrepancies["auditedVotes"][contest_choices[1]["id"]]
-        == 1
+        == "1"
     )
     assert (
         opportunistic_contest_discrepancies["reportedVotes"][contest_choices[1]["id"]]
-        == 0
+        == "0"
     )
     assert (
         opportunistic_contest_discrepancies["discrepancies"][contest_choices[1]["id"]]
