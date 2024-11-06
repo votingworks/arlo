@@ -329,14 +329,23 @@ def process_batch_inventory_cvr_file(
                 )
 
             for row_index, row in enumerate(cvr_csv):
-                for contest in contests:
-                    cvr_number = column_value(
-                        row,
-                        "Cast Vote Record",
-                        row_index + 1,
-                        header_indices,
-                        required=True,
+                cvr_number = column_value(
+                    row,
+                    "Cast Vote Record",
+                    row_index + 1,
+                    header_indices,
+                    required=True,
+                )
+
+                if cvr_number not in cvr_number_to_batch:
+                    raise UserError(
+                        f"Unable to find batch for CVR number {cvr_number} in ballots files"
                     )
+                batch = cvr_number_to_batch[cvr_number]
+                batch_key: BatchKey = ("", batch)
+                ballot_count_by_batch[batch_key] += 1
+
+                for contest in contests:
                     choice_name = column_value(
                         row,
                         contest.name,
@@ -344,16 +353,8 @@ def process_batch_inventory_cvr_file(
                         header_indices,
                         required=False,
                     )
-
-                    if cvr_number not in cvr_number_to_batch:
-                        raise UserError(
-                            f"Unable to find batch for CVR number {cvr_number} in ballots files"
-                        )
-                    batch = cvr_number_to_batch[cvr_number]
-                    batch_key: BatchKey = ("", batch)
                     choice_id = validate_choice_name_and_get_choice_id(choice_name)
 
-                    ballot_count_by_batch[batch_key] += 1
                     if choice_id:
                         batch_tallies[batch_key][choice_id] += 1
 

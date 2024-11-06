@@ -64,6 +64,20 @@ BATCH2,4,4,0\r
 """
 
 snapshots[
+    "test_batch_inventory_ess_cvr_upload_multi_contest 1"
+] = """Batch Name,Number of Ballots\r
+BATCH1,6\r
+BATCH2,8\r
+"""
+
+snapshots[
+    "test_batch_inventory_ess_cvr_upload_multi_contest 2"
+] = """Batch Name,Contest 1 - Choice 1-1,Contest 1 - Choice 1-2,Contest 1 - Write-In,Contest 2 - Choice 2-1,Contest 2 - Choice 2-2,Contest 2 - Choice 2-3,Contest 2 - Write-In\r
+BATCH1,2,2,0,6,0,0,0\r
+BATCH2,4,4,0,2,4,2,0\r
+"""
+
+snapshots[
     "test_batch_inventory_excel_tabulator_status_file 1"
 ] = """Batch Inventory Worksheet\r
 \r
@@ -206,11 +220,11 @@ Election Day,Tabulator 2 - BATCH2,6\r
 
 snapshots[
     "test_batch_inventory_happy_path_multi_contest_batch_comparison 3"
-] = """Batch Name,Contest 1 - Choice 1-1,Contest 1 - Choice 1-2,Contest 1 - Write-In,Contest 2 - Choice 2-1,Contest 2 - Choice 2-2,Contest 2 - Write-In\r
-Tabulator 1 - BATCH1,1,1,1,3,2,0\r
-Tabulator 1 - BATCH2,2,1,0,3,1,0\r
-Tabulator 2 - BATCH1,2,1,0,3,2,0\r
-Tabulator 2 - BATCH2,2,0,0,6,2,0\r
+] = """Batch Name,Contest 1 - Choice 1-1,Contest 1 - Choice 1-2,Contest 1 - Write-In,Contest 2 - Choice 2-1,Contest 2 - Choice 2-2,Contest 2 - Choice 2-3,Contest 2 - Write-In\r
+Tabulator 1 - BATCH1,1,1,1,3,2,1,0\r
+Tabulator 1 - BATCH2,2,1,0,3,1,2,0\r
+Tabulator 2 - BATCH1,2,1,0,3,2,1,0\r
+Tabulator 2 - BATCH2,2,0,0,6,2,4,0\r
 """
 
 snapshots[
@@ -229,4 +243,22 @@ BATCH1,1,2,0\r
 BATCH2,2,1,0\r
 BATCH4,1,0,1\r
 BATCH3,0,0,0\r
+"""
+
+snapshots[
+    "test_batch_inventory_hart_cvr_upload_multi_contest 1"
+] = """Batch Name,Number of Ballots\r
+BATCH1,3\r
+BATCH2,3\r
+BATCH3,2\r
+BATCH4,2\r
+"""
+
+snapshots[
+    "test_batch_inventory_hart_cvr_upload_multi_contest 2"
+] = """Batch Name,Contest 1 - Choice 1-1,Contest 1 - Choice 1-2,Contest 1 - Write-In,Contest 2 - Choice 2-1,Contest 2 - Choice 2-2,Contest 2 - Choice 2-3,Contest 2 - Write-In\r
+BATCH1,1,2,0,3,2,1,0\r
+BATCH2,2,1,0,3,1,2,0\r
+BATCH3,0,0,0,0,1,1,0\r
+BATCH4,1,0,1,0,0,1,1\r
 """
