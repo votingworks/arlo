@@ -5,7 +5,7 @@ from flask.testing import FlaskClient
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
 
-J1_BATCHES_ROUND_1 = 4
+J1_BATCHES_ROUND_1 = 5
 J2_BATCHES_ROUND_1 = 1
 
 
@@ -133,27 +133,38 @@ def test_record_batch_results(
     for batch in batches:
         assert batch["resultTallySheets"] == []
         assert batch["lastEditedBy"] is None
+    print(json.dumps(batches, indent=2))
 
     results = {
+        # Batch 1
         batches[0]["id"]: {
             choice_ids[0]: 400,
             choice_ids[1]: 50,
             choice_ids[2]: 40,
         },
+        # Batch 2
         batches[1]["id"]: {
             choice_ids[0]: 400,
             choice_ids[1]: 50,
             choice_ids[2]: 40,
         },
+        # Batch 4
         batches[2]["id"]: {
             choice_ids[0]: 100,
             choice_ids[1]: 50,
             choice_ids[2]: 40,
         },
+        # Batch 6
         batches[3]["id"]: {
             choice_ids[0]: 0,
             choice_ids[1]: 50,
             choice_ids[2]: 20,
+        },
+        # Batch 8
+        batches[4]["id"]: {
+            choice_ids[0]: 0,
+            choice_ids[1]: 100,
+            choice_ids[2]: 0,
         },
     }
     for batch_id, result in results.items():
@@ -283,6 +294,7 @@ def test_record_batch_results(
     # Start a new round to test round 2
     rv = client.get(f"/api/election/{election_id}/sample-sizes/2")
     sample_size_options = json.loads(rv.data)["sampleSizes"]
+    print(json.dumps(sample_size_options, indent=2))
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",

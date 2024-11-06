@@ -137,8 +137,8 @@ def batch_tallies(
         b"Batch 2,500,250,250\n"
         b"Batch 3,500,250,250\n"
         b"Batch 4,500,250,250\n"
-        b"Batch 5,100,50,50\n"
-        b"Batch 6,100,50,50\n"
+        b"Batch 5,300,100,100\n"
+        b"Batch 6,200,150,150\n"
     )
     rv = upload_batch_tallies(
         client,

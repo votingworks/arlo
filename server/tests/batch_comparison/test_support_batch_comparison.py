@@ -122,14 +122,14 @@ def test_support_combined_batches(
 
     # Create another combined batch
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)
-    assert sampled_batches[2]["id"] != all_batches[3].id
-    assert sampled_batches[2]["id"] != all_batches[1].id
+    assert sampled_batches[3]["id"] != all_batches[3].id
+    assert sampled_batches[3]["id"] != all_batches[1].id
     rv = post_json(
         client,
         f"/api/support/jurisdictions/{jurisdiction_ids[0]}/combined-batches",
         dict(
             name="Combined Batch 2",
-            subBatchIds=[sampled_batches[2]["id"], all_batches[3].id],
+            subBatchIds=[sampled_batches[3]["id"], all_batches[3].id],
         ),
     )
 
@@ -151,8 +151,8 @@ def test_support_combined_batches(
                     name=all_batches[3].name,
                 ),
                 dict(
-                    id=sampled_batches[2]["id"],
-                    name=sampled_batches[2]["name"],
+                    id=sampled_batches[3]["id"],
+                    name=sampled_batches[3]["name"],
                 ),
             ],
         )
