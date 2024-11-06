@@ -29,7 +29,7 @@ Organization,Election Name,State\r
 Test Org test_all_ballots_audit,Test Election,CA\r
 \r
 ######## CONTESTS ########\r
-Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes\r
+Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Vote Totals\r
 Contest 1,Targeted,1,1,2000000,candidate 1: 1000000; candidate 2: 999000; candidate 3: 1000\r
 \r
 ######## AUDIT SETTINGS ########\r

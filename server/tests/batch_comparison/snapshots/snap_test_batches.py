@@ -11,7 +11,8 @@ snapshots[
     "test_batch_retrieval_list_round_1 1"
 ] = """Batch Name,Container,Tabulator
 Batch 1,,
-Batch 3,,
+Batch 2,,
+Batch 4,,
 Batch 6,,
 Batch 8,,
 """
@@ -42,6 +43,6 @@ Totals,,120,,,candidate 1: 0; candidate 2: 0; candidate 3: 0,candidate 1: 0; can
 
 snapshots["test_record_batch_results 1"] = {
     "Contest 1 - candidate 1": 1210,
-    "Contest 1 - candidate 2": 250,
+    "Contest 1 - candidate 2": 350,
     "Contest 1 - candidate 3": 180,
 }

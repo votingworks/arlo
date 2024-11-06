@@ -134,7 +134,7 @@ def test_max_error(contests, batches) -> None:
     for contest in contests:
         for batch in batches:
             expected_up = Decimal(expected_ups[contest][batch])
-            computed_up = macro.compute_max_error(batches[batch], contests[contest])
+            computed_up = macro.compute_max_error(batches[batch], contests[contest], 0)
 
             delta = abs(computed_up - expected_up)
             assert (
@@ -1032,3 +1032,103 @@ def test_pending_ballots(snapshot):
     assert computed_p == float(expected_p)
     assert res is (expected_p < ALPHA)
     snapshot.assert_match(computed_p)
+
+
+def test_unauditable_ballots(snapshot):
+    contest_data = {
+        "winner": 200,
+        "loser": 100,
+        "third": 50,
+        "ballots": 350,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    }
+
+    contest = Contest("Contest", contest_data)
+
+    # Create batches that remove votes from the loser for any unauditable
+    # ballots. That way we can test that these votes are treated as votes for
+    # the loser.
+    def create_batches(num_unauditable_ballots: int):
+        batches = {}
+        batches["Batch 1"] = {
+            contest.name: {
+                "winner": 60,
+                "loser": 40 - num_unauditable_ballots / 2,
+                "third": 0,
+                "ballots": 100 - num_unauditable_ballots / 2,
+            }
+        }
+        batches["Batch 2"] = {
+            contest.name: {
+                "winner": 0,
+                "loser": 60 - num_unauditable_ballots / 2,
+                "third": 40,
+                "ballots": 100 - num_unauditable_ballots / 2,
+            }
+        }
+        batches["Batch 3"] = {
+            contest.name: {
+                "winner": 90,
+                "loser": 0,
+                "third": 10,
+                "ballots": 100,
+            }
+        }
+        batches["Batch 4"] = {
+            contest.name: {
+                "winner": 50,
+                "loser": 0,
+                "third": 0,
+                "ballots": 50,
+            }
+        }
+        return batches
+
+    batches = create_batches(1)
+    batches_without_unauditable_ballots = create_batches(0)
+
+    U = macro.compute_U(batches, contest)
+    U_without_unauditable_ballots = macro.compute_U(
+        batches_without_unauditable_ballots, contest
+    )
+    assert U > U_without_unauditable_ballots
+    snapshot.assert_match(
+        dict(U=U, U_without_unauditable_ballots=U_without_unauditable_ballots)
+    )
+
+    sample_size = macro.get_sample_sizes(RISK_LIMIT, contest, batches, {}, {}, [])
+    assert sample_size == len(batches)
+
+    # Don't actually do a full recount so we can assess a computed p-value,
+    # rather than an automatic 0 p-value
+    num_sampled_batches = len(batches) - 1
+    # No discrepancies
+    sample_results = dict(list(batches.items())[:num_sampled_batches])
+    sample_results_without_unauditable_ballots = dict(
+        list(batches_without_unauditable_ballots.items())[:num_sampled_batches]
+    )
+    sample_ticket_numbers = {
+        str(i): batch_name for i, batch_name in enumerate(sample_results.keys())
+    }
+
+    computed_p, _ = macro.compute_risk(
+        RISK_LIMIT, contest, batches, sample_results, sample_ticket_numbers, []
+    )
+    computed_p_without_unauditable_ballots, _ = macro.compute_risk(
+        RISK_LIMIT,
+        contest,
+        batches_without_unauditable_ballots,
+        sample_results_without_unauditable_ballots,
+        sample_ticket_numbers,
+        [],
+    )
+    assert computed_p > computed_p_without_unauditable_ballots
+    expected_p = ((1 - 1 / U) / 1) ** num_sampled_batches
+    assert computed_p == float(expected_p)
+    snapshot.assert_match(
+        dict(
+            computed_p=computed_p,
+            computed_p_without_unauditable_ballots=computed_p_without_unauditable_ballots,
+        )
+    )

@@ -18,7 +18,7 @@ Organization,Election Name,State\r
 Test Org test_standardize_contest_names,Test Election,CA\r
 \r
 ######## CONTESTS ########\r
-Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes\r
+Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Vote Totals\r
 Standardized Contest 1,Targeted,1,1,30,Choice 1-1: 14; Choice 1-2: 6\r
 Standardized Contest 2,Opportunistic,1,2,15,Choice 2-1: 12; Choice 2-2: 5; Choice 2-3: 7\r
 \r

@@ -124,8 +124,12 @@ def draw_ppeb_sample(
         return []
 
     # Map each batch to its weighted probability of being picked
+    unauditable_ballots = macro.compute_unauditable_ballots(batch_results, contest)
     weighted_errors = [
-        float(macro.compute_max_error(batch_results[batch], contest) / U)
+        float(
+            macro.compute_max_error(batch_results[batch], contest, unauditable_ballots)
+            / U
+        )
         for batch in batch_results
     ]
 

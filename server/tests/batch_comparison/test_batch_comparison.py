@@ -254,9 +254,9 @@ def test_batch_comparison_round_2(
         ],
         batches[2]["id"]: [
             {
-                choice_ids[0]: 100,
-                choice_ids[1]: 50,
-                choice_ids[2]: 40,
+                choice_ids[0]: 500,
+                choice_ids[1]: 250,
+                choice_ids[2]: 240,
             }
         ],
         batches[3]["id"]: [
@@ -266,25 +266,34 @@ def test_batch_comparison_round_2(
                 choice_ids[2]: 40,
             }
         ],
+        batches[4]["id"]: [
+            {
+                choice_ids[0]: 100,
+                choice_ids[1]: 50,
+                choice_ids[2]: 50,
+            }
+        ],
     }
 
     assert batches[0]["name"] == "Batch 1"
-    assert batches[1]["name"] == "Batch 3"
-    assert batches[2]["name"] == "Batch 6"
-    assert batches[3]["name"] == "Batch 8"
+    assert batches[1]["name"] == "Batch 2"
+    assert batches[2]["name"] == "Batch 4"
+    assert batches[3]["name"] == "Batch 6"
+    assert batches[4]["name"] == "Batch 8"
     # Batch tallies (from conftest.py)
     # Batch 1: 500,250,250
-    # Batch 3: 500,250,250
+    # Batch 2: 500,250,250
+    # Batch 4: 500,250,250
     # Batch 6: 100,50,50
     # Batch 8: 100,50,50
     expected_discrepancies_j1 = {
         "Batch 1": {"candidate 1": 100, "candidate 2": 200, "candidate 3": 210},
-        "Batch 3": {"candidate 1": 100, "candidate 2": 200, "candidate 3": 210},
+        "Batch 2": {"candidate 1": 100, "candidate 2": 200, "candidate 3": 210},
+        "Batch 4": {"candidate 1": 0, "candidate 2": 0, "candidate 3": 10},
         "Batch 6": {"candidate 1": 0, "candidate 2": 0, "candidate 3": 10},
-        "Batch 8": {"candidate 1": 0, "candidate 2": 0, "candidate 3": 10},
     }
 
-    for batch_id, results in batch_results_j1.items():
+    for i, (batch_id, results) in enumerate(batch_results_j1.items()):
         set_logged_in_user(
             client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
         )
@@ -302,6 +311,7 @@ def test_batch_comparison_round_2(
         set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
         rv = client.get(f"/api/election/{election_id}/jurisdiction")
         jurisdictions = json.loads(rv.data)["jurisdictions"]
+        assert jurisdictions[0]["currentRoundStatus"]["numSamplesAudited"] == i + 1
         snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
 
     # Finalize the results
@@ -540,10 +550,40 @@ def test_batch_comparison_batches_sampled_multiple_times(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    round_1_id: str,
+    election_settings,  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+    batch_tallies,  # pylint: disable=unused-argument
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    # Adjust random seed to one that we know will result in a sample with duplicates
+    rv = client.get(f"/api/election/{election_id}/settings")
+    election_settings = json.loads(rv.data)
+    put_json(
+        client,
+        f"/api/election/{election_id}/settings",
+        {**election_settings, "randomSeed": "0123"},
+    )
+
+    # Start the audit
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
+    sample_size_options = json.loads(rv.data)["sampleSizes"]
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 1,
+            "sampleSizes": {
+                contest_id: sample_size_options_for_contest[0]
+                for contest_id, sample_size_options_for_contest in sample_size_options.items()
+            },
+        },
+    )
+    assert_ok(rv)
+    rv = client.get(f"/api/election/{election_id}/round")
+    rounds = json.loads(rv.data)["rounds"]
+    round_1_id = rounds[0]["id"]
+
     rv = client.get(f"/api/election/{election_id}/contest")
     assert rv.status_code == 200
     contests = json.loads(rv.data)["contests"]
@@ -595,20 +635,12 @@ def test_batch_comparison_batches_sampled_multiple_times(
                 choice_ids[2]: 250,
             }
         ],
-        # Batch 8
+        # Batch 4
         batches[2]["id"]: [
             {
-                choice_ids[0]: 100,
-                choice_ids[1]: 50,
-                choice_ids[2]: 50,
-            }
-        ],
-        # Batch 6
-        batches[3]["id"]: [
-            {
-                choice_ids[0]: 100,
-                choice_ids[1]: 50,
-                choice_ids[2]: 50,
+                choice_ids[0]: 500,
+                choice_ids[1]: 250,
+                choice_ids[2]: 250,
             }
         ],
     }
@@ -642,12 +674,18 @@ def test_batch_comparison_batches_sampled_multiple_times(
 
     # Record batch results that match batch tallies exactly
     batch_results_j2 = {
-        # Batch 3
+        # Batch 1
         batches[0]["id"]: {
             choice_ids[0]: 500,
             choice_ids[1]: 250,
             choice_ids[2]: 250,
-        }
+        },
+        # Batch 5
+        batches[1]["id"]: {
+            choice_ids[0]: 300,
+            choice_ids[1]: 100,
+            choice_ids[2]: 100,
+        },
     }
 
     for batch_id, sheet_results in batch_results_j2.items():
@@ -706,8 +744,8 @@ def test_batch_comparison_batches_sampled_multiple_times(
         == audit_report.split("######## SAMPLED BATCHES ########\r\n")[1]
     )
     expected_discrepancies = {
-        "J1": {"Batch 1": None, "Batch 6": None, "Batch 8": None},
-        "J2": {"Batch 3": None},
+        "J1": {"Batch 1": None, "Batch 3": None, "Batch 4": None},
+        "J2": {"Batch 1": None, "Batch 5": None},
     }
     check_discrepancies(
         discrepancy_report,
@@ -880,9 +918,9 @@ def test_batch_tallies_summed_by_jurisdiction_csv_generation(
     assert csv_contents == (
         "Jurisdiction,candidate 1,candidate 2,candidate 3,Total Ballots\r\n"
         "J1,2500,1250,1250,2500\r\n"
-        "J2,2200,1100,1100,2500\r\n"
+        "J2,2500,1250,1250,2500\r\n"
         "J3,,,,\r\n"
-        "Total,4700,2350,2350,5000\r\n"
+        "Total,5000,2500,2500,5000\r\n"
     )
 
 
@@ -912,11 +950,12 @@ def test_batch_comparison_combined_batches(
     rv = client.get(f"/api/support/jurisdictions/{jurisdiction_ids[0]}/batches")
     j1_all_batches = json.loads(rv.data)["batches"]
 
+    print(json.dumps(j1_sampled_batches_original, indent=2))
     # Combine some batches
-    batch_2_unsampled = next(
-        batch for batch in j1_all_batches if batch["name"] == "Batch 2"
+    batch_3_unsampled = next(
+        batch for batch in j1_all_batches if batch["name"] == "Batch 3"
     )
-    assert batch_2_unsampled["id"] not in (
+    assert batch_3_unsampled["id"] not in (
         sampled_batch["id"] for sampled_batch in j1_sampled_batches_original
     )
     batch_1_sampled = next(
@@ -925,10 +964,10 @@ def test_batch_comparison_combined_batches(
     assert batch_1_sampled["id"] in (
         sampled_batch["id"] for sampled_batch in j1_sampled_batches_original
     )
-    batch_3_sampled = next(
-        batch for batch in j1_all_batches if batch["name"] == "Batch 3"
+    batch_2_sampled = next(
+        batch for batch in j1_all_batches if batch["name"] == "Batch 2"
     )
-    assert batch_3_sampled["id"] in (
+    assert batch_2_sampled["id"] in (
         sampled_batch["id"] for sampled_batch in j1_sampled_batches_original
     )
     rv = post_json(
@@ -937,9 +976,9 @@ def test_batch_comparison_combined_batches(
         {
             "name": "Combined Batch",
             "subBatchIds": [
-                batch_2_unsampled["id"],
+                batch_3_unsampled["id"],
                 batch_1_sampled["id"],
-                batch_3_sampled["id"],
+                batch_2_sampled["id"],
             ],
         },
     )
@@ -958,9 +997,9 @@ def test_batch_comparison_combined_batches(
         batch for batch in j1_sampled_batches if batch["name"] == "Combined Batch"
     )
     sampled_batch_names = {batch["name"] for batch in j1_sampled_batches}
-    assert batch_2_unsampled["name"] not in sampled_batch_names
+    assert batch_3_unsampled["name"] not in sampled_batch_names
     assert batch_1_sampled["name"] not in sampled_batch_names
-    assert batch_3_sampled["name"] not in sampled_batch_names
+    assert batch_2_sampled["name"] not in sampled_batch_names
 
     # Reported tallies from conftest.py:
     # Batch 1: 500,250,250
@@ -1019,6 +1058,7 @@ def test_batch_comparison_combined_batches(
 
     # Audit the rest of the sampled batches correctly
     results = {
+        "Batch 4": {choice_ids[0]: 500, choice_ids[1]: 250, choice_ids[2]: 250},
         "Batch 6": {choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 50},
         "Batch 8": {choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 50},
     }
