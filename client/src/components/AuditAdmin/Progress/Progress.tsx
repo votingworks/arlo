@@ -436,6 +436,7 @@ const Progress: React.FC<IProgressProps> = ({
       </Button>
       {showDiscrepancies && (
         <AsyncButton
+          icon="flag"
           onClick={() =>
             apiDownload(`/election/${electionId}/discrepancy-report`)
           }
