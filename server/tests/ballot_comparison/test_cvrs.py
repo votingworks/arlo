@@ -525,6 +525,25 @@ def test_cvrs_upload_bad_csv(
         json={
             "storagePathKey": "random.txt",
             "fileName": "random.txt",
+            "fileType": "text/csv",
+            "cvrFileType": "DOMINION",
+        },
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "message": "Invalid storage path",
+                "errorType": "Bad Request",
+            }
+        ]
+    }
+
+    rv = client.post(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs/upload-complete",
+        json={
+            "storagePathKey": f"{get_jurisdiction_folder_path(election_id, jurisdiction_ids[0])}/{timestamp_filename('cvrs', 'csv')}",
+            "fileName": "random.txt",
             "fileType": "text/plain",
             "cvrFileType": "DOMINION",
         },
@@ -2584,49 +2603,48 @@ def test_hart_cvr_upload_no_batch_match(
     jurisdictions = json.loads(rv.data)["jurisdictions"]
     manifest_num_ballots = jurisdictions[0]["ballotManifest"]["numBallots"]
 
-    invalid_cvrs = [
-        (
-            [build_hart_cvr("bad batch", "1", "1-1-1", "0,1,1,0,0")],
-            "Error in file: cvr-0.xml from cvrs.zip. Couldn't find a matching batch for BatchNumber: bad batch. The BatchNumber values in CVR files should match the Batch Name values in the ballot manifest.",
-        ),
-    ]
-
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    for invalid_cvr, expected_error in invalid_cvrs:
-        rv = upload_cvrs(
-            client,
-            zip_hart_cvrs(invalid_cvr),
-            election_id,
-            jurisdiction_ids[0],
-            "HART",
-            "application/zip",
-            "cvrs.zip",
-        )
-        assert_ok(rv)
 
-        rv = client.get(
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
+    rv = upload_cvrs(
+        client,
+        zip_hart_cvrs([build_hart_cvr("bad batch", "1", "1-1-1", "0,1,1,0,0")]),
+        election_id,
+        jurisdiction_ids[0],
+        "HART",
+        "application/zip",
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
+    )
+
+    def check_error_matches(error: str):
+        assert error.startswith("Error in file: cvr-0.xml from cvrs")
+        assert error.endswith(
+            ".zip. Couldn't find a matching batch for BatchNumber: bad batch. The BatchNumber values in CVR files should match the Batch Name values in the ballot manifest."
         )
-        compare_json(
-            json.loads(rv.data),
-            {
-                "file": {
-                    "name": asserts_startswith("cvrs"),
-                    "uploadedAt": assert_is_date,
-                    "cvrFileType": "HART",
-                },
-                "processing": {
-                    "status": ProcessingStatus.ERRORED,
-                    "startedAt": assert_is_date,
-                    "completedAt": assert_is_date,
-                    "error": expected_error,
-                    "workProgress": 0,
-                    "workTotal": manifest_num_ballots,
-                },
+
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {
+                "name": asserts_startswith("cvrs"),
+                "uploadedAt": assert_is_date,
+                "cvrFileType": "HART",
             },
-        )
+            "processing": {
+                "status": ProcessingStatus.ERRORED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": check_error_matches,
+                "workProgress": 0,
+                "workTotal": manifest_num_ballots,
+            },
+        },
+    )
 
 
 def test_hart_cvr_upload_no_tabulator_plus_batch_match(
@@ -2738,7 +2756,7 @@ def test_hart_cvr_upload_basic_input_validation(
                 "errors": [
                     {
                         "errorType": "Bad Request",
-                        "message": "Please submit a valid ZIP file.",
+                        "message": "Please submit a valid file. Expected: zip",
                     }
                 ]
             },

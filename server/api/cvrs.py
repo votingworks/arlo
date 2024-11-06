@@ -45,14 +45,15 @@ from ..worker.tasks import (
 )
 from ..util.file import (
     get_file_upload_url,
-    get_standard_file_upload_request_params,
+    get_jurisdiction_folder_path,
+    validate_and_get_standard_file_upload_request_params,
     retrieve_file,
     retrieve_file_to_buffer,
     serialize_file,
     serialize_file_processing,
     timestamp_filename,
     unzip_files,
-    validate_zip_mimetype,
+    FileType,
 )
 from ..util.csv_download import csv_response
 from ..util.csv_parse import (
@@ -61,7 +62,6 @@ from ..util.csv_parse import (
     reject_no_rows,
     validate_comma_delimited,
     validate_not_empty,
-    validate_csv_mimetype,
 )
 from ..util.collections import find_first_duplicate
 from ..util.hart_parse import find_xml, parse_contest_results
@@ -69,6 +69,9 @@ from ..audit_math.suite import HybridPair
 from ..activity_log.activity_log import UploadFile, activity_base, record_activity
 
 T = TypeVar("T")  # pylint: disable=invalid-name
+
+
+CVRS_FILE_NAME_PREFIX = "cvrs"
 
 
 def peek(iterator: Iterator[T]) -> Tuple[T, Iterator[T]]:
@@ -1616,15 +1619,19 @@ def start_upload_for_cvrs(election: Election, jurisdiction: Jurisdiction):
     if file_type is None:
         raise BadRequest("Missing expected query parameter: fileType")
 
-    storage_path_prefix = f"audits/{election.id}/jurisdictions/{jurisdiction.id}"
-
     cvr_file_type = request.args.get("cvrFileType")
     if cvr_file_type in [CvrFileType.ESS, CvrFileType.HART]:
-        filename = timestamp_filename("cvrs", "zip")
+        filename = timestamp_filename(CVRS_FILE_NAME_PREFIX, "zip")
     else:
-        filename = timestamp_filename("cvrs", "csv")
+        filename = timestamp_filename(CVRS_FILE_NAME_PREFIX, "csv")
 
-    return jsonify(get_file_upload_url(storage_path_prefix, filename, file_type))
+    return jsonify(
+        get_file_upload_url(
+            get_jurisdiction_folder_path(election.id, jurisdiction.id),
+            filename,
+            file_type,
+        )
+    )
 
 
 @api.route(
@@ -1636,16 +1643,19 @@ def complete_upload_for_cvrs(
     election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
 ):
     validate_cvr_upload(request, election, jurisdiction)
-
-    (storage_path, filename, file_type) = get_standard_file_upload_request_params(
-        request
-    )
     data = request.get_json()
     cvr_file_type = data.get("cvrFileType") if data else None
-    if cvr_file_type in [CvrFileType.ESS, CvrFileType.HART]:
-        validate_zip_mimetype(file_type)
-    else:
-        validate_csv_mimetype(file_type)
+    expected_file_types = (
+        [FileType.ZIP]
+        if cvr_file_type in [CvrFileType.ESS, CvrFileType.HART]
+        else [FileType.CSV]
+    )
+    (storage_path, filename, _) = validate_and_get_standard_file_upload_request_params(
+        request,
+        get_jurisdiction_folder_path(election.id, jurisdiction.id),
+        CVRS_FILE_NAME_PREFIX,
+        expected_file_types,
+    )
 
     clear_cvr_contests_metadata(jurisdiction)
     finalize_cvr_upload(storage_path, filename, cvr_file_type, jurisdiction)  # type: ignore

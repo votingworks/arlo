@@ -34,18 +34,19 @@ from ..worker.tasks import (
 )
 from ..util.file import (
     get_file_upload_url,
-    get_standard_file_upload_request_params,
+    get_audit_folder_path,
+    validate_and_get_standard_file_upload_request_params,
     retrieve_file,
     serialize_file,
     serialize_file_processing,
     timestamp_filename,
+    FileType,
 )
 from ..util.jsonschema import JSONDict
 from ..util.csv_parse import (
     CSVColumnType,
     CSVValueType,
     parse_csv,
-    validate_csv_mimetype,
 )
 from ..util.csv_download import csv_response
 
@@ -582,6 +583,8 @@ def download_jurisdictions_file(election: Election):
 JURISDICTION_NAME = "Jurisdiction"
 ADMIN_EMAIL = "Admin Email"
 
+JURISDICTIONS_FILE_NAME_PREFIX = "participating_jurisdictions"
+
 
 @api.route("/election/<election_id>/jurisdiction/file/upload-url", methods=["GET"])
 @restrict_access([UserType.AUDIT_ADMIN])
@@ -590,10 +593,11 @@ def start_upload_for_jurisdictions_file(election: Election):
     if file_type is None:
         raise BadRequest("Missing expected query parameter: fileType")
 
-    storage_path_prefix = f"audits/{election.id}"
-    file_name = timestamp_filename("participating_jurisdictions", "csv")
+    file_name = timestamp_filename(JURISDICTIONS_FILE_NAME_PREFIX, "csv")
 
-    return jsonify(get_file_upload_url(storage_path_prefix, file_name, file_type))
+    return jsonify(
+        get_file_upload_url(get_audit_folder_path(election.id), file_name, file_type)
+    )
 
 
 @api.route(
@@ -604,10 +608,12 @@ def complete_upload_for_jurisdictions_file(election: Election):
     if len(list(election.rounds)) > 0:
         raise Conflict("Cannot update jurisdictions after audit has started.")
 
-    (storage_path, filename, file_type) = get_standard_file_upload_request_params(
-        request
+    (storage_path, filename, _) = validate_and_get_standard_file_upload_request_params(
+        request,
+        get_audit_folder_path(election.id),
+        JURISDICTIONS_FILE_NAME_PREFIX,
+        [FileType.CSV],
     )
-    validate_csv_mimetype(file_type)
 
     election.jurisdictions_file = File(
         id=str(uuid.uuid4()),

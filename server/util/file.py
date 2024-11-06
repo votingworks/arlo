@@ -2,6 +2,7 @@ from datetime import datetime
 import shutil
 import io
 import os
+import re
 import tempfile
 from typing import BinaryIO, IO, List, Mapping, Optional, Dict, Any, Tuple
 from urllib.parse import urlparse
@@ -16,6 +17,12 @@ from ..worker.tasks import serialize_background_task
 from ..util.isoformat import isoformat
 from ..util.jsonschema import JSONDict
 from ..util.csv_parse import is_filetype_csv_mimetype
+
+
+class FileType(str, enum.Enum):
+    CSV = "csv"
+    ZIP = "zip"
+    XML = "xml"
 
 
 def serialize_file(file: Optional[File]) -> Optional[JSONDict]:
@@ -163,7 +170,23 @@ def get_file_upload_url(
         }
 
 
-def get_standard_file_upload_request_params(request: Request) -> Tuple[str, str, str]:
+def get_audit_folder_path(election_id: str) -> str:
+    return f"audits/{election_id}"
+
+
+def get_jurisdiction_folder_path(
+    election_id: str,
+    jurisdiction_id: str,
+) -> str:
+    return f"{get_audit_folder_path(election_id)}/jurisdictions/{jurisdiction_id}"
+
+
+def validate_and_get_standard_file_upload_request_params(
+    request: Request,
+    expected_file_directory_path: str,
+    expected_file_name_prefix: str,
+    expected_file_types: List[FileType],
+) -> Tuple[str, str, str]:
     data = request.get_json()
     if data is None:
         raise BadRequest("Missing JSON request body")
@@ -176,29 +199,46 @@ def get_standard_file_upload_request_params(request: Request) -> Tuple[str, str,
         raise BadRequest("Missing required JSON parameter: fileName")
     if not file_type:
         raise BadRequest("Missing required JSON parameter: fileType")
+
+    validate_mimetype(file_type, expected_file_types)
+
+    expected_extensions = "|".join(
+        [re.escape(file_type.value) for file_type in expected_file_types]
+    )
+    pattern = re.compile(
+        rf"^{re.escape(expected_file_directory_path)}/{expected_file_name_prefix}_\d{{4}}-\d{{2}}-\d{{2}}T\d{{2}}:\d{{2}}:\d{{2}}\.\d{{6}}\+\d{{2}}:\d{{2}}\.(?:{expected_extensions})$"
+    )
+    if not pattern.match(storage_path):
+        raise BadRequest("Invalid storage path")
+
     return (get_full_storage_path(storage_path), filename, file_type)
 
 
-def is_filetype_zip_mimetype(file_type: str) -> bool:
-    return file_type in ["application/zip", "application/x-zip-compressed"]
+def is_filetype_zip_mimetype(mime_type: str) -> bool:
+    return mime_type in ["application/zip", "application/x-zip-compressed"]
 
 
-def is_filetype_xml_mimetype(file_type: str) -> bool:
-    return file_type in ["text/xml"]
+def is_filetype_xml_mimetype(mime_type: str) -> bool:
+    return mime_type in ["text/xml"]
 
 
-def validate_csv_or_zip_mimetype(file_type: str) -> None:
-    if not is_filetype_zip_mimetype(file_type) and not is_filetype_csv_mimetype(
-        file_type
-    ):
-        raise BadRequest("Please submit a valid CSV or ZIP file.")
+def validate_mimetype(mime_type: str, expected_file_types: List[FileType]) -> None:
+    for type in expected_file_types:
+        if type == FileType.CSV:
+            if is_filetype_csv_mimetype(mime_type):
+                return None
+        elif type == FileType.XML:
+            if is_filetype_xml_mimetype(mime_type):
+                return None
+        elif type == FileType.ZIP:
+            if is_filetype_zip_mimetype(mime_type):
+                return None
 
+    if expected_file_types == [FileType.CSV]:
+        raise BadRequest(
+            "Please submit a valid CSV. If you are working with an Excel spreadsheet, make sure you export it as a .csv file before uploading."
+        )
 
-def validate_zip_mimetype(file_type: str) -> None:
-    if not is_filetype_zip_mimetype(file_type):
-        raise BadRequest("Please submit a valid ZIP file.")
-
-
-def validate_xml_mimetype(file_type: str) -> None:
-    if not is_filetype_xml_mimetype(file_type):
-        raise BadRequest("Please submit a valid XML file.")
+    expected_types_str = " or ".join([type.value for type in expected_file_types])
+    # If we are expecting a CSV file have a clearer error message for that case
+    raise BadRequest(f"Please submit a valid file. Expected: {expected_types_str}")

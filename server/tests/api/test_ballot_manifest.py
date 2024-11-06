@@ -212,6 +212,23 @@ def test_ballot_manifest_upload_bad_csv(
         json={
             "storagePathKey": "test_dir/random.txt",
             "fileName": "random.txt",
+            "fileType": "text/csv",
+        },
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "message": "Invalid storage path",
+                "errorType": "Bad Request",
+            }
+        ]
+    }
+    rv = client.post(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest/upload-complete",
+        json={
+            "storagePathKey": f"{get_jurisdiction_folder_path(election_id, jurisdiction_ids[0])}/{timestamp_filename('manifest', 'csv')}",
+            "fileName": "random.txt",
             "fileType": "text/plain",
         },
     )

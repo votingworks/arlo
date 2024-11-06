@@ -35,20 +35,18 @@ from ..models import *  # pylint: disable=wildcard-import
 from ..util.csv_parse import (
     validate_comma_delimited,
     is_filetype_csv_mimetype,
-    validate_csv_mimetype,
 )
 from ..util.file import (
+    FileType,
     get_file_upload_url,
-    get_standard_file_upload_request_params,
+    get_jurisdiction_folder_path,
+    validate_and_get_standard_file_upload_request_params,
     retrieve_file,
     retrieve_file_to_buffer,
     serialize_file,
     serialize_file_processing,
     timestamp_filename,
     unzip_files,
-    validate_csv_or_zip_mimetype,
-    validate_zip_mimetype,
-    validate_xml_mimetype,
 )
 from ..util.hart_parse import find_xml, parse_contest_results, find_text_xml
 from ..worker.tasks import UserError, background_task, create_background_task
@@ -61,6 +59,9 @@ from ..util.get_json import safe_get_json_dict
 
 TABULATOR_ID = "Tabulator Id"
 NAME = "Name"
+
+BATCH_CVR_FILE_NAME_PREFIX = "batch-inventory-cvrs"
+TABULATOR_STATUS_FILE_NAME_PREFIX = "batch-inventory-tabulator-status"
 
 # (tabulator_id, batch_id)
 BatchKey = Tuple[str, str]
@@ -761,10 +762,17 @@ def start_upload_for_batch_inventory_cvr(
 
     is_csv = is_filetype_csv_mimetype(file_type)
 
-    storage_path_prefix = f"audits/{election.id}/jurisdictions/{jurisdiction.id}"
-    filename = timestamp_filename("batch-inventory-cvrs", "csv" if is_csv else "zip")
+    filename = timestamp_filename(
+        BATCH_CVR_FILE_NAME_PREFIX, "csv" if is_csv else "zip"
+    )
 
-    return jsonify(get_file_upload_url(storage_path_prefix, filename, file_type))
+    return jsonify(
+        get_file_upload_url(
+            get_jurisdiction_folder_path(election.id, jurisdiction.id),
+            filename,
+            file_type,
+        )
+    )
 
 
 @api.route(
@@ -782,20 +790,22 @@ def complete_upload_for_batch_inventory_cvr(
     if not batch_inventory_data or not batch_inventory_data.system_type:
         raise Conflict("Must select system type before uploading CVR file.")
 
-    (storage_path, filename, file_type) = get_standard_file_upload_request_params(
-        request
-    )
-
-    if batch_inventory_data.system_type == CvrFileType.DOMINION:
-        validate_csv_mimetype(file_type)
-    elif batch_inventory_data.system_type == CvrFileType.ESS:
-        validate_csv_or_zip_mimetype(file_type)
+    expected_file_types = [FileType.CSV]
+    if batch_inventory_data.system_type == CvrFileType.ESS:
+        expected_file_types = [FileType.CSV, FileType.ZIP]
     elif batch_inventory_data.system_type == CvrFileType.HART:
-        validate_zip_mimetype(file_type)
-    else:
+        expected_file_types = [FileType.ZIP]
+    elif batch_inventory_data.system_type != CvrFileType.DOMINION:
         raise Conflict(
             f"Batch Inventory CVR uploads not supported for cvr file type: {batch_inventory_data.system_type}"
         )
+
+    (storage_path, filename, _) = validate_and_get_standard_file_upload_request_params(
+        request,
+        get_jurisdiction_folder_path(election.id, jurisdiction.id),
+        BATCH_CVR_FILE_NAME_PREFIX,
+        expected_file_types,
+    )
 
     batch_inventory_data.cvr_file = File(
         id=str(uuid.uuid4()),
@@ -887,10 +897,14 @@ def start_upload_for_batch_inventory_tabulator_status(
     if file_type is None:
         raise BadRequest("Missing expected query parameter: fileType")
 
-    storage_path_prefix = f"audits/{election.id}/jurisdictions/{jurisdiction.id}"
-    filename = timestamp_filename("batch-inventory-tabulator-status", "xml")
-
-    return jsonify(get_file_upload_url(storage_path_prefix, filename, file_type))
+    filename = timestamp_filename(TABULATOR_STATUS_FILE_NAME_PREFIX, "xml")
+    return jsonify(
+        get_file_upload_url(
+            get_jurisdiction_folder_path(election.id, jurisdiction.id),
+            filename,
+            file_type,
+        )
+    )
 
 
 @api.route(
@@ -911,10 +925,12 @@ def complete_upload_for_batch_inventory_tabulator_status(
             "Cannot update tabulator status while CVR file is being processed."
         )
 
-    (storage_path, filename, file_type) = get_standard_file_upload_request_params(
-        request
+    (storage_path, filename, _) = validate_and_get_standard_file_upload_request_params(
+        request,
+        get_jurisdiction_folder_path(election.id, jurisdiction.id),
+        TABULATOR_STATUS_FILE_NAME_PREFIX,
+        [FileType.XML],
     )
-    validate_xml_mimetype(file_type)
 
     batch_inventory_data.tabulator_status_file = File(
         id=str(uuid.uuid4()),

@@ -18,8 +18,10 @@ from ..worker.tasks import (
     create_background_task,
 )
 from ..util.file import (
+    FileType,
     get_file_upload_url,
-    get_standard_file_upload_request_params,
+    get_jurisdiction_folder_path,
+    validate_and_get_standard_file_upload_request_params,
     retrieve_file,
     serialize_file,
     serialize_file_processing,
@@ -34,11 +36,11 @@ from ..util.csv_parse import (
     parse_csv,
     CSVValueType,
     CSVColumnType,
-    validate_csv_mimetype,
 )
 from ..util.string import format_count
 from ..activity_log.activity_log import UploadFile, activity_base, record_activity
 
+BATCH_TALLIES_FILE_PREFIX = "batch_tallies"
 
 # { (contest_id, choice_id): csv_header }
 ContestChoiceCsvHeaders = Dict[Tuple[str, str], str]
@@ -242,12 +244,15 @@ def start_upload_for_batch_tallies(
     if file_type is None:
         raise BadRequest("Missing expected query parameter: fileType")
 
-    storage_path_prefix = (
-        f"audits/{jurisdiction.election_id}/jurisdictions/{jurisdiction.id}"
-    )
-    filename = timestamp_filename("batch_tallies", "csv")
+    filename = timestamp_filename(BATCH_TALLIES_FILE_PREFIX, "csv")
 
-    return jsonify(get_file_upload_url(storage_path_prefix, filename, file_type))
+    return jsonify(
+        get_file_upload_url(
+            get_jurisdiction_folder_path(election.id, jurisdiction.id),
+            filename,
+            file_type,
+        )
+    )
 
 
 @api.route(
@@ -261,10 +266,12 @@ def complete_upload_for_batch_tallies(
 ):
     validate_batch_tallies_upload(election, jurisdiction)
 
-    (storage_path, filename, file_type) = get_standard_file_upload_request_params(
-        request
+    (storage_path, filename, _) = validate_and_get_standard_file_upload_request_params(
+        request,
+        get_jurisdiction_folder_path(election.id, jurisdiction.id),
+        BATCH_TALLIES_FILE_PREFIX,
+        [FileType.CSV],
     )
-    validate_csv_mimetype(file_type)
 
     clear_batch_tallies_data(jurisdiction)
 

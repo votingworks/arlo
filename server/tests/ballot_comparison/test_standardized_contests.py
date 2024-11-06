@@ -27,7 +27,7 @@ def test_upload_standardized_contests(
         json.loads(rv.data),
         {
             "file": {
-                "name": asserts_startswith("standardizedContests"),
+                "name": asserts_startswith("standardized_contests"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -51,7 +51,7 @@ def test_upload_standardized_contests(
 
     rv = client.get(f"/api/election/{election_id}/standardized-contests/file/csv")
     assert rv.headers["Content-Disposition"].startswith(
-        'attachment; filename="standardizedContests'
+        'attachment; filename="standardized_contests'
     )
     assert rv.data.decode("utf-8") == standardized_contests_file
 
@@ -122,7 +122,7 @@ def test_standardized_contests_bad_jurisdiction(
         json.loads(rv.data),
         {
             "file": {
-                "name": asserts_startswith("standardizedContests"),
+                "name": asserts_startswith("standardized_contests"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -155,7 +155,7 @@ def test_standardized_contests_no_jurisdictions(
         json.loads(rv.data),
         {
             "file": {
-                "name": asserts_startswith("standardizedContests"),
+                "name": asserts_startswith("standardized_contests"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -200,6 +200,24 @@ def test_standardized_contests_bad_csv(
         f"/api/election/{election_id}/standardized-contests/file/upload-complete",
         json={
             "storagePathKey": "test_dir/random.txt",
+            "fileName": "random.txt",
+            "fileType": "text/csv",
+        },
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "message": "Invalid storage path",
+                "errorType": "Bad Request",
+            }
+        ]
+    }
+
+    rv = client.post(
+        f"/api/election/{election_id}/standardized-contests/file/upload-complete",
+        json={
+            "storagePathKey": f"{get_audit_folder_path(election_id)}/{timestamp_filename('standardized_contests', 'csv')}",
             "fileName": "random.txt",
             "fileType": "text/plain",
         },
@@ -398,7 +416,7 @@ def test_standardized_contests_change_jurisdictions_file(
         json.loads(rv.data),
         {
             "file": {
-                "name": asserts_startswith("standardizedContests"),
+                "name": asserts_startswith("standardized_contests"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {

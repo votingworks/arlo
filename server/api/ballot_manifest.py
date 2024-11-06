@@ -18,11 +18,13 @@ from ..worker.tasks import (
 )
 from ..util.file import (
     get_file_upload_url,
-    get_standard_file_upload_request_params,
+    get_jurisdiction_folder_path,
+    validate_and_get_standard_file_upload_request_params,
     retrieve_file,
     serialize_file,
     serialize_file_processing,
     timestamp_filename,
+    FileType,
 )
 from ..util.csv_download import csv_response
 from ..util.csv_parse import (
@@ -30,7 +32,6 @@ from ..util.csv_parse import (
     CSVValueType,
     CSVColumnType,
     parse_csv,
-    validate_csv_mimetype,
 )
 from ..audit_math.suite import HybridPair
 from . import contests
@@ -275,6 +276,9 @@ def clear_ballot_manifest_file(jurisdiction: Jurisdiction):
     Batch.query.filter_by(jurisdiction=jurisdiction).delete()
 
 
+BALLOT_MANIFEST_FILE_NAME_PREFIX = "manifest"
+
+
 @api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/ballot-manifest/upload-url",
     methods=["GET"],
@@ -288,12 +292,15 @@ def start_upload_for_ballot_manifest(
     if file_type is None:
         raise BadRequest("Missing expected query parameter: fileType")
 
-    storage_path_prefix = (
-        f"audits/{jurisdiction.election_id}/jurisdictions/{jurisdiction.id}"
-    )
-    filename = timestamp_filename("manifest", "csv")
+    file_name = timestamp_filename(BALLOT_MANIFEST_FILE_NAME_PREFIX, "csv")
 
-    return jsonify(get_file_upload_url(storage_path_prefix, filename, file_type))
+    return jsonify(
+        get_file_upload_url(
+            get_jurisdiction_folder_path(election.id, jurisdiction.id),
+            file_name,
+            file_type,
+        )
+    )
 
 
 @api.route(
@@ -305,10 +312,12 @@ def complete_upload_for_ballot_manifest(
     election: Election,  # pylint: disable=unused-argument
     jurisdiction: Jurisdiction,
 ):
-    (storage_path, filename, file_type) = get_standard_file_upload_request_params(
-        request
+    (storage_path, filename, _) = validate_and_get_standard_file_upload_request_params(
+        request,
+        get_jurisdiction_folder_path(election.id, jurisdiction.id),
+        BALLOT_MANIFEST_FILE_NAME_PREFIX,
+        [FileType.CSV],
     )
-    validate_csv_mimetype(file_type)
 
     clear_ballot_manifest_file(jurisdiction)
     save_ballot_manifest_file(storage_path, filename, jurisdiction)

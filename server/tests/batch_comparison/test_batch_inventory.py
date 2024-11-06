@@ -205,7 +205,7 @@ def test_batch_inventory_happy_path(
         json.loads(rv.data),
         {
             "file": {
-                "name": asserts_startswith("batchInventoryCvr"),
+                "name": asserts_startswith("batch-inventory-cvrs"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -233,7 +233,7 @@ def test_batch_inventory_happy_path(
         json.loads(rv.data),
         {
             "file": {
-                "name": asserts_startswith("tabulator-status"),
+                "name": asserts_startswith("batch-inventory-tabulator-status"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -325,7 +325,7 @@ def test_batch_inventory_happy_path(
         json.loads(rv.data),
         {
             "file": {
-                "name": asserts_startswith("batchTallies"),
+                "name": asserts_startswith("batch_tallies"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -416,7 +416,7 @@ def test_batch_inventory_happy_path_cvrs_with_leading_equal_signs(
         json.loads(rv.data),
         {
             "file": {
-                "name": asserts_startswith("batchInventoryCvr"),
+                "name": asserts_startswith("batch-inventory-cvrs"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -444,7 +444,7 @@ def test_batch_inventory_happy_path_cvrs_with_leading_equal_signs(
         json.loads(rv.data),
         {
             "file": {
-                "name": asserts_startswith("tabulator-status"),
+                "name": asserts_startswith("batch-inventory-tabulator-status"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -536,7 +536,7 @@ def test_batch_inventory_happy_path_cvrs_with_leading_equal_signs(
         json.loads(rv.data),
         {
             "file": {
-                "name": asserts_startswith("batchTallies"),
+                "name": asserts_startswith("batch_tallies"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -627,7 +627,7 @@ def test_batch_inventory_happy_path_multi_contest_batch_comparison(
         json.loads(rv.data),
         {
             "file": {
-                "name": asserts_startswith("batchInventoryCvr"),
+                "name": asserts_startswith("batch-inventory-cvrs"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -655,7 +655,7 @@ def test_batch_inventory_happy_path_multi_contest_batch_comparison(
         json.loads(rv.data),
         {
             "file": {
-                "name": asserts_startswith("tabulator-status"),
+                "name": asserts_startswith("batch-inventory-tabulator-status"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -747,7 +747,7 @@ def test_batch_inventory_happy_path_multi_contest_batch_comparison(
         json.loads(rv.data),
         {
             "file": {
-                "name": asserts_startswith("batchTallies"),
+                "name": asserts_startswith("batch_tallies"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -1150,7 +1150,7 @@ def test_batch_inventory_excel_tabulator_status_file(
         json.loads(rv.data),
         {
             "file": {
-                "name": asserts_startswith("tabulator-status"),
+                "name": asserts_startswith("batch-inventory-tabulator-status"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -1783,7 +1783,7 @@ def test_batch_inventory_hart_cvr_upload(
         json.loads(rv.data),
         {
             "file": {
-                "name": asserts_startswith("batchTallies"),
+                "name": asserts_startswith("batch_tallies"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {

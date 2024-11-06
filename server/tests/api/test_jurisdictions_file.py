@@ -31,6 +31,23 @@ def test_bad_csv_file(client: FlaskClient, election_id: str):
         json={
             "storagePathKey": "test_dir/random.txt",
             "fileName": "random.txt",
+            "fileType": "text/csv",
+        },
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "message": "Invalid storage path",
+                "errorType": "Bad Request",
+            }
+        ]
+    }
+    rv = client.post(
+        f"/api/election/{election_id}/jurisdiction/file/upload-complete",
+        json={
+            "storagePathKey": f"{get_audit_folder_path(election_id)}/{timestamp_filename('participating_jurisdictions', 'csv')}",
+            "fileName": "random.txt",
             "fileType": "text/plain",
         },
     )
@@ -58,7 +75,7 @@ def test_missing_one_csv_field(client, election_id):
         json.loads(rv.data),
         {
             "file": {
-                "name": asserts_startswith("jurisdictions"),
+                "name": asserts_startswith("participating_jurisdictions"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -84,14 +101,14 @@ def test_jurisdictions_file_metadata(client, election_id):
     assert_ok(rv)
 
     election = Election.query.filter_by(id=election_id).one()
-    assert election.jurisdictions_file.name.startswith("jurisdictions")
+    assert election.jurisdictions_file.name.startswith("participating_jurisdictions")
     assert election.jurisdictions_file.uploaded_at
 
     rv = client.get(f"/api/election/{election_id}/jurisdiction/file")
     response = json.loads(rv.data)
     file = response["file"]
     processing = response["processing"]
-    assert file["name"].startswith("jurisdictions")
+    assert file["name"].startswith("participating_jurisdictions")
     assert file["uploadedAt"]
     assert processing["status"] == ProcessingStatus.PROCESSED
     assert processing["startedAt"]
@@ -100,7 +117,7 @@ def test_jurisdictions_file_metadata(client, election_id):
 
     rv = client.get(f"/api/election/{election_id}/jurisdiction/file/csv")
     assert rv.headers["Content-Disposition"].startswith(
-        'attachment; filename="jurisdictions'
+        'attachment; filename="participating_jurisdictions'
     )
     assert rv.data.decode("utf-8") == contents
 
@@ -142,7 +159,7 @@ def test_replace_jurisdictions_file(client, election_id):
     )
     assert rv.status_code == 200
     response = json.loads(rv.data)
-    assert response["file"]["name"].startswith("jurisdictions")
+    assert response["file"]["name"].startswith("participating_jurisdictions")
 
     assert File.query.get(file_id) is None, "the old file should have been deleted"
 
@@ -283,7 +300,7 @@ def test_upload_jurisdictions_file_duplicate_row(
         json.loads(rv.data),
         {
             "file": {
-                "name": asserts_startswith("jurisdictions"),
+                "name": asserts_startswith("participating_jurisdictions"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
