@@ -34,7 +34,7 @@ Organization,Election Name,State\r
 Test Org test_multiple_targeted_contests_two_rounds,Test Election,CA\r
 \r
 ######## CONTESTS ########\r
-Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes\r
+Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Vote Totals\r
 Contest 1,Targeted,1,1,1600,candidate 1: 600; candidate 2: 400\r
 Contest 2,Targeted,1,1,1600,Yes: 800; No: 650\r
 Contest 3,Opportunistic,2,2,600,candidate 1: 200; candidate 2: 300; candidate 3: 100\r

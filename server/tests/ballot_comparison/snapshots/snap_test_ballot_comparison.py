@@ -27,7 +27,7 @@ Organization,Election Name,State\r
 Test Org test_ballot_comparison_ess,Test Election,CA\r
 \r
 ######## CONTESTS ########\r
-Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes\r
+Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Vote Totals\r
 Contest 1,Targeted,1,1,30,Choice 1-1: 16; Choice 1-2: 6\r
 Contest 2,Opportunistic,1,1,30,Choice 2-1: 13; Choice 2-2: 4; Choice 2-3: 5\r
 \r
@@ -94,7 +94,7 @@ Organization,Election Name,State\r
 Test Org test_ballot_comparison_two_rounds,Test Election,CA\r
 \r
 ######## CONTESTS ########\r
-Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes\r
+Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Vote Totals\r
 Contest 1,Targeted,1,1,30,Choice 1-1: 14; Choice 1-2: 6\r
 Contest 2,Opportunistic,1,2,30,Choice 2-1: 24; Choice 2-2: 10; Choice 2-3: 14\r
 \r
@@ -195,7 +195,7 @@ Organization,Election Name,State\r
 Test Org test_ballot_comparison_two_rounds,Test Election,CA\r
 \r
 ######## CONTESTS ########\r
-Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes\r
+Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Vote Totals\r
 Contest 1,Targeted,1,1,30,Choice 1-1: 14; Choice 1-2: 6\r
 Contest 2,Opportunistic,1,2,30,Choice 2-1: 24; Choice 2-2: 10; Choice 2-3: 14\r
 \r

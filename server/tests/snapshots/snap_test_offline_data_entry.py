@@ -22,7 +22,7 @@ Organization,Election Name,State\r
 Test Org test_run_offline_audit,Test Election,CA\r
 \r
 ######## CONTESTS ########\r
-Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes\r
+Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Vote Totals\r
 Contest 1,Targeted,1,1,1000,candidate 1: 600; candidate 2: 400\r
 Contest 2,Opportunistic,2,2,600,candidate 1: 200; candidate 2: 300; candidate 3: 100\r
 \r

@@ -262,8 +262,8 @@ def contest_rows(election: Election):
             [
                 "Total Ballots Cast: CVR",
                 "Total Ballots Cast: Non-CVR",
-                "Tabulated Votes: CVR",
-                "Tabulated Votes: Non-CVR",
+                "Vote Totals: CVR",
+                "Vote Totals: Non-CVR",
             ]
             if election.audit_type == AuditType.HYBRID
             else []
