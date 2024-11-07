@@ -520,7 +520,7 @@ def test_batch_tallies_ballot_polling(
         "errors": [
             {
                 "errorType": "Conflict",
-                "message": "Can only upload batch tallies file for batch comparison audits.",
+                "message": "Can only upload candidate totals by batch for batch comparison audits.",
             }
         ]
     }
@@ -583,7 +583,7 @@ def test_batch_tallies_before_manifests(
         "errors": [
             {
                 "errorType": "Conflict",
-                "message": "Must upload ballot manifest before uploading batch tallies.",
+                "message": "Must upload ballot manifest before uploading candidate totals by batch.",
             }
         ]
     }
@@ -783,7 +783,7 @@ def test_replace_batch_tallies_fails_while_processing_jurisdiction_file(
             "errors": [
                 {
                     "errorType": "Conflict",
-                    "message": "Cannot update batch tallies while manifest file is processing.",
+                    "message": "Cannot update candidate totals by batch while ballot manifest is processing.",
                 }
             ]
         }
