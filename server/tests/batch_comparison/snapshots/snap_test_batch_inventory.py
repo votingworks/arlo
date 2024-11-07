@@ -78,6 +78,22 @@ BATCH2,4,4,0,2,4,2,0\r
 """
 
 snapshots[
+    "test_batch_inventory_ess_cvr_upload_no_ballot_file 1"
+] = """Batch Name,Number of Ballots\r
+Batch 1,4\r
+Batch 2,5\r
+Batch 3,5\r
+"""
+
+snapshots[
+    "test_batch_inventory_ess_cvr_upload_no_ballot_file 2"
+] = """Batch Name,Choice 1-1,Choice 1-2,Write-In\r
+Batch 1,2,2,0\r
+Batch 2,1,2,0\r
+Batch 3,3,2,0\r
+"""
+
+snapshots[
     "test_batch_inventory_excel_tabulator_status_file 1"
 ] = """Batch Inventory Worksheet\r
 \r
