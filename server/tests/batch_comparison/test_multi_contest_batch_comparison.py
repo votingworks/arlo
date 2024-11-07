@@ -1204,9 +1204,6 @@ def test_updating_contests_while_jurisdictions_file_is_being_processed(
     election_id: str,
     jurisdiction_ids,  # pylint: disable=unused-argument
     contest_ids,  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    batch_tallies,  # pylint: disable=unused-argument
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
 
@@ -1244,9 +1241,7 @@ def test_updating_contests_while_batch_tallies_file_is_being_processed(
     election_id: str,
     jurisdiction_ids,  # pylint: disable=unused-argument
     contest_ids,  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
-    batch_tallies,  # pylint: disable=unused-argument
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
 
