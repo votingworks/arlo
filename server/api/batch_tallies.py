@@ -190,14 +190,21 @@ def process_batch_tallies_file(
 def validate_batch_tallies_upload(election: Election, jurisdiction: Jurisdiction):
     if election.audit_type != AuditType.BATCH_COMPARISON:
         raise Conflict(
-            "Can only upload batch tallies file for batch comparison audits."
+            "Can only upload candidate totals by batch for batch comparison audits."
         )
 
     if len(list(jurisdiction.contests)) == 0:
         raise Conflict("Jurisdiction does not have any contests assigned")
 
     if not jurisdiction.manifest_file_id:
-        raise Conflict("Must upload ballot manifest before uploading batch tallies.")
+        raise Conflict(
+            "Must upload ballot manifest before uploading candidate totals by batch."
+        )
+
+    if jurisdiction.manifest_file.is_processing():
+        raise Conflict(
+            "Cannot update candidate totals by batch while ballot manifest is processing."
+        )
 
 
 def clear_batch_tallies_data(jurisdiction: Jurisdiction):

@@ -2989,3 +2989,41 @@ def test_cvrs_get_upload_url(
             f"audits/{election_id}/jurisdictions/{jurisdiction_ids[0]}/cvrs_"
         )
         assert response_data["fields"]["key"].endswith(".zip")
+
+
+def test_replace_cvrs_fails_while_processing_manifest_file(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+
+    with no_automatic_task_execution():
+        # Replace the manifest file with a new one, but don't process it yet
+        rv = upload_ballot_manifest(
+            client,
+            io.BytesIO(b"does not matter"),
+            election_id,
+            jurisdiction_ids[0],
+        )
+        assert_ok(rv)
+
+        rv = upload_cvrs(
+            client,
+            io.BytesIO(b"does not matter"),
+            election_id,
+            jurisdiction_ids[0],
+            "DOMINION",
+        )
+
+        assert rv.status_code == 409
+        assert json.loads(rv.data) == {
+            "errors": [
+                {
+                    "errorType": "Conflict",
+                    "message": "Cannot replace CVRs while manifest file is processing.",
+                }
+            ]
+        }

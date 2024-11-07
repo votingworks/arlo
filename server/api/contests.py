@@ -303,6 +303,21 @@ def create_or_update_all_contests(election: Election):
     if election.audit_type == AuditType.BATCH_COMPARISON:
         user = get_loggedin_user(session)
         assert user[0] is not None
+
+        if election.jurisdictions_file and election.jurisdictions_file.is_processing():
+            raise Conflict(
+                "Cannot update contests while jurisdictions file is being processed."
+            )
+
+        if any(
+            jurisdiction.batch_tallies_file
+            and jurisdiction.batch_tallies_file.is_processing()
+            for jurisdiction in election.jurisdictions
+        ):
+            raise Conflict(
+                "Cannot update contests while batch tallies file is being processed."
+            )
+
         for jurisdiction in election.jurisdictions:
             batch_tallies.reprocess_batch_tallies_file_if_uploaded(
                 jurisdiction,

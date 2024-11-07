@@ -871,6 +871,11 @@ def complete_upload_for_batch_inventory_tabulator_status(
     if not batch_inventory_data or not batch_inventory_data.cvr_file_id:
         raise Conflict("Must upload CVR file before uploading tabulator status file.")
 
+    if batch_inventory_data.cvr_file.is_processing():
+        raise Conflict(
+            "Cannot update tabulator status while CVR file is being processed."
+        )
+
     (storage_path, filename, file_type) = get_standard_file_upload_request_params(
         request
     )

@@ -1538,6 +1538,9 @@ def validate_cvr_upload(
     if not jurisdiction.manifest_file_id:
         raise Conflict("Must upload ballot manifest before uploading CVR file.")
 
+    if jurisdiction.manifest_file.is_processing():
+        raise Conflict("Cannot replace CVRs while manifest file is processing.")
+
     data = request.get_json()
     cvr_file_type = data.get("cvrFileType") if data else None
     if cvr_file_type is None:

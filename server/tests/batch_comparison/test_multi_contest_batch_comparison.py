@@ -1197,3 +1197,79 @@ def test_multi_contest_batch_comparison_editing_contests_after_uploads(
         batch_tallies_status = jurisdiction["batchTallies"]["processing"]
         assert batch_tallies_status["status"] == "PROCESSED"
         assert batch_tallies_status["error"] is None
+
+
+def test_updating_contests_while_jurisdictions_file_is_being_processed(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids,  # pylint: disable=unused-argument
+    contest_ids,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+
+    with no_automatic_task_execution():
+        # cause the jurisdictions file to start processing, but don't wait for it to finish
+        rv = upload_jurisdictions_file(
+            client,
+            io.BytesIO(b"does not matter"),
+            election_id,
+        )
+        assert_ok(rv)
+
+        rv = client.get(f"/api/election/{election_id}/contest")
+        assert rv.status_code == 200
+        contests = json.loads(rv.data)["contests"]
+
+        for contest in contests:
+            del contest["totalBallotsCast"]
+
+        # Re-post the same contests, fails because the jurisdictions file is still being processed
+        rv = put_json(client, f"/api/election/{election_id}/contest", contests)
+        assert rv.status_code == 409
+        assert json.loads(rv.data) == {
+            "errors": [
+                {
+                    "errorType": "Conflict",
+                    "message": "Cannot update contests while jurisdictions file is being processed.",
+                }
+            ]
+        }
+
+
+def test_updating_contests_while_batch_tallies_file_is_being_processed(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids,  # pylint: disable=unused-argument
+    contest_ids,  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+
+    with no_automatic_task_execution():
+        # cause the batch tallies file to start processing, but don't wait for it to finish
+        rv = upload_batch_tallies(
+            client,
+            io.BytesIO(b"does not matter"),
+            election_id,
+            jurisdiction_ids[0],
+        )
+        assert_ok(rv)
+
+        rv = client.get(f"/api/election/{election_id}/contest")
+        assert rv.status_code == 200
+        contests = json.loads(rv.data)["contests"]
+
+        for contest in contests:
+            del contest["totalBallotsCast"]
+
+        # Re-post the same contests, fails because the batch tallies file is still being processed
+        rv = put_json(client, f"/api/election/{election_id}/contest", contests)
+        assert rv.status_code == 409
+        assert json.loads(rv.data) == {
+            "errors": [
+                {
+                    "errorType": "Conflict",
+                    "message": "Cannot update contests while batch tallies file is being processed.",
+                }
+            ]
+        }

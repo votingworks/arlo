@@ -1029,6 +1029,11 @@ class File(BaseModel):
     task_id = Column(String(200), ForeignKey("background_task.id"))
     task = relationship("BackgroundTask")
 
+    def is_processing(self):
+        if self.task is None:
+            return False
+        return self.task.completed_at is None
+
 
 class BackgroundTask(BaseModel):
     id = Column(String(200), primary_key=True)

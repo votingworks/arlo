@@ -591,3 +591,35 @@ def test_standardized_contests_get_upload_url(client: FlaskClient, election_id: 
         f"audits/{election_id}/standardized_contests_"
     )
     assert response_data["fields"]["key"].endswith(".csv")
+
+
+def test_replace_standardized_contests_file_while_processing_jurisdictions_file_fails(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+):
+    with no_automatic_task_execution():
+        # upload jurisdictions file, but don't process it
+        rv = upload_jurisdictions_file(
+            client,
+            io.BytesIO(b"does not matter"),
+            election_id,
+        )
+        assert_ok(rv)
+
+        # upload standardized contests file
+        rv = upload_standardized_contests(
+            client,
+            io.BytesIO(b"does not matter"),
+            election_id,
+        )
+
+        assert rv.status_code == 409
+        assert json.loads(rv.data) == {
+            "errors": [
+                {
+                    "errorType": "Conflict",
+                    "message": "Cannot replace standardized contests while jurisdictions file is processing.",
+                }
+            ]
+        }
