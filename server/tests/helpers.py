@@ -601,8 +601,9 @@ def zip_hart_cvrs(cvrs: List[str]):
 
 @contextmanager
 def no_automatic_task_execution():
+    old_run_background_tasks_immediately = config.RUN_BACKGROUND_TASKS_IMMEDIATELY
     config.RUN_BACKGROUND_TASKS_IMMEDIATELY = False
     try:
         yield
     finally:
-        config.RUN_BACKGROUND_TASKS_IMMEDIATELY = True
+        config.RUN_BACKGROUND_TASKS_IMMEDIATELY = old_run_background_tasks_immediately
