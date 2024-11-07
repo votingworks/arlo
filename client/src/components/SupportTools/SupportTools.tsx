@@ -39,6 +39,7 @@ import {
   useJurisdictionBatches,
   useCreateCombinedBatch,
   useDeleteCombinedBatch,
+  IRound,
 } from './support-api'
 import { useConfirm, Confirm } from '../Atoms/Confirm'
 import AuditBoardsTable from '../AuditAdmin/Progress/AuditBoardsTable'
@@ -46,6 +47,7 @@ import RoundsTable from './RoundsTable'
 import { List, LinkItem } from './List'
 import Breadcrumbs from './Breadcrumbs'
 import { stateOptions, states } from '../AuditAdmin/Setup/Settings/states'
+import StatusTag from '../Atoms/StatusTag'
 
 const Table = styled(HTMLTable)`
   margin: 10px 0;
@@ -110,6 +112,20 @@ const Row = styled.div`
   width: 100%;
 `
 
+const AuditStatusTag = ({ currentRound }: { currentRound: IRound | null }) => {
+  if (!currentRound) {
+    return <StatusTag>Not Started</StatusTag>
+  }
+  if (currentRound.endedAt) {
+    return <StatusTag intent="success">Completed</StatusTag>
+  }
+  return (
+    <StatusTag intent="warning">
+      Round {currentRound.roundNum} In Progress
+    </StatusTag>
+  )
+}
+
 const ActiveAudits = () => {
   const elections = useActiveElections()
 
@@ -124,6 +140,7 @@ const ActiveAudits = () => {
             <div>
               <div style={{ color: 'black' }}>{election.organization.name}</div>
               <div className="bp3-text-large">{election.auditName}</div>
+              <AuditStatusTag currentRound={election.currentRound} />
             </div>
           </LinkItem>
         ))}
@@ -221,6 +238,10 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
   }
 
   const { name, defaultState, elections, auditAdmins } = organization.data
+
+  const sortedElections = elections.sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  )
 
   const onClickRemoveAuditAdmin = (auditAdmin: IAuditAdmin) =>
     confirm({
@@ -333,16 +354,19 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
         <Column>
           <H3>Audits</H3>
           <List style={{ marginBottom: '30px' }}>
-            {elections
+            {sortedElections
               .filter(election => !election.deletedAt)
-              .map(election => (
-                <LinkItem
-                  key={election.id}
-                  to={`/support/audits/${election.id}`}
-                >
-                  {election.auditName}
-                </LinkItem>
-              ))}
+              .map(election => {
+                return (
+                  <LinkItem
+                    key={election.id}
+                    to={`/support/audits/${election.id}`}
+                  >
+                    {election.auditName}
+                    <AuditStatusTag currentRound={election.currentRound} />
+                  </LinkItem>
+                )
+              })}
           </List>
           <H3>Deleted Audits</H3>
           <Table striped>

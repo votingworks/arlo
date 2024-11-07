@@ -37,6 +37,8 @@ const mockElectionBase: IElectionBase = {
   auditType: 'BALLOT_POLLING',
   online: true,
   deletedAt: null,
+  createdAt: '2022-02-08T21:03:35.487Z',
+  currentRound: null,
 }
 
 const mockJurisdictionBase: IJurisdictionBase = {
@@ -55,6 +57,12 @@ const mockOrganization: IOrganization = {
       auditType: 'BALLOT_COMPARISON',
       online: false,
       deletedAt: null,
+      createdAt: '2022-02-08T21:03:35.487Z',
+      currentRound: {
+        id: 'round-2',
+        endedAt: null,
+        roundNum: 1,
+      },
     },
     {
       id: 'election-id-3',
@@ -62,6 +70,25 @@ const mockOrganization: IOrganization = {
       auditType: 'BATCH_COMPARISON',
       online: false,
       deletedAt: '2022-03-08T21:03:35.487Z',
+      createdAt: '2022-02-08T21:03:35.487Z',
+      currentRound: {
+        id: 'round-3',
+        endedAt: '2022-03-07T21:03:35.487Z',
+        roundNum: 1,
+      },
+    },
+    {
+      id: 'election-id-3',
+      auditName: 'Audit 4',
+      auditType: 'BATCH_COMPARISON',
+      online: false,
+      deletedAt: null,
+      createdAt: '2022-02-08T21:03:35.487Z',
+      currentRound: {
+        id: 'round-3',
+        endedAt: '2022-03-07T21:03:35.487Z',
+        roundNum: 1,
+      },
     },
   ],
   auditAdmins: [
@@ -263,6 +290,7 @@ describe('Support Tools', () => {
           ...mockElectionWithOrg,
           id: 'election-id-2',
           auditName: 'Audit 2',
+          currentRound: { id: 'round-1', endedAt: null, roundNum: 1 },
         },
       ]),
       apiCalls.getOrganizations([]),
@@ -272,9 +300,11 @@ describe('Support Tools', () => {
       const { history } = renderRoute('/support')
 
       await screen.findByRole('heading', { name: 'Active Audits' })
-      screen.getByRole('link', { name: 'Organization 1 Audit 2' })
+      screen.getByRole('link', {
+        name: 'Organization 1 Audit 2 Round 1 In Progress',
+      })
       userEvent.click(
-        screen.getByRole('link', { name: 'Organization 1 Audit 1' })
+        screen.getByRole('link', { name: 'Organization 1 Audit 1 Not Started' })
       )
       await screen.findByRole('heading', { name: 'Audit 1' })
       expect(history.location.pathname).toEqual('/support/audits/election-id-1')
@@ -380,13 +410,14 @@ describe('Support Tools', () => {
       await screen.findByRole('heading', { name: 'Organization 1' })
 
       screen.getByRole('heading', { name: 'Audits' })
-      screen.getByRole('link', { name: 'Audit 2' })
-      screen.getByRole('link', { name: 'Audit 1' })
+      screen.getByRole('link', { name: 'Audit 2 Round 1 In Progress' })
+      screen.getByRole('link', { name: 'Audit 4 Completed' })
+      screen.getByRole('link', { name: 'Audit 1 Not Started' })
 
       screen.getByRole('heading', { name: 'Deleted Audits' })
       screen.getByRole('row', { name: /Audit 3/ })
 
-      userEvent.click(screen.getByRole('link', { name: 'Audit 1' }))
+      userEvent.click(screen.getByRole('link', { name: 'Audit 1 Not Started' }))
       await screen.findByRole('heading', { name: 'Audit 1' })
       expect(history.location.pathname).toEqual('/support/audits/election-id-1')
     })
