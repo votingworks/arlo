@@ -63,6 +63,12 @@ NAME = "Name"
 BATCH_CVR_FILE_NAME_PREFIX = "batch-inventory-cvrs"
 TABULATOR_STATUS_FILE_NAME_PREFIX = "batch-inventory-tabulator-status"
 
+EXPECTED_CVR_FILE_TYPE_MAPPING = {
+    CvrFileType.ESS: [FileType.CSV, FileType.ZIP],
+    CvrFileType.HART: [FileType.ZIP],
+    CvrFileType.DOMINION: [FileType.CSV],
+}
+
 # (tabulator_id, batch_id)
 BatchKey = Tuple[str, str]
 
@@ -790,12 +796,10 @@ def complete_upload_for_batch_inventory_cvr(
     if not batch_inventory_data or not batch_inventory_data.system_type:
         raise Conflict("Must select system type before uploading CVR file.")
 
-    expected_file_types = [FileType.CSV]
-    if batch_inventory_data.system_type == CvrFileType.ESS:
-        expected_file_types = [FileType.CSV, FileType.ZIP]
-    elif batch_inventory_data.system_type == CvrFileType.HART:
-        expected_file_types = [FileType.ZIP]
-    elif batch_inventory_data.system_type != CvrFileType.DOMINION:
+    expected_file_types = EXPECTED_CVR_FILE_TYPE_MAPPING.get(
+        batch_inventory_data.system_type
+    )
+    if expected_file_types is None:
         raise Conflict(
             f"Batch Inventory CVR uploads not supported for cvr file type: {batch_inventory_data.system_type}"
         )
@@ -892,7 +896,6 @@ def download_batch_inventory_cvr(
 def start_upload_for_batch_inventory_tabulator_status(
     election: Election, jurisdiction: Jurisdiction
 ):
-
     file_type = request.args.get("fileType")
     if file_type is None:
         raise BadRequest("Missing expected query parameter: fileType")
