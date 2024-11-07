@@ -331,12 +331,8 @@ const Progress: React.FC<IProgressProps> = ({
           return (
             <Button
               onClick={() => setJurisdictionDiscrepanciesId(jurisdiction.id)}
+              icon={<Icon icon="flag" intent="danger" />}
             >
-              <Icon
-                icon="flag"
-                intent="danger"
-                style={{ marginRight: '4px' }}
-              />
               Review {value.toLocaleString()}
             </Button>
           )
