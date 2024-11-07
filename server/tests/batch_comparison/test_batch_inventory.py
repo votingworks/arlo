@@ -205,7 +205,7 @@ def test_batch_inventory_happy_path(
         json.loads(rv.data),
         {
             "file": {
-                "name": asserts_startswith("batch-inventory-cvrs"),
+                "name": asserts_startswith("batch_inventory_cvrs"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -233,7 +233,7 @@ def test_batch_inventory_happy_path(
         json.loads(rv.data),
         {
             "file": {
-                "name": asserts_startswith("batch-inventory-tabulator-status"),
+                "name": asserts_startswith("batch_inventory_tabulator_status"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -416,7 +416,7 @@ def test_batch_inventory_happy_path_cvrs_with_leading_equal_signs(
         json.loads(rv.data),
         {
             "file": {
-                "name": asserts_startswith("batch-inventory-cvrs"),
+                "name": asserts_startswith("batch_inventory_cvrs"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -444,7 +444,7 @@ def test_batch_inventory_happy_path_cvrs_with_leading_equal_signs(
         json.loads(rv.data),
         {
             "file": {
-                "name": asserts_startswith("batch-inventory-tabulator-status"),
+                "name": asserts_startswith("batch_inventory_tabulator_status"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -627,7 +627,7 @@ def test_batch_inventory_happy_path_multi_contest_batch_comparison(
         json.loads(rv.data),
         {
             "file": {
-                "name": asserts_startswith("batch-inventory-cvrs"),
+                "name": asserts_startswith("batch_inventory_cvrs"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -655,7 +655,7 @@ def test_batch_inventory_happy_path_multi_contest_batch_comparison(
         json.loads(rv.data),
         {
             "file": {
-                "name": asserts_startswith("batch-inventory-tabulator-status"),
+                "name": asserts_startswith("batch_inventory_tabulator_status"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -1150,7 +1150,7 @@ def test_batch_inventory_excel_tabulator_status_file(
         json.loads(rv.data),
         {
             "file": {
-                "name": asserts_startswith("batch-inventory-tabulator-status"),
+                "name": asserts_startswith("batch_inventory_tabulator_status"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -1566,7 +1566,7 @@ def test_batch_inventory_cvr_get_upload_url(
 
     assert response_data["url"] == expected_url
     assert response_data["fields"]["key"].startswith(
-        f"audits/{election_id}/jurisdictions/{jurisdiction_ids[0]}/batch-inventory-cvrs_"
+        f"audits/{election_id}/jurisdictions/{jurisdiction_ids[0]}/batch_inventory_cvrs_"
     )
     assert response_data["fields"]["key"].endswith(".csv")
 
@@ -1608,7 +1608,7 @@ def test_batch_inventory_tabulator_status_get_upload_url(
 
     assert response_data["url"] == expected_url
     assert response_data["fields"]["key"].startswith(
-        f"audits/{election_id}/jurisdictions/{jurisdiction_ids[0]}/batch-inventory-tabulator-status_"
+        f"audits/{election_id}/jurisdictions/{jurisdiction_ids[0]}/batch_inventory_tabulator_status_"
     )
     assert response_data["fields"]["key"].endswith(".xml")
 

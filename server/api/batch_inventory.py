@@ -60,8 +60,8 @@ from ..util.get_json import safe_get_json_dict
 TABULATOR_ID = "Tabulator Id"
 NAME = "Name"
 
-BATCH_CVR_FILE_NAME_PREFIX = "batch-inventory-cvrs"
-TABULATOR_STATUS_FILE_NAME_PREFIX = "batch-inventory-tabulator-status"
+BATCH_CVR_FILE_NAME_PREFIX = "batch_inventory_cvrs"
+TABULATOR_STATUS_FILE_NAME_PREFIX = "batch_inventory_tabulator_status"
 
 EXPECTED_CVR_FILE_TYPE_MAPPING = {
     CvrFileType.ESS: [FileType.CSV, FileType.ZIP],

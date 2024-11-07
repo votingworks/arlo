@@ -561,9 +561,9 @@ def upload_batch_inventory_cvr(
     file_type: str = "text/csv",
 ):
     if file_type in ["application/zip", "application/x-zip-compressed"]:
-        filename = timestamp_filename("batch-inventory-cvrs", "zip")
+        filename = timestamp_filename("batch_inventory_cvrs", "zip")
     else:
-        filename = timestamp_filename("batch-inventory-cvrs", "csv")
+        filename = timestamp_filename("batch_inventory_cvrs", "csv")
     return upload_file_helper(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/batch-inventory/cvr",
@@ -580,7 +580,7 @@ def upload_batch_inventory_tabulator_status(
     election_id: str,
     jurisdiction_id: str,
 ):
-    filename = timestamp_filename("batch-inventory-tabulator-status", "xml")
+    filename = timestamp_filename("batch_inventory_tabulator_status", "xml")
     return upload_file_helper(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/batch-inventory/tabulator-status",
