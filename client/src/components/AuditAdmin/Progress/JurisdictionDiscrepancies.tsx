@@ -3,7 +3,7 @@ import { Classes, Colors, Dialog, H6, HTMLTable } from '@blueprintjs/core'
 import styled from 'styled-components'
 import {
   IJurisdiction,
-  useDiscrepanciesByJurisdiction,
+  DiscrepanciesByJurisdiction,
 } from '../../useJurisdictions'
 import useContestsJurisdictionAdmin from '../../JurisdictionAdmin/useContestsJurisdictionAdmin'
 import { IContest } from '../../../types'
@@ -65,27 +65,28 @@ function formatVoteCount(val: string | number | undefined): string {
 }
 
 export interface IJurisdictionDiscrepanciesProps {
+  discrepancies: DiscrepanciesByJurisdiction
   electionId: string
   handleClose: () => void
   jurisdiction: IJurisdiction
 }
 
 const JurisdictionDiscrepancies: React.FC<IJurisdictionDiscrepanciesProps> = ({
+  discrepancies,
   handleClose,
   jurisdiction,
   electionId,
 }) => {
-  const discrepancyQuery = useDiscrepanciesByJurisdiction(electionId, {})
   const contestsQuery = useContestsJurisdictionAdmin(
     electionId,
     jurisdiction.id
   )
 
-  if (!discrepancyQuery.isSuccess || !contestsQuery.isSuccess) {
+  if (!contestsQuery.isSuccess) {
     return null
   }
 
-  const discrepanciesByBatchOrBallot = discrepancyQuery.data[jurisdiction.id]
+  const discrepanciesByBatchOrBallot = discrepancies[jurisdiction.id]
   const contests = contestsQuery.data
 
   return (
