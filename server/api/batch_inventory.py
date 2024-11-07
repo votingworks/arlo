@@ -317,9 +317,25 @@ def process_batch_inventory_cvr_file(
                         header_indices,
                         required=True,
                     )
-                    batch = column_value(
-                        row, "Batch", cvr_number, header_indices, required=True
+                    batch_col = column_value(
+                        row,
+                        "Batch",
+                        row_index + 1,
+                        header_indices,
+                        required=False,
                     )
+                    batch_name_col = column_value(
+                        row,
+                        "Batch Name",
+                        row_index + 1,
+                        header_indices,
+                        required=False,
+                    )
+                    batch = batch_col if batch_col is not None else batch_name_col
+                    if batch is None:
+                        raise UserError(
+                            "Missing Batch and Batch Name columns from CSV, at least one must be defined."
+                        )
                     cvr_number_to_batch[cvr_number] = batch
 
             validate_comma_delimited(primary_cvr_file)
@@ -371,13 +387,25 @@ def process_batch_inventory_cvr_file(
             header_indices = get_header_indices(headers)
             for row_index, row in enumerate(cvrs):
                 for contest in contests:
-                    batch = column_value(
+                    batch_col = column_value(
                         row,
                         "Batch",
                         row_index + 1,
                         header_indices,
-                        required=True,
+                        required=False,
                     )
+                    batch_name_col = column_value(
+                        row,
+                        "Batch Name",
+                        row_index + 1,
+                        header_indices,
+                        required=False,
+                    )
+                    batch = batch_col if batch_col is not None else batch_name_col
+                    if batch is None:
+                        raise UserError(
+                            "Missing Batch and Batch Name columns from CSV, at least one must be defined."
+                        )
                     choice_name = column_value(
                         row,
                         contest.name,
