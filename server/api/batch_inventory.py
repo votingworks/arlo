@@ -272,13 +272,19 @@ def process_batch_inventory_cvr_file(
                 if choice.name == choice_name:
                     choice_id = choice.id
                     break
+                # handle capitalization mismatches for the write in column
+                if choice.name.lower() == choice_name.lower() == "write-in":
+                    choice_id = choice.id
+                    break
 
             if (
                 not choice_id
                 and choice_name
-                and choice_name != "overvote"
-                and choice_name != "undervote"
-                and choice_name != "Write-in"
+                and choice_name.lower() != "overvote"
+                and choice_name.lower() != "undervote"
+                # If the user configured a write-in candidate choice when setting up the audit choice_id
+                # will be set in the for loop above. If the audit wasn't configured for write-ins we can parse them out.
+                and choice_name.lower() != "write-in"
             ):
                 raise UserError(f"Unrecognized choice in CVR file: {choice_name}")
             return choice_id
@@ -311,9 +317,25 @@ def process_batch_inventory_cvr_file(
                         header_indices,
                         required=True,
                     )
-                    batch = column_value(
-                        row, "Batch", cvr_number, header_indices, required=True
+                    batch_col = column_value(
+                        row,
+                        "Batch",
+                        row_index + 1,
+                        header_indices,
+                        required=False,
                     )
+                    batch_name_col = column_value(
+                        row,
+                        "Batch Name",
+                        row_index + 1,
+                        header_indices,
+                        required=False,
+                    )
+                    batch = batch_col if batch_col is not None else batch_name_col
+                    if batch is None:
+                        raise UserError(
+                            "Missing Batch and Batch Name columns from CSV, at least one must be defined."
+                        )
                     cvr_number_to_batch[cvr_number] = batch
 
             validate_comma_delimited(primary_cvr_file)
@@ -329,14 +351,23 @@ def process_batch_inventory_cvr_file(
                 )
 
             for row_index, row in enumerate(cvr_csv):
-                for contest in contests:
-                    cvr_number = column_value(
-                        row,
-                        "Cast Vote Record",
-                        row_index + 1,
-                        header_indices,
-                        required=True,
+                cvr_number = column_value(
+                    row,
+                    "Cast Vote Record",
+                    row_index + 1,
+                    header_indices,
+                    required=True,
+                )
+
+                if cvr_number not in cvr_number_to_batch:
+                    raise UserError(
+                        f"Unable to find batch for CVR number {cvr_number} in ballots files"
                     )
+                batch = cvr_number_to_batch[cvr_number]
+                batch_key: BatchKey = ("", batch)
+                ballot_count_by_batch[batch_key] += 1
+
+                for contest in contests:
                     choice_name = column_value(
                         row,
                         contest.name,
@@ -344,16 +375,8 @@ def process_batch_inventory_cvr_file(
                         header_indices,
                         required=False,
                     )
-
-                    if cvr_number not in cvr_number_to_batch:
-                        raise UserError(
-                            f"Unable to find batch for CVR number {cvr_number} in ballots files"
-                        )
-                    batch = cvr_number_to_batch[cvr_number]
-                    batch_key: BatchKey = ("", batch)
                     choice_id = validate_choice_name_and_get_choice_id(choice_name)
 
-                    ballot_count_by_batch[batch_key] += 1
                     if choice_id:
                         batch_tallies[batch_key][choice_id] += 1
 
@@ -364,13 +387,25 @@ def process_batch_inventory_cvr_file(
             header_indices = get_header_indices(headers)
             for row_index, row in enumerate(cvrs):
                 for contest in contests:
-                    batch = column_value(
+                    batch_col = column_value(
                         row,
                         "Batch",
                         row_index + 1,
                         header_indices,
-                        required=True,
+                        required=False,
                     )
+                    batch_name_col = column_value(
+                        row,
+                        "Batch Name",
+                        row_index + 1,
+                        header_indices,
+                        required=False,
+                    )
+                    batch = batch_col if batch_col is not None else batch_name_col
+                    if batch is None:
+                        raise UserError(
+                            "Missing Batch and Batch Name columns from CSV, at least one must be defined."
+                        )
                     choice_name = column_value(
                         row,
                         contest.name,
