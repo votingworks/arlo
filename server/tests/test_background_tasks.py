@@ -674,19 +674,19 @@ def test_file_is_processing(db_session):
 
     db_session.commit()
 
-    assert file.is_processing() == False
+    assert file.is_processing() is False
 
     @background_task
-    def process_file(election_id):
+    def process_file(election_id): # pylint: disable=unused-argument
         pass
 
     # queue the task
     file.task = create_background_task(
         process_file, dict(election_id="election-01"), db_session
     )
-    assert file.is_processing() == True
+    assert file.is_processing() is True
     db_session.commit()
 
     # run the task
     run_task(claim_next_task("test_worker", db_session), db_session)
-    assert file.is_processing() == False
+    assert file.is_processing() is False
