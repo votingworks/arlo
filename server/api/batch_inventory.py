@@ -272,12 +272,18 @@ def process_batch_inventory_cvr_file(
                 if choice.name == choice_name:
                     choice_id = choice.id
                     break
+                # handle capitalization mismatches for the write in column
+                if choice.name.lower() == choice_name.lower() == "write-in":
+                    choice_id = choice.id
+                    break
 
             if (
                 not choice_id
                 and choice_name
                 and choice_name != "overvote"
                 and choice_name != "undervote"
+                # If the user configured a write-in candidate choice when setting up the audit choice_id
+                # will be set in the for loop above. If the audit wasn't configured for write-ins we can parse them out.
                 and choice_name != "Write-in"
             ):
                 raise UserError(f"Unrecognized choice in CVR file: {choice_name}")

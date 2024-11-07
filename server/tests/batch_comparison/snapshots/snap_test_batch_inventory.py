@@ -88,9 +88,9 @@ Batch 3,5\r
 snapshots[
     "test_batch_inventory_ess_cvr_upload_no_ballot_file 2"
 ] = """Batch Name,Choice 1-1,Choice 1-2,Write-In\r
-Batch 1,2,2,0\r
+Batch 1,2,1,1\r
 Batch 2,1,2,0\r
-Batch 3,3,2,0\r
+Batch 3,2,2,1\r
 """
 
 snapshots[

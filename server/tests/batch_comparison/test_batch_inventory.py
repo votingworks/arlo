@@ -2046,12 +2046,12 @@ x,1,p,bs,Batch 1,Choice 1-2,Choice 2-1
 x,2,p,bs,Batch 1,Choice 1-1,Choice 2-1
 x,3,p,bs,Batch 2,undervote,Choice 2-1
 x,4,p,bs,Batch 2,overvote,Choice 2-1
-x,5,p,bs,Batch 1,Choice 1-2,Choice 2-1
+x,5,p,bs,Batch 1,Write-in,Choice 2-1
 x,6,p,bs,Batch 1,Choice 1-1,Choice 2-1
 x,7,p,bs,Batch 2,Choice 1-2,Choice 2-1
 x,8,p,bs,Batch 2,Choice 1-1,Choice 2-1
 x,9,p,bs,Batch 2,Choice 1-2,Choice 2-2
-x,10,p,bs,Batch 3,Choice 1-1,Choice 2-2
+x,10,p,bs,Batch 3,Write-in,Choice 2-2
 x,11,p,bs,Batch 3,Choice 1-2,Choice 2-2
 x,12,p,bs,Batch 3,Choice 1-1,Choice 2-2
 x,13,p,bs,Batch 3,Choice 1-2,Choice 2-3
