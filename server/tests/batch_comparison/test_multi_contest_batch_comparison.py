@@ -1198,6 +1198,7 @@ def test_multi_contest_batch_comparison_editing_contests_after_uploads(
         assert batch_tallies_status["status"] == "PROCESSED"
         assert batch_tallies_status["error"] is None
 
+
 def test_updating_contests_while_jurisdictions_file_is_being_processed(
     client: FlaskClient,
     election_id: str,
@@ -1232,10 +1233,11 @@ def test_updating_contests_while_jurisdictions_file_is_being_processed(
             "errors": [
                 {
                     "errorType": "Conflict",
-                    "message": "Cannot update contests while jurisdictions file is being processed."
+                    "message": "Cannot update contests while jurisdictions file is being processed.",
                 }
             ]
         }
+
 
 def test_updating_contests_while_batch_tallies_file_is_being_processed(
     client: FlaskClient,
@@ -1272,7 +1274,7 @@ def test_updating_contests_while_batch_tallies_file_is_being_processed(
             "errors": [
                 {
                     "errorType": "Conflict",
-                    "message": "Cannot update contests while batch tallies file is being processed."
+                    "message": "Cannot update contests while batch tallies file is being processed.",
                 }
             ]
         }

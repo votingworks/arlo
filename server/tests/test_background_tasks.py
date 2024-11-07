@@ -664,6 +664,7 @@ def test_task_missing_parameter(db_session):
     ):
         create_background_task(missing_parameters, dict(arg2=2), db_session)
 
+
 def test_file_is_processing(db_session):
     file = File(
         id=1,
@@ -678,7 +679,7 @@ def test_file_is_processing(db_session):
     @background_task
     def process_file(election_id):
         pass
-    
+
     # queue the task
     file.task = create_background_task(
         process_file, dict(election_id="election-01"), db_session

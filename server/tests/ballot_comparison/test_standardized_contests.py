@@ -592,6 +592,7 @@ def test_standardized_contests_get_upload_url(client: FlaskClient, election_id: 
     )
     assert response_data["fields"]["key"].endswith(".csv")
 
+
 def test_replace_standardized_contests_file_while_processing_jurisdictions_file_fails(
     client: FlaskClient,
     election_id: str,

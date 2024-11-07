@@ -1739,6 +1739,7 @@ def test_batch_inventory_hart_cvr_upload(
         },
     )
 
+
 def test_replace_tabulator_status_file_while_cvr_file_is_processing_fails(
     client: FlaskClient,
     election_id: str,

@@ -222,7 +222,9 @@ def complete_upload_for_standardized_contests_file(election: Election):
         )
 
     if election.jurisdictions_file and election.jurisdictions_file.is_processing():
-        raise Conflict("Cannot replace standardized contests while jurisdictions file is processing.")
+        raise Conflict(
+            "Cannot replace standardized contests while jurisdictions file is processing."
+        )
 
     (storage_path, filename, file_type) = get_standard_file_upload_request_params(
         request

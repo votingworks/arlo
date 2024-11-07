@@ -2990,6 +2990,7 @@ def test_cvrs_get_upload_url(
         )
         assert response_data["fields"]["key"].endswith(".zip")
 
+
 def test_replace_cvrs_fails_while_processing_manifest_file(
     client: FlaskClient,
     election_id: str,

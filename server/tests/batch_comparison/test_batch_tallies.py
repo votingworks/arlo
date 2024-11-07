@@ -751,6 +751,7 @@ def test_batch_tallies_get_upload_url(
         )
         assert response_data["fields"]["key"].endswith(".csv")
 
+
 def test_replace_batch_tallies_fails_while_processing_jurisdiction_file(
     client: FlaskClient,
     election_id: str,
@@ -758,9 +759,7 @@ def test_replace_batch_tallies_fails_while_processing_jurisdiction_file(
     contest_id: str,
     manifests,  # pylint: disable=unused-argument
 ):
-    set_logged_in_user(
-        client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL
-    )
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
 
     with no_automatic_task_execution():
         # replace the ballot manifest file, but don't process it yet

@@ -598,6 +598,7 @@ def zip_hart_cvrs(cvrs: List[str]):
     files["WriteIns"] = io.BytesIO()
     return io.BytesIO(zip_files(files).read())
 
+
 @contextmanager
 def no_automatic_task_execution():
     config.RUN_BACKGROUND_TASKS_IMMEDIATELY = False
