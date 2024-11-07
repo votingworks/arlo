@@ -756,7 +756,7 @@ def test_replace_batch_tallies_fails_while_processing_jurisdiction_file(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_id: str, # pylint: disable=unused-argument
+    contest_id: str,  # pylint: disable=unused-argument
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
 

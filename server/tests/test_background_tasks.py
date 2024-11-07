@@ -677,7 +677,7 @@ def test_file_is_processing(db_session):
     assert file.is_processing() is False
 
     @background_task
-    def process_file(election_id): # pylint: disable=unused-argument
+    def process_file(election_id):  # pylint: disable=unused-argument
         pass
 
     # queue the task
