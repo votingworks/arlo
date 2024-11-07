@@ -1089,6 +1089,67 @@ def test_batch_comparison_combined_batches(
     discrepancy_counts = json.loads(rv.data)
     assert discrepancy_counts[jurisdiction_ids[0]] == 1
 
+    # Check discrepancies
+    rv = client.get(f"/api/election/{election_id}/discrepancy")
+    discrepancies = json.loads(rv.data)
+    choices = contests[0]["choices"]
+    assert (
+        discrepancies[jurisdiction_ids[0]]["Combined Batch"][contests[0]["id"]][
+            "discrepancies"
+        ][choices[0]["id"]]
+        == 0
+    )
+    assert (
+        discrepancies[jurisdiction_ids[0]]["Combined Batch"][contests[0]["id"]][
+            "discrepancies"
+        ][choices[1]["id"]]
+        == candidate_2_discrepancy
+    )
+    assert (
+        discrepancies[jurisdiction_ids[0]]["Combined Batch"][contests[0]["id"]][
+            "discrepancies"
+        ][choices[2]["id"]]
+        == candidate_3_discrepancy
+    )
+
+    assert (
+        discrepancies[jurisdiction_ids[0]]["Combined Batch"][contests[0]["id"]][
+            "reportedVotes"
+        ][choices[0]["id"]]
+        == reported_tallies[choice_ids[0]]
+    )
+    assert (
+        discrepancies[jurisdiction_ids[0]]["Combined Batch"][contests[0]["id"]][
+            "reportedVotes"
+        ][choices[1]["id"]]
+        == reported_tallies[choice_ids[1]]
+    )
+    assert (
+        discrepancies[jurisdiction_ids[0]]["Combined Batch"][contests[0]["id"]][
+            "reportedVotes"
+        ][choices[2]["id"]]
+        == reported_tallies[choice_ids[2]]
+    )
+
+    assert (
+        discrepancies[jurisdiction_ids[0]]["Combined Batch"][contests[0]["id"]][
+            "auditedVotes"
+        ][choices[0]["id"]]
+        == reported_tallies[choice_ids[0]]
+    )
+    assert (
+        discrepancies[jurisdiction_ids[0]]["Combined Batch"][contests[0]["id"]][
+            "auditedVotes"
+        ][choices[1]["id"]]
+        == reported_tallies[choice_ids[1]] - candidate_2_discrepancy
+    )
+    assert (
+        discrepancies[jurisdiction_ids[0]]["Combined Batch"][contests[0]["id"]][
+            "auditedVotes"
+        ][choices[2]["id"]]
+        == reported_tallies[choice_ids[2]] - candidate_3_discrepancy
+    )
+
     # Check the discrepancy report
     rv = client.get(f"/api/election/{election_id}/discrepancy-report")
     discrepancy_report = rv.data.decode("utf-8")
