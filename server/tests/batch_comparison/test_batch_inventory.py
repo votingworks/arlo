@@ -1919,7 +1919,7 @@ def test_batch_inventory_hart_cvr_upload_multi_contest(
         json.loads(rv.data),
         {
             "file": {
-                "name": asserts_startswith("batchTallies"),
+                "name": asserts_startswith("batch_tallies"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -2057,7 +2057,7 @@ def test_batch_inventory_ess_cvr_upload(
             json.loads(rv.data),
             {
                 "file": {
-                    "name": asserts_startswith("batchTallies"),
+                    "name": asserts_startswith("batch_tallies"),
                     "uploadedAt": assert_is_date,
                 },
                 "processing": {
@@ -2225,7 +2225,7 @@ def test_batch_inventory_ess_cvr_upload_no_ballot_file(
             json.loads(rv.data),
             {
                 "file": {
-                    "name": asserts_startswith("batchTallies"),
+                    "name": asserts_startswith("batch_tallies"),
                     "uploadedAt": assert_is_date,
                 },
                 "processing": {
@@ -2343,7 +2343,7 @@ def test_batch_inventory_ess_cvr_upload_multi_contest(
         json.loads(rv.data),
         {
             "file": {
-                "name": asserts_startswith("batchTallies"),
+                "name": asserts_startswith("batch_tallies"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
