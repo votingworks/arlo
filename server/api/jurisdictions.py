@@ -785,7 +785,6 @@ def get_batch_comparison_audit_discrepancies_by_jurisdiction(
         lambda: defaultdict(dict)
     )
 
-    # TODO: Add support for combined batches
     batch_keys_in_round = set(
         SampledBatchDraw.query.filter_by(round_id=round_id)
         .join(Batch)
@@ -799,6 +798,28 @@ def get_batch_comparison_audit_discrepancies_by_jurisdiction(
         )
     )
 
+    combined_sub_batches = (
+        Batch.query.join(Jurisdiction)
+        .filter_by(election_id=election.id)
+        .filter(Batch.combined_batch_name.isnot(None))
+        .all()
+    )
+    combined_batches = group_combined_batches(combined_sub_batches)
+
+    all_combined_batch_keys = {
+        (sub_batch.jurisdiction.name, sub_batch.name)
+        for combined_batch in combined_batches
+        for sub_batch in combined_batch["sub_batches"]
+    }
+
+    representative_batch_to_combined_batch = {
+        (
+            combined_batch["representative_batch"].jurisdiction.name,
+            combined_batch["representative_batch"].name,
+        ): combined_batch
+        for combined_batch in combined_batches
+    }
+
     for contest in list(election.contests):
         audited_batch_results = sampled_batch_results(
             contest, include_non_rla_batches=True
@@ -811,6 +832,28 @@ def get_batch_comparison_audit_discrepancies_by_jurisdiction(
 
             audited_contest_result = audited_batch_result[contest.id]
             reported_contest_result = reported_batch_results[batch_key][contest.id]
+
+            # Special case: for combined batches, only count discrepancies in the representative batch
+            combined_batch_name = None
+            if batch_key in all_combined_batch_keys:
+                if batch_key not in representative_batch_to_combined_batch:
+                    continue
+                combined_batch = representative_batch_to_combined_batch[batch_key]
+                combined_batch_name = combined_batch["name"]
+                sub_batches = combined_batch["sub_batches"]
+                sub_batch_reported_results = list(
+                    sub_batch.jurisdiction.batch_tallies[sub_batch.name].get(contest.id)  # type: ignore
+                    for sub_batch in sub_batches
+                )
+                reported_contest_result = {
+                    choice.id: sum(
+                        reported_results[choice.id]
+                        for reported_results in sub_batch_reported_results
+                        if reported_results is not None
+                    )
+                    for choice in contest.choices
+                }
+
             vote_deltas = batch_vote_deltas(
                 reported_contest_result, audited_contest_result
             )
@@ -819,7 +862,9 @@ def get_batch_comparison_audit_discrepancies_by_jurisdiction(
 
             jurisdiction_name, batch_name = batch_key
             jurisdiction_id = jurisdiction_name_to_id[jurisdiction_name]
-            discrepancies_by_jurisdiction[jurisdiction_id][batch_name][contest.id] = {
+            discrepancies_by_jurisdiction[jurisdiction_id][
+                combined_batch_name or batch_name
+            ][contest.id] = {
                 "reportedVotes": reported_contest_result,
                 "auditedVotes": audited_contest_result,
                 "discrepancies": vote_deltas,
