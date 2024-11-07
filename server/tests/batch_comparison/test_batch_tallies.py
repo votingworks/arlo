@@ -60,7 +60,7 @@ def test_batch_tallies_upload(
         json.loads(rv.data),
         {
             "file": {
-                "name": asserts_startswith("batchTallies"),
+                "name": asserts_startswith("batch_tallies"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -110,7 +110,7 @@ def test_batch_tallies_upload(
         jurisdictions[0]["batchTallies"],
         {
             "file": {
-                "name": asserts_startswith("batchTallies"),
+                "name": asserts_startswith("batch_tallies"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -129,7 +129,7 @@ def test_batch_tallies_upload(
     )
     assert rv.status_code == 200
     assert rv.headers["Content-Disposition"].startswith(
-        'attachment; filename="batchTallies'
+        'attachment; filename="batch_tallies'
     )
     assert rv.data == batch_tallies_file
 
@@ -316,6 +316,23 @@ def test_batch_tallies_upload_bad_csv(
         json={
             "storagePathKey": "test_dir/random.txt",
             "fileName": "random.txt",
+            "fileType": "text/csv",
+        },
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "message": "Invalid storage path",
+                "errorType": "Bad Request",
+            }
+        ]
+    }
+    rv = client.post(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies/upload-complete",
+        json={
+            "storagePathKey": f"{get_jurisdiction_folder_path(election_id, jurisdiction_ids[0])}/{timestamp_filename('batch_tallies', 'csv')}",
+            "fileName": "random.txt",
             "fileType": "text/plain",
         },
     )
@@ -360,7 +377,7 @@ def test_batch_tallies_upload_missing_choice(
             json.loads(rv.data),
             {
                 "file": {
-                    "name": asserts_startswith("batchTallies"),
+                    "name": asserts_startswith("batch_tallies"),
                     "uploadedAt": assert_is_date,
                 },
                 "processing": {
@@ -432,7 +449,7 @@ def test_batch_tallies_wrong_batch_names(
             json.loads(rv.data),
             {
                 "file": {
-                    "name": asserts_startswith("batchTallies"),
+                    "name": asserts_startswith("batch_tallies"),
                     "uploadedAt": assert_is_date,
                 },
                 "processing": {
@@ -475,7 +492,7 @@ def test_batch_tallies_too_many_tallies(
         json.loads(rv.data),
         {
             "file": {
-                "name": asserts_startswith("batchTallies"),
+                "name": asserts_startswith("batch_tallies"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -631,7 +648,7 @@ def test_batch_tallies_reprocess_after_manifest_reupload(
         json.loads(rv.data),
         {
             "file": {
-                "name": asserts_startswith("batchTallies"),
+                "name": asserts_startswith("batch_tallies"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {
@@ -667,7 +684,7 @@ def test_batch_tallies_reprocess_after_manifest_reupload(
         json.loads(rv.data),
         {
             "file": {
-                "name": asserts_startswith("batchTallies"),
+                "name": asserts_startswith("batch_tallies"),
                 "uploadedAt": assert_is_date,
             },
             "processing": {

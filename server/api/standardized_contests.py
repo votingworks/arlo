@@ -21,16 +21,17 @@ from ..util.csv_parse import (
     parse_csv,
     CSVColumnType,
     CSVValueType,
-    validate_csv_mimetype,
 )
 from ..util.csv_download import csv_response
 from ..util.file import (
+    FileType,
+    get_audit_folder_path,
     get_file_upload_url,
-    get_standard_file_upload_request_params,
     retrieve_file,
     serialize_file,
     serialize_file_processing,
     timestamp_filename,
+    validate_and_get_standard_file_upload_request_params,
 )
 
 CONTEST_NAME = "Contest Name"
@@ -45,6 +46,8 @@ STANDARDIZED_CONTEST_COLUMNS = [
         CHOICE_NAMES, CSVValueType.TEXT, required_column=False, allow_empty_rows=False
     ),
 ]
+
+STANDARDIZED_CONTESTS_FILE_NAME_PREFIX = "standardized_contests"
 
 
 @background_task
@@ -187,23 +190,10 @@ def start_upload_for_standardized_contests_file(election: Election):
     if file_type is None:
         raise BadRequest("Missing expected query parameter: fileType")
 
-    storage_path_prefix = f"audits/{election.id}"
-    filename = timestamp_filename("standardized_contests", "csv")
+    file_name = timestamp_filename(STANDARDIZED_CONTESTS_FILE_NAME_PREFIX, "csv")
 
-    return jsonify(get_file_upload_url(storage_path_prefix, filename, file_type))
-
-
-def save_standardized_contests_file(
-    election: Election, storage_path: str, filename: str
-):
-    election.standardized_contests_file = File(
-        id=str(uuid.uuid4()),
-        name=filename,
-        storage_path=storage_path,
-        uploaded_at=datetime.now(timezone.utc),
-    )
-    election.standardized_contests_file.task = create_background_task(
-        process_standardized_contests_file, dict(election_id=election.id)
+    return jsonify(
+        get_file_upload_url(get_audit_folder_path(election.id), file_name, file_type)
     )
 
 
@@ -226,13 +216,23 @@ def complete_upload_for_standardized_contests_file(election: Election):
             "Cannot replace standardized contests while jurisdictions file is processing."
         )
 
-    (storage_path, filename, file_type) = get_standard_file_upload_request_params(
-        request
+    (storage_path, filename, _) = validate_and_get_standard_file_upload_request_params(
+        request,
+        get_audit_folder_path(election.id),
+        STANDARDIZED_CONTESTS_FILE_NAME_PREFIX,
+        [FileType.CSV],
     )
-    validate_csv_mimetype(file_type)
 
     election.standardized_contests = None
-    save_standardized_contests_file(election, storage_path, filename)
+    election.standardized_contests_file = File(
+        id=str(uuid.uuid4()),
+        name=filename,
+        storage_path=storage_path,
+        uploaded_at=datetime.now(timezone.utc),
+    )
+    election.standardized_contests_file.task = create_background_task(
+        process_standardized_contests_file, dict(election_id=election.id)
+    )
     db_session.commit()
     return jsonify(status="ok")
 

@@ -15,7 +15,6 @@ from typing import (
 )
 import csv as py_csv
 import io, re, locale, chardet
-from werkzeug.exceptions import BadRequest
 
 from .jsonschema import EMAIL_REGEX
 from .collections import find_first_duplicate
@@ -83,11 +82,6 @@ def parse_csv(file: BinaryIO, columns: List[CSVColumnType]) -> CSVDictIterator:
 
 def is_filetype_csv_mimetype(file_type: str) -> bool:
     return file_type in ["text/csv", "application/vnd.ms-excel"]
-
-
-def validate_csv_mimetype(file_type: str) -> None:
-    if not is_filetype_csv_mimetype(file_type):
-        raise BadRequest(INVALID_CSV_ERROR)
 
 
 def read_chunks(file: IO[bytes], chunk_size: int) -> Iterable[bytes]:

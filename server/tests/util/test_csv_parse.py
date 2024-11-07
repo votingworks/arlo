@@ -1,7 +1,6 @@
 # pylint: disable=implicit-str-concat
 from typing import BinaryIO, Union, List
 import os, io, pytest
-from werkzeug.exceptions import BadRequest
 
 from ...api.jurisdictions import JURISDICTIONS_COLUMNS
 from ...util.csv_parse import (
@@ -9,7 +8,6 @@ from ...util.csv_parse import (
     CSVParseError,
     CSVColumnType,
     CSVValueType,
-    validate_csv_mimetype,
 )
 
 BALLOT_MANIFEST_COLUMNS = [
@@ -993,24 +991,6 @@ def test_parse_csv_real_world_examples():
     for csv, expected_rows, columns in REAL_WORLD_ACCEPTED_CSVS:
         parsed = do_parse(csv, columns)
         assert len(parsed) == expected_rows
-
-
-def test_validate_csv_mimetype():
-    validate_csv_mimetype("text/csv")
-    validate_csv_mimetype("application/vnd.ms-excel")
-
-    for invalid_mimetype in [
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "application/pdf",
-        "text/plain",
-    ]:
-        with pytest.raises(BadRequest) as error:
-            validate_csv_mimetype(invalid_mimetype)
-            assert error.value.description == (
-                "Please submit a valid CSV."
-                " If you are working with an Excel spreadsheet,"
-                " make sure you export it as a .csv file before uploading."
-            )
 
 
 def test_parse_csv_excel_file():

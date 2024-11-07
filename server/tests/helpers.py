@@ -9,7 +9,12 @@ from werkzeug.wrappers import Response
 from sqlalchemy.exc import IntegrityError
 
 from .. import config
-from ..util.file import zip_files, timestamp_filename
+from ..util.file import (
+    get_audit_folder_path,
+    get_jurisdiction_folder_path,
+    zip_files,
+    timestamp_filename,
+)
 from ..auth.auth_helpers import UserType
 from ..auth import auth_helpers
 from ..database import db_session
@@ -427,6 +432,7 @@ def upload_file_helper(
     client: FlaskClient,
     url: str,
     filename: str,
+    file_path: str,
     file_type: str,
     file_content: io.BytesIO,
     cvr_file_type: Optional[str] = None,
@@ -438,7 +444,7 @@ def upload_file_helper(
                 file_content,
                 filename,
             ),
-            "key": f"test_dir/{filename}",
+            "key": f"{file_path}/{filename}",
         },
     )
     assert_ok(rv)
@@ -446,7 +452,7 @@ def upload_file_helper(
     return client.post(
         f"{url}/upload-complete",
         json={
-            "storagePathKey": f"test_dir/{filename}",
+            "storagePathKey": f"{file_path}/{filename}",
             "fileName": filename,
             "fileType": file_type,
             "cvrFileType": cvr_file_type,
@@ -465,6 +471,7 @@ def upload_ballot_manifest(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/ballot-manifest",
         filename,
+        get_jurisdiction_folder_path(election_id, jurisdiction_id),
         "text/csv",
         file_content,
     )
@@ -476,11 +483,12 @@ def upload_batch_tallies(
     election_id: str,
     jurisdiction_id: str,
 ):
-    filename = timestamp_filename("batchTallies", "csv")
+    filename = timestamp_filename("batch_tallies", "csv")
     return upload_file_helper(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/batch-tallies",
         filename,
+        get_jurisdiction_folder_path(election_id, jurisdiction_id),
         "text/csv",
         file_content,
     )
@@ -493,13 +501,11 @@ def upload_cvrs(
     jurisdiction_id: str,
     cvr_file_type: str,
     file_type: Optional[str] = None,
-    filename: Optional[str] = None,
 ):
-    if filename is None:
-        if file_type in ["application/zip", "application/x-zip-compressed"]:
-            filename = timestamp_filename("cvrs", "zip")
-        else:
-            filename = timestamp_filename("cvrs", "csv")
+    if file_type in ["application/zip", "application/x-zip-compressed"]:
+        filename = timestamp_filename("cvrs", "zip")
+    else:
+        filename = timestamp_filename("cvrs", "csv")
 
     if file_type is None:
         file_type = "text/csv"
@@ -508,6 +514,7 @@ def upload_cvrs(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/cvrs",
         filename,
+        get_jurisdiction_folder_path(election_id, jurisdiction_id),
         file_type,
         file_content,
         cvr_file_type,
@@ -519,11 +526,12 @@ def upload_jurisdictions_file(
     file_content: io.BytesIO,
     election_id: str,
 ):
-    filename = timestamp_filename("jurisdictions", "csv")
+    filename = timestamp_filename("participating_jurisdictions", "csv")
     return upload_file_helper(
         client,
         f"/api/election/{election_id}/jurisdiction/file",
         filename,
+        get_audit_folder_path(election_id),
         "text/csv",
         file_content,
     )
@@ -534,11 +542,12 @@ def upload_standardized_contests(
     file_content: io.BytesIO,
     election_id: str,
 ):
-    filename = timestamp_filename("standardizedContests", "csv")
+    filename = timestamp_filename("standardized_contests", "csv")
     return upload_file_helper(
         client,
         f"/api/election/{election_id}/standardized-contests/file",
         filename,
+        get_audit_folder_path(election_id),
         "text/csv",
         file_content,
     )
@@ -552,13 +561,14 @@ def upload_batch_inventory_cvr(
     file_type: str = "text/csv",
 ):
     if file_type in ["application/zip", "application/x-zip-compressed"]:
-        filename = timestamp_filename("batchInventoryCvr", "zip")
+        filename = timestamp_filename("batch_inventory_cvrs", "zip")
     else:
-        filename = timestamp_filename("batchInventoryCvr", "csv")
+        filename = timestamp_filename("batch_inventory_cvrs", "csv")
     return upload_file_helper(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/batch-inventory/cvr",
         filename,
+        get_jurisdiction_folder_path(election_id, jurisdiction_id),
         file_type,
         file_content,
     )
@@ -570,11 +580,12 @@ def upload_batch_inventory_tabulator_status(
     election_id: str,
     jurisdiction_id: str,
 ):
-    filename = timestamp_filename("tabulator-status", "xml")
+    filename = timestamp_filename("batch_inventory_tabulator_status", "xml")
     return upload_file_helper(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/batch-inventory/tabulator-status",
         filename,
+        get_jurisdiction_folder_path(election_id, jurisdiction_id),
         "text/xml",
         file_content,
     )
