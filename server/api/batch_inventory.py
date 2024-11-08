@@ -136,7 +136,15 @@ def process_batch_inventory_cvr_file(
 
         # Parse out all the initial metadata
         _election_name = next(cvrs)[0]
-        contests_row = [" ".join(contest.splitlines()) for contest in next(cvrs)]
+        contests_row_uncleaned = [
+            " ".join(contest.splitlines()) for contest in next(cvrs)
+        ]
+        # We've encountered files with extra spaces in between the contest name and the number of
+        # votes allowed. Remove these extra spaces so that the contest headers are what we expect.
+        contests_row = [
+            re.sub(r"\s+\(Vote For=", " (Vote For=", contest)
+            for contest in contests_row_uncleaned
+        ]
         contest_choices_row = next(cvrs)
         headers_and_affiliations = next(cvrs)
 
