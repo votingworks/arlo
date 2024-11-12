@@ -69,6 +69,10 @@ def test_support_get_organization(client: FlaskClient, org_id: str, election_id:
                     "deletedAt": None,
                     "createdAt": assert_is_date,
                     "currentRound": None,
+                    "organization": {
+                        "id": org_id,
+                        "name": "Test Org test_support_get_organization",
+                    },
                 }
             ],
             "auditAdmins": [
@@ -99,6 +103,10 @@ def test_support_get_organization_round(
                     "auditType": "BALLOT_POLLING",
                     "online": True,
                     "deletedAt": None,
+                    "organization": {
+                        "id": org_id,
+                        "name": "Test Org test_support_get_organization_round",
+                    },
                     "createdAt": assert_is_date,
                     "currentRound": {"id": round_1_id, "endedAt": None, "roundNum": 1},
                 }

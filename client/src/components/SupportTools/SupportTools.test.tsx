@@ -15,15 +15,15 @@ import AuthDataProvider from '../UserContext'
 import { supportApiCalls } from '../_mocks'
 import {
   IOrganizationBase,
-  IOrganization,
-  IElectionBase,
   IElection,
   IJurisdictionBase,
   IJurisdiction,
   IRound,
-  IElectionWithOrg,
   IBatch,
   ICombinedBatch,
+  IElectionForSupport,
+  IOrganizationForSupport,
+  IElectionBase,
 } from './support-api'
 
 const mockOrganizationBase: IOrganizationBase = {
@@ -37,6 +37,11 @@ const mockElectionBase: IElectionBase = {
   auditType: 'BALLOT_POLLING',
   online: true,
   deletedAt: null,
+}
+
+const mockElectionForSupport: IElectionForSupport = {
+  ...mockElectionBase,
+  organization: mockOrganizationBase,
   createdAt: '2022-02-08T21:03:35.487Z',
   currentRound: null,
 }
@@ -46,11 +51,11 @@ const mockJurisdictionBase: IJurisdictionBase = {
   name: 'Jurisdiction 1',
 }
 
-const mockOrganization: IOrganization = {
+const mockOrganization: IOrganizationForSupport = {
   ...mockOrganizationBase,
   defaultState: null,
   elections: [
-    mockElectionBase,
+    mockElectionForSupport,
     {
       id: 'election-id-2',
       auditName: 'Audit 2',
@@ -58,6 +63,7 @@ const mockOrganization: IOrganization = {
       online: false,
       deletedAt: null,
       createdAt: '2022-02-08T21:03:35.487Z',
+      organization: mockOrganizationBase,
       currentRound: {
         id: 'round-2',
         endedAt: null,
@@ -71,6 +77,7 @@ const mockOrganization: IOrganization = {
       online: false,
       deletedAt: '2022-03-08T21:03:35.487Z',
       createdAt: '2022-02-08T21:03:35.487Z',
+      organization: mockOrganizationBase,
       currentRound: {
         id: 'round-3',
         endedAt: '2022-03-07T21:03:35.487Z',
@@ -84,6 +91,7 @@ const mockOrganization: IOrganization = {
       online: false,
       deletedAt: null,
       createdAt: '2022-02-08T21:03:35.487Z',
+      organization: mockOrganizationBase,
       currentRound: {
         id: 'round-3',
         endedAt: '2022-03-07T21:03:35.487Z',
@@ -97,13 +105,8 @@ const mockOrganization: IOrganization = {
   ],
 }
 
-const mockElectionWithOrg: IElectionWithOrg = {
-  ...mockElectionBase,
-  organization: mockOrganizationBase,
-}
-
 const mockElection: IElection = {
-  ...mockElectionWithOrg,
+  ...mockElectionForSupport,
   jurisdictions: [
     mockJurisdictionBase,
     {
@@ -162,7 +165,7 @@ const apiCalls = {
     },
     response: { status: 'ok' },
   },
-  getOrganization: (response: IOrganization) => ({
+  getOrganization: (response: IOrganizationForSupport) => ({
     url: '/api/support/organizations/organization-id-1',
     response,
   }),
@@ -188,7 +191,7 @@ const apiCalls = {
     options: { method: 'DELETE' },
     response: { status: 'ok' },
   },
-  getActiveElections: (response: IElectionWithOrg[]) => ({
+  getActiveElections: (response: IElectionForSupport[]) => ({
     url: '/api/support/elections/active',
     response,
   }),
@@ -285,11 +288,12 @@ describe('Support Tools', () => {
     const expectedCalls = [
       supportApiCalls.getUser,
       apiCalls.getActiveElections([
-        mockElectionWithOrg,
+        mockElectionForSupport,
         {
-          ...mockElectionWithOrg,
+          ...mockElectionForSupport,
           id: 'election-id-2',
           auditName: 'Audit 2',
+          organization: mockOrganizationBase,
           currentRound: { id: 'round-1', endedAt: null, roundNum: 1 },
         },
       ]),

@@ -87,22 +87,14 @@ def auth0_create_audit_admin(email: str) -> Optional[str]:
 @restrict_access_support
 def list_active_elections():
     elections = (
-        Election.query.filter(
-            Election.id.in_(
-                ActivityLogRecord.query.filter(
-                    ActivityLogRecord.timestamp
-                    > datetime.now(timezone.utc) - timedelta(days=14)
-                )
-                .with_entities(
-                    ActivityLogRecord.info["base"]["election_id"].as_string()
-                )
-                .subquery()
-            )
-        )
-        .join(Organization)
+        Election.query.join(Organization)
         .join(
             ActivityLogRecord,
             ActivityLogRecord.info["base"]["election_id"].as_string() == Election.id,
+        )
+        .filter(
+            ActivityLogRecord.timestamp
+            > datetime.now(timezone.utc) - timedelta(days=14)
         )
         .order_by(ActivityLogRecord.timestamp.desc())
         .options(
@@ -178,6 +170,7 @@ def get_organization(organization_id: str):
                 auditName=election.audit_name,
                 auditType=election.audit_type,
                 online=election.online,
+                organization=dict(id=organization.id, name=organization.name),
                 deletedAt=isoformat(election.deleted_at),
                 createdAt=isoformat(election.created_at),
                 currentRound=get_current_round_info(election),

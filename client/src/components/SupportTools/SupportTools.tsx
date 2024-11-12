@@ -48,6 +48,7 @@ import { List, LinkItem } from './List'
 import Breadcrumbs from './Breadcrumbs'
 import { stateOptions, states } from '../AuditAdmin/Setup/Settings/states'
 import StatusTag from '../Atoms/StatusTag'
+import { sortBy } from '../../utils/array'
 
 const Table = styled(HTMLTable)`
   margin: 10px 0;
@@ -239,8 +240,8 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
 
   const { name, defaultState, elections, auditAdmins } = organization.data
 
-  const sortedElections = elections.sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  const sortedElections = sortBy(elections, a =>
+    new Date(a.createdAt).getTime()
   )
 
   const onClickRemoveAuditAdmin = (auditAdmin: IAuditAdmin) =>
