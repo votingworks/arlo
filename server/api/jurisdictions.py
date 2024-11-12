@@ -1,4 +1,4 @@
-from collections import Counter, defaultdict
+from collections import defaultdict
 import logging
 from typing import Dict, List, Optional, Mapping, Union, cast as typing_cast
 import enum
@@ -626,113 +626,6 @@ def complete_upload_for_jurisdictions_file(election: Election):
     )
     db_session.commit()
     return jsonify(status="ok")
-
-
-@api.route("/election/<election_id>/discrepancy-counts", methods=["GET"])
-@restrict_access([UserType.AUDIT_ADMIN])
-def get_discrepancy_counts_by_jurisdiction(election: Election):
-    discrepancy_count_by_jurisdiction: Dict[str, int] = Counter()
-    round = get_current_round(election)
-    if not round:
-        raise Conflict("Audit not started")
-
-    if election.audit_type == AuditType.BALLOT_COMPARISON:
-        ballots_in_round = (
-            SampledBallot.query.join(SampledBallotDraw)
-            .filter_by(round_id=round.id)
-            .distinct(SampledBallot.id)
-            .with_entities(SampledBallot.id)
-            .subquery()
-        )
-        sampled_ballot_id_to_jurisdiction_id = dict(
-            SampledBallot.query.filter(SampledBallot.id.in_(ballots_in_round))
-            .join(Batch)
-            .with_entities(SampledBallot.id, Batch.jurisdiction_id)
-        )
-        for contest in election.contests:
-            reported_results = cvrs_for_contest(contest)
-            audited_results = sampled_ballot_interpretations_to_cvrs(contest)
-            for ballot_id, audited_result in audited_results.items():
-                vote_deltas = ballot_vote_deltas(
-                    contest,
-                    reported_results.get(ballot_id),
-                    audited_result["cvr"],
-                )
-                if vote_deltas and ballot_id in sampled_ballot_id_to_jurisdiction_id:
-                    jurisdiction_id = sampled_ballot_id_to_jurisdiction_id[ballot_id]
-                    discrepancy_count_by_jurisdiction[jurisdiction_id] += 1
-
-    elif election.audit_type == AuditType.BATCH_COMPARISON:
-        batch_keys_in_round = set(
-            SampledBatchDraw.query.filter_by(round_id=round.id)
-            .join(Batch)
-            .join(Jurisdiction)
-            .with_entities(Jurisdiction.name, Batch.name)
-            .all()
-        )
-        jurisdiction_name_to_id = dict(
-            Jurisdiction.query.filter_by(election_id=election.id).with_entities(
-                Jurisdiction.name, Jurisdiction.id
-            )
-        )
-        contests = list(election.contests)
-        combined_batches = group_combined_batches(
-            Batch.query.join(Jurisdiction)
-            .filter_by(election_id=election.id)
-            .filter(Batch.combined_batch_name.isnot(None))
-            .all()
-        )
-        all_combined_batch_keys = {
-            (sub_batch.jurisdiction.name, sub_batch.name)
-            for combined_batch in combined_batches
-            for sub_batch in combined_batch["sub_batches"]
-        }
-        representative_combined_batch_keys = {
-            (
-                combined_batch["representative_batch"].jurisdiction.name,
-                combined_batch["representative_batch"].name,
-            )
-            for combined_batch in combined_batches
-        }
-
-        # If a batch has a discrepancy in multiple contests, the discrepancy count will be incremented
-        # multiple times. In other words, the discrepancy count represents the number of batch-contest
-        # pairs with discrepancies, not the number of batches with discrepancies.
-        for contest in contests:
-            reported_batch_results = batch_tallies(contest)
-            audited_batch_results = sampled_batch_results(
-                contest, include_non_rla_batches=True
-            )
-            for batch_key, audited_batch_result in audited_batch_results.items():
-
-                # Special case: for combined batches, only count discrepancies in the representative batch
-                if (
-                    batch_key in all_combined_batch_keys
-                    and batch_key not in representative_combined_batch_keys
-                ):
-                    continue
-
-                if batch_key in batch_keys_in_round:
-                    vote_deltas = batch_vote_deltas(
-                        reported_batch_results[batch_key][contest.id],
-                        audited_batch_result[contest.id],
-                    )
-                    if vote_deltas:
-                        jurisdiction_name, _ = batch_key
-                        jurisdiction_id = jurisdiction_name_to_id[jurisdiction_name]
-                        discrepancy_count_by_jurisdiction[jurisdiction_id] += 1
-
-    else:
-        raise Conflict(
-            "Discrepancy counts are only available for ballot comparison and batch comparison audits"
-        )
-
-    return jsonify(
-        {
-            jurisdiction.id: discrepancy_count_by_jurisdiction[jurisdiction.id]
-            for jurisdiction in election.jurisdictions
-        }
-    )
 
 
 DiscrepanciesByJurisdiction = Dict[

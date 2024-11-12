@@ -242,11 +242,6 @@ describe('Progress screen', () => {
   it('shows round and discrepancy status for ballot comparison', async () => {
     const expectedCalls = [
       aaApiCalls.getMapData,
-      aaApiCalls.getDiscrepancyCounts({
-        [jurisdictionMocks.allComplete[0].id]: 0,
-        [jurisdictionMocks.allComplete[1].id]: 2,
-        [jurisdictionMocks.allComplete[2].id]: 1,
-      }),
       aaApiCalls.getDiscrepancies({
         [jurisdictionMocks.oneComplete[1].id]: {
           ballot1: {
@@ -259,6 +254,15 @@ describe('Progress screen', () => {
               reportedVotes: {}, // undefined, seemingly can occur if no vote was reported
               auditedVotes: { [contestMocks.two[1].choices[0].id]: 'o' },
               discrepancies: { [contestMocks.two[1].choices[0].id]: 1 },
+            },
+          },
+        },
+        [jurisdictionMocks.oneComplete[2].id]: {
+          ballot2: {
+            [contestMocks.one[0].id]: {
+              reportedVotes: { [contestMocks.one[0].choices[0].id]: '0' },
+              auditedVotes: { [contestMocks.one[0].choices[0].id]: '1' },
+              discrepancies: { [contestMocks.one[0].choices[0].id]: -1 },
             },
           },
         },
@@ -369,6 +373,11 @@ describe('Progress screen', () => {
       expect(footers[4]).toHaveTextContent('60')
       expect(footers[5]).toHaveTextContent('0')
 
+      userEvent.click(within(dialog).getByRole('button', { name: 'Close' }))
+      await waitFor(() => {
+        expect(dialog).not.toBeInTheDocument()
+      })
+
       const downloadReportButton = screen.getByRole('button', {
         name: /Download Discrepancy Report/,
       })
@@ -390,11 +399,6 @@ describe('Progress screen', () => {
   it('shows round and discrepancy status for batch comparison', async () => {
     const expectedCalls = [
       aaApiCalls.getMapData,
-      aaApiCalls.getDiscrepancyCounts({
-        [jurisdictionMocks.oneComplete[0].id]: 3,
-        [jurisdictionMocks.oneComplete[1].id]: 2,
-        [jurisdictionMocks.oneComplete[2].id]: 1,
-      }),
       aaApiCalls.getDiscrepancies({
         [jurisdictionMocks.oneComplete[2].id]: {
           batch1: {
@@ -726,11 +730,7 @@ describe('Progress screen', () => {
   it('shows a different toggle label for batch audits', async () => {
     const expectedCalls = [
       aaApiCalls.getMapData,
-      aaApiCalls.getDiscrepancyCounts({
-        [jurisdictionMocks.oneComplete[0].id]: 0,
-        [jurisdictionMocks.oneComplete[1].id]: 0,
-        [jurisdictionMocks.oneComplete[2].id]: 0,
-      }),
+      aaApiCalls.getDiscrepancies({}),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({

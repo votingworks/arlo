@@ -21,7 +21,6 @@ import {
   IBallotManifestInfo,
   IBatchTalliesFileInfo,
   IJurisdiction,
-  DiscrepancyCountsByJurisdiction,
   DiscrepanciesByJurisdiction,
 } from './useJurisdictions'
 import { IStandardizedContest } from './useStandardizedContests'
@@ -2180,10 +2179,6 @@ export const aaApiCalls = {
     url: '/us-states-counties.json',
     response: mapTopology,
   },
-  getDiscrepancyCounts: (response: DiscrepancyCountsByJurisdiction) => ({
-    url: '/api/election/1/discrepancy-counts',
-    response,
-  }),
   getDiscrepancies: (response: DiscrepanciesByJurisdiction) => ({
     url: '/api/election/1/discrepancy',
     response,

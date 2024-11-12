@@ -684,15 +684,8 @@ def test_multi_contest_batch_comparison_end_to_end(
     )
     assert_ok(rv)
 
-    # Check discrepancy counts
-    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.get(f"/api/election/{election_id}/discrepancy-counts")
-    discrepancy_counts = json.loads(rv.data)
-    assert discrepancy_counts[jurisdictions[0]["id"]] == 4
-    assert discrepancy_counts[jurisdictions[1]["id"]] == 0
-    assert discrepancy_counts[jurisdictions[2]["id"]] == 1
-
     # Check discrepancies
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/discrepancy")
     discrepancies = json.loads(rv.data)
     assert (
@@ -894,15 +887,8 @@ def test_multi_contest_batch_comparison_round_2(
     )
     assert_ok(rv)
 
-    # Check discrepancy counts
-    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.get(f"/api/election/{election_id}/discrepancy-counts")
-    discrepancy_counts = json.loads(rv.data)
-    assert discrepancy_counts[jurisdiction_ids[0]] == 1
-    assert discrepancy_counts[jurisdiction_ids[1]] == 0
-    assert discrepancy_counts[jurisdiction_ids[2]] == 0
-
     # Check discrepancies
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/discrepancy")
     discrepancies = json.loads(rv.data)
 
@@ -1051,15 +1037,8 @@ def test_multi_contest_batch_comparison_round_2(
     )
     assert_ok(rv)
 
-    # Check discrepancy counts
-    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.get(f"/api/election/{election_id}/discrepancy-counts")
-    discrepancy_counts = json.loads(rv.data)
-    assert discrepancy_counts[jurisdiction_ids[0]] == 0
-    assert discrepancy_counts[jurisdiction_ids[1]] == 0
-    assert discrepancy_counts[jurisdiction_ids[2]] == 0
-
     # Check discrepancies
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/discrepancy")
     discrepancies = json.loads(rv.data)
 

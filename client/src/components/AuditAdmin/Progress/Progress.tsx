@@ -17,7 +17,8 @@ import {
   IJurisdiction,
   getJurisdictionStatus,
   JurisdictionProgressStatus,
-  useDiscrepancyCountsByJurisdiction,
+  useDiscrepanciesByJurisdiction,
+  DiscrepanciesByJurisdiction,
 } from '../../useJurisdictions'
 import JurisdictionDetail from './JurisdictionDetail'
 import {
@@ -60,6 +61,19 @@ const totalFooter = <T extends object>(headerName: string) => (
   info: TableInstance<T>
 ) => sum(info.rows.map(row => row.values[headerName])).toLocaleString()
 
+// We count the number of batch-contest pairs with discrepancies, not the number
+// of batches with discrepancies.
+const countDiscrepanciesForJurisdiction = (
+  discrepancies: DiscrepanciesByJurisdiction,
+  jurisdictionId: string
+) => {
+  return sum(
+    Object.values(discrepancies[jurisdictionId] ?? {}).map(
+      contestDiscrepancies => Object.keys(contestDiscrepancies).length
+    )
+  )
+}
+
 export interface IProgressProps {
   jurisdictions: IJurisdiction[]
   auditSettings: IAuditSettings
@@ -76,10 +90,9 @@ const Progress: React.FC<IProgressProps> = ({
   const showDiscrepancies =
     Boolean(round) &&
     (auditType === 'BALLOT_COMPARISON' || auditType === 'BATCH_COMPARISON')
-  const discrepancyCountsQuery = useDiscrepancyCountsByJurisdiction(
-    electionId,
-    { enabled: showDiscrepancies }
-  )
+  const discrepancyQuery = useDiscrepanciesByJurisdiction(electionId, {
+    enabled: showDiscrepancies,
+  })
   // Store sort and filter state in URL search params to allow it to persist
   // across page refreshes
   const [sortAndFilterState, setSortAndFilterState] = useSearchParams<{
@@ -315,12 +328,13 @@ const Progress: React.FC<IProgressProps> = ({
         accessor: ({ id, currentRoundStatus: s }) =>
           s &&
           s.status === JurisdictionRoundStatus.COMPLETE &&
-          discrepancyCountsQuery.data?.[id],
+          discrepancyQuery.isSuccess &&
+          countDiscrepanciesForJurisdiction(discrepancyQuery.data, id),
         Cell: ({
           value,
           row: { original: jurisdiction },
         }: Cell<IJurisdiction>) => {
-          if (discrepancyCountsQuery.isLoading) {
+          if (discrepancyQuery.isLoading) {
             return (
               <div style={{ display: 'flex', justifyContent: 'start' }}>
                 <Spinner size={Spinner.SIZE_SMALL} />
@@ -337,7 +351,7 @@ const Progress: React.FC<IProgressProps> = ({
             </Button>
           )
         },
-        Footer: discrepancyCountsQuery.isLoading
+        Footer: discrepancyQuery.isLoading
           ? () => null
           : totalFooter('Discrepancies'),
       })
@@ -505,6 +519,7 @@ const Progress: React.FC<IProgressProps> = ({
       )}
       {jurisdictionDiscrepanciesId && (
         <JurisdictionDiscrepancies
+          discrepancies={discrepancyQuery.data!}
           jurisdiction={
             jurisdictions.find(
               jurisdiction => jurisdiction.id === jurisdictionDiscrepanciesId
