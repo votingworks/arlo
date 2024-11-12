@@ -36,6 +36,17 @@ from .shared import combined_batch_representative, group_combined_batches
 AUTH0_DOMAIN = urlparse(AUDITADMIN_AUTH0_BASE_URL).hostname
 
 
+def get_current_round_info(election):
+    current_round = get_current_round(election)
+    if not current_round:
+        return None
+    return dict(
+        id=current_round.id,
+        endedAt=isoformat(current_round.ended_at),
+        roundNum=current_round.round_num,
+    )
+
+
 def auth0_get_token() -> str:
     response = GetToken(AUTH0_DOMAIN).client_credentials(
         AUDITADMIN_AUTH0_CLIENT_ID,
@@ -76,20 +87,16 @@ def auth0_create_audit_admin(email: str) -> Optional[str]:
 @restrict_access_support
 def list_active_elections():
     elections = (
-        Election.query.filter(
-            Election.id.in_(
-                ActivityLogRecord.query.filter(
-                    ActivityLogRecord.timestamp
-                    > datetime.now(timezone.utc) - timedelta(days=14)
-                )
-                .with_entities(
-                    ActivityLogRecord.info["base"]["election_id"].as_string()
-                )
-                .subquery()
-            )
+        Election.query.join(Organization)
+        .join(
+            ActivityLogRecord,
+            ActivityLogRecord.info["base"]["election_id"].as_string() == Election.id,
         )
-        .join(Organization)
-        .order_by(Organization.name, Election.audit_name)
+        .filter(
+            ActivityLogRecord.timestamp
+            > datetime.now(timezone.utc) - timedelta(days=14)
+        )
+        .order_by(ActivityLogRecord.timestamp.desc())
         .options(
             contains_eager(Election.organization),
         )
@@ -105,6 +112,8 @@ def list_active_elections():
                 organization=dict(
                     id=election.organization.id, name=election.organization.name
                 ),
+                createdAt=isoformat(election.created_at),
+                currentRound=get_current_round_info(election),
             )
             for election in elections
         ]
@@ -150,6 +159,7 @@ def create_organization():
 @restrict_access_support
 def get_organization(organization_id: str):
     organization = get_or_404(Organization, organization_id)
+
     return jsonify(
         id=organization.id,
         name=organization.name,
@@ -160,7 +170,10 @@ def get_organization(organization_id: str):
                 auditName=election.audit_name,
                 auditType=election.audit_type,
                 online=election.online,
+                organization=dict(id=organization.id, name=organization.name),
                 deletedAt=isoformat(election.deleted_at),
+                createdAt=isoformat(election.created_at),
+                currentRound=get_current_round_info(election),
             )
             for election in organization.elections
         ],

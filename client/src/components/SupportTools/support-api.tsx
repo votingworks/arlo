@@ -10,7 +10,13 @@ export interface IOrganizationBase {
 
 export interface IOrganization extends IOrganizationBase {
   defaultState: string | null
-  elections: IElectionBase[]
+  elections: IElection[]
+  auditAdmins: IAuditAdmin[]
+}
+
+export interface IOrganizationForSupport extends IOrganizationBase {
+  defaultState: string | null
+  elections: IElectionForSupport[]
   auditAdmins: IAuditAdmin[]
 }
 
@@ -44,6 +50,11 @@ export interface IElectionWithOrg extends IElectionBase {
 export interface IElection extends IElectionWithOrg {
   jurisdictions: IJurisdictionBase[]
   rounds: IRound[]
+}
+
+export interface IElectionForSupport extends IElectionWithOrg {
+  createdAt: string
+  currentRound: IRound | null
 }
 
 export interface IJurisdictionBase {
@@ -80,7 +91,7 @@ export interface ICombinedBatch {
 }
 
 export const useActiveElections = () =>
-  useQuery<IElectionWithOrg[], Error>(['elections', 'active'], () =>
+  useQuery<IElectionForSupport[], Error>(['elections', 'active'], () =>
     fetchApi('/api/support/elections/active')
   )
 
@@ -105,8 +116,9 @@ export const useCreateOrganization = () => {
 }
 
 export const useOrganization = (organizationId: string) =>
-  useQuery<IOrganization, Error>(['organizations', organizationId], () =>
-    fetchApi(`/api/support/organizations/${organizationId}`)
+  useQuery<IOrganizationForSupport, Error>(
+    ['organizations', organizationId],
+    () => fetchApi(`/api/support/organizations/${organizationId}`)
   )
 
 export const useUpdateOrganization = (organizationId: string) => {

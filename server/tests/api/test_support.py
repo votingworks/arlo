@@ -67,6 +67,48 @@ def test_support_get_organization(client: FlaskClient, org_id: str, election_id:
                     "auditType": "BALLOT_POLLING",
                     "online": True,
                     "deletedAt": None,
+                    "createdAt": assert_is_date,
+                    "currentRound": None,
+                    "organization": {
+                        "id": org_id,
+                        "name": "Test Org test_support_get_organization",
+                    },
+                }
+            ],
+            "auditAdmins": [
+                {
+                    "id": User.query.filter_by(email=DEFAULT_AA_EMAIL).one().id,
+                    "email": DEFAULT_AA_EMAIL,
+                }
+            ],
+        },
+    )
+
+
+def test_support_get_organization_round(
+    client: FlaskClient, org_id: str, election_id: str, round_1_id: str
+):
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
+    rv = client.get(f"/api/support/organizations/{org_id}")
+    compare_json(
+        json.loads(rv.data),
+        {
+            "id": org_id,
+            "name": "Test Org test_support_get_organization_round",
+            "defaultState": None,
+            "elections": [
+                {
+                    "id": election_id,
+                    "auditName": "Test Audit test_support_get_organization_round",
+                    "auditType": "BALLOT_POLLING",
+                    "online": True,
+                    "deletedAt": None,
+                    "organization": {
+                        "id": org_id,
+                        "name": "Test Org test_support_get_organization_round",
+                    },
+                    "createdAt": assert_is_date,
+                    "currentRound": {"id": round_1_id, "endedAt": None, "roundNum": 1},
                 }
             ],
             "auditAdmins": [
@@ -182,17 +224,22 @@ def test_support_list_active_elections(
     assert other_election is None
 
     election = next(election for election in elections if election["id"] == election_id)
-    assert election == {
-        "id": election_id,
-        "auditName": "Test Audit test_support_list_active_elections",
-        "auditType": "BALLOT_POLLING",
-        "online": True,
-        "deletedAt": None,
-        "organization": {
-            "id": org_id,
-            "name": "Test Org test_support_list_active_elections",
+    compare_json(
+        election,
+        {
+            "id": election_id,
+            "auditName": "Test Audit test_support_list_active_elections",
+            "auditType": "BALLOT_POLLING",
+            "online": True,
+            "deletedAt": None,
+            "createdAt": assert_is_date,
+            "currentRound": None,
+            "organization": {
+                "id": org_id,
+                "name": "Test Org test_support_list_active_elections",
+            },
         },
-    }
+    )
 
 
 def test_support_get_election(
