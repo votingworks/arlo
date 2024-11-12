@@ -567,3 +567,34 @@ def test_sample_extra_batches_with_invalid_counting_group(
             },
         },
     )
+
+    # Missing the "Container" column
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = upload_ballot_manifest(
+        client,
+        io.BytesIO(b"Batch Name,Number of Ballots\n" b"Batch 1,500\n"),
+        election_id,
+        jurisdiction_ids[0],
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
+    )
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {
+                "name": asserts_startswith("manifest"),
+                "uploadedAt": assert_is_date,
+            },
+            "processing": {
+                "status": ProcessingStatus.ERRORED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": 'Missing required column "Container". Use the Batch Audit File Preparation Tool to create your ballot manifest.',
+            },
+        },
+    )
