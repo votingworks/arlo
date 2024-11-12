@@ -68,8 +68,8 @@ const countDiscrepanciesForJurisdiction = (
   jurisdictionId: string
 ) => {
   return sum(
-    Object.entries(discrepancies[jurisdictionId] ?? {}).map(
-      ([_, contestDiscrepancies]) => Object.keys(contestDiscrepancies).length
+    Object.values(discrepancies[jurisdictionId] ?? {}).map(
+      contestDiscrepancies => Object.keys(contestDiscrepancies).length
     )
   )
 }
