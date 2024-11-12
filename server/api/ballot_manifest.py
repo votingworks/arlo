@@ -125,11 +125,7 @@ def process_ballot_manifest_file(
         )
 
         columns = [
-            CSVColumnType(
-                CONTAINER,
-                CSVValueType.TEXT,
-                required_column=is_counting_group_required,
-            ),
+            CSVColumnType(CONTAINER, CSVValueType.TEXT, required_column=False),
             CSVColumnType(
                 TABULATOR,
                 CSVValueType.TEXT,
@@ -158,14 +154,16 @@ def process_ballot_manifest_file(
         num_ballots = 0
 
         for row_index, row in enumerate(manifest_csv):
-            counting_group = row.get(CONTAINER, None)
-            if (
-                is_counting_group_required
-                and not counting_group in counting_group_allowset
-            ):
-                raise CSVParseError(
-                    f"Invalid value for column \"Container\", row {row_index+2}: \"{counting_group}\". Use the Batch Audit File Preparation Tool to create your ballot manifest, or correct this value to one of the following: {', '.join(counting_group_allowlist)}."
-                )
+            if is_counting_group_required:
+                if not CONTAINER in row:
+                    raise CSVParseError(
+                        'Missing required column "Container". Use the Batch Audit File Preparation Tool to create your ballot manifest.'
+                    )
+                counting_group = row.get(CONTAINER)
+                if counting_group not in counting_group_allowset:
+                    raise CSVParseError(
+                        f"Invalid value for column \"Container\", row {row_index+2}: \"{counting_group}\". Use the Batch Audit File Preparation Tool to create your ballot manifest, or correct this value to one of the following: {', '.join(counting_group_allowlist)}."
+                    )
 
             batch = Batch(
                 id=str(uuid.uuid4()),
