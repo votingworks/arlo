@@ -120,12 +120,14 @@ def process_ballot_manifest_file(
             AuditType.HYBRID,
         ]
 
-        is_counting_group_required = is_enabled_sample_extra_batches_by_counting_group(
-            jurisdiction.election
-        )
-
         columns = [
-            CSVColumnType(CONTAINER, CSVValueType.TEXT, required_column=False),
+            CSVColumnType(
+                CONTAINER,
+                CSVValueType.TEXT,
+                # Optionally, users can include a "Container" column to help
+                # identify ballots in different storage locations.
+                required_column=False,
+            ),
             CSVColumnType(
                 TABULATOR,
                 CSVValueType.TEXT,
@@ -147,6 +149,9 @@ def process_ballot_manifest_file(
         validate_is_not_batch_inventory_worksheet(manifest_file)
         manifest_csv = parse_csv(manifest_file, columns)
 
+        is_counting_group_required = is_enabled_sample_extra_batches_by_counting_group(
+            jurisdiction.election
+        )
         counting_group_allowlist = [item.value for item in CountingGroup]
         counting_group_allowset = set(counting_group_allowlist)
 
@@ -154,8 +159,13 @@ def process_ballot_manifest_file(
         num_ballots = 0
 
         for row_index, row in enumerate(manifest_csv):
+            # For the "sample extra batches by counting group" feature, we
+            # require the Container column to identify the counting group, so we
+            # validate it here. We want to provide special custom error
+            # messages, so we don't use the built-in "required_column" option in
+            # CSVColumnType.
             if is_counting_group_required:
-                if not CONTAINER in row:
+                if CONTAINER not in row:
                     raise CSVParseError(
                         'Missing required column "Container". Use the Batch Audit File Preparation Tool to create your ballot manifest.'
                     )
