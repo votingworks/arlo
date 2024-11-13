@@ -242,3 +242,14 @@ def validate_mimetype(mime_type: str, expected_file_types: List[FileType]) -> No
     expected_types_str = " or ".join([type.value for type in expected_file_types])
     # If we are expecting a CSV file have a clearer error message for that case
     raise BadRequest(f"Please submit a valid file. Expected: {expected_types_str}")
+
+
+def any_jurisdiction_file_is_processing(jurisdiction: Jurisdiction) -> bool:
+    return bool(
+        (jurisdiction.manifest_file and jurisdiction.manifest_file.is_processing())
+        or (jurisdiction.cvr_file and jurisdiction.cvr_file.is_processing())
+        or (
+            jurisdiction.batch_tallies_file
+            and jurisdiction.batch_tallies_file.is_processing()
+        )
+    )

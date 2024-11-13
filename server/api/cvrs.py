@@ -44,6 +44,7 @@ from ..worker.tasks import (
     create_background_task,
 )
 from ..util.file import (
+    any_jurisdiction_file_is_processing,
     get_file_upload_url,
     get_jurisdiction_folder_path,
     validate_and_get_standard_file_upload_request_params,
@@ -1541,9 +1542,6 @@ def validate_cvr_upload(
     if not jurisdiction.manifest_file_id:
         raise Conflict("Must upload ballot manifest before uploading CVR file.")
 
-    if jurisdiction.manifest_file.is_processing():
-        raise Conflict("Cannot replace CVRs while manifest file is processing.")
-
     data = request.get_json()
     cvr_file_type = data.get("cvrFileType") if data else None
     if cvr_file_type is None:
@@ -1657,6 +1655,9 @@ def complete_upload_for_cvrs(
         expected_file_types,
     )
 
+    if any_jurisdiction_file_is_processing(jurisdiction):
+        raise Conflict("Cannot upload CVRs while any file upload is processing.")
+
     clear_cvr_contests_metadata(jurisdiction)
     finalize_cvr_upload(storage_path, filename, cvr_file_type, jurisdiction)  # type: ignore
     db_session.commit()
@@ -1689,6 +1690,8 @@ def clear_cvrs(
     election: Election,
     jurisdiction: Jurisdiction,
 ):
+    if any_jurisdiction_file_is_processing(jurisdiction):
+        raise Conflict("Cannot remove CVRs while any file upload is processing.")
     if jurisdiction.cvr_file_id:
         # Clear the CVR file and contests metadata immediately, but defer
         # clearing the actual CVR ballot records to a background task, since
@@ -1699,9 +1702,9 @@ def clear_cvrs(
         # - The CVR upload task starts by clearing the CVR ballot records, so
         #   there's another layer of protection to ensure there aren't multiple
         #   sets of CVR ballot records for the same jurisdiction
-        # - The background worker only processes one task at a time, so this
-        #   task is guaranteed to be completed before a newly uploaded CVR file
-        #   will be processed.
+        # - The background worker only processes one task at a time per
+        #   election, so this task is guaranteed to be completed before a newly
+        #   uploaded CVR file will be processed.
         File.query.filter_by(id=jurisdiction.cvr_file_id).delete()
         clear_cvr_contests_metadata(jurisdiction)
         create_background_task(

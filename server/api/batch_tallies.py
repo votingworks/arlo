@@ -18,6 +18,7 @@ from ..worker.tasks import (
     create_background_task,
 )
 from ..util.file import (
+    any_jurisdiction_file_is_processing,
     FileType,
     get_file_upload_url,
     get_jurisdiction_folder_path,
@@ -203,9 +204,9 @@ def validate_batch_tallies_upload(election: Election, jurisdiction: Jurisdiction
             "Must upload ballot manifest before uploading candidate totals by batch."
         )
 
-    if jurisdiction.manifest_file.is_processing():
+    if any_jurisdiction_file_is_processing(jurisdiction):
         raise Conflict(
-            "Cannot update candidate totals by batch while ballot manifest is processing."
+            "Cannot upload candidate totals by batch while any file upload is processing."
         )
 
 
@@ -335,6 +336,10 @@ def clear_batch_tallies(
     election: Election,  # pylint: disable=unused-argument
     jurisdiction: Jurisdiction,
 ):
+    if any_jurisdiction_file_is_processing(jurisdiction):
+        raise Conflict(
+            "Cannot remove candidate totals by batch while any file upload is processing."
+        )
     if jurisdiction.batch_tallies_file:
         db_session.delete(jurisdiction.batch_tallies_file)
         clear_batch_tallies_data(jurisdiction)
