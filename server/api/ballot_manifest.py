@@ -3,7 +3,7 @@ import uuid
 import logging
 from datetime import datetime
 from flask import request, jsonify, session
-from werkzeug.exceptions import BadRequest, NotFound
+from werkzeug.exceptions import BadRequest, NotFound, Conflict
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
@@ -17,6 +17,7 @@ from ..worker.tasks import (
     create_background_task,
 )
 from ..util.file import (
+    any_jurisdiction_file_is_processing,
     get_file_upload_url,
     get_jurisdiction_folder_path,
     validate_and_get_standard_file_upload_request_params,
@@ -327,6 +328,11 @@ def complete_upload_for_ballot_manifest(
         [FileType.CSV],
     )
 
+    if any_jurisdiction_file_is_processing(jurisdiction):
+        raise Conflict(
+            "Cannot upload ballot manifest while any file upload is processing."
+        )
+
     clear_ballot_manifest_file(jurisdiction)
     save_ballot_manifest_file(storage_path, filename, jurisdiction)
     db_session.commit()
@@ -374,6 +380,10 @@ def clear_ballot_manifest(
     election: Election,  # pylint: disable=unused-argument
     jurisdiction: Jurisdiction,
 ):
+    if any_jurisdiction_file_is_processing(jurisdiction):
+        raise Conflict(
+            "Cannot remove ballot manifest while any file upload is processing."
+        )
     clear_ballot_manifest_file(jurisdiction)
     db_session.commit()
     return jsonify(status="ok")
