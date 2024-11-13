@@ -14,7 +14,12 @@ import {
   IRound,
   useFinishRound,
 } from './useRoundsAuditAdmin'
-import { useJurisdictions, jurisdictionsQueryKey } from '../useJurisdictions'
+import {
+  jurisdictionsQueryKey,
+  jurisdictionsWithLastActivityQueryKey,
+  useJurisdictions,
+  useLastActivityByJurisdiction,
+} from '../useJurisdictions'
 import { useContests } from '../useContests'
 import { useAuditSettings } from '../useAuditSettings'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
@@ -22,6 +27,8 @@ import { AuditAdminStatusBox } from '../Atoms/StatusBox'
 import { RefreshTag } from '../Atoms/RefreshTag'
 import Setup from './Setup/Setup'
 import Progress from './Progress/Progress'
+import { IAuditAdmin, useAuthDataContext } from '../UserContext'
+import useAuditAdminsOrganizations from '../useAuditAdminsOrganizations'
 
 interface IParams {
   electionId: string
@@ -33,6 +40,15 @@ const AuditAdminView: React.FC = () => {
 
   const queryClient = useQueryClient()
   const history = useHistory()
+  const auth = useAuthDataContext()
+  const user = auth && (auth.user as IAuditAdmin)
+  const organizationsQuery = useAuditAdminsOrganizations(user)
+  const organizations =
+    organizationsQuery && organizationsQuery.isSuccess
+      ? organizationsQuery.data
+      : []
+  const organization =
+    organizations && organizations.length > 0 ? organizations[0] : undefined
   const lastFetchedRounds = useRef<IRound[] | null>(null)
   const roundsQuery = useRounds(electionId, {
     refetchInterval: rounds =>
@@ -48,6 +64,13 @@ const AuditAdminView: React.FC = () => {
         isDrawSampleComplete(rounds)
       ) {
         queryClient.invalidateQueries(jurisdictionsQueryKey(electionId))
+        queryClient.invalidateQueries(
+          jurisdictionsWithLastActivityQueryKey(
+            electionId,
+            organization?.id || '',
+            'JurisdictionAdminLogin'
+          )
+        )
         history.push(`/election/${electionId}/progress`)
       }
       lastFetchedRounds.current = rounds
@@ -57,22 +80,34 @@ const AuditAdminView: React.FC = () => {
   const finishRoundMutation = useFinishRound(electionId)
   const undoRoundStartMutation = useUndoRoundStart(electionId)
 
-  const jurisdictionsQuery = useJurisdictions(electionId)
   const contestsQuery = useContests(electionId)
   const auditSettingsQuery = useAuditSettings(electionId)
+
+  const jurisdictionsQuery = useJurisdictions(electionId)
+  // Used only by <Progress>, but memoization of sort/filter behavior late in that component's render logic
+  // throws an error when short-circuiting react-query queries that are in flight.
+  const lastActivityByJurisdictionsQuery = useLastActivityByJurisdiction(
+    electionId,
+    organization?.id || '',
+    'JurisdictionAdminLogin'
+  )
 
   if (
     !jurisdictionsQuery.isSuccess ||
     !contestsQuery.isSuccess ||
     !roundsQuery.isSuccess ||
-    !auditSettingsQuery.isSuccess
-  )
+    !auditSettingsQuery.isSuccess ||
+    !organizationsQuery.isSuccess ||
+    !lastActivityByJurisdictionsQuery.isSuccess
+  ) {
     return null // Still loading
+  }
 
-  const jurisdictions = jurisdictionsQuery.data
   const contests = contestsQuery.data
   const rounds = roundsQuery.data
   const auditSettings = auditSettingsQuery.data
+  const jurisdictions = jurisdictionsQuery.data
+  const lastActivityByJurisdiction = lastActivityByJurisdictionsQuery.data
 
   if (isDrawingSample(rounds)) {
     return (
@@ -153,6 +188,13 @@ const AuditAdminView: React.FC = () => {
               refresh={() => {
                 queryClient.invalidateQueries(roundsQueryKey(electionId))
                 queryClient.invalidateQueries(jurisdictionsQueryKey(electionId))
+                queryClient.invalidateQueries(
+                  jurisdictionsWithLastActivityQueryKey(
+                    electionId,
+                    organization?.id || '',
+                    'JurisdictionAdminLogin'
+                  )
+                )
               }}
             />
           </AuditAdminStatusBox>
@@ -160,6 +202,7 @@ const AuditAdminView: React.FC = () => {
             <Inner>
               <Progress
                 jurisdictions={jurisdictions}
+                lastActivityByJurisdiction={lastActivityByJurisdiction}
                 auditSettings={auditSettings}
                 round={rounds.length > 0 ? rounds[rounds.length - 1] : null}
               />

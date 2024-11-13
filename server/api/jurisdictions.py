@@ -10,6 +10,8 @@ from sqlalchemy import func
 from sqlalchemy.orm import joinedload
 from werkzeug.exceptions import Conflict, BadRequest
 
+from server.api.activity import serialize_activity
+
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
 from ..database import db_session
@@ -533,6 +535,66 @@ def batch_round_status(election: Election, round: Round) -> Dict[str, JSONDict]:
         }
         for jurisdiction in election.jurisdictions
     }
+
+
+@api.route(
+    "/election/<election_id>/organization/<organization_id>/jurisdictions/last_activity",
+    methods=["GET"],
+)
+@restrict_access([UserType.AUDIT_ADMIN])
+def get_last_activity_by_jurisdiction(election: Election, organization_id: str):
+    # TODO access control
+    # Get all jurisdiction IDs that can be seen for this election
+    jurisdiction_ids = [
+        jurisdiction_id
+        for (jurisdiction_id,) in Jurisdiction.query.with_entities(Jurisdiction.id)
+        .filter_by(election_id=election.id)
+        .all()
+    ]
+
+    query_timestamp_after = election.created_at
+    round = (
+        Round.query.filter_by(election_id=election.id)
+        .order_by(Round.created_at.desc())
+        .one_or_none()
+    )
+    if round is not None:
+        query_timestamp_after = round.created_at
+
+    activity_name = request.args.get("activity_name")
+    activities = (
+        ActivityLogRecord.query.join(
+            User, ActivityLogRecord.info["base"]["user_key"].astext == User.email
+        )
+        .join(User.jurisdictions)
+        .filter(
+            Jurisdiction.id.in_(jurisdiction_ids),
+            ActivityLogRecord.organization_id == organization_id,
+            ActivityLogRecord.timestamp > query_timestamp_after,
+            *(
+                [ActivityLogRecord.activity_name == activity_name]
+                if activity_name
+                else []
+            ),
+        )
+        .add_columns(Jurisdiction.id.label("jurisdiction_id"))
+        .all()
+    )
+
+    last_activity_by_jurisdiction: Dict[str, ActivityLogRecord] = {}
+    for activity, jurisdiction_id in activities:
+        if (jurisdiction_id not in last_activity_by_jurisdiction) or (
+            activity.timestamp
+            < last_activity_by_jurisdiction[jurisdiction_id].timestamp
+        ):
+            last_activity_by_jurisdiction[jurisdiction_id] = activity
+
+    serialized = {
+        jurisdiction_id: serialize_activity(activity)
+        for jurisdiction_id, activity in last_activity_by_jurisdiction.items()
+    }
+
+    return jsonify({"lastActivityByJurisdiction": serialized})
 
 
 @api.route("/election/<election_id>/jurisdiction", methods=["GET"])

@@ -200,6 +200,15 @@ def restrict_access(user_types: List[UserType]):
                 )
                 kwargs["jurisdiction"] = jurisdiction
 
+            # organization = None
+            # if "organization_id" in kwargs:
+            #     organization = find_or_404(
+            #         Organization.query.filter_by(
+            #             id=kwargs.pop("organization_id")
+            #         )
+            #     )
+            #     kwargs["organization"] = organization
+
             round = None
             if "round_id" in kwargs:
                 round = find_or_404(

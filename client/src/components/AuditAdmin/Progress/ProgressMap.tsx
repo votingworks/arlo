@@ -148,9 +148,11 @@ const Map: React.FC<IProps> = ({
         return 'danger'
       case JurisdictionProgressStatus.UPLOADS_IN_PROGRESS:
       case JurisdictionProgressStatus.AUDIT_IN_PROGRESS:
+      case JurisdictionProgressStatus.UPLOADS_NOT_STARTED_LOGGED_IN:
+      case JurisdictionProgressStatus.AUDIT_NOT_STARTED_LOGGED_IN:
         return 'progress'
-      case JurisdictionProgressStatus.UPLOADS_NOT_STARTED:
-      case JurisdictionProgressStatus.AUDIT_NOT_STARTED:
+      case JurisdictionProgressStatus.UPLOADS_NOT_STARTED_NO_LOGIN:
+      case JurisdictionProgressStatus.AUDIT_NOT_STARTED_NO_LOGIN:
         return 'gray'
       default:
         return 'default'

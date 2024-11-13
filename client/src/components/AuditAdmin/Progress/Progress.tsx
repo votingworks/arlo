@@ -37,6 +37,7 @@ import { apiDownload, assert } from '../../utilities'
 import AsyncButton from '../../Atoms/AsyncButton'
 import useSearchParams from '../../useSearchParams'
 import { JurisdictionDiscrepancies } from './JurisdictionDiscrepancies'
+import { IActivity } from '../ActivityLog'
 
 const Wrapper = styled.div`
   flex-grow: 1;
@@ -76,12 +77,14 @@ const countDiscrepanciesForJurisdiction = (
 
 export interface IProgressProps {
   jurisdictions: IJurisdiction[]
+  lastActivityByJurisdiction: Record<string, IActivity>
   auditSettings: IAuditSettings
   round: IRound | null
 }
 
 const Progress: React.FC<IProgressProps> = ({
   jurisdictions,
+  lastActivityByJurisdiction,
   auditSettings,
   round,
 }: IProgressProps) => {
@@ -108,6 +111,19 @@ const Progress: React.FC<IProgressProps> = ({
     jurisdictionDiscrepanciesId,
     setJurisdictionDiscrepanciesId,
   ] = useState<string | null>(null)
+
+  const onSortByChange = useCallback(
+    (newSortBy: SortingRule<unknown>[]) => {
+      assert(newSortBy.length <= 1)
+      const sortBy = newSortBy[0]
+      setSortAndFilterState({
+        ...sortAndFilterState,
+        sort: sortBy?.id,
+        dir: sortBy && (sortBy.desc ? 'desc' : 'asc'),
+      })
+    },
+    [sortAndFilterState, setSortAndFilterState]
+  )
 
   const ballotsOrBatches =
     auditType === 'BATCH_COMPARISON' ? 'Batches' : 'Ballots'
@@ -152,7 +168,10 @@ const Progress: React.FC<IProgressProps> = ({
         ).length
         const filesUploadedText = `${numComplete}/${files.length} files uploaded`
 
-        const jurisdictionStatus = getJurisdictionStatus(jurisdiction)
+        const jurisdictionStatus = getJurisdictionStatus(
+          jurisdiction,
+          lastActivityByJurisdiction[jurisdiction.id]
+        )
         switch (jurisdictionStatus) {
           case JurisdictionProgressStatus.UPLOADS_COMPLETE:
             return (
@@ -172,20 +191,18 @@ const Progress: React.FC<IProgressProps> = ({
             )
           case JurisdictionProgressStatus.UPLOADS_IN_PROGRESS:
             return <Status intent="warning">{filesUploadedText}</Status>
-          case JurisdictionProgressStatus.UPLOADS_NOT_STARTED:
-            return (
-              <Status>
-                {auditType === 'BALLOT_POLLING'
-                  ? 'No manifest uploaded'
-                  : filesUploadedText}
-              </Status>
-            )
+          case JurisdictionProgressStatus.UPLOADS_NOT_STARTED_LOGGED_IN:
+            return <Status intent="warning">Logged in</Status>
+          case JurisdictionProgressStatus.UPLOADS_NOT_STARTED_NO_LOGIN:
+            return <Status>Not logged</Status>
           case JurisdictionProgressStatus.AUDIT_IN_PROGRESS:
             return <Status intent="warning">In progress</Status>
           case JurisdictionProgressStatus.AUDIT_COMPLETE:
             return <Status intent="success">Complete</Status>
-          case JurisdictionProgressStatus.AUDIT_NOT_STARTED:
-            return <Status>Not started</Status>
+          case JurisdictionProgressStatus.AUDIT_NOT_STARTED_LOGGED_IN:
+            return <Status intent="warning">Logged in</Status>
+          case JurisdictionProgressStatus.AUDIT_NOT_STARTED_NO_LOGIN:
+            return <Status>Not logged</Status>
           default:
             return null
         }
@@ -402,18 +419,6 @@ const Progress: React.FC<IProgressProps> = ({
         },
       ]
     : undefined
-  const onSortByChange = useCallback(
-    (newSortBy: SortingRule<unknown>[]) => {
-      assert(newSortBy.length <= 1)
-      const sortBy = newSortBy[0]
-      setSortAndFilterState({
-        ...sortAndFilterState,
-        sort: sortBy?.id,
-        dir: sortBy && (sortBy.desc ? 'desc' : 'asc'),
-      })
-    },
-    [sortAndFilterState, setSortAndFilterState]
-  )
 
   const downloadButtons = (
     <div style={{ display: 'flex', alignSelf: 'end', gap: '5px' }}>

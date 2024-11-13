@@ -56,6 +56,7 @@ const render = (props: Partial<IProgressProps> = {}, searchParams = '') =>
           <Progress
             {...routeProps}
             jurisdictions={jurisdictionMocks.oneManifest}
+            lastActivityByJurisdiction={{}}
             auditSettings={auditSettingsMocks.all}
             round={null}
             {...props}

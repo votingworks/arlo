@@ -1,9 +1,6 @@
 import { useState, useEffect } from 'react'
-import { useQuery, UseQueryResult } from 'react-query'
 import { api } from './utilities'
 import { IFileInfo, FileProcessingStatus } from './useCSV'
-import { fetchApi, ApiError } from '../utils/api'
-import { IActivity } from './AuditAdmin/ActivityLog'
 
 export interface IBallotManifestInfo extends IFileInfo {
   numBallots: number | null
@@ -28,13 +25,11 @@ export enum JurisdictionRoundStatus {
 }
 
 export enum JurisdictionProgressStatus {
-  UPLOADS_NOT_STARTED_NO_LOGIN = 'UPLOADS_NOT_STARTED_NO_LOGIN',
-  UPLOADS_NOT_STARTED_LOGGED_IN = 'UPLOADS_NOT_STARTED_LOGGED_IN',
+  UPLOADS_NOT_STARTED = 'UPLOADS_NOT_STARTED',
   UPLOADS_IN_PROGRESS = 'UPLOADS_IN_PROGRESS',
   UPLOADS_COMPLETE = 'UPLOADS_COMPLETE',
   UPLOADS_FAILED = 'UPLOADS_FAILED',
-  AUDIT_NOT_STARTED_NO_LOGIN = 'AUDIT_NOT_STARTED_NO_LOGIN',
-  AUDIT_NOT_STARTED_LOGGED_IN = 'AUDIT_NOT_STARTED_LOGGED_IN',
+  AUDIT_NOT_STARTED = 'AUDIT_NOT_STARTED',
   AUDIT_IN_PROGRESS = 'AUDIT_IN_PROGRESS',
   AUDIT_COMPLETE = 'AUDIT_COMPLETE',
 }
@@ -57,8 +52,7 @@ export interface IJurisdiction {
 }
 
 export const getJurisdictionStatus = (
-  jurisdiction: IJurisdiction,
-  lastLogin?: IActivity
+  jurisdiction: IJurisdiction
 ): JurisdictionProgressStatus => {
   const {
     currentRoundStatus,
@@ -99,12 +93,7 @@ export const getJurisdictionStatus = (
     if (numComplete > 0) {
       return JurisdictionProgressStatus.UPLOADS_IN_PROGRESS
     }
-
-    if (lastLogin) {
-      return JurisdictionProgressStatus.UPLOADS_NOT_STARTED_LOGGED_IN
-    }
-
-    return JurisdictionProgressStatus.UPLOADS_NOT_STARTED_NO_LOGIN
+    return JurisdictionProgressStatus.UPLOADS_NOT_STARTED
   }
 
   if (currentRoundStatus.status === JurisdictionRoundStatus.COMPLETE) {
@@ -114,11 +103,7 @@ export const getJurisdictionStatus = (
     return JurisdictionProgressStatus.AUDIT_IN_PROGRESS
   }
 
-  if (lastLogin) {
-    return JurisdictionProgressStatus.AUDIT_NOT_STARTED_LOGGED_IN
-  }
-
-  return JurisdictionProgressStatus.AUDIT_NOT_STARTED_NO_LOGIN
+  return JurisdictionProgressStatus.AUDIT_NOT_STARTED
 }
 
 export const useJurisdictionsDeprecated = (
@@ -140,90 +125,7 @@ export const useJurisdictionsDeprecated = (
   return jurisdictions
 }
 
-export const jurisdictionsQueryKey = (electionId: string): string[] => [
-  'elections',
-  electionId,
-  'jurisdictions',
-]
-
-export const useJurisdictions = (
-  electionId: string
-): UseQueryResult<IJurisdiction[], ApiError> => {
-  return useQuery(jurisdictionsQueryKey(electionId), async () => {
-    const response: { jurisdictions: IJurisdiction[] } = await fetchApi(
-      `/api/election/${electionId}/jurisdiction`
-    )
-    return response.jurisdictions
-  })
-}
-
-
-export const jurisdictionsWithLastActivityQueryKey = (
-  electionId: string,
+export const activitiesQueryKey = (
   organizationId: string,
   activityName: string
-): string[] => [
-  'elections',
-  electionId,
-  'organization',
-  organizationId,
-  'jurisdictions',
-  'activityName',
-  activityName,
-]
-// { jurisidictionId: ActivityLogRecord }
-export type LastActivityByJurisdiction = Record<string, IActivity>
-
-export const useLastActivityByJurisdiction = (
-  electionId: string,
-  organizationId?: string,
-  activityName?: string
-): UseQueryResult<LastActivityByJurisdiction, ApiError> => {
-  return useQuery(
-    jurisdictionsWithLastActivityQueryKey(
-      electionId,
-      organizationId || '',
-      activityName || ''
-    ),
-    async () => {
-      const activityNameQueryParam = activityName
-        ? `?activity_name=${activityName}`
-        : ''
-      const response: {
-        lastActivityByJurisdiction: LastActivityByJurisdiction
-      } = await fetchApi(
-        `/api/election/${electionId}/organization/${organizationId}/jurisdictions/last_activity${activityNameQueryParam}`
-      )
-      return response.lastActivityByJurisdiction
-    },
-    { enabled: !!organizationId }
-  )
-}
-
-export type DiscrepanciesByJurisdiction = Record<
-  string, // [jurisdictionId]
-  Record<
-    string, // [batchName]
-    Record<string, ContestDiscrepancies> // [contestId]: contestDiscrepancies
-  >
->
-
-type ContestDiscrepancies = {
-  reportedVotes: Record<string, number | string> // `Record` keys are choiceId
-  auditedVotes: Record<string, number | string> // `Record` values are counts, "o" (overvote), "u" (undervote)
-  discrepancies: Record<string, number | string>
-}
-
-const discrepanciesByJurisdictionQueryKey = (electionId: string): string[] =>
-  jurisdictionsQueryKey(electionId).concat('discrepanciesByJurisdiction')
-
-export const useDiscrepanciesByJurisdiction = (
-  electionId: string,
-  options: { enabled?: boolean }
-): UseQueryResult<DiscrepanciesByJurisdiction, ApiError> => {
-  return useQuery(
-    discrepanciesByJurisdictionQueryKey(electionId),
-    () => fetchApi(`/api/election/${electionId}/discrepancy`),
-    options
-  )
-}
+): string[] => ['organizations', organizationId, 'activities', activityName]
