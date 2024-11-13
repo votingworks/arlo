@@ -1845,7 +1845,7 @@ def test_batch_inventory_tabulator_status_get_upload_url(
     assert response_data["fields"]["key"].endswith(".xml")
 
 
-def test_replace_tabulator_status_file_while_cvr_file_is_processing_fails(
+def test_upload_tabulator_status_file_while_cvr_file_is_processing_fails(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
@@ -1886,7 +1886,157 @@ def test_replace_tabulator_status_file_while_cvr_file_is_processing_fails(
             "errors": [
                 {
                     "errorType": "Conflict",
-                    "message": "Cannot update tabulator status while CVR file is being processed.",
+                    "message": "Cannot upload tabulator status while CVR file is processing.",
+                }
+            ]
+        }
+
+
+def test_remove_tabulator_status_file_while_cvr_file_is_processing_fails(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_id: str,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+
+    # Set system type
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type",
+        {"systemType": CvrFileType.DOMINION},
+    )
+    assert_ok(rv)
+
+    with no_automatic_task_execution():
+        # Upload CVR file, but don't process it
+        rv = upload_batch_inventory_cvr(
+            client,
+            io.BytesIO(b"does not matter"),
+            election_id,
+            jurisdiction_ids[0],
+        )
+        assert_ok(rv)
+
+        rv = client.delete(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/tabulator-status"
+        )
+
+        assert rv.status_code == 409
+        assert json.loads(rv.data) == {
+            "errors": [
+                {
+                    "errorType": "Conflict",
+                    "message": "Cannot remove tabulator status while CVR file is processing.",
+                }
+            ]
+        }
+
+
+def test_upload_cvr_file_while_tabulator_status_file_is_processing_fails(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_id: str,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+
+    # Set system type
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type",
+        {"systemType": CvrFileType.DOMINION},
+    )
+    assert_ok(rv)
+
+    # Upload CVR file
+    rv = upload_batch_inventory_cvr(
+        client,
+        io.BytesIO(TEST_CVR.encode()),
+        election_id,
+        jurisdiction_ids[0],
+    )
+    assert_ok(rv)
+
+    with no_automatic_task_execution():
+        # Upload tabulator status file, but don't process it
+        rv = upload_batch_inventory_tabulator_status(
+            client,
+            io.BytesIO(b"does not matter"),
+            election_id,
+            jurisdiction_ids[0],
+        )
+        assert_ok(rv)
+
+        rv = upload_batch_inventory_cvr(
+            client,
+            io.BytesIO(b"does not matter"),
+            election_id,
+            jurisdiction_ids[0],
+        )
+
+        assert rv.status_code == 409
+        assert json.loads(rv.data) == {
+            "errors": [
+                {
+                    "errorType": "Conflict",
+                    "message": "Cannot upload CVRs while tabulator status file is processing.",
+                }
+            ]
+        }
+
+
+def test_remove_cvr_file_while_tabulator_status_file_is_processing_fails(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_id: str,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+
+    # Set system type
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type",
+        {"systemType": CvrFileType.DOMINION},
+    )
+    assert_ok(rv)
+
+    # Upload CVR file
+    rv = upload_batch_inventory_cvr(
+        client,
+        io.BytesIO(TEST_CVR.encode()),
+        election_id,
+        jurisdiction_ids[0],
+    )
+    assert_ok(rv)
+
+    with no_automatic_task_execution():
+        # Upload tabulator status file, but don't process it
+        rv = upload_batch_inventory_tabulator_status(
+            client,
+            io.BytesIO(b"does not matter"),
+            election_id,
+            jurisdiction_ids[0],
+        )
+        assert_ok(rv)
+
+        rv = client.delete(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr"
+        )
+
+        assert rv.status_code == 409
+        assert json.loads(rv.data) == {
+            "errors": [
+                {
+                    "errorType": "Conflict",
+                    "message": "Cannot remove CVRs while tabulator status file is processing.",
                 }
             ]
         }

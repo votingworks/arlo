@@ -804,6 +804,12 @@ def complete_upload_for_batch_inventory_cvr(
     if not batch_inventory_data or not batch_inventory_data.system_type:
         raise Conflict("Must select system type before uploading CVR file.")
 
+    if (
+        batch_inventory_data.tabulator_status_file
+        and batch_inventory_data.tabulator_status_file.is_processing()
+    ):
+        raise Conflict("Cannot upload CVRs while tabulator status file is processing.")
+
     expected_file_types = EXPECTED_CVR_FILE_TYPE_MAPPING.get(
         batch_inventory_data.system_type
     )
@@ -865,6 +871,12 @@ def clear_batch_inventory_cvr(
     jurisdiction: Jurisdiction,
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
+
+    if (
+        batch_inventory_data.tabulator_status_file
+        and batch_inventory_data.tabulator_status_file.is_processing()
+    ):
+        raise Conflict("Cannot remove CVRs while tabulator status file is processing.")
 
     if batch_inventory_data.cvr_file_id:
         File.query.filter_by(id=batch_inventory_data.cvr_file_id).delete()
@@ -932,9 +944,7 @@ def complete_upload_for_batch_inventory_tabulator_status(
         raise Conflict("Must upload CVR file before uploading tabulator status file.")
 
     if batch_inventory_data.cvr_file.is_processing():
-        raise Conflict(
-            "Cannot update tabulator status while CVR file is being processed."
-        )
+        raise Conflict("Cannot upload tabulator status while CVR file is processing.")
 
     (storage_path, filename, _) = validate_and_get_standard_file_upload_request_params(
         request,
@@ -991,6 +1001,9 @@ def clear_batch_inventory_tabulator_status(
     jurisdiction: Jurisdiction,
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
+
+    if batch_inventory_data.cvr_file and batch_inventory_data.cvr_file.is_processing():
+        raise Conflict("Cannot remove tabulator status while CVR file is processing.")
 
     if batch_inventory_data.tabulator_status_file_id:
         File.query.filter_by(id=batch_inventory_data.tabulator_status_file_id).delete()

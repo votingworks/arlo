@@ -769,16 +769,17 @@ def test_batch_tallies_get_upload_url(
         assert response_data["fields"]["key"].endswith(".csv")
 
 
-def test_replace_batch_tallies_fails_while_processing_jurisdiction_file(
+def test_upload_batch_tallies_fails_while_processing_manifest_file(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_id: str,  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+    contest_id,  # pylint: disable=unused-argument
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
 
     with no_automatic_task_execution():
-        # replace the ballot manifest file, but don't process it yet
+        # Upload a new ballot manifest file, but don't process it yet
         rv = upload_ballot_manifest(
             client,
             io.BytesIO(b"does not matter"),
@@ -787,7 +788,6 @@ def test_replace_batch_tallies_fails_while_processing_jurisdiction_file(
         )
         assert_ok(rv)
 
-        # try to replace the batch tallies file
         rv = upload_batch_tallies(
             client,
             io.BytesIO(b"does not matter"),
@@ -800,7 +800,110 @@ def test_replace_batch_tallies_fails_while_processing_jurisdiction_file(
             "errors": [
                 {
                     "errorType": "Conflict",
-                    "message": "Cannot update candidate totals by batch while ballot manifest is processing.",
+                    "message": "Cannot upload candidate totals by batch while any file upload is processing.",
+                }
+            ]
+        }
+
+
+def test_remove_batch_tallies_fails_while_processing_manifest_file(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+
+    with no_automatic_task_execution():
+        # Upload the ballot manifest file, but don't process it yet
+        rv = upload_ballot_manifest(
+            client,
+            io.BytesIO(b"does not matter"),
+            election_id,
+            jurisdiction_ids[0],
+        )
+        assert_ok(rv)
+
+        rv = client.delete(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
+        )
+
+        assert rv.status_code == 409
+        assert json.loads(rv.data) == {
+            "errors": [
+                {
+                    "errorType": "Conflict",
+                    "message": "Cannot remove candidate totals by batch while any file upload is processing.",
+                }
+            ]
+        }
+
+
+def test_upload_ballot_manifest_fails_while_processing_batch_tallies_file(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    manifests,  # pylint: disable=unused-argument
+    contest_id,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+
+    with no_automatic_task_execution():
+        # Upload batch tallies file, but don't process it yet
+        rv = upload_batch_tallies(
+            client,
+            io.BytesIO(b"does not matter"),
+            election_id,
+            jurisdiction_ids[0],
+        )
+        assert_ok(rv)
+
+        rv = upload_ballot_manifest(
+            client,
+            io.BytesIO(b"does not matter"),
+            election_id,
+            jurisdiction_ids[0],
+        )
+
+        assert rv.status_code == 409
+        assert json.loads(rv.data) == {
+            "errors": [
+                {
+                    "errorType": "Conflict",
+                    "message": "Cannot upload ballot manifest while any file upload is processing.",
+                }
+            ]
+        }
+
+
+def test_remove_ballot_manifest_fails_while_processing_batch_tallies_file(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    manifests,  # pylint: disable=unused-argument
+    contest_id,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+
+    with no_automatic_task_execution():
+        # Upload batch tallies file, but don't process it yet
+        rv = upload_batch_tallies(
+            client,
+            io.BytesIO(b"does not matter"),
+            election_id,
+            jurisdiction_ids[0],
+        )
+        assert_ok(rv)
+
+        rv = client.delete(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
+        )
+
+        assert rv.status_code == 409
+        assert json.loads(rv.data) == {
+            "errors": [
+                {
+                    "errorType": "Conflict",
+                    "message": "Cannot remove ballot manifest while any file upload is processing.",
                 }
             ]
         }
