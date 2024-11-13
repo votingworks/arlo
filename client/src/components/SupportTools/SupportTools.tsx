@@ -242,7 +242,7 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
 
   const sortedElections = sortBy(elections, a =>
     new Date(a.createdAt).getTime()
-  )
+  ).reverse()
 
   const onClickRemoveAuditAdmin = (auditAdmin: IAuditAdmin) =>
     confirm({
