@@ -157,47 +157,22 @@ export const useJurisdictions = (
   })
 }
 
+export const jurisdictionsWithLastLoginQueryKey = (
+  electionId: string
+): string[] => ['elections', electionId]
 
-export const jurisdictionsWithLastActivityQueryKey = (
-  electionId: string,
-  organizationId: string,
-  activityName: string
-): string[] => [
-  'elections',
-  electionId,
-  'organization',
-  organizationId,
-  'jurisdictions',
-  'activityName',
-  activityName,
-]
 // { jurisidictionId: ActivityLogRecord }
-export type LastActivityByJurisdiction = Record<string, IActivity>
+export type LastLoginByJurisdiction = Record<string, IActivity>
 
-export const useLastActivityByJurisdiction = (
-  electionId: string,
-  organizationId?: string,
-  activityName?: string
-): UseQueryResult<LastActivityByJurisdiction, ApiError> => {
-  return useQuery(
-    jurisdictionsWithLastActivityQueryKey(
-      electionId,
-      organizationId || '',
-      activityName || ''
-    ),
-    async () => {
-      const activityNameQueryParam = activityName
-        ? `?activity_name=${activityName}`
-        : ''
-      const response: {
-        lastActivityByJurisdiction: LastActivityByJurisdiction
-      } = await fetchApi(
-        `/api/election/${electionId}/organization/${organizationId}/jurisdictions/last_activity${activityNameQueryParam}`
-      )
-      return response.lastActivityByJurisdiction
-    },
-    { enabled: !!organizationId }
-  )
+export const useLastLoginByJurisdiction = (
+  electionId: string
+): UseQueryResult<LastLoginByJurisdiction, ApiError> => {
+  return useQuery(jurisdictionsWithLastLoginQueryKey(electionId), async () => {
+    const response: {
+      lastLoginByJurisdiction: LastLoginByJurisdiction
+    } = await fetchApi(`/api/election/${electionId}/jurisdictions/last-login`)
+    return response.lastLoginByJurisdiction
+  })
 }
 
 export type DiscrepanciesByJurisdiction = Record<

@@ -16,9 +16,9 @@ import {
 } from './useRoundsAuditAdmin'
 import {
   jurisdictionsQueryKey,
-  jurisdictionsWithLastActivityQueryKey,
+  jurisdictionsWithLastLoginQueryKey,
   useJurisdictions,
-  useLastActivityByJurisdiction,
+  useLastLoginByJurisdiction,
 } from '../useJurisdictions'
 import { useContests } from '../useContests'
 import { useAuditSettings } from '../useAuditSettings'
@@ -27,8 +27,6 @@ import { AuditAdminStatusBox } from '../Atoms/StatusBox'
 import { RefreshTag } from '../Atoms/RefreshTag'
 import Setup from './Setup/Setup'
 import Progress from './Progress/Progress'
-import { IAuditAdmin, useAuthDataContext } from '../UserContext'
-import useAuditAdminsOrganizations from '../useAuditAdminsOrganizations'
 
 interface IParams {
   electionId: string
@@ -40,15 +38,6 @@ const AuditAdminView: React.FC = () => {
 
   const queryClient = useQueryClient()
   const history = useHistory()
-  const auth = useAuthDataContext()
-  const user = auth && (auth.user as IAuditAdmin)
-  const organizationsQuery = useAuditAdminsOrganizations(user)
-  const organizations =
-    organizationsQuery && organizationsQuery.isSuccess
-      ? organizationsQuery.data
-      : []
-  const organization =
-    organizations && organizations.length > 0 ? organizations[0] : undefined
   const lastFetchedRounds = useRef<IRound[] | null>(null)
   const roundsQuery = useRounds(electionId, {
     refetchInterval: rounds =>
@@ -65,11 +54,7 @@ const AuditAdminView: React.FC = () => {
       ) {
         queryClient.invalidateQueries(jurisdictionsQueryKey(electionId))
         queryClient.invalidateQueries(
-          jurisdictionsWithLastActivityQueryKey(
-            electionId,
-            organization?.id || '',
-            'JurisdictionAdminLogin'
-          )
+          jurisdictionsWithLastLoginQueryKey(electionId)
         )
         history.push(`/election/${electionId}/progress`)
       }
@@ -86,10 +71,8 @@ const AuditAdminView: React.FC = () => {
   const jurisdictionsQuery = useJurisdictions(electionId)
   // Used only by <Progress>, but memoization of sort/filter behavior late in that component's render logic
   // throws an error when short-circuiting react-query queries that are in flight.
-  const lastActivityByJurisdictionsQuery = useLastActivityByJurisdiction(
-    electionId,
-    organization?.id || '',
-    'JurisdictionAdminLogin'
+  const lastActivityByJurisdictionsQuery = useLastLoginByJurisdiction(
+    electionId
   )
 
   if (
@@ -97,7 +80,6 @@ const AuditAdminView: React.FC = () => {
     !contestsQuery.isSuccess ||
     !roundsQuery.isSuccess ||
     !auditSettingsQuery.isSuccess ||
-    !organizationsQuery.isSuccess ||
     !lastActivityByJurisdictionsQuery.isSuccess
   ) {
     return null // Still loading
@@ -189,11 +171,7 @@ const AuditAdminView: React.FC = () => {
                 queryClient.invalidateQueries(roundsQueryKey(electionId))
                 queryClient.invalidateQueries(jurisdictionsQueryKey(electionId))
                 queryClient.invalidateQueries(
-                  jurisdictionsWithLastActivityQueryKey(
-                    electionId,
-                    organization?.id || '',
-                    'JurisdictionAdminLogin'
-                  )
+                  jurisdictionsWithLastLoginQueryKey(electionId)
                 )
               }}
             />

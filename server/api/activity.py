@@ -1,5 +1,5 @@
 from typing import Any, Dict, cast
-from flask import request, session
+from flask import session
 from flask.json import jsonify
 from werkzeug.exceptions import Forbidden
 
@@ -47,13 +47,9 @@ def list_activities(organization_id: str):
     ):
         return Forbidden()
 
-    activity_name = request.args.get("activity_name")
-    query = ActivityLogRecord.query.filter_by(
-        organization_id=organization_id,
+    activities = (
+        ActivityLogRecord.query.filter_by(organization_id=organization_id)
+        .order_by(ActivityLogRecord.timestamp.desc())
+        .all()
     )
-    if activity_name:
-        query = query.filter_by(activity_name=activity_name)
-
-    activities = query.order_by(ActivityLogRecord.timestamp.desc()).all()
-
     return jsonify([serialize_activity(activity) for activity in activities])

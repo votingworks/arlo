@@ -194,7 +194,7 @@ const Progress: React.FC<IProgressProps> = ({
           case JurisdictionProgressStatus.UPLOADS_NOT_STARTED_LOGGED_IN:
             return <Status intent="warning">Logged in</Status>
           case JurisdictionProgressStatus.UPLOADS_NOT_STARTED_NO_LOGIN:
-            return <Status>Not logged</Status>
+            return <Status>Not logged in</Status>
           case JurisdictionProgressStatus.AUDIT_IN_PROGRESS:
             return <Status intent="warning">In progress</Status>
           case JurisdictionProgressStatus.AUDIT_COMPLETE:
@@ -202,7 +202,7 @@ const Progress: React.FC<IProgressProps> = ({
           case JurisdictionProgressStatus.AUDIT_NOT_STARTED_LOGGED_IN:
             return <Status intent="warning">Logged in</Status>
           case JurisdictionProgressStatus.AUDIT_NOT_STARTED_NO_LOGIN:
-            return <Status>Not logged</Status>
+            return <Status>Not logged in</Status>
           default:
             return null
         }
@@ -516,6 +516,7 @@ const Progress: React.FC<IProgressProps> = ({
               jurisdiction => jurisdiction.id === jurisdictionDetailId
             )!
           }
+          lastLoginActivity={lastActivityByJurisdiction[jurisdictionDetailId]}
           electionId={electionId}
           round={round}
           handleClose={() => setJurisdictionDetailId(null)}
