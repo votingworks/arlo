@@ -287,28 +287,54 @@ def set_contest_metadata(election: Election):
             cvrs.set_contest_metadata_from_cvrs(contest)
 
 
+# We need to reprocess batch tallies files if any of the contest info changes
+# (including adding/removing contests). However, if we only change the
+# jurisdiction list for a contest, we don't need to reprocess them, since each
+# batch tallies file is associated with a single jurisdiction. We want to avoid
+# reprocessing when we don't need to, because it's a bit disruptive since it
+# affects every jurisdiction.
+def should_reprocess_batch_tallies(
+    previous_contests: List[JSONDict], new_contests: List[JSONDict]
+) -> bool:
+    if len(previous_contests) != len(new_contests):
+        return True
+
+    def normalize_contest(contest):
+        contest = contest.copy()
+        # This field isn't sent from the client, its computed on the backend, so
+        # new_contests won't have it
+        if "totalBallotsCast" in contest:
+            del contest["totalBallotsCast"]
+        # We don't want to reprocess on jurisdiction changes, so we remove the
+        # jursidictionIds
+        del contest["jurisdictionIds"]
+        # Sort choices to normalize
+        contest["choices"] = sorted(
+            contest["choices"], key=lambda choice: str(choice["id"])
+        )
+        return contest
+
+    return any(
+        normalize_contest(previous_contest) != normalize_contest(new_contest)
+        for previous_contest, new_contest in zip(
+            sorted(previous_contests, key=lambda contest: str(contest["id"])),
+            sorted(new_contests, key=lambda contest: str(contest["id"])),
+        )
+    )
+
+
 @api.route("/election/<election_id>/contest", methods=["PUT"])
 @restrict_access([UserType.AUDIT_ADMIN])
 def create_or_update_all_contests(election: Election):
+    if election.jurisdictions_file and election.jurisdictions_file.is_processing():
+        raise Conflict(
+            "Cannot update contests while jurisdictions file is being processed."
+        )
+
     json_contests = safe_get_json_list(request)
     validate_contests(json_contests, election)
 
-    Contest.query.filter_by(election_id=election.id).delete()
-    election.contests = [
-        deserialize_contest(json_contest, election.id) for json_contest in json_contests
-    ]
-
-    set_contest_metadata(election)
-
     if election.audit_type == AuditType.BATCH_COMPARISON:
-        user = get_loggedin_user(session)
-        assert user[0] is not None
-
-        if election.jurisdictions_file and election.jurisdictions_file.is_processing():
-            raise Conflict(
-                "Cannot update contests while jurisdictions file is being processed."
-            )
-
         if any(
             jurisdiction.batch_tallies_file
             and jurisdiction.batch_tallies_file.is_processing()
@@ -318,6 +344,24 @@ def create_or_update_all_contests(election: Election):
                 "Cannot update contests while batch tallies file is being processed."
             )
 
+        previous_contests = [
+            serialize_contest(contest) for contest in election.contests
+        ]
+
+    for contest in election.contests:
+        db_session.delete(contest)
+    election.contests = [
+        deserialize_contest(json_contest, election.id) for json_contest in json_contests
+    ]
+
+    set_contest_metadata(election)
+
+    if (
+        election.audit_type == AuditType.BATCH_COMPARISON
+        and should_reprocess_batch_tallies(previous_contests, json_contests)
+    ):
+        user = get_loggedin_user(session)
+        assert user[0] is not None
         for jurisdiction in election.jurisdictions:
             batch_tallies.reprocess_batch_tallies_file_if_uploaded(
                 jurisdiction,
