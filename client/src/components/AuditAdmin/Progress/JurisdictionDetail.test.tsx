@@ -66,6 +66,32 @@ const render = (props: Partial<IJurisdictionDetailProps>) =>
   )
 
 describe('JurisdictionDetail', () => {
+  it('shows last login if it exists', async () => {
+    const expectedCalls = [
+      jaApiCalls.getBallotManifestFile(manifestMocks.empty),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const loginTime = new Date().toLocaleString()
+      render({
+        jurisdiction: jurisdictionMocks.oneManifest[0],
+        lastLoginActivity: {
+          id: '0',
+          activityName: 'JurisdictionAdminLogin',
+          timestamp: loginTime,
+          user: {
+            type: 'jurisdiction-admin',
+            key: 'ja-1@example.com',
+            supportUser: false,
+          },
+          election: null,
+          info: {},
+        },
+      })
+
+      await screen.findByText(`ja-1@example.com at ${loginTime}`)
+    })
+  })
+
   it('before launch, shows manifest for ballot polling audit', async () => {
     const expectedCalls = [
       jaApiCalls.getBallotManifestFile(manifestMocks.empty),
