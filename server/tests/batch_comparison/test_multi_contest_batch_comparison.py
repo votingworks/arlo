@@ -1252,3 +1252,66 @@ def test_updating_contests_while_batch_tallies_file_is_being_processed(
                 }
             ]
         }
+
+
+def test_batch_tallies_dont_reprocess_when_contest_jurisdictions_change(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_ids,  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+    batch_tallies,  # pylint: disable=unused-argument
+):
+    def get_last_processed_batch_tallies_timestamp():
+        set_logged_in_user(
+            client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+        )
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies"
+        )
+        return json.loads(rv.data)["processing"]["completedAt"]
+
+    original_processed_batch_tallies_timestamp = (
+        get_last_processed_batch_tallies_timestamp()
+    )
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contests = json.loads(rv.data)["contests"]
+
+    for contest in contests:
+        del contest["totalBallotsCast"]
+
+    # If no fields change, shouldn't reprocess batch tallies
+    rv = put_json(client, f"/api/election/{election_id}/contest", contests)
+    assert_ok(rv)
+
+    assert (
+        get_last_processed_batch_tallies_timestamp()
+        == original_processed_batch_tallies_timestamp
+    )
+
+    # If only jurisdictionIds change, shouldn't reprocess batch tallies
+    assert contests[0]["jurisdictionIds"] != jurisdiction_ids[:-1]
+    contests[0]["jurisdictionIds"] = jurisdiction_ids[:-1]
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = put_json(client, f"/api/election/{election_id}/contest", contests)
+    assert_ok(rv)
+
+    assert (
+        get_last_processed_batch_tallies_timestamp()
+        == original_processed_batch_tallies_timestamp
+    )
+
+    # If another field changes, should reprocess batch tallies
+    contests[0]["name"] = "New Name"
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = put_json(client, f"/api/election/{election_id}/contest", contests)
+    assert_ok(rv)
+
+    assert (
+        get_last_processed_batch_tallies_timestamp()
+        != original_processed_batch_tallies_timestamp
+    )
