@@ -551,7 +551,7 @@ def get_last_login_by_jurisdiction(election: Election):
         .all()
     ]
 
-    # Look for events after most recent round, or election creation time
+    # Look for events after most recent round started, or election creation time
     # if no rounds exist yet
     query_timestamp_after = election.created_at
     round = (

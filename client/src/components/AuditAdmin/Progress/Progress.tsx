@@ -112,19 +112,6 @@ const Progress: React.FC<IProgressProps> = ({
     setJurisdictionDiscrepanciesId,
   ] = useState<string | null>(null)
 
-  const onSortByChange = useCallback(
-    (newSortBy: SortingRule<unknown>[]) => {
-      assert(newSortBy.length <= 1)
-      const sortBy = newSortBy[0]
-      setSortAndFilterState({
-        ...sortAndFilterState,
-        sort: sortBy?.id,
-        dir: sortBy && (sortBy.desc ? 'desc' : 'asc'),
-      })
-    },
-    [sortAndFilterState, setSortAndFilterState]
-  )
-
   const ballotsOrBatches =
     auditType === 'BATCH_COMPARISON' ? 'Batches' : 'Ballots'
 
@@ -419,6 +406,18 @@ const Progress: React.FC<IProgressProps> = ({
         },
       ]
     : undefined
+  const onSortByChange = useCallback(
+    (newSortBy: SortingRule<unknown>[]) => {
+      assert(newSortBy.length <= 1)
+      const sortBy = newSortBy[0]
+      setSortAndFilterState({
+        ...sortAndFilterState,
+        sort: sortBy?.id,
+        dir: sortBy && (sortBy.desc ? 'desc' : 'asc'),
+      })
+    },
+    [sortAndFilterState, setSortAndFilterState]
+  )
 
   const downloadButtons = (
     <div style={{ display: 'flex', alignSelf: 'end', gap: '5px' }}>
