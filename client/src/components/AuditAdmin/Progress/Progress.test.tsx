@@ -18,6 +18,7 @@ import {
   auditBoardMocks,
   manifestMocks,
   contestMocks,
+  getLastLoginMocks,
 } from '../../_mocks'
 import Progress, { IProgressProps } from './Progress'
 import { dummyBallots } from '../../AuditBoard/_mocks'
@@ -56,7 +57,7 @@ const render = (props: Partial<IProgressProps> = {}, searchParams = '') =>
           <Progress
             {...routeProps}
             jurisdictions={jurisdictionMocks.oneManifest}
-            lastActivityByJurisdiction={{}}
+            lastLoginByJurisdiction={props.lastLoginByJurisdiction || {}}
             auditSettings={auditSettingsMocks.all}
             round={null}
             {...props}
@@ -78,7 +79,9 @@ describe('Progress screen', () => {
   it('shows ballot manifest upload status', async () => {
     const expectedCalls = [aaApiCalls.getMapData]
     await withMockFetch(expectedCalls, async () => {
-      const { container } = render()
+      const { container } = render({
+        lastLoginByJurisdiction: getLastLoginMocks(new Date()),
+      })
       expect(container.querySelectorAll('.d3-component').length).toBe(1)
 
       await waitFor(() => {
@@ -101,7 +104,7 @@ describe('Progress screen', () => {
       expect(row1[2]).toBeEmpty()
       const row2 = within(rows[2]).getAllByRole('cell')
       expect(row2[0]).toHaveTextContent('Jurisdiction 2')
-      expectStatusTag(row2[1], 'No manifest uploaded', 'none')
+      expectStatusTag(row2[1], 'Logged in', 'warning')
       expect(row2[2]).toBeEmpty()
       const row3 = within(rows[3]).getAllByRole('cell')
       expect(row3[0]).toHaveTextContent('Jurisdiction 3')
@@ -216,7 +219,7 @@ describe('Progress screen', () => {
       expect(row1[4]).toHaveTextContent('6')
       const row2 = within(rows[2]).getAllByRole('cell')
       expect(row2[0]).toHaveTextContent('Jurisdiction 2')
-      expectStatusTag(row2[1], 'Not started', 'none')
+      expectStatusTag(row2[1], 'Not logged in', 'none')
       expect(row2[2]).toHaveTextContent('2,117')
       expect(row2[3]).toHaveTextContent('0')
       expect(row2[4]).toHaveTextContent('20')
@@ -452,7 +455,7 @@ describe('Progress screen', () => {
       expect(row1[5]).toHaveTextContent('6')
       const row2 = within(rows[2]).getAllByRole('cell')
       expect(row2[0]).toHaveTextContent('Jurisdiction 2')
-      expectStatusTag(row2[1], 'Not started', 'none')
+      expectStatusTag(row2[1], 'Not logged in', 'none')
       expect(row2[2]).toHaveTextContent('2,117')
       // Discrepancies hidden until jurisdiction is complete
       expect(row2[3]).toHaveTextContent('')
@@ -679,6 +682,7 @@ describe('Progress screen', () => {
       const { container } = render({
         jurisdictions: jurisdictionMocks.hybridTwoManifestsOneCvr,
         auditSettings: auditSettingsMocks.hybridAll,
+        lastLoginByJurisdiction: getLastLoginMocks(new Date()),
       })
 
       expect(container.querySelectorAll('.d3-component').length).toBe(1)
@@ -712,7 +716,7 @@ describe('Progress screen', () => {
       expect(row2[5]).toHaveTextContent('10')
       // Jurisdiction 3 - no manifest, no CVR
       const row3 = within(rows[3]).getAllByRole('cell')
-      expectStatusTag(row3[1], '0/2 files uploaded', 'none')
+      expectStatusTag(row3[1], 'Logged in', 'warning')
       expect(row3[2]).toBeEmpty()
       expect(row3[3]).toBeEmpty()
       expect(row3[4]).toBeEmpty()
@@ -790,7 +794,7 @@ describe('Progress screen', () => {
       expect(await new Response(fileBlob).text()).toEqual(
         '"Jurisdiction","Status","Ballots in Manifest","Ballots Audited","Ballots Remaining"\n' +
           '"Jurisdiction 1","In progress","2,117","4","6"\n' +
-          '"Jurisdiction 2","Not started","2,117","0","20"\n' +
+          '"Jurisdiction 2","Not logged in","2,117","0","20"\n' +
           '"Jurisdiction 3","Complete","2,117","30","0"\n' +
           '"Total","1/3 complete","6,351","34","26"'
       )
@@ -831,7 +835,9 @@ describe('Progress screen', () => {
   it('sorts', async () => {
     const expectedCalls = [aaApiCalls.getMapData]
     await withMockFetch(expectedCalls, async () => {
-      const { container, history } = render()
+      const { container, history } = render({
+        lastLoginByJurisdiction: getLastLoginMocks(new Date()),
+      })
 
       expect(container.querySelectorAll('.d3-component').length).toBe(1)
 
@@ -873,7 +879,7 @@ describe('Progress screen', () => {
       })
       userEvent.click(statusHeader)
       rows = screen.getAllByRole('row')
-      within(rows[1]).getByText('No manifest uploaded')
+      within(rows[1]).getByText('Logged in')
       await waitFor(() => {
         expect(history.location.search).toEqual('?sort=Status&dir=asc')
       })
@@ -937,7 +943,7 @@ describe('Progress screen', () => {
       })
       userEvent.click(statusHeader)
       let rows = screen.getAllByRole('row')
-      within(rows[1]).getByRole('cell', { name: 'Not started' })
+      within(rows[1]).getByRole('cell', { name: 'Not logged in' })
 
       userEvent.click(statusHeader)
       rows = screen.getAllByRole('row')
@@ -1077,7 +1083,7 @@ describe('Progress screen', () => {
       await waitFor(() => {
         expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
       })
-      expect(container.querySelectorAll('.county.gray').length).toBe(1) // not started
+      expect(container.querySelectorAll('.county.gray').length).toBe(1) // not logged in
       expect(container.querySelectorAll('.county.progress').length).toBe(1) // in progress
       expect(container.querySelectorAll('.county.danger').length).toBe(1) // errored
 

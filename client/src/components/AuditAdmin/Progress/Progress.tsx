@@ -77,14 +77,14 @@ const countDiscrepanciesForJurisdiction = (
 
 export interface IProgressProps {
   jurisdictions: IJurisdiction[]
-  lastActivityByJurisdiction: Record<string, IActivity>
+  lastLoginByJurisdiction: Record<string, IActivity>
   auditSettings: IAuditSettings
   round: IRound | null
 }
 
 const Progress: React.FC<IProgressProps> = ({
   jurisdictions,
-  lastActivityByJurisdiction,
+  lastLoginByJurisdiction,
   auditSettings,
   round,
 }: IProgressProps) => {
@@ -157,7 +157,7 @@ const Progress: React.FC<IProgressProps> = ({
 
         const jurisdictionStatus = getJurisdictionStatus(
           jurisdiction,
-          lastActivityByJurisdiction[jurisdiction.id]
+          lastLoginByJurisdiction[jurisdiction.id]
         )
         switch (jurisdictionStatus) {
           case JurisdictionProgressStatus.UPLOADS_COMPLETE:
@@ -515,7 +515,7 @@ const Progress: React.FC<IProgressProps> = ({
               jurisdiction => jurisdiction.id === jurisdictionDetailId
             )!
           }
-          lastLoginActivity={lastActivityByJurisdiction[jurisdictionDetailId]}
+          lastLoginActivity={lastLoginByJurisdiction[jurisdictionDetailId]}
           electionId={electionId}
           round={round}
           handleClose={() => setJurisdictionDetailId(null)}

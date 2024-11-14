@@ -180,7 +180,7 @@ const AuditAdminView: React.FC = () => {
             <Inner>
               <Progress
                 jurisdictions={jurisdictions}
-                lastActivityByJurisdiction={lastActivityByJurisdiction}
+                lastLoginByJurisdiction={lastActivityByJurisdiction}
                 auditSettings={auditSettings}
                 round={rounds.length > 0 ? rounds[rounds.length - 1] : null}
               />
