@@ -2014,6 +2014,12 @@ export const aaApiCalls = {
       ],
     },
   },
+  getLastLoginByJurisdiction: {
+    url: '/api/election/1/jurisdictions/last-login',
+    response: {
+      lastLoginByJurisdiction: {},
+    },
+  },
   getBatchJurisdictions: {
     url: '/api/election/1/jurisdiction',
     response: {

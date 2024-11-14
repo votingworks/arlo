@@ -61,6 +61,7 @@ const AuditAdminView: React.FC = () => {
       lastFetchedRounds.current = rounds
     },
   })
+  const jurisdictionsQuery = useJurisdictions(electionId)
   const startNextRoundMutation = useStartNextRound(electionId)
   const finishRoundMutation = useFinishRound(electionId)
   const undoRoundStartMutation = useUndoRoundStart(electionId)
@@ -68,7 +69,6 @@ const AuditAdminView: React.FC = () => {
   const contestsQuery = useContests(electionId)
   const auditSettingsQuery = useAuditSettings(electionId)
 
-  const jurisdictionsQuery = useJurisdictions(electionId)
   // Used only by <Progress>, but memoization of sort/filter behavior late in that component's render logic
   // throws an error when short-circuiting react-query queries that are in flight.
   const lastActivityByJurisdictionsQuery = useLastLoginByJurisdiction(
