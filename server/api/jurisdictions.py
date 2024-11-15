@@ -560,6 +560,9 @@ def get_last_login_by_jurisdiction(election: Election):
             ActivityLogRecord.organization_id == election.organization_id,
             ActivityLogRecord.timestamp > query_timestamp_after,
             ActivityLogRecord.activity_name == "JurisdictionAdminLogin",
+            ActivityLogRecord.info["error"] is None,  # Filter out failed logins
+            ActivityLogRecord.info["base"]["support_user_email"]
+            is None,  # Filter out logins by support users
         )
         .order_by(Jurisdiction.id, ActivityLogRecord.timestamp.desc())
         .distinct(Jurisdiction.id)

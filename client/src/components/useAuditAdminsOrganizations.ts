@@ -7,7 +7,7 @@ function useAuditAdminsOrganizations(
 ): UseQueryResult<IOrganization[], ApiError> {
   return useQuery<IOrganization[], ApiError>(
     'orgs',
-    () => fetchApi(`/api/audit_admins/${user?.id}/organizations`),
+    () => fetchApi(`/api/audit_admins/${user!.id}/organizations`),
     { enabled: !!user }
   )
 }
