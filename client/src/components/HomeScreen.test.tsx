@@ -21,7 +21,6 @@ const setupScreenCalls = [
   aaApiCalls.getJurisdictions,
   aaApiCalls.getContests(contestMocks.filledTargeted),
   aaApiCalls.getSettings(auditSettingsMocks.blank),
-  aaApiCalls.getLastLoginByJurisdictionEmpty(),
   aaApiCalls.getJurisdictionFile,
 ]
 

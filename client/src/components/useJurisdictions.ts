@@ -159,7 +159,8 @@ export const useJurisdictions = (
 
 export const jurisdictionsWithLastLoginQueryKey = (
   electionId: string
-): string[] => ['elections', electionId, 'jurisdictions', 'last-login']
+): string[] =>
+  jurisdictionsQueryKey(electionId).concat('lastLoginByJurisdiction')
 
 // { jurisidictionId: ActivityLogRecord }
 export type LastLoginByJurisdiction = Record<string, IActivity>

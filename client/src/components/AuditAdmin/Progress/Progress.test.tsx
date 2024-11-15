@@ -75,10 +75,7 @@ describe('Progress screen', () => {
   afterAll(() => jest.restoreAllMocks())
 
   function getDefaultExpectedCalls() {
-    return [
-      aaApiCalls.getLastLoginByJurisdiction(new Date()),
-      aaApiCalls.getMapData,
-    ]
+    return [aaApiCalls.getLastLoginByJurisdiction(), aaApiCalls.getMapData]
   }
 
   it('shows ballot manifest upload status', async () => {
@@ -278,7 +275,7 @@ describe('Progress screen', () => {
           },
         },
       }),
-      aaApiCalls.getLastLoginByJurisdictionEmpty(),
+      aaApiCalls.getLastLoginByJurisdiction({ responseIsEmpty: true }),
       aaApiCalls.getMapData,
       jaApiCalls.getJurisdictionContests(
         contestMocks.two,
@@ -420,7 +417,7 @@ describe('Progress screen', () => {
           },
         },
       }),
-      aaApiCalls.getLastLoginByJurisdictionEmpty(),
+      aaApiCalls.getLastLoginByJurisdiction({ responseIsEmpty: true }),
       aaApiCalls.getMapData,
       jaApiCalls.getJurisdictionContests(
         [contestMocks.one[0]],
@@ -740,7 +737,7 @@ describe('Progress screen', () => {
   it('shows a different toggle label for batch audits', async () => {
     const expectedCalls = [
       aaApiCalls.getDiscrepancies({}),
-      aaApiCalls.getLastLoginByJurisdiction(new Date()),
+      aaApiCalls.getLastLoginByJurisdiction(),
       aaApiCalls.getMapData,
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -928,7 +925,7 @@ describe('Progress screen', () => {
 
   it('sorts by status once the audit is in progress', async () => {
     const expectedCalls = [
-      aaApiCalls.getLastLoginByJurisdictionEmpty(),
+      aaApiCalls.getLastLoginByJurisdiction({ responseIsEmpty: true }),
       aaApiCalls.getMapData,
     ]
     await withMockFetch(expectedCalls, async () => {

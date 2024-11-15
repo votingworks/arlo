@@ -2014,20 +2014,15 @@ export const aaApiCalls = {
       ],
     },
   },
-  getLastLoginByJurisdictionEmpty: () => ({
-    url: '/api/election/1/jurisdictions/last-login',
-    response: {
-      lastLoginByJurisdiction: {},
-    },
-  }),
-  getLastLoginByJurisdiction: (timestamp: Date) => ({
-    url: '/api/election/1/jurisdictions/last-login',
-    response: {
-      lastLoginByJurisdiction: {
+  getLastLoginByJurisdiction: (options?: { responseIsEmpty: boolean }) => {
+    let lastLoginByJurisdiction = {}
+    if (!options?.responseIsEmpty) {
+      const timestamp = new Date().toLocaleString()
+      lastLoginByJurisdiction = {
         'jurisdiction-id-1': {
           id: '1',
           activityName: 'JurisdictionAdminLogin',
-          timestamp: timestamp.toLocaleString(),
+          timestamp,
           user: {
             type: 'jurisdiction-admin',
             key: 'ja-1@example.com',
@@ -2039,7 +2034,7 @@ export const aaApiCalls = {
         'jurisdiction-id-2': {
           id: '2',
           activityName: 'JurisdictionAdminLogin',
-          timestamp: timestamp.toLocaleString(),
+          timestamp,
           user: {
             type: 'jurisdiction-admin',
             key: 'ja-2@example.com',
@@ -2051,7 +2046,7 @@ export const aaApiCalls = {
         'jurisdiction-id-3': {
           id: '3',
           activityName: 'JurisdictionAdminLogin',
-          timestamp: timestamp.toLocaleString(),
+          timestamp,
           user: {
             type: 'jurisdiction-admin',
             key: 'ja-3@example.com',
@@ -2060,9 +2055,13 @@ export const aaApiCalls = {
           election: null,
           info: {},
         },
-      },
-    },
-  }),
+      }
+    }
+    return {
+      url: '/api/election/1/jurisdictions/last-login',
+      response: { lastLoginByJurisdiction },
+    }
+  },
   getBatchJurisdictions: {
     url: '/api/election/1/jurisdiction',
     response: {
