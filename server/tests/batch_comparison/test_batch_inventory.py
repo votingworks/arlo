@@ -2087,6 +2087,9 @@ def test_batch_inventory_hart_cvr_upload(
         build_hart_cvr("BATCH1", "1", "1-1-1", "0,1,1,0,0"),
         build_hart_cvr("BATCH1", "2", "1-1-2", "1,0,1,0,0"),
         build_hart_cvr("BATCH1", "3", "1-1-3", "0,1,1,0,0"),
+        build_hart_cvr(
+            "BATCH1", "4", "1-1-4", "1,1,1,1,1"
+        ),  # Overvote, ballot manifest should include in ballot count, candidate-totals-by-batch should not include in vote counts
         build_hart_cvr("BATCH2", "1", "1-2-1", "1,0,1,0,0"),
         build_hart_cvr("BATCH2", "2", "1-2-2", "0,1,0,1,0"),
         build_hart_cvr("BATCH2", "3", "1-2-3", "1,0,0,0,1"),

@@ -304,7 +304,7 @@ Tabulator 2 - BATCH2,2,0,0,6,2,4,0\r
 snapshots[
     "test_batch_inventory_hart_cvr_upload 1"
 ] = """Batch Name,Number of Ballots\r
-BATCH1,3\r
+BATCH1,4\r
 BATCH2,3\r
 BATCH3,2\r
 BATCH4,2\r
