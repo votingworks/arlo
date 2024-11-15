@@ -3,13 +3,12 @@ from datetime import datetime, timedelta
 from typing import List
 from flask.testing import FlaskClient
 
-from server.activity_log.activity_log import (
+from ...activity_log.activity_log import (
     ActivityBase,
     JurisdictionAdminLogin,
     record_activity,
 )
-from server.auth.auth_routes import record_login
-
+from ...auth.auth_routes import record_login
 from ..helpers import *  # pylint: disable=wildcard-import
 from ...auth import UserType
 from ...database import db_session
