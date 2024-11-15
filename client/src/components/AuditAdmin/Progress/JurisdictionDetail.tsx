@@ -132,7 +132,7 @@ const JurisdictionDetail: React.FC<IJurisdictionDetailProps> = ({
           <>
             <H5>Last Login</H5>
             <span>
-              {`${lastLoginActivity.user?.key || 'Unknown'} at ${new Date(
+              {`${lastLoginActivity.user!.key} at ${new Date(
                 lastLoginActivity.timestamp
               ).toLocaleString()}`}
             </span>

@@ -75,7 +75,7 @@ const ActivityLog: React.FC = () => {
   const auth = useAuthDataContext()
   const user = auth && (auth.user as IAuditAdmin)
   const organizations = useAuditAdminsOrganizations(user)
-  if (!(organizations && organizations.isSuccess)) return null
+  if (!organizations.isSuccess) return null
   return <ActivityLogOrgsLoaded organizations={organizations.data} />
 }
 
