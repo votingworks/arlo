@@ -510,10 +510,20 @@ def process_batch_inventory_cvr_file(
             contest_results = parse_contest_results(cvr_xml)
             for contest in contests:
                 choices = contest_results.get(contest.name, set())
+                validated_choice_ids = []
                 for choice_name in choices:
-                    choice_id = validate_choice_name_and_get_choice_id(choice_name)
-                    if choice_id is not None:
-                        batch_tallies[batch_key][choice_id] += 1
+                    validated_choice_id = validate_choice_name_and_get_choice_id(
+                        choice_name
+                    )
+                    if validated_choice_id:
+                        validated_choice_ids.append(validated_choice_id)
+
+                # Skip overvotes
+                if len(validated_choice_ids) > contest.votes_allowed:
+                    continue
+
+                for choice_id in validated_choice_ids:
+                    batch_tallies[batch_key][choice_id] += 1
 
         # Set explicit zeros for choices with zero votes in a batch to avoid KeyErrors when
         # generating files and to make sure every batch is included even if it has no votes for the contest(s)
