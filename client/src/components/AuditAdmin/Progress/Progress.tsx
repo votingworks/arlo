@@ -211,6 +211,22 @@ const Progress: React.FC<IProgressProps> = ({
           JurisdictionProgressStatus.AUDIT_NOT_STARTED_NO_LOGIN,
         ].includes(progressStatus)
 
+        /**
+         * Ascending sort order ...
+         *
+         * When round has not started:
+         * -2. Not logged in, no file uploads completed
+         * -1. Logged in, no file uploads completed
+         *  0. Logged in, uploads attempted but failed
+         *  n. Order by successful processed files regardless of login status
+         *
+         * When round has been started
+         * 0: Not logged in, audit actions not taken
+         * 1. Logged in, audit actions not taken
+         * 2. Audit in progress, regardless of login status
+         * 3. Audit complete, regardless of login status
+         */
+
         if (!currentRoundStatus) {
           const files: IFileInfo['processing'][] = [ballotManifest.processing]
           if (batchTallies) files.push(batchTallies.processing)
@@ -222,20 +238,15 @@ const Progress: React.FC<IProgressProps> = ({
           const anyFailed = files.some(
             f => f && f.status === FileProcessingStatus.ERRORED
           )
-          if (anyFailed) return hasLoggedIn ? 0 : -1
+          if (anyFailed) return 0
           if (numComplete === 0) return hasLoggedIn ? -1 : -2
           return numComplete
         }
         return {
-          [JurisdictionRoundStatus.NOT_STARTED]: () => {
-            if (hasLoggedIn) {
-              return 0
-            }
-            return 1
-          },
-          [JurisdictionRoundStatus.IN_PROGRESS]: () => 2,
-          [JurisdictionRoundStatus.COMPLETE]: () => 3,
-        }[currentRoundStatus.status]()
+          [JurisdictionRoundStatus.NOT_STARTED]: hasLoggedIn ? 1 : 0,
+          [JurisdictionRoundStatus.IN_PROGRESS]: 2,
+          [JurisdictionRoundStatus.COMPLETE]: 3,
+        }[currentRoundStatus.status]
       }),
       Footer: info => {
         const numJurisdictionsComplete = sum(

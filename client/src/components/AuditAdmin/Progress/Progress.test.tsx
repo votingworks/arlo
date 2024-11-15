@@ -18,6 +18,7 @@ import {
   auditBoardMocks,
   manifestMocks,
   contestMocks,
+  lastLoginByJurisdictionMocks,
 } from '../../_mocks'
 import Progress, { IProgressProps } from './Progress'
 import { dummyBallots } from '../../AuditBoard/_mocks'
@@ -55,7 +56,7 @@ const render = (props: Partial<IProgressProps> = {}, searchParams = '') =>
         render={routeProps => (
           <Progress
             {...routeProps}
-            jurisdictions={jurisdictionMocks.oneManifest}
+            jurisdictions={props.jurisdictions ?? jurisdictionMocks.oneManifest}
             auditSettings={auditSettingsMocks.all}
             round={null}
             {...props}
@@ -128,7 +129,9 @@ describe('Progress screen', () => {
 
   it('shows not-logged-in status when no logins exist and audit has not started', async () => {
     const expectedCalls = [
-      aaApiCalls.getLastLoginByJurisdiction({ responseIsEmpty: true }),
+      aaApiCalls.getLastLoginByJurisdiction({
+        response: lastLoginByJurisdictionMocks.noLogins,
+      }),
       aaApiCalls.getMapData,
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -306,7 +309,9 @@ describe('Progress screen', () => {
           },
         },
       }),
-      aaApiCalls.getLastLoginByJurisdiction({ responseIsEmpty: true }),
+      aaApiCalls.getLastLoginByJurisdiction({
+        response: lastLoginByJurisdictionMocks.noLogins,
+      }),
       aaApiCalls.getMapData,
       jaApiCalls.getJurisdictionContests(
         contestMocks.two,
@@ -448,7 +453,9 @@ describe('Progress screen', () => {
           },
         },
       }),
-      aaApiCalls.getLastLoginByJurisdiction({ responseIsEmpty: true }),
+      aaApiCalls.getLastLoginByJurisdiction({
+        response: lastLoginByJurisdictionMocks.noLogins,
+      }),
       aaApiCalls.getMapData,
       jaApiCalls.getJurisdictionContests(
         [contestMocks.one[0]],
@@ -932,6 +939,76 @@ describe('Progress screen', () => {
     })
   })
 
+  it('sorts based on logged-in status when round status exists', async () => {
+    const expectedCalls = [
+      aaApiCalls.getLastLoginByJurisdiction({
+        response: lastLoginByJurisdictionMocks.oneLogin,
+      }),
+      aaApiCalls.getMapData,
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { container, history } = render({
+        jurisdictions: jurisdictionMocks.noneStarted,
+      })
+
+      await waitFor(() => {
+        expect(container.querySelectorAll('.d3-component').length).toBe(1)
+      })
+      expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+
+      expect(history.location.search).toEqual('')
+
+      // Toggle sorting by status
+      const statusHeader = screen.getByRole('columnheader', {
+        name: 'Status',
+      })
+      userEvent.click(statusHeader)
+      await waitFor(() => {
+        expect(history.location.search).toEqual('?sort=Status&dir=asc')
+      })
+      let rows = screen.getAllByRole('row')
+      rows = screen.getAllByRole('row')
+      within(rows[1]).getByText('Not logged in')
+      within(rows[2]).getByText('Logged in')
+      within(rows[3]).getByText('Complete')
+    })
+  })
+
+  it('sorts based on logged-in status when round has not started and there are 0 uploads', async () => {
+    const expectedCalls = [
+      aaApiCalls.getLastLoginByJurisdiction({
+        response: lastLoginByJurisdictionMocks.oneLogin,
+      }),
+      aaApiCalls.getMapData,
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { container, history } = render({
+        jurisdictions: jurisdictionMocks.noManifests,
+      })
+
+      await waitFor(() => {
+        expect(container.querySelectorAll('.d3-component').length).toBe(1)
+      })
+      expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+
+      expect(history.location.search).toEqual('')
+
+      // Toggle sorting by status
+      const statusHeader = screen.getByRole('columnheader', {
+        name: 'Status',
+      })
+      userEvent.click(statusHeader)
+      await waitFor(() => {
+        expect(history.location.search).toEqual('?sort=Status&dir=asc')
+      })
+      let rows = screen.getAllByRole('row')
+      rows = screen.getAllByRole('row')
+      within(rows[1]).getByText('Not logged in')
+      within(rows[2]).getByText('Not logged in')
+      within(rows[3]).getByText('Logged in')
+    })
+  })
+
   it('loads initial sort/filter state from URL search params', async () => {
     const expectedCalls = getDefaultExpectedCalls()
     await withMockFetch(expectedCalls, async () => {
@@ -956,7 +1033,9 @@ describe('Progress screen', () => {
 
   it('sorts by status once the audit is in progress', async () => {
     const expectedCalls = [
-      aaApiCalls.getLastLoginByJurisdiction({ responseIsEmpty: true }),
+      aaApiCalls.getLastLoginByJurisdiction({
+        response: lastLoginByJurisdictionMocks.noLogins,
+      }),
       aaApiCalls.getMapData,
     ]
     await withMockFetch(expectedCalls, async () => {

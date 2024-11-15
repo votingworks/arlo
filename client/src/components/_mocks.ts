@@ -26,6 +26,7 @@ import {
 import { IStandardizedContest } from './useStandardizedContests'
 import { ISampleSizesResponse } from './AuditAdmin/Setup/Review/useSampleSizes'
 import { IContestChoiceNameStandardizationsResponse } from './useContestChoiceNameStandardizations'
+import { IActivity } from './AuditAdmin/ActivityLog'
 
 export const manifestFile = new File(
   ['fake manifest - contents dont matter'],
@@ -476,6 +477,65 @@ export const cvrsMocks = mocksOfType<ICvrFileInfo>()({
       status: FileProcessingStatus.ERRORED,
     },
     numBallots: null,
+  },
+})
+
+const now = new Date().toLocaleString()
+export const lastLoginByJurisdictionMocks = mocksOfType<
+  Record<string, IActivity>
+>()({
+  noLogins: {},
+  oneLogin: {
+    'jurisdiction-id-1': {
+      id: '1',
+      activityName: 'JurisdictionAdminLogin',
+      timestamp: now,
+      user: {
+        type: 'jurisdiction-admin',
+        key: 'ja-1@example.com',
+        supportUser: false,
+      },
+      election: null,
+      info: {},
+    },
+  },
+  allLogins: {
+    'jurisdiction-id-1': {
+      id: '1',
+      activityName: 'JurisdictionAdminLogin',
+      timestamp: now,
+      user: {
+        type: 'jurisdiction-admin',
+        key: 'ja-1@example.com',
+        supportUser: false,
+      },
+      election: null,
+      info: {},
+    },
+    'jurisdiction-id-2': {
+      id: '2',
+      activityName: 'JurisdictionAdminLogin',
+      timestamp: now,
+      user: {
+        type: 'jurisdiction-admin',
+        key: 'ja-2@example.com',
+        supportUser: false,
+      },
+      election: null,
+      info: {},
+    },
+    'jurisdiction-id-3': {
+      id: '3',
+      activityName: 'JurisdictionAdminLogin',
+      timestamp: now,
+      user: {
+        type: 'jurisdiction-admin',
+        key: 'ja-3@example.com',
+        supportUser: false,
+      },
+      election: null,
+      info: {},
+    },
   },
 })
 
@@ -2014,52 +2074,15 @@ export const aaApiCalls = {
       ],
     },
   },
-  getLastLoginByJurisdiction: (options?: { responseIsEmpty: boolean }) => {
-    let lastLoginByJurisdiction = {}
-    if (!options?.responseIsEmpty) {
-      const timestamp = new Date().toLocaleString()
-      lastLoginByJurisdiction = {
-        'jurisdiction-id-1': {
-          id: '1',
-          activityName: 'JurisdictionAdminLogin',
-          timestamp,
-          user: {
-            type: 'jurisdiction-admin',
-            key: 'ja-1@example.com',
-            supportUser: false,
-          },
-          election: null,
-          info: {},
-        },
-        'jurisdiction-id-2': {
-          id: '2',
-          activityName: 'JurisdictionAdminLogin',
-          timestamp,
-          user: {
-            type: 'jurisdiction-admin',
-            key: 'ja-2@example.com',
-            supportUser: false,
-          },
-          election: null,
-          info: {},
-        },
-        'jurisdiction-id-3': {
-          id: '3',
-          activityName: 'JurisdictionAdminLogin',
-          timestamp,
-          user: {
-            type: 'jurisdiction-admin',
-            key: 'ja-3@example.com',
-            supportUser: false,
-          },
-          election: null,
-          info: {},
-        },
-      }
-    }
+  getLastLoginByJurisdiction: (options?: {
+    response?: Record<string, IActivity>
+  }) => {
     return {
       url: '/api/election/1/jurisdictions/last-login',
-      response: { lastLoginByJurisdiction },
+      response: {
+        lastLoginByJurisdiction:
+          options?.response ?? lastLoginByJurisdictionMocks.allLogins,
+      },
     }
   },
   getBatchJurisdictions: {
