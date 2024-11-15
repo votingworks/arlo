@@ -195,30 +195,48 @@ const Progress: React.FC<IProgressProps> = ({
             return null
         }
       },
-      sortType: sortByRank(
-        ({ currentRoundStatus, ballotManifest, batchTallies, cvrs }) => {
-          if (!currentRoundStatus) {
-            const files: IFileInfo['processing'][] = [ballotManifest.processing]
-            if (batchTallies) files.push(batchTallies.processing)
-            if (cvrs) files.push(cvrs.processing)
+      sortType: sortByRank((jurisdiction: IJurisdiction) => {
+        const {
+          currentRoundStatus,
+          ballotManifest,
+          batchTallies,
+          cvrs,
+        } = jurisdiction
+        const progressStatus = getJurisdictionStatus(
+          jurisdiction,
+          lastLoginQuery.data![jurisdiction.id]
+        )
+        const hasLoggedIn = ![
+          JurisdictionProgressStatus.UPLOADS_NOT_STARTED_NO_LOGIN,
+          JurisdictionProgressStatus.AUDIT_NOT_STARTED_NO_LOGIN,
+        ].includes(progressStatus)
 
-            const numComplete = files.filter(
-              f => f && f.status === FileProcessingStatus.PROCESSED
-            ).length
-            const anyFailed = files.some(
-              f => f && f.status === FileProcessingStatus.ERRORED
-            )
-            if (anyFailed) return 0
-            if (numComplete === 0) return -1
-            return numComplete
-          }
-          return {
-            [JurisdictionRoundStatus.NOT_STARTED]: 0,
-            [JurisdictionRoundStatus.IN_PROGRESS]: 1,
-            [JurisdictionRoundStatus.COMPLETE]: 2,
-          }[currentRoundStatus.status]
+        if (!currentRoundStatus) {
+          const files: IFileInfo['processing'][] = [ballotManifest.processing]
+          if (batchTallies) files.push(batchTallies.processing)
+          if (cvrs) files.push(cvrs.processing)
+
+          const numComplete = files.filter(
+            f => f && f.status === FileProcessingStatus.PROCESSED
+          ).length
+          const anyFailed = files.some(
+            f => f && f.status === FileProcessingStatus.ERRORED
+          )
+          if (anyFailed) return hasLoggedIn ? 0 : -1
+          if (numComplete === 0) return hasLoggedIn ? -1 : -2
+          return numComplete
         }
-      ),
+        return {
+          [JurisdictionRoundStatus.NOT_STARTED]: () => {
+            if (hasLoggedIn) {
+              return 0
+            }
+            return 1
+          },
+          [JurisdictionRoundStatus.IN_PROGRESS]: () => 2,
+          [JurisdictionRoundStatus.COMPLETE]: () => 3,
+        }[currentRoundStatus.status]()
+      }),
       Footer: info => {
         const numJurisdictionsComplete = sum(
           info.rows.map(row => {
