@@ -10,9 +10,8 @@ from sqlalchemy import func
 from sqlalchemy.orm import joinedload
 from werkzeug.exceptions import Conflict, BadRequest
 
-from server.api.activity import serialize_activity
-
 from . import api
+from .activity import serialize_activity
 from ..models import *  # pylint: disable=wildcard-import
 from ..database import db_session
 from ..auth import restrict_access, UserType
@@ -543,53 +542,34 @@ def batch_round_status(election: Election, round: Round) -> Dict[str, JSONDict]:
 )
 @restrict_access([UserType.AUDIT_ADMIN])
 def get_last_login_by_jurisdiction(election: Election):
-    # Get all jurisdiction IDs for this election
-    jurisdiction_ids = [
-        jurisdiction_id
-        for (jurisdiction_id,) in Jurisdiction.query.with_entities(Jurisdiction.id)
-        .filter_by(election_id=election.id)
-        .all()
-    ]
-
     # Look for events after most recent round started, or election creation time
     # if no rounds exist yet
-    query_timestamp_after = election.created_at
-    round = (
-        Round.query.filter_by(election_id=election.id)
-        .order_by(Round.created_at.desc())
-        .one_or_none()
+    current_round = get_current_round(election)
+    query_timestamp_after = (
+        current_round.created_at if current_round else election.created_at
     )
-    if round is not None:
-        query_timestamp_after = round.created_at
 
     # Query for login activities from users who are related to jurisdictions we found earlier
-    activities = (
+    activities = dict(
         ActivityLogRecord.query.join(
             User, ActivityLogRecord.info["base"]["user_key"].astext == User.email
         )
         .join(User.jurisdictions)
         .filter(
-            Jurisdiction.id.in_(jurisdiction_ids),
+            Jurisdiction.election_id == election.id,
             ActivityLogRecord.organization_id == election.organization_id,
             ActivityLogRecord.timestamp > query_timestamp_after,
             ActivityLogRecord.activity_name == "JurisdictionAdminLogin",
         )
-        .add_columns(Jurisdiction.id.label("jurisdiction_id"))
+        .order_by(Jurisdiction.id, ActivityLogRecord.timestamp.desc())
+        .distinct(Jurisdiction.id)
+        .with_entities(Jurisdiction.id, ActivityLogRecord)
         .all()
     )
 
-    # Get the most recent login activity for each jurisdiction
-    last_login_by_jurisdiction: Dict[str, ActivityLogRecord] = {}
-    for activity, jurisdiction_id in activities:
-        if (jurisdiction_id not in last_login_by_jurisdiction) or (
-            activity.timestamp > last_login_by_jurisdiction[jurisdiction_id].timestamp
-        ):
-            last_login_by_jurisdiction[jurisdiction_id] = activity
-
-    # Serialize and return
     serialized = {
         jurisdiction_id: serialize_activity(activity)
-        for jurisdiction_id, activity in last_login_by_jurisdiction.items()
+        for jurisdiction_id, activity in activities.items()
     }
 
     return jsonify({"lastLoginByJurisdiction": serialized})
