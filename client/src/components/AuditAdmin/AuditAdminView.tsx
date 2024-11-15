@@ -18,7 +18,6 @@ import {
   jurisdictionsQueryKey,
   jurisdictionsWithLastLoginQueryKey,
   useJurisdictions,
-  useLastLoginByJurisdiction,
 } from '../useJurisdictions'
 import { useContests } from '../useContests'
 import { useAuditSettings } from '../useAuditSettings'
@@ -69,18 +68,11 @@ const AuditAdminView: React.FC = () => {
   const contestsQuery = useContests(electionId)
   const auditSettingsQuery = useAuditSettings(electionId)
 
-  // Used only by <Progress>, but memoization of sort/filter behavior late in that component's render logic
-  // throws an error when short-circuiting react-query queries that are in flight.
-  const lastActivityByJurisdictionsQuery = useLastLoginByJurisdiction(
-    electionId
-  )
-
   if (
     !jurisdictionsQuery.isSuccess ||
     !contestsQuery.isSuccess ||
     !roundsQuery.isSuccess ||
-    !auditSettingsQuery.isSuccess ||
-    !lastActivityByJurisdictionsQuery.isSuccess
+    !auditSettingsQuery.isSuccess
   ) {
     return null // Still loading
   }
@@ -89,7 +81,6 @@ const AuditAdminView: React.FC = () => {
   const rounds = roundsQuery.data
   const auditSettings = auditSettingsQuery.data
   const jurisdictions = jurisdictionsQuery.data
-  const lastActivityByJurisdiction = lastActivityByJurisdictionsQuery.data
 
   if (isDrawingSample(rounds)) {
     return (
@@ -180,7 +171,6 @@ const AuditAdminView: React.FC = () => {
             <Inner>
               <Progress
                 jurisdictions={jurisdictions}
-                lastLoginByJurisdiction={lastActivityByJurisdiction}
                 auditSettings={auditSettings}
                 round={rounds.length > 0 ? rounds[rounds.length - 1] : null}
               />

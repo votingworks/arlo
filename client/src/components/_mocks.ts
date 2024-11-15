@@ -26,7 +26,6 @@ import {
 import { IStandardizedContest } from './useStandardizedContests'
 import { ISampleSizesResponse } from './AuditAdmin/Setup/Review/useSampleSizes'
 import { IContestChoiceNameStandardizationsResponse } from './useContestChoiceNameStandardizations'
-import { IActivity } from './AuditAdmin/ActivityLog'
 
 export const manifestFile = new File(
   ['fake manifest - contents dont matter'],
@@ -2015,10 +2014,53 @@ export const aaApiCalls = {
       ],
     },
   },
-  getLastLoginByJurisdiction: () => ({
+  getLastLoginByJurisdictionEmpty: () => ({
     url: '/api/election/1/jurisdictions/last-login',
     response: {
       lastLoginByJurisdiction: {},
+    },
+  }),
+  getLastLoginByJurisdiction: (timestamp: Date) => ({
+    url: '/api/election/1/jurisdictions/last-login',
+    response: {
+      lastLoginByJurisdiction: {
+        'jurisdiction-id-1': {
+          id: '1',
+          activityName: 'JurisdictionAdminLogin',
+          timestamp: timestamp.toLocaleString(),
+          user: {
+            type: 'jurisdiction-admin',
+            key: 'ja-1@example.com',
+            supportUser: false,
+          },
+          election: null,
+          info: {},
+        },
+        'jurisdiction-id-2': {
+          id: '2',
+          activityName: 'JurisdictionAdminLogin',
+          timestamp: timestamp.toLocaleString(),
+          user: {
+            type: 'jurisdiction-admin',
+            key: 'ja-2@example.com',
+            supportUser: false,
+          },
+          election: null,
+          info: {},
+        },
+        'jurisdiction-id-3': {
+          id: '3',
+          activityName: 'JurisdictionAdminLogin',
+          timestamp: timestamp.toLocaleString(),
+          user: {
+            type: 'jurisdiction-admin',
+            key: 'ja-3@example.com',
+            supportUser: false,
+          },
+          election: null,
+          info: {},
+        },
+      },
     },
   }),
   getBatchJurisdictions: {
@@ -2371,47 +2413,3 @@ export const fileInfoMocks = mocksOfType<IFileInfo>()({
     },
   },
 })
-
-export function getLastLoginMocks(
-  timestampDate: Date
-): Record<string, IActivity> {
-  const timestamp = timestampDate.toLocaleString()
-  return {
-    'jurisdiction-id-1': {
-      id: '1',
-      activityName: 'JurisdictionAdminLogin',
-      timestamp,
-      user: {
-        type: 'jurisdiction-admin',
-        key: 'ja-1@example.com',
-        supportUser: false,
-      },
-      election: null,
-      info: {},
-    },
-    'jurisdiction-id-2': {
-      id: '2',
-      activityName: 'JurisdictionAdminLogin',
-      timestamp,
-      user: {
-        type: 'jurisdiction-admin',
-        key: 'ja-2@example.com',
-        supportUser: false,
-      },
-      election: null,
-      info: {},
-    },
-    'jurisdiction-id-3': {
-      id: '3',
-      activityName: 'JurisdictionAdminLogin',
-      timestamp,
-      user: {
-        type: 'jurisdiction-admin',
-        key: 'ja-3@example.com',
-        supportUser: false,
-      },
-      election: null,
-      info: {},
-    },
-  }
-}

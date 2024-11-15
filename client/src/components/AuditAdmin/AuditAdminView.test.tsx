@@ -56,7 +56,7 @@ describe('AA setup flow', () => {
     aaApiCalls.getJurisdictions,
     aaApiCalls.getContests(contestMocks.filledTargeted),
     aaApiCalls.getSettings(auditSettingsMocks.all),
-    aaApiCalls.getLastLoginByJurisdiction(),
+    aaApiCalls.getLastLoginByJurisdictionEmpty(),
     aaApiCalls.getJurisdictionFile,
   ]
 
@@ -96,7 +96,7 @@ describe('AA setup flow', () => {
       aaApiCalls.getJurisdictions,
       aaApiCalls.getContests(contestMocks.filledTargeted),
       aaApiCalls.getSettings(auditSettingsMocks.all),
-      aaApiCalls.getLastLoginByJurisdiction(),
+      aaApiCalls.getLastLoginByJurisdictionEmpty(),
       aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.empty),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -128,7 +128,7 @@ describe('AA setup flow', () => {
       aaApiCalls.getJurisdictions,
       aaApiCalls.getContests(contestMocks.filledTargeted),
       aaApiCalls.getSettings(auditSettingsMocks.all),
-      aaApiCalls.getLastLoginByJurisdiction(),
+      aaApiCalls.getLastLoginByJurisdictionEmpty(),
       aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.empty),
       aaApiCalls.uploadJurisdictionFileGetUrl,
       aaApiCalls.uploadJurisdictionFilePostFile,
@@ -137,7 +137,7 @@ describe('AA setup flow', () => {
         jurisdictionFileMocks.processed
       ),
       aaApiCalls.getJurisdictions,
-      aaApiCalls.getLastLoginByJurisdiction(),
+      aaApiCalls.getLastLoginByJurisdictionEmpty(),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { queryAllByText } = render()
@@ -165,14 +165,14 @@ describe('AA setup flow', () => {
       aaApiCalls.getJurisdictions,
       aaApiCalls.getContests(contestMocks.filledTargeted),
       aaApiCalls.getSettings(auditSettingsMocks.all),
-      aaApiCalls.getLastLoginByJurisdiction(),
+      aaApiCalls.getLastLoginByJurisdictionEmpty(),
       aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.empty),
       aaApiCalls.uploadJurisdictionFileGetUrl,
       aaApiCalls.uploadJurisdictionFilePostFile,
       aaApiCalls.uploadJurisdictionFileUploadCompleteError,
       aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.errored),
       aaApiCalls.getJurisdictions,
-      aaApiCalls.getLastLoginByJurisdiction(),
+      aaApiCalls.getLastLoginByJurisdictionEmpty(),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { queryAllByText } = render()
@@ -199,7 +199,7 @@ describe('AA setup flow', () => {
       aaApiCalls.getJurisdictions,
       aaApiCalls.getContests(contestMocks.filledTargeted),
       aaApiCalls.getSettings(auditSettingsMocks.ballotComparisonAll),
-      aaApiCalls.getLastLoginByJurisdiction(),
+      aaApiCalls.getLastLoginByJurisdictionEmpty(),
       aaApiCalls.getJurisdictionFile,
     ]
     const expectedCalls = [
@@ -241,7 +241,7 @@ describe('AA setup flow', () => {
       aaApiCalls.getJurisdictions,
       aaApiCalls.getContests(contestMocks.filledTargeted),
       aaApiCalls.getSettings(auditSettingsMocks.all),
-      aaApiCalls.getLastLoginByJurisdiction(),
+      aaApiCalls.getLastLoginByJurisdictionEmpty(),
     ]
     await withMockFetch(expectedCalls, async () => {
       render('progress')
@@ -268,7 +268,7 @@ describe('AA setup flow', () => {
       }),
       aaApiCalls.getRounds(roundMocks.singleIncomplete),
       aaApiCalls.getJurisdictions,
-      aaApiCalls.getLastLoginByJurisdiction(),
+      aaApiCalls.getLastLoginByJurisdictionEmpty(),
       aaApiCalls.getMapData,
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -296,7 +296,7 @@ describe('AA setup flow', () => {
       aaApiCalls.getJurisdictions,
       aaApiCalls.getContests(contestMocks.filledTargeted),
       aaApiCalls.getSettings(auditSettingsMocks.all),
-      aaApiCalls.getLastLoginByJurisdiction(),
+      aaApiCalls.getLastLoginByJurisdictionEmpty(),
     ]
     const expectedCalls = [
       aaApiCalls.getUser,
@@ -308,7 +308,7 @@ describe('AA setup flow', () => {
         response: { status: 'ok' },
       },
       aaApiCalls.getJurisdictions,
-      aaApiCalls.getLastLoginByJurisdiction(),
+      aaApiCalls.getLastLoginByJurisdictionEmpty(),
       aaApiCalls.getRounds(roundMocks.empty),
       aaApiCalls.getMapData,
     ]
@@ -335,7 +335,7 @@ describe('AA setup flow', () => {
       aaApiCalls.getJurisdictions,
       aaApiCalls.getContests(contestMocks.filledTargeted),
       aaApiCalls.getSettings(auditSettingsMocks.all),
-      aaApiCalls.getLastLoginByJurisdiction(),
+      aaApiCalls.getLastLoginByJurisdictionEmpty(),
       aaApiCalls.getMapData,
       jaApiCalls.getBallotManifestFile(manifestMocks.empty),
       ...jaApiCalls.uploadManifestCalls,
@@ -344,7 +344,7 @@ describe('AA setup flow', () => {
         ...aaApiCalls.getJurisdictions,
         response: { jurisdictions: jurisdictionMocks.allManifests },
       },
-      aaApiCalls.getLastLoginByJurisdiction(),
+      aaApiCalls.getLastLoginByJurisdictionEmpty(),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = render('progress')
@@ -396,7 +396,7 @@ it('finishes a round', async () => {
     },
     aaApiCalls.getContests(contestMocks.filledTargeted),
     aaApiCalls.getSettings(auditSettingsMocks.all),
-    aaApiCalls.getLastLoginByJurisdiction(),
+    aaApiCalls.getLastLoginByJurisdictionEmpty(),
     aaApiCalls.getMapData,
     aaApiCalls.postFinishRound,
     aaApiCalls.getRounds(roundMocks.singleComplete),

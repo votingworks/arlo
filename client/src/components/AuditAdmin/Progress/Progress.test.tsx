@@ -18,7 +18,6 @@ import {
   auditBoardMocks,
   manifestMocks,
   contestMocks,
-  getLastLoginMocks,
 } from '../../_mocks'
 import Progress, { IProgressProps } from './Progress'
 import { dummyBallots } from '../../AuditBoard/_mocks'
@@ -57,7 +56,6 @@ const render = (props: Partial<IProgressProps> = {}, searchParams = '') =>
           <Progress
             {...routeProps}
             jurisdictions={jurisdictionMocks.oneManifest}
-            lastLoginByJurisdiction={props.lastLoginByJurisdiction || {}}
             auditSettings={auditSettingsMocks.all}
             round={null}
             {...props}
@@ -76,13 +74,20 @@ describe('Progress screen', () => {
 
   afterAll(() => jest.restoreAllMocks())
 
+  function getDefaultExpectedCalls() {
+    return [
+      aaApiCalls.getLastLoginByJurisdiction(new Date()),
+      aaApiCalls.getMapData,
+    ]
+  }
+
   it('shows ballot manifest upload status', async () => {
-    const expectedCalls = [aaApiCalls.getMapData]
+    const expectedCalls = getDefaultExpectedCalls()
     await withMockFetch(expectedCalls, async () => {
-      const { container } = render({
-        lastLoginByJurisdiction: getLastLoginMocks(new Date()),
+      const { container } = render()
+      await waitFor(() => {
+        expect(container.querySelectorAll('.d3-component').length).toBe(1)
       })
-      expect(container.querySelectorAll('.d3-component').length).toBe(1)
 
       await waitFor(() => {
         expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
@@ -125,7 +130,7 @@ describe('Progress screen', () => {
   })
 
   it('shows expected number of ballots in manifest and difference if provided', async () => {
-    const expectedCalls = [aaApiCalls.getMapData]
+    const expectedCalls = getDefaultExpectedCalls()
     await withMockFetch(expectedCalls, async () => {
       render({
         jurisdictions: [
@@ -186,14 +191,16 @@ describe('Progress screen', () => {
   })
 
   it('shows round status for ballot polling', async () => {
-    const expectedCalls = [aaApiCalls.getMapData]
+    const expectedCalls = getDefaultExpectedCalls()
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({
         jurisdictions: jurisdictionMocks.oneComplete,
         round: roundMocks.singleIncomplete[0],
       })
 
-      expect(container.querySelectorAll('.d3-component').length).toBe(1)
+      await waitFor(() => {
+        expect(container.querySelectorAll('.d3-component').length).toBe(1)
+      })
 
       await waitFor(() => {
         expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
@@ -219,7 +226,7 @@ describe('Progress screen', () => {
       expect(row1[4]).toHaveTextContent('6')
       const row2 = within(rows[2]).getAllByRole('cell')
       expect(row2[0]).toHaveTextContent('Jurisdiction 2')
-      expectStatusTag(row2[1], 'Not logged in', 'none')
+      expectStatusTag(row2[1], 'Logged in', 'warning')
       expect(row2[2]).toHaveTextContent('2,117')
       expect(row2[3]).toHaveTextContent('0')
       expect(row2[4]).toHaveTextContent('20')
@@ -245,7 +252,7 @@ describe('Progress screen', () => {
 
   it('shows round and discrepancy status for ballot comparison', async () => {
     const expectedCalls = [
-      aaApiCalls.getMapData,
+      // aaApiCalls.getMapData,
       aaApiCalls.getDiscrepancies({
         [jurisdictionMocks.oneComplete[1].id]: {
           ballot1: {
@@ -271,6 +278,8 @@ describe('Progress screen', () => {
           },
         },
       }),
+      aaApiCalls.getLastLoginByJurisdictionEmpty(),
+      aaApiCalls.getMapData,
       jaApiCalls.getJurisdictionContests(
         contestMocks.two,
         jurisdictionMocks.oneComplete[1].id
@@ -283,12 +292,10 @@ describe('Progress screen', () => {
         round: roundMocks.singleIncomplete[0],
       })
 
-      expect(container.querySelectorAll('.d3-component').length).toBe(1)
+      await waitFor(() => {
+        expect(container.querySelectorAll('.d3-component').length).toBe(1)
+      })
 
-      // One spinner for each jurisdiction's discrepancy count
-      expect(container.querySelectorAll('.bp3-spinner').length).toBe(
-        1 + jurisdictionMocks.allComplete.length
-      )
       await waitFor(() => {
         expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
       })
@@ -402,7 +409,6 @@ describe('Progress screen', () => {
 
   it('shows round and discrepancy status for batch comparison', async () => {
     const expectedCalls = [
-      aaApiCalls.getMapData,
       aaApiCalls.getDiscrepancies({
         [jurisdictionMocks.oneComplete[2].id]: {
           batch1: {
@@ -414,6 +420,8 @@ describe('Progress screen', () => {
           },
         },
       }),
+      aaApiCalls.getLastLoginByJurisdictionEmpty(),
+      aaApiCalls.getMapData,
       jaApiCalls.getJurisdictionContests(
         [contestMocks.one[0]],
         jurisdictionMocks.oneComplete[2].id
@@ -426,11 +434,10 @@ describe('Progress screen', () => {
         round: roundMocks.singleIncomplete[0],
       })
 
-      expect(container.querySelectorAll('.d3-component').length).toBe(1)
-
       await waitFor(() => {
-        expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+        expect(container.querySelectorAll('.d3-component').length).toBe(1)
       })
+      expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
 
       screen.getByText('Audit Progress')
 
@@ -528,18 +535,17 @@ describe('Progress screen', () => {
   })
 
   it('toggles between ballots and samples', async () => {
-    const expectedCalls = [aaApiCalls.getMapData]
+    const expectedCalls = getDefaultExpectedCalls()
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({
         jurisdictions: jurisdictionMocks.oneComplete,
         round: roundMocks.singleIncomplete[0],
       })
 
-      expect(container.querySelectorAll('.d3-component').length).toBe(1)
-
       await waitFor(() => {
-        expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+        expect(container.querySelectorAll('.d3-component').length).toBe(1)
       })
+      expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
 
       const ballotsSwitch = screen.getByRole('checkbox', {
         name: 'Count unique sampled ballots',
@@ -582,18 +588,17 @@ describe('Progress screen', () => {
   })
 
   it('shows additional columns during setup for batch audits', async () => {
-    const expectedCalls = [aaApiCalls.getMapData]
+    const expectedCalls = getDefaultExpectedCalls()
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({
         jurisdictions: jurisdictionMocks.twoManifestsOneTallies,
         auditSettings: auditSettingsMocks.batchComparisonAll,
       })
 
-      expect(container.querySelectorAll('.d3-component').length).toBe(1)
-
       await waitFor(() => {
-        expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+        expect(container.querySelectorAll('.d3-component').length).toBe(1)
       })
+      expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
 
       const headers = screen.getAllByRole('columnheader')
       expect(headers[0]).toHaveTextContent('Jurisdiction')
@@ -632,18 +637,17 @@ describe('Progress screen', () => {
   })
 
   it('shows additional columns during setup for ballot comparison audits', async () => {
-    const expectedCalls = [aaApiCalls.getMapData]
+    const expectedCalls = getDefaultExpectedCalls()
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({
         jurisdictions: jurisdictionMocks.allManifestsSomeCVRs,
         auditSettings: auditSettingsMocks.ballotComparisonAll,
       })
 
-      expect(container.querySelectorAll('.d3-component').length).toBe(1)
-
       await waitFor(() => {
-        expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+        expect(container.querySelectorAll('.d3-component').length).toBe(1)
       })
+      expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
 
       const headers = screen.getAllByRole('columnheader')
       expect(headers[0]).toHaveTextContent('Jurisdiction')
@@ -677,15 +681,16 @@ describe('Progress screen', () => {
   })
 
   it('shows additional columns during setup for hybrid audits', async () => {
-    const expectedCalls = [aaApiCalls.getMapData]
+    const expectedCalls = getDefaultExpectedCalls()
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({
         jurisdictions: jurisdictionMocks.hybridTwoManifestsOneCvr,
         auditSettings: auditSettingsMocks.hybridAll,
-        lastLoginByJurisdiction: getLastLoginMocks(new Date()),
       })
 
-      expect(container.querySelectorAll('.d3-component').length).toBe(1)
+      await waitFor(() => {
+        expect(container.querySelectorAll('.d3-component').length).toBe(1)
+      })
 
       await waitFor(() => {
         expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
@@ -734,8 +739,9 @@ describe('Progress screen', () => {
 
   it('shows a different toggle label for batch audits', async () => {
     const expectedCalls = [
-      aaApiCalls.getMapData,
       aaApiCalls.getDiscrepancies({}),
+      aaApiCalls.getLastLoginByJurisdiction(new Date()),
+      aaApiCalls.getMapData,
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({
@@ -744,11 +750,11 @@ describe('Progress screen', () => {
         round: roundMocks.singleIncomplete[0],
       })
 
-      expect(container.querySelectorAll('.d3-component').length).toBe(1)
-
       await waitFor(() => {
-        expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+        expect(container.querySelectorAll('.d3-component').length).toBe(1)
       })
+
+      expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
 
       screen.getByRole('checkbox', {
         name: 'Count unique sampled batches',
@@ -769,18 +775,17 @@ describe('Progress screen', () => {
       .spyOn(utilities, 'downloadFile')
       .mockImplementation()
 
-    const expectedCalls = [aaApiCalls.getMapData]
+    const expectedCalls = getDefaultExpectedCalls()
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({
         jurisdictions: jurisdictionMocks.oneComplete,
         round: roundMocks.singleIncomplete[0],
       })
 
-      expect(container.querySelectorAll('.d3-component').length).toBe(1)
-
       await waitFor(() => {
-        expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+        expect(container.querySelectorAll('.d3-component').length).toBe(1)
       })
+      expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
 
       userEvent.click(
         screen.getByRole('button', { name: /Download Table as CSV/ })
@@ -794,7 +799,7 @@ describe('Progress screen', () => {
       expect(await new Response(fileBlob).text()).toEqual(
         '"Jurisdiction","Status","Ballots in Manifest","Ballots Audited","Ballots Remaining"\n' +
           '"Jurisdiction 1","In progress","2,117","4","6"\n' +
-          '"Jurisdiction 2","Not logged in","2,117","0","20"\n' +
+          '"Jurisdiction 2","Logged in","2,117","0","20"\n' +
           '"Jurisdiction 3","Complete","2,117","30","0"\n' +
           '"Total","1/3 complete","6,351","34","26"'
       )
@@ -805,7 +810,7 @@ describe('Progress screen', () => {
   })
 
   it('filters by jurisdiction name', async () => {
-    const expectedCalls = [aaApiCalls.getMapData]
+    const expectedCalls = getDefaultExpectedCalls()
     await withMockFetch(expectedCalls, async () => {
       const { container, history } = render()
       await waitFor(() => {
@@ -833,17 +838,14 @@ describe('Progress screen', () => {
   })
 
   it('sorts', async () => {
-    const expectedCalls = [aaApiCalls.getMapData]
+    const expectedCalls = getDefaultExpectedCalls()
     await withMockFetch(expectedCalls, async () => {
-      const { container, history } = render({
-        lastLoginByJurisdiction: getLastLoginMocks(new Date()),
-      })
-
-      expect(container.querySelectorAll('.d3-component').length).toBe(1)
+      const { container, history } = render()
 
       await waitFor(() => {
-        expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+        expect(container.querySelectorAll('.d3-component').length).toBe(1)
       })
+      expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
 
       expect(history.location.search).toEqual('')
 
@@ -903,7 +905,7 @@ describe('Progress screen', () => {
   })
 
   it('loads initial sort/filter state from URL search params', async () => {
-    const expectedCalls = [aaApiCalls.getMapData]
+    const expectedCalls = getDefaultExpectedCalls()
     await withMockFetch(expectedCalls, async () => {
       const { container } = render(
         {
@@ -925,18 +927,20 @@ describe('Progress screen', () => {
   })
 
   it('sorts by status once the audit is in progress', async () => {
-    const expectedCalls = [aaApiCalls.getMapData]
+    const expectedCalls = [
+      aaApiCalls.getLastLoginByJurisdictionEmpty(),
+      aaApiCalls.getMapData,
+    ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({
         jurisdictions: jurisdictionMocks.oneComplete,
         round: roundMocks.singleIncomplete[0],
       })
 
-      expect(container.querySelectorAll('.d3-component').length).toBe(1)
-
       await waitFor(() => {
-        expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+        expect(container.querySelectorAll('.d3-component').length).toBe(1)
       })
+      expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
 
       const statusHeader = screen.getByRole('columnheader', {
         name: 'Status',
@@ -957,17 +961,16 @@ describe('Progress screen', () => {
 
   it('shows the detail modal with file upload status before the audit starts', async () => {
     const expectedCalls = [
-      aaApiCalls.getMapData,
+      ...getDefaultExpectedCalls(),
       jaApiCalls.getBallotManifestFile(manifestMocks.errored),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = render()
 
-      expect(container.querySelectorAll('.d3-component').length).toBe(1)
-
       await waitFor(() => {
-        expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+        expect(container.querySelectorAll('.d3-component').length).toBe(1)
       })
+      expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
 
       // Click on a jurisdiction name to open the detail modal
       userEvent.click(screen.getByRole('button', { name: 'Jurisdiction 1' }))
@@ -994,7 +997,7 @@ describe('Progress screen', () => {
 
   it('shows the detail modal with round status after an audit starts', async () => {
     const expectedCalls = [
-      aaApiCalls.getMapData,
+      ...getDefaultExpectedCalls(),
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getAuditBoards(auditBoardMocks.unfinished),
       jaApiCalls.getBallotCount(dummyBallots.ballots),
@@ -1005,11 +1008,10 @@ describe('Progress screen', () => {
         round: roundMocks.singleIncomplete[0],
       })
 
-      expect(container.querySelectorAll('.d3-component').length).toBe(1)
-
       await waitFor(() => {
-        expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+        expect(container.querySelectorAll('.d3-component').length).toBe(1)
       })
+      expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
 
       userEvent.click(screen.getByRole('button', { name: 'Jurisdiction 1' }))
       const modal = screen
@@ -1024,18 +1026,17 @@ describe('Progress screen', () => {
   })
 
   it('shows status for ballot manifest and batch tallies for batch comparison audits', async () => {
-    const expectedCalls = [aaApiCalls.getMapData]
+    const expectedCalls = getDefaultExpectedCalls()
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({
         jurisdictions: jurisdictionMocks.twoManifestsOneTallies,
         auditSettings: auditSettingsMocks.batchComparisonAll,
       })
 
-      expect(container.querySelectorAll('.d3-component').length).toBe(1)
-
       await waitFor(() => {
-        expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+        expect(container.querySelectorAll('.d3-component').length).toBe(1)
       })
+      expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
 
       // Shows aggregated status for multiple files
       let rows = screen.getAllByRole('row')
@@ -1071,18 +1072,18 @@ describe('Progress screen', () => {
   })
 
   it('renders progress map with jurisdiction upload status', async () => {
-    const expectedCalls = [aaApiCalls.getMapData]
+    const expectedCalls = getDefaultExpectedCalls()
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({
         jurisdictions: jurisdictionMocks.uploadingWithAlabamaJurisdictions,
         auditSettings: auditSettingsMocks.batchComparisonAll,
       })
 
-      expect(container.querySelectorAll('.d3-component').length).toBe(1)
-
       await waitFor(() => {
-        expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+        expect(container.querySelectorAll('.d3-component').length).toBe(1)
       })
+      expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+
       expect(container.querySelectorAll('.county.gray').length).toBe(1) // not logged in
       expect(container.querySelectorAll('.county.progress').length).toBe(1) // in progress
       expect(container.querySelectorAll('.county.danger').length).toBe(1) // errored
@@ -1097,7 +1098,7 @@ describe('Progress screen', () => {
   })
 
   it('renders progress map with all completed jurisdictions', async () => {
-    const expectedCalls = [aaApiCalls.getMapData]
+    const expectedCalls = getDefaultExpectedCalls()
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({
         // jurisdiction name also contains "County" name
@@ -1105,17 +1106,17 @@ describe('Progress screen', () => {
         round: roundMocks.singleIncomplete[0],
       })
 
-      expect(container.querySelectorAll('.d3-component').length).toBe(1)
-
       await waitFor(() => {
-        expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+        expect(container.querySelectorAll('.d3-component').length).toBe(1)
       })
+      expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+
       expect(container.querySelectorAll('.county.success').length).toBe(3) // all completed
     })
   })
 
   it('renders progress map with 2 matched & completed jurisdictions', async () => {
-    const expectedCalls = [aaApiCalls.getMapData]
+    const expectedCalls = getDefaultExpectedCalls()
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({
         // jurisdiction name also contains "County" name
@@ -1124,11 +1125,11 @@ describe('Progress screen', () => {
         round: roundMocks.singleIncomplete[0],
       })
 
-      expect(container.querySelectorAll('.d3-component').length).toBe(1)
-
       await waitFor(() => {
-        expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+        expect(container.querySelectorAll('.d3-component').length).toBe(1)
       })
+      expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+
       expect(container.querySelectorAll('.county.success').length).toBe(2) // all completed
 
       // should including showing map label
@@ -1137,7 +1138,7 @@ describe('Progress screen', () => {
   })
 
   it('does not render progress map with 1 matched & completed jurisdictions', async () => {
-    const expectedCalls = [aaApiCalls.getMapData]
+    const expectedCalls = getDefaultExpectedCalls()
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({
         // jurisdiction name also contains "County" name
@@ -1146,11 +1147,10 @@ describe('Progress screen', () => {
         round: roundMocks.singleIncomplete[0],
       })
 
-      expect(container.querySelectorAll('.d3-component').length).toBe(1)
-
       await waitFor(() => {
-        expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+        expect(container.querySelectorAll('.d3-component').length).toBe(1)
       })
+      expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
 
       // should not show map label
       expect(screen.queryAllByText('Complete').length).toBe(3) // all completed

@@ -19,6 +19,7 @@ import {
   JurisdictionProgressStatus,
   useDiscrepanciesByJurisdiction,
   DiscrepanciesByJurisdiction,
+  useLastLoginByJurisdiction,
 } from '../../useJurisdictions'
 import JurisdictionDetail from './JurisdictionDetail'
 import {
@@ -37,7 +38,6 @@ import { apiDownload, assert } from '../../utilities'
 import AsyncButton from '../../Atoms/AsyncButton'
 import useSearchParams from '../../useSearchParams'
 import { JurisdictionDiscrepancies } from './JurisdictionDiscrepancies'
-import { IActivity } from '../ActivityLog'
 
 const Wrapper = styled.div`
   flex-grow: 1;
@@ -77,14 +77,12 @@ const countDiscrepanciesForJurisdiction = (
 
 export interface IProgressProps {
   jurisdictions: IJurisdiction[]
-  lastLoginByJurisdiction: Record<string, IActivity>
   auditSettings: IAuditSettings
   round: IRound | null
 }
 
 const Progress: React.FC<IProgressProps> = ({
   jurisdictions,
-  lastLoginByJurisdiction,
   auditSettings,
   round,
 }: IProgressProps) => {
@@ -96,6 +94,8 @@ const Progress: React.FC<IProgressProps> = ({
   const discrepancyQuery = useDiscrepanciesByJurisdiction(electionId, {
     enabled: showDiscrepancies,
   })
+  const lastLoginQuery = useLastLoginByJurisdiction(electionId)
+
   // Store sort and filter state in URL search params to allow it to persist
   // across page refreshes
   const [sortAndFilterState, setSortAndFilterState] = useSearchParams<{
@@ -157,7 +157,7 @@ const Progress: React.FC<IProgressProps> = ({
 
         const jurisdictionStatus = getJurisdictionStatus(
           jurisdiction,
-          lastLoginByJurisdiction[jurisdiction.id]
+          lastLoginQuery.data![jurisdiction.id]
         )
         switch (jurisdictionStatus) {
           case JurisdictionProgressStatus.UPLOADS_COMPLETE:
@@ -454,6 +454,12 @@ const Progress: React.FC<IProgressProps> = ({
   )
 
   const splitTableControlsAcrossTwoRows = Boolean(showDiscrepancies)
+
+  if (!lastLoginQuery.isSuccess) {
+    return null
+  }
+
+  const lastLoginByJurisdiction = lastLoginQuery.data
 
   return (
     <Wrapper>

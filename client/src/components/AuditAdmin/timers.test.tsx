@@ -50,11 +50,11 @@ describe('timers', () => {
       aaApiCalls.getJurisdictions,
       aaApiCalls.getContests(contestMocks.filledTargeted),
       aaApiCalls.getSettings(auditSettingsMocks.all),
-      aaApiCalls.getLastLoginByJurisdiction(),
+      aaApiCalls.getLastLoginByJurisdictionEmpty(),
       aaApiCalls.getMapData,
       aaApiCalls.getRounds([]),
       aaApiCalls.getJurisdictions,
-      aaApiCalls.getLastLoginByJurisdiction(),
+      aaApiCalls.getLastLoginByJurisdictionEmpty(),
       aaApiCalls.getMapData,
     ]
     await withMockFetch(expectedCalls, async () => {
