@@ -190,6 +190,7 @@ const Progress: React.FC<IProgressProps> = ({
             return <Status intent="warning">Logged in</Status>
           case JurisdictionProgressStatus.AUDIT_NOT_STARTED_NO_LOGIN:
             return <Status>Not logged in</Status>
+          /* istanbul ignore next - unreachable when exhaustive */
           default:
             return null
         }

@@ -126,6 +126,37 @@ describe('Progress screen', () => {
     })
   })
 
+  it('shows not-logged-in status when no logins exist and audit has not started', async () => {
+    const expectedCalls = [
+      aaApiCalls.getLastLoginByJurisdiction({ responseIsEmpty: true }),
+      aaApiCalls.getMapData,
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { container } = render()
+      await waitFor(() => {
+        expect(container.querySelectorAll('.d3-component').length).toBe(1)
+      })
+
+      await waitFor(() => {
+        expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+      })
+
+      screen.getByText('Audit Progress')
+
+      const headers = screen.getAllByRole('columnheader')
+      expect(headers).toHaveLength(3)
+      expect(headers[0]).toHaveTextContent('Jurisdiction')
+      expect(headers[1]).toHaveTextContent('Status')
+      expect(headers[2]).toHaveTextContent('Ballots in Manifest')
+
+      const rows = screen.getAllByRole('row')
+      expect(rows).toHaveLength(jurisdictionMocks.oneManifest.length + 2) // includes headers and footers
+      const row2 = within(rows[2]).getAllByRole('cell')
+      expect(row2[0]).toHaveTextContent('Jurisdiction 2')
+      expectStatusTag(row2[1], 'Not logged in', 'none')
+    })
+  })
+
   it('shows expected number of ballots in manifest and difference if provided', async () => {
     const expectedCalls = getDefaultExpectedCalls()
     await withMockFetch(expectedCalls, async () => {
