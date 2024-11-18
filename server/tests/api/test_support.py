@@ -241,6 +241,12 @@ def test_support_list_active_elections(
         },
     )
 
+    # Mark election as deleted and make sure it's not visible
+    client.delete(f"/api/election/{election_id}")
+    rv = client.get("/api/support/elections/active")
+    elections = json.loads(rv.data)
+    assert len(elections) == 0
+
 
 def test_support_get_election(
     client: FlaskClient,
