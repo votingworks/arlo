@@ -210,7 +210,7 @@ def test_support_list_active_elections(
         ActivityLogRecord.info["base"]["election_id"].as_string() == older_election_id
     ).all()
     for activity in older_election_activities:
-        activity.timestamp = activity.timestamp - timedelta(days=14)
+        activity.timestamp = activity.timestamp - timedelta(days=7)
     db_session.commit()
 
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)

@@ -94,7 +94,7 @@ def list_active_elections():
         )
         .filter(
             ActivityLogRecord.timestamp
-            > datetime.now(timezone.utc) - timedelta(days=14),
+            > datetime.now(timezone.utc) - timedelta(days=7),
             # SQLAlchemy requires == operator. See https://stackoverflow.com/questions/5602918/select-null-values-in-sqlalchemy
             # pylint: disable-next=singleton-comparison
             Election.deleted_at == None,
