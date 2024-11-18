@@ -14,11 +14,7 @@ import {
   IRound,
   useFinishRound,
 } from './useRoundsAuditAdmin'
-import {
-  jurisdictionsQueryKey,
-  jurisdictionsWithLastLoginQueryKey,
-  useJurisdictions,
-} from '../useJurisdictions'
+import { jurisdictionsQueryKey, useJurisdictions } from '../useJurisdictions'
 import { useContests } from '../useContests'
 import { useAuditSettings } from '../useAuditSettings'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
@@ -52,9 +48,6 @@ const AuditAdminView: React.FC = () => {
         isDrawSampleComplete(rounds)
       ) {
         queryClient.invalidateQueries(jurisdictionsQueryKey(electionId))
-        queryClient.invalidateQueries(
-          jurisdictionsWithLastLoginQueryKey(electionId)
-        )
         history.push(`/election/${electionId}/progress`)
       }
       lastFetchedRounds.current = rounds
@@ -161,9 +154,6 @@ const AuditAdminView: React.FC = () => {
               refresh={() => {
                 queryClient.invalidateQueries(roundsQueryKey(electionId))
                 queryClient.invalidateQueries(jurisdictionsQueryKey(electionId))
-                queryClient.invalidateQueries(
-                  jurisdictionsWithLastLoginQueryKey(electionId)
-                )
               }}
             />
           </AuditAdminStatusBox>
