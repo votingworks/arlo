@@ -19,6 +19,7 @@ import {
   JurisdictionProgressStatus,
   useDiscrepanciesByJurisdiction,
   DiscrepanciesByJurisdiction,
+  useLastLoginByJurisdiction,
 } from '../../useJurisdictions'
 import JurisdictionDetail from './JurisdictionDetail'
 import {
@@ -93,6 +94,8 @@ const Progress: React.FC<IProgressProps> = ({
   const discrepancyQuery = useDiscrepanciesByJurisdiction(electionId, {
     enabled: showDiscrepancies,
   })
+  const lastLoginQuery = useLastLoginByJurisdiction(electionId)
+
   // Store sort and filter state in URL search params to allow it to persist
   // across page refreshes
   const [sortAndFilterState, setSortAndFilterState] = useSearchParams<{
@@ -152,7 +155,10 @@ const Progress: React.FC<IProgressProps> = ({
         ).length
         const filesUploadedText = `${numComplete}/${files.length} files uploaded`
 
-        const jurisdictionStatus = getJurisdictionStatus(jurisdiction)
+        const jurisdictionStatus = getJurisdictionStatus(
+          jurisdiction,
+          lastLoginQuery.data![jurisdiction.id]
+        )
         switch (jurisdictionStatus) {
           case JurisdictionProgressStatus.UPLOADS_COMPLETE:
             return (
@@ -172,48 +178,76 @@ const Progress: React.FC<IProgressProps> = ({
             )
           case JurisdictionProgressStatus.UPLOADS_IN_PROGRESS:
             return <Status intent="warning">{filesUploadedText}</Status>
-          case JurisdictionProgressStatus.UPLOADS_NOT_STARTED:
-            return (
-              <Status>
-                {auditType === 'BALLOT_POLLING'
-                  ? 'No manifest uploaded'
-                  : filesUploadedText}
-              </Status>
-            )
+          case JurisdictionProgressStatus.UPLOADS_NOT_STARTED_LOGGED_IN:
+            return <Status intent="warning">Logged in</Status>
+          case JurisdictionProgressStatus.UPLOADS_NOT_STARTED_NO_LOGIN:
+            return <Status>Not logged in</Status>
           case JurisdictionProgressStatus.AUDIT_IN_PROGRESS:
             return <Status intent="warning">In progress</Status>
           case JurisdictionProgressStatus.AUDIT_COMPLETE:
             return <Status intent="success">Complete</Status>
-          case JurisdictionProgressStatus.AUDIT_NOT_STARTED:
-            return <Status>Not started</Status>
+          case JurisdictionProgressStatus.AUDIT_NOT_STARTED_LOGGED_IN:
+            return <Status intent="warning">Logged in</Status>
+          case JurisdictionProgressStatus.AUDIT_NOT_STARTED_NO_LOGIN:
+            return <Status>Not logged in</Status>
+          /* istanbul ignore next - unreachable when exhaustive */
           default:
             return null
         }
       },
-      sortType: sortByRank(
-        ({ currentRoundStatus, ballotManifest, batchTallies, cvrs }) => {
-          if (!currentRoundStatus) {
-            const files: IFileInfo['processing'][] = [ballotManifest.processing]
-            if (batchTallies) files.push(batchTallies.processing)
-            if (cvrs) files.push(cvrs.processing)
+      sortType: sortByRank((jurisdiction: IJurisdiction) => {
+        const {
+          currentRoundStatus,
+          ballotManifest,
+          batchTallies,
+          cvrs,
+        } = jurisdiction
+        const progressStatus = getJurisdictionStatus(
+          jurisdiction,
+          lastLoginQuery.data![jurisdiction.id]
+        )
+        const hasLoggedIn = ![
+          JurisdictionProgressStatus.UPLOADS_NOT_STARTED_NO_LOGIN,
+          JurisdictionProgressStatus.AUDIT_NOT_STARTED_NO_LOGIN,
+        ].includes(progressStatus)
 
-            const numComplete = files.filter(
-              f => f && f.status === FileProcessingStatus.PROCESSED
-            ).length
-            const anyFailed = files.some(
-              f => f && f.status === FileProcessingStatus.ERRORED
-            )
-            if (anyFailed) return 0
-            if (numComplete === 0) return -1
-            return numComplete
-          }
-          return {
-            [JurisdictionRoundStatus.NOT_STARTED]: 0,
-            [JurisdictionRoundStatus.IN_PROGRESS]: 1,
-            [JurisdictionRoundStatus.COMPLETE]: 2,
-          }[currentRoundStatus.status]
+        /**
+         * Ascending sort order ...
+         *
+         * When round has not started:
+         * -2. Not logged in, no file uploads completed
+         * -1. Logged in, no file uploads completed
+         *  0. Logged in, uploads attempted but failed
+         *  n. Order by successful processed files regardless of login status
+         *
+         * When round has been started
+         * 0: Not logged in, audit actions not taken
+         * 1. Logged in, audit actions not taken
+         * 2. Audit in progress, regardless of login status
+         * 3. Audit complete, regardless of login status
+         */
+
+        if (!currentRoundStatus) {
+          const files: IFileInfo['processing'][] = [ballotManifest.processing]
+          if (batchTallies) files.push(batchTallies.processing)
+          if (cvrs) files.push(cvrs.processing)
+
+          const numComplete = files.filter(
+            f => f && f.status === FileProcessingStatus.PROCESSED
+          ).length
+          const anyFailed = files.some(
+            f => f && f.status === FileProcessingStatus.ERRORED
+          )
+          if (anyFailed) return 0
+          if (numComplete === 0) return hasLoggedIn ? -1 : -2
+          return numComplete
         }
-      ),
+        return {
+          [JurisdictionRoundStatus.NOT_STARTED]: hasLoggedIn ? 1 : 0,
+          [JurisdictionRoundStatus.IN_PROGRESS]: 2,
+          [JurisdictionRoundStatus.COMPLETE]: 3,
+        }[currentRoundStatus.status]
+      }),
       Footer: info => {
         const numJurisdictionsComplete = sum(
           info.rows.map(row => {
@@ -451,6 +485,12 @@ const Progress: React.FC<IProgressProps> = ({
 
   const splitTableControlsAcrossTwoRows = Boolean(showDiscrepancies)
 
+  if (!lastLoginQuery.isSuccess) {
+    return null
+  }
+
+  const lastLoginByJurisdiction = lastLoginQuery.data
+
   return (
     <Wrapper>
       <H2Title>Audit Progress</H2Title>
@@ -511,6 +551,7 @@ const Progress: React.FC<IProgressProps> = ({
               jurisdiction => jurisdiction.id === jurisdictionDetailId
             )!
           }
+          lastLoginActivity={lastLoginByJurisdiction[jurisdictionDetailId]}
           electionId={electionId}
           round={round}
           handleClose={() => setJurisdictionDetailId(null)}

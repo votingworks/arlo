@@ -14,7 +14,11 @@ import {
   IRound,
   useFinishRound,
 } from './useRoundsAuditAdmin'
-import { useJurisdictions, jurisdictionsQueryKey } from '../useJurisdictions'
+import {
+  jurisdictionsQueryKey,
+  jurisdictionsWithLastLoginQueryKey,
+  useJurisdictions,
+} from '../useJurisdictions'
 import { useContests } from '../useContests'
 import { useAuditSettings } from '../useAuditSettings'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
@@ -48,16 +52,19 @@ const AuditAdminView: React.FC = () => {
         isDrawSampleComplete(rounds)
       ) {
         queryClient.invalidateQueries(jurisdictionsQueryKey(electionId))
+        queryClient.invalidateQueries(
+          jurisdictionsWithLastLoginQueryKey(electionId)
+        )
         history.push(`/election/${electionId}/progress`)
       }
       lastFetchedRounds.current = rounds
     },
   })
+  const jurisdictionsQuery = useJurisdictions(electionId)
   const startNextRoundMutation = useStartNextRound(electionId)
   const finishRoundMutation = useFinishRound(electionId)
   const undoRoundStartMutation = useUndoRoundStart(electionId)
 
-  const jurisdictionsQuery = useJurisdictions(electionId)
   const contestsQuery = useContests(electionId)
   const auditSettingsQuery = useAuditSettings(electionId)
 
@@ -66,13 +73,14 @@ const AuditAdminView: React.FC = () => {
     !contestsQuery.isSuccess ||
     !roundsQuery.isSuccess ||
     !auditSettingsQuery.isSuccess
-  )
+  ) {
     return null // Still loading
+  }
 
-  const jurisdictions = jurisdictionsQuery.data
   const contests = contestsQuery.data
   const rounds = roundsQuery.data
   const auditSettings = auditSettingsQuery.data
+  const jurisdictions = jurisdictionsQuery.data
 
   if (isDrawingSample(rounds)) {
     return (
@@ -153,6 +161,9 @@ const AuditAdminView: React.FC = () => {
               refresh={() => {
                 queryClient.invalidateQueries(roundsQueryKey(electionId))
                 queryClient.invalidateQueries(jurisdictionsQueryKey(electionId))
+                queryClient.invalidateQueries(
+                  jurisdictionsWithLastLoginQueryKey(electionId)
+                )
               }}
             />
           </AuditAdminStatusBox>

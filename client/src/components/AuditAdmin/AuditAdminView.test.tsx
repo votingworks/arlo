@@ -260,6 +260,7 @@ describe('AA setup flow', () => {
       }),
       aaApiCalls.getRounds(roundMocks.singleIncomplete),
       aaApiCalls.getJurisdictions,
+      aaApiCalls.getLastLoginByJurisdiction(),
       aaApiCalls.getMapData,
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -299,6 +300,7 @@ describe('AA setup flow', () => {
       },
       aaApiCalls.getJurisdictions,
       aaApiCalls.getRounds(roundMocks.empty),
+      aaApiCalls.getLastLoginByJurisdiction(),
       aaApiCalls.getMapData,
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -324,6 +326,7 @@ describe('AA setup flow', () => {
       aaApiCalls.getJurisdictions,
       aaApiCalls.getContests(contestMocks.filledTargeted),
       aaApiCalls.getSettings(auditSettingsMocks.all),
+      aaApiCalls.getLastLoginByJurisdiction(),
       aaApiCalls.getMapData,
       jaApiCalls.getBallotManifestFile(manifestMocks.empty),
       ...jaApiCalls.uploadManifestCalls,
@@ -332,6 +335,7 @@ describe('AA setup flow', () => {
         ...aaApiCalls.getJurisdictions,
         response: { jurisdictions: jurisdictionMocks.allManifests },
       },
+      aaApiCalls.getLastLoginByJurisdiction(),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = render('progress')
@@ -344,7 +348,7 @@ describe('AA setup flow', () => {
       let rows = screen.getAllByRole('row')
       let row1 = within(rows[1]).getAllByRole('cell')
       expect(row1[0]).toHaveTextContent('Jurisdiction One')
-      within(row1[1]).getByText('No manifest uploaded')
+      within(row1[1]).getByText('Logged in')
 
       // Click on a jurisdiction name to open the detail modal
       userEvent.click(screen.getByRole('button', { name: 'Jurisdiction One' }))
@@ -383,6 +387,7 @@ it('finishes a round', async () => {
     },
     aaApiCalls.getContests(contestMocks.filledTargeted),
     aaApiCalls.getSettings(auditSettingsMocks.all),
+    aaApiCalls.getLastLoginByJurisdiction(),
     aaApiCalls.getMapData,
     aaApiCalls.postFinishRound,
     aaApiCalls.getRounds(roundMocks.singleComplete),

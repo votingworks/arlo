@@ -1,8 +1,14 @@
 import json, io
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List
 from flask.testing import FlaskClient
 
+from ...activity_log.activity_log import (
+    ActivityBase,
+    JurisdictionAdminLogin,
+    record_activity,
+)
+from ...auth.auth_routes import record_login
 from ..helpers import *  # pylint: disable=wildcard-import
 from ...auth import UserType
 from ...database import db_session
@@ -429,3 +435,118 @@ def test_discrepancy_non_batch_comparison_enabled(
             }
         ]
     }
+
+
+def test_last_login_by_jurisdiction_with_round(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_ids: str,
+):
+    # J3 has a unique JM which makes this test simpler
+    jurisdiction_id = jurisdiction_ids[2]
+    jurisdiction = Jurisdiction.query.filter_by(id=jurisdiction_id).one()
+    user = User.query.filter(User.jurisdictions.any(id=jurisdiction_id)).one()
+
+    # Log in before round starts
+    record_login(user)
+
+    # Should be able to see the login event
+    def assert_login_event():
+        rv = client.get(f"/api/election/{election_id}/jurisdictions/last-login")
+        logins = json.loads(rv.data)
+
+        expectation = {}
+        expectation[jurisdiction.id] = {
+            "activityName": "JurisdictionAdminLogin",
+            "election": None,
+            "id": assert_is_id,
+            "info": {"error": None},
+            "timestamp": assert_is_date,
+            "user": {
+                "key": asserts_startswith("j3"),
+                "supportUser": None,
+                "type": "jurisdiction_admin",
+            },
+        }
+        compare_json(logins, {"lastLoginByJurisdiction": expectation})
+
+    assert_login_event()
+
+    # Start the audit
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 1,
+            "sampleSizes": {contest_ids[0]: {"size": 100, "key": "0.7", "prob": 1}},
+        },
+    )
+    assert_ok(rv)
+
+    # Should no longer be able to see the login event because it happened before round start
+    rv = client.get(f"/api/election/{election_id}/jurisdictions/last-login")
+    logins = json.loads(rv.data)
+    assert logins == {"lastLoginByJurisdiction": {}}
+
+    # Log in after round start
+    record_login(user)
+    # Should be able to see the latest event
+    assert_login_event()
+
+
+def test_last_login_by_jurisdiction_most_recent(client: FlaskClient, election_id: str):
+    rv = upload_jurisdictions_file(
+        client,
+        io.BytesIO(b"Jurisdiction,Admin Email\nJ1,a1@example.com\nJ1,a2@example.com"),
+        election_id,
+    )
+    assert_ok(rv)
+
+    election = Election.query.filter_by(id=election_id).one()
+    assert [j.name for j in election.jurisdictions] == ["J1"]
+
+    jurisdiction = election.jurisdictions[0]
+    assert [a.user.email for a in jurisdiction.jurisdiction_administrations] == [
+        "a1@example.com",
+        "a2@example.com",
+    ]
+
+    user_1 = User.query.filter_by(email="a1@example.com").one()
+    user_2 = User.query.filter_by(email="a2@example.com").one()
+
+    organization = list(user_1.jurisdictions)[0].election.organization
+    record_activity(
+        JurisdictionAdminLogin(
+            timestamp=datetime.now(timezone.utc) - timedelta(hours=0, minutes=5),
+            base=ActivityBase(
+                organization_id=organization.id,
+                organization_name=organization.name,
+                election_id=None,
+                audit_name=None,
+                audit_type=None,
+                user_type="jurisdiction_admin",
+                user_key=user_1.email,
+                support_user_email=None,
+            ),
+            error=None,
+        )
+    )
+    record_login(user_2)
+
+    rv = client.get(f"/api/election/{election_id}/jurisdictions/last-login")
+    logins = json.loads(rv.data)
+    expectation = {}
+    expectation[election.jurisdictions[0].id] = {
+        "activityName": "JurisdictionAdminLogin",
+        "election": None,
+        "id": assert_is_id,
+        "info": {"error": None},
+        "timestamp": assert_is_date,
+        "user": {
+            "key": "a2@example.com",
+            "supportUser": None,
+            "type": "jurisdiction_admin",
+        },
+    }
+    compare_json(logins, {"lastLoginByJurisdiction": expectation})

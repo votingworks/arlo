@@ -5,8 +5,9 @@ import { IOrganization, useAuthDataContext, IAuditAdmin } from '../UserContext'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
 import { StyledTable, downloadTableAsCSV } from '../Atoms/Table'
 import { fetchApi } from '../../utils/api'
+import useAuditAdminsOrganizations from '../useAuditAdminsOrganizations'
 
-interface IActivity {
+export interface IActivity {
   id: string
   activityName: string
   timestamp: string
@@ -73,11 +74,7 @@ const prettyAction = (activity: IActivity) => {
 const ActivityLog: React.FC = () => {
   const auth = useAuthDataContext()
   const user = auth && (auth.user as IAuditAdmin)
-  const organizations = useQuery<IOrganization[]>(
-    'orgs',
-    () => fetchApi(`/api/audit_admins/${user!.id}/organizations`),
-    { enabled: !!user }
-  )
+  const organizations = useAuditAdminsOrganizations(user)
   if (!organizations.isSuccess) return null
   return <ActivityLogOrgsLoaded organizations={organizations.data} />
 }

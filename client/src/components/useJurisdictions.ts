@@ -3,6 +3,7 @@ import { useQuery, UseQueryResult } from 'react-query'
 import { api } from './utilities'
 import { IFileInfo, FileProcessingStatus } from './useCSV'
 import { fetchApi, ApiError } from '../utils/api'
+import { IActivity } from './AuditAdmin/ActivityLog'
 
 export interface IBallotManifestInfo extends IFileInfo {
   numBallots: number | null
@@ -27,11 +28,13 @@ export enum JurisdictionRoundStatus {
 }
 
 export enum JurisdictionProgressStatus {
-  UPLOADS_NOT_STARTED = 'UPLOADS_NOT_STARTED',
+  UPLOADS_NOT_STARTED_NO_LOGIN = 'UPLOADS_NOT_STARTED_NO_LOGIN',
+  UPLOADS_NOT_STARTED_LOGGED_IN = 'UPLOADS_NOT_STARTED_LOGGED_IN',
   UPLOADS_IN_PROGRESS = 'UPLOADS_IN_PROGRESS',
   UPLOADS_COMPLETE = 'UPLOADS_COMPLETE',
   UPLOADS_FAILED = 'UPLOADS_FAILED',
-  AUDIT_NOT_STARTED = 'AUDIT_NOT_STARTED',
+  AUDIT_NOT_STARTED_NO_LOGIN = 'AUDIT_NOT_STARTED_NO_LOGIN',
+  AUDIT_NOT_STARTED_LOGGED_IN = 'AUDIT_NOT_STARTED_LOGGED_IN',
   AUDIT_IN_PROGRESS = 'AUDIT_IN_PROGRESS',
   AUDIT_COMPLETE = 'AUDIT_COMPLETE',
 }
@@ -54,7 +57,8 @@ export interface IJurisdiction {
 }
 
 export const getJurisdictionStatus = (
-  jurisdiction: IJurisdiction
+  jurisdiction: IJurisdiction,
+  lastLogin?: IActivity
 ): JurisdictionProgressStatus => {
   const {
     currentRoundStatus,
@@ -95,7 +99,12 @@ export const getJurisdictionStatus = (
     if (numComplete > 0) {
       return JurisdictionProgressStatus.UPLOADS_IN_PROGRESS
     }
-    return JurisdictionProgressStatus.UPLOADS_NOT_STARTED
+
+    if (lastLogin) {
+      return JurisdictionProgressStatus.UPLOADS_NOT_STARTED_LOGGED_IN
+    }
+
+    return JurisdictionProgressStatus.UPLOADS_NOT_STARTED_NO_LOGIN
   }
 
   if (currentRoundStatus.status === JurisdictionRoundStatus.COMPLETE) {
@@ -105,7 +114,11 @@ export const getJurisdictionStatus = (
     return JurisdictionProgressStatus.AUDIT_IN_PROGRESS
   }
 
-  return JurisdictionProgressStatus.AUDIT_NOT_STARTED
+  if (lastLogin) {
+    return JurisdictionProgressStatus.AUDIT_NOT_STARTED_LOGGED_IN
+  }
+
+  return JurisdictionProgressStatus.AUDIT_NOT_STARTED_NO_LOGIN
 }
 
 export const useJurisdictionsDeprecated = (
@@ -141,6 +154,25 @@ export const useJurisdictions = (
       `/api/election/${electionId}/jurisdiction`
     )
     return response.jurisdictions
+  })
+}
+
+export const jurisdictionsWithLastLoginQueryKey = (
+  electionId: string
+): string[] =>
+  jurisdictionsQueryKey(electionId).concat('lastLoginByJurisdiction')
+
+// { jurisidictionId: ActivityLogRecord }
+export type LastLoginByJurisdiction = Record<string, IActivity>
+
+export const useLastLoginByJurisdiction = (
+  electionId: string
+): UseQueryResult<LastLoginByJurisdiction, ApiError> => {
+  return useQuery(jurisdictionsWithLastLoginQueryKey(electionId), async () => {
+    const response: {
+      lastLoginByJurisdiction: LastLoginByJurisdiction
+    } = await fetchApi(`/api/election/${electionId}/jurisdictions/last-login`)
+    return response.lastLoginByJurisdiction
   })
 }
 

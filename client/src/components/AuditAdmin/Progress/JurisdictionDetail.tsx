@@ -32,6 +32,7 @@ import DownloadBatchRetrievalListButton from '../../JurisdictionAdmin/BatchRound
 import DownloadBatchTallySheetsButton from '../../JurisdictionAdmin/BatchRoundSteps/DownloadBatchTallySheetsButton'
 import { candidateTotalsByBatchTemplateCsvPath } from '../../JurisdictionAdmin/candidateTotalsByBatchTemplateCsv'
 import DownloadStackLabelsButton from '../../JurisdictionAdmin/BatchRoundSteps/DownloadStackLabelsButton'
+import { IActivity } from '../ActivityLog'
 
 const StatusCard = styled(Card)`
   &:not(:last-child) {
@@ -51,6 +52,7 @@ export interface IJurisdictionDetailProps {
   electionId: string
   round: IRound | null
   auditSettings: IAuditSettings
+  lastLoginActivity?: IActivity
 }
 
 const JurisdictionDetail: React.FC<IJurisdictionDetailProps> = ({
@@ -59,6 +61,7 @@ const JurisdictionDetail: React.FC<IJurisdictionDetailProps> = ({
   electionId,
   round,
   auditSettings,
+  lastLoginActivity,
 }) => {
   const cvrsEnabled =
     auditSettings.auditType === 'BALLOT_COMPARISON' ||
@@ -124,6 +127,16 @@ const JurisdictionDetail: React.FC<IJurisdictionDetailProps> = ({
             round={round}
             auditSettings={auditSettings}
           />
+        )}
+        {lastLoginActivity && (
+          <>
+            <H5>Last Login</H5>
+            <span>
+              {`${lastLoginActivity.user!.key} at ${new Date(
+                lastLoginActivity.timestamp
+              ).toLocaleString()}`}
+            </span>
+          </>
         )}
       </div>
     </Dialog>

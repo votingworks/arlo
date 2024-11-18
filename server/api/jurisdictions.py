@@ -11,6 +11,7 @@ from sqlalchemy.orm import joinedload
 from werkzeug.exceptions import Conflict, BadRequest
 
 from . import api
+from .activity import serialize_activity
 from ..models import *  # pylint: disable=wildcard-import
 from ..database import db_session
 from ..auth import restrict_access, UserType
@@ -533,6 +534,50 @@ def batch_round_status(election: Election, round: Round) -> Dict[str, JSONDict]:
         }
         for jurisdiction in election.jurisdictions
     }
+
+
+@api.route(
+    "/election/<election_id>/jurisdictions/last-login",
+    methods=["GET"],
+)
+@restrict_access([UserType.AUDIT_ADMIN])
+def get_last_login_by_jurisdiction(election: Election):
+    # Look for events after most recent round started, or election creation time
+    # if no rounds exist yet
+    current_round = get_current_round(election)
+    query_timestamp_after = (
+        current_round.created_at if current_round else election.created_at
+    )
+
+    # Query for login activities from users who are related to jurisdictions we found earlier
+    activities = dict(
+        ActivityLogRecord.query.join(
+            User, ActivityLogRecord.info["base"]["user_key"].astext == User.email
+        )
+        .join(User.jurisdictions)
+        .filter(
+            Jurisdiction.election_id == election.id,
+            ActivityLogRecord.organization_id == election.organization_id,
+            ActivityLogRecord.timestamp > query_timestamp_after,
+            ActivityLogRecord.activity_name == "JurisdictionAdminLogin",
+            # SQLAlchemy requires == operator. See https://stackoverflow.com/questions/5602918/select-null-values-in-sqlalchemy
+            # pylint: disable-next=singleton-comparison
+            ActivityLogRecord.info["error"].astext == None,
+            # pylint: disable-next=singleton-comparison
+            ActivityLogRecord.info["base"]["support_user_email"].astext == None,
+        )
+        .order_by(Jurisdiction.id, ActivityLogRecord.timestamp.desc())
+        .distinct(Jurisdiction.id)
+        .with_entities(Jurisdiction.id, ActivityLogRecord)
+        .all()
+    )
+
+    serialized = {
+        jurisdiction_id: serialize_activity(activity)
+        for jurisdiction_id, activity in activities.items()
+    }
+
+    return jsonify({"lastLoginByJurisdiction": serialized})
 
 
 @api.route("/election/<election_id>/jurisdiction", methods=["GET"])
