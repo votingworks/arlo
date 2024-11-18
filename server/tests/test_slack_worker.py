@@ -251,3 +251,32 @@ def test_slack_worker_message_format(snapshot):
             )
         )
     )
+
+
+def test_slack_worker_truncate_long_error_messages():
+    timestamp = datetime.fromisoformat("2021-05-19T18:31:13.576657+00:00")
+    base = activity_log.ActivityBase(
+        organization_id="test_org_id",
+        organization_name="Test Org",
+        election_id="test_election_id",
+        audit_name="Test Audit",
+        audit_type="BALLOT_COMPARISON",
+        user_type="audit_admin",
+        user_key="test_user@example.com",
+        support_user_email=None,
+    )
+    max_error_len = 4000
+    long_error = "".join(["x" for _ in range(0, max_error_len + 1)])
+    message = slack_worker.slack_message(
+        activity_log.UploadFile(
+            timestamp,
+            base,
+            jurisdiction_id="test_jurisdiction_id",
+            jurisdiction_name="Test Jurisdiction",
+            file_type="batch_tallies",
+            error=long_error,
+        )
+    )
+    error_message = message["blocks"][1]["elements"][0]["text"]
+    error_prefix = ":x: "
+    assert len(error_message) == max_error_len + len(error_prefix)
