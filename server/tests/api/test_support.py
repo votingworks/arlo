@@ -245,7 +245,10 @@ def test_support_list_active_elections(
     client.delete(f"/api/election/{election_id}")
     rv = client.get("/api/support/elections/active")
     elections = json.loads(rv.data)
-    assert len(elections) == 0
+    election = next(
+        (election for election in elections if election["id"] == election_id), None
+    )
+    assert election is None
 
 
 def test_support_get_election(
