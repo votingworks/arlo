@@ -190,7 +190,11 @@ def slack_message(activity: activity_log.Activity):
                             dict(
                                 type="context",
                                 elements=[
-                                    dict(type="mrkdwn", text=f":x: {activity.error}")
+                                    dict(
+                                        type="mrkdwn",
+                                        # Truncate long error messages to avoid Slack API limits
+                                        text=f":x: {activity.error[:4000]}",
+                                    )
                                 ],
                             )
                             if activity.error
