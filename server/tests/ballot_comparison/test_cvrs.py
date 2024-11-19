@@ -2824,6 +2824,31 @@ def test_hart_cvr_upload_processing_validation(
             "expected_status_code": 400,
             "expected_response": "Unsupported file type. Expected either a ZIP file or a CSV file, but found scanned-ballot-information.jpg.",
         },
+        {
+            "cvrs": zip_cvrs(
+                [
+                    (zip_hart_cvrs(HART_CVRS), "cvrs.zip"),
+                    (
+                        string_to_bytes_io(""),
+                        "1.xml",
+                    ),
+                    (
+                        string_to_bytes_io(""),
+                        "2.xml",
+                    ),
+                    (
+                        string_to_bytes_io(""),
+                        "3.xml",
+                    ),
+                    (
+                        string_to_bytes_io(""),
+                        "4.xml",
+                    ),
+                ]
+            ),
+            "expected_status_code": 400,
+            "expected_response": "Unsupported file type. Expected either a ZIP file or a CSV file, but found 1.xml, 2.xml, 3.xml, and 1 more.",
+        },
     ]
 
     for test_case in test_cases:

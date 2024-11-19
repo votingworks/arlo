@@ -33,6 +33,7 @@ from werkzeug.exceptions import BadRequest, NotFound, Conflict
 from sqlalchemy import func, and_
 from sqlalchemy.orm import Session
 
+
 from . import api
 from ..database import db_session, engine as db_engine
 from ..models import *  # pylint: disable=wildcard-import
@@ -66,6 +67,7 @@ from ..util.csv_parse import (
 )
 from ..util.collections import find_first_duplicate
 from ..util.hart_parse import find_xml, parse_contest_results
+from ..util.string import comma_join_until_limit
 from ..audit_math.suite import HybridPair
 from ..activity_log.activity_log import UploadFile, activity_base, record_activity
 
@@ -1071,7 +1073,7 @@ def parse_hart_cvrs(
         wrapper_zip_file.close()
         if len(nonCsvZipFiles) > 0:
             raise UserError(
-                f"Unsupported file type. Expected either a ZIP file or a CSV file, but found {(','.join(nonCsvZipFiles))}."
+                f"Unsupported file type. Expected either a ZIP file or a CSV file, but found {comma_join_until_limit(nonCsvZipFiles, 3)}."
             )
 
     def parse_scanned_ballot_information_file(

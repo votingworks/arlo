@@ -38,7 +38,7 @@ from ..util.csv_parse import (
     CSVValueType,
     CSVColumnType,
 )
-from ..util.string import format_count
+from ..util.string import comma_join_until_limit, format_count
 from ..activity_log.activity_log import UploadFile, activity_base, record_activity
 
 BATCH_TALLIES_FILE_PREFIX = "batch_tallies"
@@ -100,12 +100,14 @@ def process_batch_tallies_file(
             raise UserError(
                 "Batch names must match the ballot manifest file."
                 + (
-                    "\nFound extra batch names: " + ", ".join(extra_batch_names)
+                    "\nFound extra batch names: "
+                    + comma_join_until_limit(extra_batch_names, 5)
                     if extra_batch_names
                     else ""
                 )
                 + (
-                    "\nFound missing batch names: " + ", ".join(missing_batch_names)
+                    "\nFound missing batch names: "
+                    + comma_join_until_limit(missing_batch_names, 5)
                     if missing_batch_names
                     else ""
                 )
