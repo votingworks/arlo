@@ -1,5 +1,5 @@
 import math
-from typing import Any
+from typing import Any, Dict
 
 from werkzeug.exceptions import Conflict, BadRequest
 from flask import jsonify, request
@@ -127,17 +127,14 @@ def compute_ballot_comparison_sample_size(
 
 def compute_ballot_polling_sample_size(
     contest: sampler_contest.Contest, risk_limit_percentage: int
-) -> int:
+) -> Dict[str, int]:
     sample_size_options = bravo.get_sample_size(
         risk_limit_percentage, contest, None, None
     )
-    sample_size: int = sample_size_options.get(
-        "0.9",
-        sample_size_options.get(
-            "all-ballots", sample_size_options.get("asn", {"size": contest.ballots})
-        ),
-    )["size"]
-    return min(sample_size, contest.ballots)
+    return {
+        key: min(option["size"], contest.ballots)
+        for key, option in sample_size_options.items()
+    }
 
 
 def compute_batch_comparison_sample_size(

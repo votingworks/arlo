@@ -1,14 +1,20 @@
 import { toast } from 'react-toastify'
 import { useQuery, UseQueryResult } from 'react-query'
 
-import { AuditType } from '../../useAuditSettings'
 import { fetchApi } from '../../../utils/api'
 import { IElectionResults } from './electionResults'
 
+const BALLOT_POLLING_SAMPLE_SIZE_KEYS = ['asn', '0.7', '0.8', '0.9'] as const
+export type BallotPollingSampleSizeKey = typeof BALLOT_POLLING_SAMPLE_SIZE_KEYS[number]
+
 export type SampleSizes = {
-  [auditType in Exclude<AuditType, 'HYBRID'>]: {
-    [riskLimitPercentage: string]: number
+  BALLOT_POLLING: {
+    [riskLimitPercentage: string]:
+      | { [key in BallotPollingSampleSizeKey]: number }
+      | { 'all-ballots': number }
   }
+  BALLOT_COMPARISON: { [riskLimitPercentage: string]: number }
+  BATCH_COMPARISON: { [riskLimitPercentage: string]: number }
 }
 
 interface UseSampleSizesOptions {

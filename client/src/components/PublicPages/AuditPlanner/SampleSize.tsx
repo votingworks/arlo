@@ -1,9 +1,10 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Icon, Spinner } from '@blueprintjs/core'
-
+import { QueryObserverResult } from 'react-query'
 import Count from '../../Atoms/Count'
 import { AuditType } from '../../useAuditSettings'
+import { SampleSizes, BallotPollingSampleSizeKey } from './sampleSizes'
 
 const CONTAINER_HEIGHT = 36
 
@@ -13,7 +14,7 @@ const Container = styled.div`
   min-height: ${CONTAINER_HEIGHT}px;
 `
 
-const Error = styled.span`
+const ErrorMessage = styled.span`
   align-items: center;
   display: flex;
   font-size: 14px;
@@ -24,43 +25,85 @@ const Error = styled.span`
 `
 
 interface IProps {
-  auditType: Exclude<AuditType, 'HYBRID'>
   disabled?: boolean
-  error?: Error
-  isComputing?: boolean
-  sampleSize?: number
+  auditType: Exclude<AuditType, 'HYBRID'>
+  sampleSizes: QueryObserverResult<SampleSizes, Error>
+  riskLimitPercentage: string
   totalBallotsCast: number
 }
 
 const SampleSize: React.FC<IProps> = ({
-  auditType,
   disabled,
-  error,
-  isComputing,
-  sampleSize,
+  sampleSizes,
+  auditType,
+  riskLimitPercentage,
   totalBallotsCast,
 }) => {
-  let content: JSX.Element
-  if (disabled) {
-    content = <span>&mdash;</span>
-  } else if (isComputing) {
-    content = <Spinner size={CONTAINER_HEIGHT} />
-  } else if (error) {
-    content = (
-      <Error>
-        <Icon icon="error" intent="danger" />
-        <span>Error computing sample size</span>
-      </Error>
-    )
-  } else if (sampleSize === undefined) {
-    content = <span>&mdash;</span>
-  } else if (sampleSize === totalBallotsCast) {
-    content = <span>Full hand tally</span>
-  } else if (auditType === 'BATCH_COMPARISON') {
-    content = <Count count={sampleSize} plural="batches" singular="batch" />
-  } else {
-    content = <Count count={sampleSize} plural="ballots" singular="ballot" />
-  }
+  const content = (() => {
+    if (disabled) {
+      return <span>&mdash;</span>
+    }
+    if (sampleSizes.isFetching) {
+      return <Spinner size={CONTAINER_HEIGHT} />
+    }
+    if (sampleSizes.error) {
+      return (
+        <ErrorMessage>
+          <Icon icon="error" intent="danger" />
+          <span>Error computing sample size</span>
+        </ErrorMessage>
+      )
+    }
+
+    if (!sampleSizes.data) {
+      return <span>&mdash;</span>
+    }
+
+    if (auditType === 'BALLOT_POLLING') {
+      const sizeOptions = sampleSizes.data[auditType][riskLimitPercentage]
+
+      if ('all-ballots' in sizeOptions) {
+        return <span>Full hand tally</span>
+      }
+
+      const prettyKey: Record<BallotPollingSampleSizeKey, string> = {
+        asn: 'ASN',
+        '0.7': '70%',
+        '0.8': '80%',
+        '0.9': '90%',
+      }
+      return (
+        <div>
+          {Object.entries(prettyKey).map(([key, keyLabel]) => {
+            const sampleSize = sizeOptions[key as BallotPollingSampleSizeKey]
+            return (
+              <div key={key} style={{ marginBottom: '0.5rem' }}>
+                {keyLabel}:{' '}
+                {sampleSize === totalBallotsCast ? (
+                  <span>Full hand tally</span>
+                ) : (
+                  <Count
+                    count={sampleSize}
+                    singular="ballot"
+                    plural="ballots"
+                  />
+                )}
+              </div>
+            )
+          })}
+        </div>
+      )
+    }
+
+    const sampleSize = sampleSizes.data[auditType][riskLimitPercentage]
+    if (sampleSize === totalBallotsCast) {
+      return <span>Full hand tally</span>
+    }
+    if (auditType === 'BATCH_COMPARISON') {
+      return <Count count={sampleSize} singular="batch" plural="batches" />
+    }
+    return <Count count={sampleSize} singular="ballot" plural="ballots" />
+  })()
   return <Container>{content}</Container>
 }
 

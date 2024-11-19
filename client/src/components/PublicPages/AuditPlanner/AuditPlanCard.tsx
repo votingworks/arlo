@@ -153,15 +153,10 @@ const AuditPlanCard: React.FC<IProps> = ({ disabled, electionResults }) => {
       <SampleSizeSection ref={sampleSizeSectionRef}>
         <SubHeading>Estimated Sample Size</SubHeading>
         <SampleSize
-          auditType={selectedAuditType}
           disabled={disabled}
-          error={sampleSizes.error || undefined}
-          isComputing={sampleSizes.isFetching}
-          sampleSize={
-            sampleSizes.data?.[selectedAuditType][
-              debouncedRiskLimitPercentage.toString()
-            ]
-          }
+          auditType={selectedAuditType}
+          sampleSizes={sampleSizes}
+          riskLimitPercentage={debouncedRiskLimitPercentage.toString()}
           totalBallotsCast={electionResults.totalBallotsCast}
         />
       </SampleSizeSection>
