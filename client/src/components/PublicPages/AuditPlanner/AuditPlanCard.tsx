@@ -21,7 +21,7 @@ const Container = styled(Card)<IContainerProps>`
     margin-top: 24px;
     margin-bottom: 72px;
     max-width: 640px;
-    opacity: ${props => (props.disabled ? '0.5' : '1')}
+    opacity: ${props => (props.disabled ? '0.5' : '1')};
     padding: 0;
     width: 100%;
   }
@@ -57,14 +57,14 @@ const RiskLimitSlider = styled(Slider)`
     color: transparent;
   }
   &.bp3-slider .bp3-slider-handle .${HIDDEN_LABEL_CLASS_NAME} {
-    color: white;
+    color: #ffffff;
   }
 `
 
 const SampleSizeSection = styled.div`
-  background: #f3f8ff; // A custom tint of Blueprint v4 @blue5
-  border-bottom-left-radius: 3px; // Match Blueprint card
-  border-bottom-right-radius: 3px; // Match Blueprint card
+  background: #f3f8ff; /* A custom tint of Blueprint v4 @blue5 */
+  border-bottom-left-radius: 3px; /* Match Blueprint card */
+  border-bottom-right-radius: 3px; /* Match Blueprint card */
   padding: 32px;
 `
 
