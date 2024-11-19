@@ -7,7 +7,7 @@ release: ./heroku-release-phase.sh
 # configure gunicorn to restart each worker after a certain number of requests
 # (with some random jitter). This threshold was set by observing how long it
 # took for memory to rise to an unacceptable level during peak traffic, then
-# counting the number of requests in that internval and dividing by the number
+# counting the number of requests in that interval and dividing by the number
 # of workers.
 web: gunicorn server.app:app --preload --max-requests 1000 --max-requests-jitter 50
 worker: python -m server.worker.worker
