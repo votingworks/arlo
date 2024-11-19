@@ -435,6 +435,25 @@ def test_batch_tallies_wrong_batch_names(
                 "Found missing batch names: Batch 3"
             ),
         ),
+        (
+            (
+                b"Batch Name,candidate 1,candidate 2,candidate 3\n"
+                b"Batch 1,1,10,100\n"
+                b"Batch 2,2,20,200\n"
+                b"Batch 3,3,30,300\n"
+                b"Batch 4,4,40,400\n"
+                b"Batch 5,4,40,400\n"
+                b"Batch 6,4,40,400\n"
+                b"Batch 7,4,40,400\n"
+                b"Batch 8,4,40,400\n"
+                b"Batch 9,4,40,400\n"
+                b"Batch 10,4,40,400\n"
+            ),
+            (
+                "Batch names must match the ballot manifest file.\n"
+                "Found extra batch names: Batch 10, Batch 4, Batch 5, Batch 6, Batch 7, and 2 more"
+            ),
+        ),
     ]
     for bad_file, expected_error in bad_files:
         rv = upload_batch_tallies(
