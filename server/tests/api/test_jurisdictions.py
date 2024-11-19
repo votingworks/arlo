@@ -532,7 +532,22 @@ def test_last_login_by_jurisdiction_most_recent(client: FlaskClient, election_id
             error=None,
         )
     )
-    record_login(user_2)
+    record_activity(
+        JurisdictionAdminLogin(
+            timestamp=datetime.now(timezone.utc) + timedelta(hours=0, minutes=1),
+            base=ActivityBase(
+                organization_id=organization.id,
+                organization_name=organization.name,
+                election_id=None,
+                audit_name=None,
+                audit_type=None,
+                user_type="jurisdiction_admin",
+                user_key=user_2.email,
+                support_user_email=None,
+            ),
+            error=None,
+        )
+    )
 
     rv = client.get(f"/api/election/{election_id}/jurisdictions/last-login")
     logins = json.loads(rv.data)
