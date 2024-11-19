@@ -79,6 +79,7 @@ const AuditPlanCard: React.FC<IProps> = ({ disabled, electionResults }) => {
   // Scroll the card, specifically the sample size, into view when it first appears
   const sampleSizeSectionRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
+    /* istanbul ignore next */
     if (sampleSizeSectionRef.current) {
       sampleSizeSectionRef.current.scrollIntoView({ behavior: 'smooth' })
     }

@@ -55,7 +55,7 @@ const SampleSize: React.FC<IProps> = ({
       )
     }
 
-    if (!sampleSizes.data) {
+    if (!sampleSizes.data?.[auditType][riskLimitPercentage]) {
       return <span>&mdash;</span>
     }
 

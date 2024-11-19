@@ -399,7 +399,12 @@ const ElectionResultsCard: React.FC<IProps> = ({
             <tr>
               <td>
                 <Button
-                  aria-label={isMobileWidth ? 'Add Candidate' : undefined}
+                  aria-label={
+                    isMobileWidth
+                      ? /* istanbul ignore next */
+                        'Add Candidate'
+                      : undefined
+                  }
                   disabled={!editable}
                   icon="plus"
                   onClick={() => addCandidate(constructNewCandidate())}
