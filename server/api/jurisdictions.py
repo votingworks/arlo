@@ -560,11 +560,8 @@ def get_last_login_by_jurisdiction(election: Election):
             ActivityLogRecord.organization_id == election.organization_id,
             ActivityLogRecord.timestamp > query_timestamp_after,
             ActivityLogRecord.activity_name == "JurisdictionAdminLogin",
-            # SQLAlchemy requires == operator. See https://stackoverflow.com/questions/5602918/select-null-values-in-sqlalchemy
-            # pylint: disable-next=singleton-comparison
-            ActivityLogRecord.info["error"].astext == None,
-            # pylint: disable-next=singleton-comparison
-            ActivityLogRecord.info["base"]["support_user_email"].astext == None,
+            ActivityLogRecord.info["error"].astext.is_(None),
+            ActivityLogRecord.info["base"]["support_user_email"].astext.is_(None),
         )
         .order_by(Jurisdiction.id, ActivityLogRecord.timestamp.desc())
         .distinct(Jurisdiction.id)

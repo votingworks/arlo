@@ -94,7 +94,8 @@ def list_active_elections():
         )
         .filter(
             ActivityLogRecord.timestamp
-            > datetime.now(timezone.utc) - timedelta(days=14)
+            > datetime.now(timezone.utc) - timedelta(days=7),
+            Election.deleted_at.is_(None),
         )
         .order_by(ActivityLogRecord.timestamp.desc())
         .options(

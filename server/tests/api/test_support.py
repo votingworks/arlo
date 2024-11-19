@@ -210,7 +210,7 @@ def test_support_list_active_elections(
         ActivityLogRecord.info["base"]["election_id"].as_string() == older_election_id
     ).all()
     for activity in older_election_activities:
-        activity.timestamp = activity.timestamp - timedelta(days=14)
+        activity.timestamp = activity.timestamp - timedelta(days=7)
     db_session.commit()
 
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)
@@ -240,6 +240,15 @@ def test_support_list_active_elections(
             },
         },
     )
+
+    # Mark election as deleted and make sure it's not visible
+    client.delete(f"/api/election/{election_id}")
+    rv = client.get("/api/support/elections/active")
+    elections = json.loads(rv.data)
+    election = next(
+        (election for election in elections if election["id"] == election_id), None
+    )
+    assert election is None
 
 
 def test_support_get_election(
