@@ -7,7 +7,6 @@ import SegmentedControl from '../../Atoms/SegmentedControl'
 import { AuditType } from '../../useAuditSettings'
 import { IElectionResults } from './electionResults'
 import { useCssBreakpoints } from '../../../utils/responsiveness'
-import { useSampleSizes } from './sampleSizes'
 
 const HIDDEN_LABEL_CLASS_NAME = 'hidden-label'
 
@@ -96,10 +95,6 @@ const AuditPlanCard: React.FC<IProps> = ({ disabled, electionResults }) => {
     debouncedRiskLimitPercentage,
     setDebouncedRiskLimitPercentage,
   ] = useState(riskLimitPercentage)
-  const sampleSizes = useSampleSizes(electionResults, {
-    // We display an inline error message instead
-    showToastOnError: false,
-  })
 
   return (
     <Container data-testid="auditPlanCard" disabled={disabled} elevation={1}>
@@ -156,7 +151,7 @@ const AuditPlanCard: React.FC<IProps> = ({ disabled, electionResults }) => {
         <SampleSize
           disabled={disabled}
           auditType={selectedAuditType}
-          sampleSizes={sampleSizes}
+          electionResults={electionResults}
           riskLimitPercentage={debouncedRiskLimitPercentage.toString()}
           totalBallotsCast={electionResults.totalBallotsCast}
         />

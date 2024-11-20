@@ -1,10 +1,10 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Icon, Spinner } from '@blueprintjs/core'
-import { QueryObserverResult } from 'react-query'
 import Count from '../../Atoms/Count'
 import { AuditType } from '../../useAuditSettings'
-import { SampleSizes, BallotPollingSampleSizeKey } from './sampleSizes'
+import { BallotPollingSampleSizeKey, useSampleSizes } from './sampleSizes'
+import { IElectionResults } from './electionResults'
 
 const CONTAINER_HEIGHT = 36
 
@@ -27,18 +27,19 @@ const ErrorMessage = styled.span`
 interface IProps {
   disabled?: boolean
   auditType: Exclude<AuditType, 'HYBRID'>
-  sampleSizes: QueryObserverResult<SampleSizes, Error>
+  electionResults: IElectionResults
   riskLimitPercentage: string
   totalBallotsCast: number
 }
 
 const SampleSize: React.FC<IProps> = ({
   disabled,
-  sampleSizes,
   auditType,
+  electionResults,
   riskLimitPercentage,
   totalBallotsCast,
 }) => {
+  const sampleSizes = useSampleSizes(electionResults)
   const content = (() => {
     if (disabled) {
       return <span>&mdash;</span>
