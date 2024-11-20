@@ -598,3 +598,157 @@ def test_sample_extra_batches_with_invalid_counting_group(
             },
         },
     )
+
+
+@pytest.mark.parametrize(
+    "org_id",
+    [
+        "TEST-ORG/sample-extra-batches-by-counting-group",
+    ],
+    indirect=True,
+)
+def test_sample_extra_batches_with_combined_batches(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_id: str,
+    election_settings,  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+    batch_tallies,  # pylint: disable=unused-argument
+    snapshot,
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+
+    # Start the audit
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    custom_sample_size = {"key": "custom", "size": 1, "prob": None}
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {"roundNum": 1, "sampleSizes": {contest_id: custom_sample_size}},
+    )
+    assert_ok(rv)
+    rv = client.get(f"/api/election/{election_id}/round")
+    rounds = json.loads(rv.data)["rounds"]
+    round_1_id = rounds[0]["id"]
+
+    j1_extra_batch = (
+        Batch.query.filter_by(jurisdiction_id=jurisdiction_ids[0])
+        .join(SampledBatchDraw)
+        .filter(SampledBatchDraw.ticket_number == EXTRA_TICKET_NUMBER)
+        .first()
+    )
+    j1_unsampled_batch = (
+        Batch.query.filter_by(jurisdiction_id=jurisdiction_ids[0])
+        .outerjoin(SampledBatchDraw)
+        .filter(SampledBatchDraw.ticket_number.is_(None))
+        .first()
+    )
+    j2_sampled_batch = (
+        Batch.query.filter_by(jurisdiction_id=jurisdiction_ids[1])
+        .join(SampledBatchDraw)
+        .filter(SampledBatchDraw.ticket_number != EXTRA_TICKET_NUMBER)
+        .first()
+    )
+    j2_extra_batch = (
+        Batch.query.filter_by(jurisdiction_id=jurisdiction_ids[1])
+        .join(SampledBatchDraw)
+        .filter(SampledBatchDraw.ticket_number == EXTRA_TICKET_NUMBER)
+        .first()
+    )
+    j2_unsampled_batch = (
+        Batch.query.filter_by(jurisdiction_id=jurisdiction_ids[1])
+        .outerjoin(SampledBatchDraw)
+        .filter(SampledBatchDraw.ticket_number.is_(None))
+        .first()
+    )
+
+    # Combine batches
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
+    combined_batch_1_name = "Combined Batch - Extra, Unsampled"
+    combined_batch_1_batches = [
+        j1_extra_batch,
+        j1_unsampled_batch,
+    ]
+    rv = post_json(
+        client,
+        f"/api/support/jurisdictions/{jurisdiction_ids[0]}/combined-batches",
+        {
+            "name": combined_batch_1_name,
+            "subBatchIds": [batch.id for batch in combined_batch_1_batches],
+        },
+    )
+    assert_ok(rv)
+    combined_batch_2_name = "Combined Batch - Sampled, Extra, Unsampled"
+    combined_batch_2_batches = [
+        j2_sampled_batch,
+        j2_extra_batch,
+        j2_unsampled_batch,
+    ]
+    rv = post_json(
+        client,
+        f"/api/support/jurisdictions/{jurisdiction_ids[1]}/combined-batches",
+        {
+            "name": combined_batch_2_name,
+            "subBatchIds": [batch.id for batch in combined_batch_2_batches],
+        },
+    )
+    assert_ok(rv)
+
+    # Audit batches correctly
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contests = json.loads(rv.data)["contests"]
+    contest = contests[0]
+    choice_ids = [choice["id"] for choice in contest["choices"]]
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    for jurisdiction_id in jurisdiction_ids[:2]:
+        batch_tallies = Jurisdiction.query.get(jurisdiction_id).batch_tallies
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/batches"
+        )
+        batches = json.loads(rv.data)["batches"]
+        for batch in batches:
+            if batch["name"] == combined_batch_1_name:
+                results = {
+                    choice_id: sum(
+                        batch_tallies[sub_batch.name][contest_id][choice_id]
+                        for sub_batch in combined_batch_1_batches
+                    )
+                    for choice_id in choice_ids
+                }
+            elif batch["name"] == combined_batch_2_name:
+                results = {
+                    choice_id: sum(
+                        batch_tallies[sub_batch.name][contest_id][choice_id]
+                        for sub_batch in combined_batch_2_batches
+                    )
+                    for choice_id in choice_ids
+                }
+            else:
+                results = {
+                    choice_id: batch_tallies[batch["name"]][contest_id][choice_id]
+                    for choice_id in choice_ids
+                }
+            rv = put_json(
+                client,
+                f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/batches/{batch['id']}/results",
+                [{"name": "Tally Sheet #1", "results": results}],
+            )
+            assert_ok(rv)
+        rv = post_json(
+            client,
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/batches/finalize",
+        )
+
+    # Finish the round
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
+    assert_ok(rv)
+
+    # Check the audit report
+    rv = client.get(f"/api/election/{election_id}/report")
+    assert_match_report(rv.data, snapshot)

@@ -931,7 +931,6 @@ def test_batch_comparison_combined_batches(
     rv = client.get(f"/api/support/jurisdictions/{jurisdiction_ids[0]}/batches")
     j1_all_batches = json.loads(rv.data)["batches"]
 
-    print(json.dumps(j1_sampled_batches_original, indent=2))
     # Combine some batches
     batch_3_unsampled = next(
         batch for batch in j1_all_batches if batch["name"] == "Batch 3"
