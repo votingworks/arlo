@@ -169,7 +169,26 @@ const apiMocks = {
     },
     response: {
       ballotComparison: { '0': 2000, '5': 1000, '6': 1006 },
-      ballotPolling: { '0': 2000, '5': 1001, '6': 1007 },
+      ballotPolling: {
+        '0': {
+          '0.7': 2000,
+          '0.8': 2000,
+          '0.9': 2000,
+          asn: 2000,
+        },
+        '5': {
+          '0.7': 705,
+          '0.8': 805,
+          '0.9': 905,
+          asn: 505,
+        },
+        '6': {
+          '0.7': 706,
+          '0.8': 2000,
+          '0.9': 2000,
+          asn: 506,
+        },
+      },
       batchComparison: { '0': 2000, '5': 1002, '6': 1008 },
     },
   },
@@ -182,7 +201,9 @@ const apiMocks = {
     },
     response: {
       ballotComparison: { '5': 1003 },
-      ballotPolling: { '5': 1004 },
+      ballotPolling: {
+        '5': { 'all-ballots': 1004 },
+      },
       batchComparison: { '5': 1005 },
     },
   },
@@ -359,7 +380,9 @@ test('Entering election results - validation and submit', async () => {
     expect(textInputs[5]).toHaveValue('2,000') // Total ballots cast
     screen.getByRole('button', { name: 'Clear' })
     screen.getByRole('button', { name: 'Edit' })
-    await screen.findByText('1,001 ballots')
+    expect((await screen.findByText(/ASN/)).closest('div')).toHaveTextContent(
+      'ASN: 505 ballots'
+    )
   })
 })
 
@@ -467,7 +490,9 @@ test('Entering election results - clearing', async () => {
     userEvent.type(candidate2VotesInput, '900')
     userEvent.type(totalBallotsCastInput, '2000')
     userEvent.click(planAuditButton)
-    await screen.findByText('1,001 ballots')
+    expect((await screen.findByText(/ASN/)).closest('div')).toHaveTextContent(
+      'ASN: 505 ballots'
+    )
 
     // Clearing after submission
     userEvent.click(clearButton)
@@ -537,7 +562,9 @@ test('Entering election results - editing', async () => {
     expect(textInputs[3]).toHaveValue('900') // Candidate 1 votes
     expect(textInputs[4]).toHaveValue('1') // Number of winners
     expect(textInputs[5]).toHaveValue('2,000') // Total ballots cast
-    await screen.findByText('1,001 ballots')
+    expect((await screen.findByText(/ASN/)).closest('div')).toHaveTextContent(
+      'ASN: 505 ballots'
+    )
 
     const editButton = screen.getByRole('button', { name: 'Edit' })
     userEvent.click(editButton)
@@ -576,7 +603,7 @@ test('Entering election results - editing', async () => {
     expect(textInputs[3]).toHaveValue('901') // Candidate 1 votes
     expect(textInputs[4]).toHaveValue('1') // Number of winners
     expect(textInputs[5]).toHaveValue('2,001') // Total ballots cast
-    await screen.findByText('1,004 ballots')
+    await screen.findByText('Full hand tally')
   })
 })
 
@@ -605,7 +632,9 @@ test('Audit plan card interactions', async () => {
     userEvent.type(candidate2VotesInput, '900')
     userEvent.type(totalBallotsCastInput, '2000')
     userEvent.click(planAuditButton)
-    await screen.findByText('1,001 ballots')
+    expect((await screen.findByText(/ASN/)).closest('div')).toHaveTextContent(
+      'ASN: 505 ballots'
+    )
     expect(mockScrollIntoView).toHaveBeenCalledTimes(1)
 
     // Toggle audit methods ----------
@@ -639,7 +668,18 @@ test('Audit plan card interactions', async () => {
     expect(ballotPollingRadioInput).toBeChecked()
     expect(ballotComparisonRadioInput).not.toBeChecked()
     expect(batchComparisonRadioInput).not.toBeChecked()
-    await screen.findByText('1,001 ballots')
+    expect((await screen.findByText(/ASN/)).closest('div')).toHaveTextContent(
+      'ASN: 505 ballots'
+    )
+    expect((await screen.findByText(/70%/)).closest('div')).toHaveTextContent(
+      '70%: 705 ballots'
+    )
+    expect((await screen.findByText(/80%/)).closest('div')).toHaveTextContent(
+      '80%: 805 ballots'
+    )
+    expect((await screen.findByText(/90%/)).closest('div')).toHaveTextContent(
+      '90%: 905 ballots'
+    )
 
     // Change risk limit percentage ----------
 
@@ -650,13 +690,22 @@ test('Audit plan card interactions', async () => {
     expect(sliderHandle).toHaveTextContent('5%')
     moveSlider(sliderHandle, 'right', 1)
     expect(sliderHandle).toHaveTextContent('6%')
-    await screen.findByText('1,007 ballots')
+    expect((await screen.findByText(/ASN/)).closest('div')).toHaveTextContent(
+      'ASN: 506 ballots'
+    )
     moveSlider(sliderHandle, 'left', 6)
     expect(sliderHandle).toHaveTextContent('0%')
+    expect((await screen.findByText(/ASN/)).closest('div')).toHaveTextContent(
+      'ASN: Full hand tally'
+    )
+
+    userEvent.click(ballotComparisonRadioInput)
     await screen.findByText('Full hand tally')
     moveSlider(sliderHandle, 'right', 5)
     expect(sliderHandle).toHaveTextContent('5%')
-    await screen.findByText('1,001 ballots')
+    await screen.findByText('1,000 ballots')
+
+    userEvent.click(ballotPollingRadioInput)
 
     // Edit election results ----------
 
@@ -719,7 +768,7 @@ test('Audit plan card interactions', async () => {
     expect(batchComparisonRadioInput).toBeEnabled()
     sliderHandle = document.querySelector('.bp3-slider-handle')! as HTMLElement
     expect(!sliderHandle.classList.contains('.bp3-disabled'))
-    await screen.findByText('1,004 ballots')
+    await screen.findByText('Full hand tally')
   })
 })
 

@@ -14,5 +14,6 @@ module.exports = {
     'selector-class-pattern': null,
     // Fix for: https://github.com/stylelint/stylelint-config-standard/issues/138
     'value-keyword-case': ['lower', { ignoreKeywords: ['dummyValue'] }],
+    'font-weight-notation': null,
   },
 }

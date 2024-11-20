@@ -7,7 +7,6 @@ import SegmentedControl from '../../Atoms/SegmentedControl'
 import { AuditType } from '../../useAuditSettings'
 import { IElectionResults } from './electionResults'
 import { useCssBreakpoints } from '../../../utils/responsiveness'
-import { useSampleSizes } from './sampleSizes'
 
 const HIDDEN_LABEL_CLASS_NAME = 'hidden-label'
 
@@ -21,7 +20,7 @@ const Container = styled(Card)<IContainerProps>`
     margin-top: 24px;
     margin-bottom: 72px;
     max-width: 640px;
-    opacity: ${props => (props.disabled ? '0.5' : '1')}
+    opacity: ${props => (props.disabled ? '0.5' : '1')};
     padding: 0;
     width: 100%;
   }
@@ -57,14 +56,14 @@ const RiskLimitSlider = styled(Slider)`
     color: transparent;
   }
   &.bp3-slider .bp3-slider-handle .${HIDDEN_LABEL_CLASS_NAME} {
-    color: white;
+    color: #ffffff;
   }
 `
 
 const SampleSizeSection = styled.div`
-  background: #f3f8ff; // A custom tint of Blueprint v4 @blue5
-  border-bottom-left-radius: 3px; // Match Blueprint card
-  border-bottom-right-radius: 3px; // Match Blueprint card
+  background: #f3f8ff; /* A custom tint of Blueprint v4 @blue5 */
+  border-bottom-left-radius: 3px; /* Match Blueprint card */
+  border-bottom-right-radius: 3px; /* Match Blueprint card */
   padding: 32px;
 `
 
@@ -79,6 +78,7 @@ const AuditPlanCard: React.FC<IProps> = ({ disabled, electionResults }) => {
   // Scroll the card, specifically the sample size, into view when it first appears
   const sampleSizeSectionRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
+    /* istanbul ignore next */
     if (sampleSizeSectionRef.current) {
       sampleSizeSectionRef.current.scrollIntoView({ behavior: 'smooth' })
     }
@@ -95,10 +95,6 @@ const AuditPlanCard: React.FC<IProps> = ({ disabled, electionResults }) => {
     debouncedRiskLimitPercentage,
     setDebouncedRiskLimitPercentage,
   ] = useState(riskLimitPercentage)
-  const sampleSizes = useSampleSizes(electionResults, {
-    // We display an inline error message instead
-    showToastOnError: false,
-  })
 
   return (
     <Container data-testid="auditPlanCard" disabled={disabled} elevation={1}>
@@ -153,15 +149,10 @@ const AuditPlanCard: React.FC<IProps> = ({ disabled, electionResults }) => {
       <SampleSizeSection ref={sampleSizeSectionRef}>
         <SubHeading>Estimated Sample Size</SubHeading>
         <SampleSize
-          auditType={selectedAuditType}
           disabled={disabled}
-          error={sampleSizes.error || undefined}
-          isComputing={sampleSizes.isFetching}
-          sampleSize={
-            sampleSizes.data?.[selectedAuditType][
-              debouncedRiskLimitPercentage.toString()
-            ]
-          }
+          auditType={selectedAuditType}
+          electionResults={electionResults}
+          riskLimitPercentage={debouncedRiskLimitPercentage.toString()}
           totalBallotsCast={electionResults.totalBallotsCast}
         />
       </SampleSizeSection>

@@ -49,21 +49,21 @@ const CandidatesTable = styled(HTMLTable)`
   }
 
   &.bp3-html-table td {
-    height: 70px; // Large enough to house inputs plus inline error messages
+    height: 70px; /* Large enough to house inputs plus inline error messages */
     padding: 8px;
     padding-bottom: 0;
     vertical-align: top;
-    width: 296px; // Large enough to accommodate longest error string
+    width: 296px; /* Large enough to accommodate longest error string */
   }
   &.bp3-html-table tr:first-child td {
-    height: 78px; // Extra height to accommodate extra top padding
+    height: 78px; /* Extra height to accommodate extra top padding */
     padding-top: 16px;
   }
   &.bp3-html-table tr:not(:last-child) td:last-child {
-    padding-right: 0; // To properly align remove candidate button
+    padding-right: 0; /* To properly align remove candidate button */
   }
   &.bp3-html-table tr:last-child td {
-    height: 102px; // Extra height to accommodate input labels
+    height: 102px; /* Extra height to accommodate input labels */
   }
 
   &.bp3-html-table .bp3-form-group {
@@ -399,7 +399,12 @@ const ElectionResultsCard: React.FC<IProps> = ({
             <tr>
               <td>
                 <Button
-                  aria-label={isMobileWidth ? 'Add Candidate' : undefined}
+                  aria-label={
+                    isMobileWidth
+                      ? /* istanbul ignore next */
+                        'Add Candidate'
+                      : undefined
+                  }
                   disabled={!editable}
                   icon="plus"
                   onClick={() => addCandidate(constructNewCandidate())}
