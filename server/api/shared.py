@@ -1,7 +1,7 @@
 from collections import defaultdict
 import random
 from typing import Dict, List, Optional, Set, Tuple, TypedDict, Union
-from sqlalchemy import and_, func, literal, true
+from sqlalchemy import and_, func, literal
 from sqlalchemy.orm import joinedload, load_only
 
 
@@ -133,7 +133,7 @@ def combined_batch_keys(election_id: str) -> List[Set[sampler.BatchKey]]:
 
 
 def sampled_batch_results(
-    contest: Contest, include_non_rla_batches=False
+    contest: Contest, include_non_rla_batches=False  # pylint: disable=unused-argument
 ) -> BatchTallies:
     results_by_batch_and_choice = (
         Batch.query.filter(
@@ -141,18 +141,30 @@ def sampled_batch_results(
                 Batch.query.join(Jurisdiction)
                 .filter(Jurisdiction.election_id == contest.election_id)
                 .join(SampledBatchDraw)
+                # TODO
+                # We used to filter out non-RLA batches here to ensure they
+                # weren't used in the RLA math risk calculation. However, that
+                # calculation iterates over a different dataset - the list of
+                # batch ticket numbers, and uses the results calculated by this
+                # function as a lookup. So extra results in this function won't
+                # impact the p-value. However, that's a bit of a shoddy
+                # protection, so it would be better to continue filtering out
+                # here. However, we need to figure out how to make that interact
+                # correctly with combined batches, which currently may use a
+                # non-RLA batch as their representative batch.
+                #
                 # Don't include non-RLA batches unless explicitly requested, e.g., for discrepancy
                 # and audit reports
-                .filter(
-                    (
-                        true()
-                        if include_non_rla_batches
-                        else and_(
-                            SampledBatchDraw.contest_id == contest.id,
-                            SampledBatchDraw.ticket_number != EXTRA_TICKET_NUMBER,
-                        )
-                    ),
-                )
+                # .filter(
+                #     (
+                #         true()
+                #         if include_non_rla_batches
+                #         else and_(
+                #             SampledBatchDraw.contest_id == contest.id,
+                #             SampledBatchDraw.ticket_number != EXTRA_TICKET_NUMBER,
+                #         )
+                #     ),
+                # )
                 .values(Batch.id)
             )
         )
