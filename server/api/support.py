@@ -152,7 +152,7 @@ def list_users_by_organization():
     elections_with_users = (
         Election.query.filter(
             Election.deleted_at.is_(None),
-            Election.created_at > datetime.now(timezone.utc) - timedelta(weeks=52),
+            Election.created_at > datetime.now(timezone.utc) - timedelta(weeks=12),
         )
         .options(
             subqueryload(Election.jurisdictions)
