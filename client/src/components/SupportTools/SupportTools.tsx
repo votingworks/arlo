@@ -112,6 +112,9 @@ const Row = styled.div`
   display: flex;
   width: 100%;
 `
+const DownloadUserListButton = styled(AnchorButton)`
+  margin: 10px 0;
+`
 
 const AuditStatusTag = ({ currentRound }: { currentRound: IRound | null }) => {
   if (!currentRound) {
@@ -203,6 +206,16 @@ const Organizations = () => {
           </LinkItem>
         ))}
       </List>
+      <DownloadUserListButton
+        icon="download"
+        href="/api/support/organizations/users"
+      >
+        Download User List
+      </DownloadUserListButton>
+      <p>
+        Export a list of Audit Admins and Jurisdiction Managers for recently
+        completed audits for all organizations.
+      </p>
     </Column>
   )
 }
