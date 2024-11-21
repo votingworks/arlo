@@ -101,7 +101,17 @@ class CombinedBatch(TypedDict):
 def combined_batch_representative(sub_batches: List[Batch]) -> Batch:
     assert len(sub_batches) > 0
     sampled_sub_batches = [sub_batch for sub_batch in sub_batches if sub_batch.draws]
-    return sorted(sampled_sub_batches, key=lambda batch: batch.id)[0]
+    # Prioritize RLA sampled sub-batches (if there are any) over extra sampled
+    # batches. That way, the results from this combined batch will be included
+    # in places where we filter out extra sampled batches.
+    sampled_non_extra_sub_batches = [
+        sub_batch
+        for sub_batch in sampled_sub_batches
+        if list(sub_batch.draws)[0].ticket_number != EXTRA_TICKET_NUMBER
+    ]
+    return sorted(
+        sampled_non_extra_sub_batches or sampled_sub_batches, key=lambda batch: batch.id
+    )[0]
 
 
 def group_combined_batches(all_sub_batches: List[Batch]) -> List[CombinedBatch]:

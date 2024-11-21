@@ -479,27 +479,35 @@ def round_rows(election: Election):
                 .filter(SampledBatchDraw.ticket_number != EXTRA_TICKET_NUMBER)
                 .all()
             )
+            sampled_batch_ids = {batch.id for batch in sampled_batches}
             combined_sub_batches = (
                 Batch.query.join(Jurisdiction)
                 .filter_by(election_id=election.id)
                 .filter(Batch.combined_batch_name.isnot(None))
                 .all()
             )
-            combined_batches = group_combined_batches(combined_sub_batches)
+            combined_batches_sampled_this_round = [
+                combined_batch
+                for combined_batch in group_combined_batches(combined_sub_batches)
+                if any(
+                    batch.id in sampled_batch_ids
+                    for batch in combined_batch["sub_batches"]
+                )
+            ]
 
-            num_sampled_batches = (
-                len(sampled_batches)
-                # Instead of counting sub batches that got combined, count the
-                # combined batches
-                - len(combined_sub_batches)
-                + len(combined_batches)
+            # Ensure we only count each combined batch once
+            uncombined_sampled_batches = [
+                batch for batch in sampled_batches if not batch.combined_batch_name
+            ]
+            num_sampled_batches = len(uncombined_sampled_batches) + len(
+                combined_batches_sampled_this_round
             )
 
             # To get the total ballots/reported results in the sampled batches,
             # we need to include all combined sub batches (even unsampled ones)
-            for combined_batch in combined_batches:
+            for combined_batch in combined_batches_sampled_this_round:
                 for sub_batch in combined_batch["sub_batches"]:
-                    if not any(sub_batch.id == batch.id for batch in sampled_batches):
+                    if sub_batch.id not in sampled_batch_ids:
                         sampled_batches.append(sub_batch)
 
             num_ballots_in_sampled_batches = sum(
@@ -1082,7 +1090,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
                         sampler_contest.from_db_contest(contest),
                         0,
                     )
-                    if is_audited and audit_results and not is_combined
+                    if audit_results
                     else None
                 )
 
