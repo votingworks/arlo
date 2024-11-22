@@ -1018,12 +1018,15 @@ def test_list_users_by_organization(
 
     rv = client.get("/api/support/organizations/users")
     assert rv.status_code == 200
-    expectation = (
-        "Organization Name,Audit Name,Role,Email,Jurisdiction Name\r\n"
+    csv_contents = rv.data.decode("utf-8")
+    # Loads all users from all fixture orgs, so we can't check exact value
+    headers = "Organization Name,Audit Name,Role,Email,Jurisdiction Name\r\n"
+    assert csv_contents.startswith(headers) is True
+    expected_users = [
         "Test Org test_list_users_by_organization,Test Audit test_list_users_by_organization,Audit Admin,admin@example.com\r\n"
         f"Test Org test_list_users_by_organization,Test Audit test_list_users_by_organization,Jurisdiction Manager,jurisdiction.admin-{election_id}@example.com,J1\r\n"
         f"Test Org test_list_users_by_organization,Test Audit test_list_users_by_organization,Jurisdiction Manager,jurisdiction.admin-{election_id}@example.com,J2\r\n"
         f"Test Org test_list_users_by_organization,Test Audit test_list_users_by_organization,Jurisdiction Manager,j3-{election_id}@example.com,J3\r\n"
-    )
-    csv_contents = rv.data.decode("utf-8")
-    assert csv_contents == expectation
+    ]
+    for line in expected_users:
+        assert line in csv_contents
