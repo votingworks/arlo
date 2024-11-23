@@ -1,4 +1,6 @@
+import csv
 from datetime import datetime, timedelta
+import io
 import uuid
 import secrets
 from typing import Optional
@@ -8,7 +10,9 @@ from auth0.v3.authentication import GetToken
 from auth0.v3.management import Auth0
 from auth0.v3.exceptions import Auth0Error
 from werkzeug.exceptions import BadRequest, Conflict
-from sqlalchemy.orm import contains_eager
+from sqlalchemy.orm import contains_eager, subqueryload
+
+from server.util.csv_download import csv_response
 
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
@@ -29,7 +33,11 @@ from ..util.jsonschema import validate
 from ..util.isoformat import isoformat
 from ..util.file import delete_file
 from ..util.redirect import redirect
-from .rounds import delete_round_and_corresponding_sampled_ballots, get_current_round
+from .rounds import (
+    delete_round_and_corresponding_sampled_ballots,
+    get_current_round,
+    is_audit_complete,
+)
 from ..util.get_json import safe_get_json_dict
 from .shared import combined_batch_representative, group_combined_batches
 
@@ -130,6 +138,68 @@ def list_organizations():
             dict(id=organization.id, name=organization.name)
             for organization in organizations
         ]
+    )
+
+
+@api.route("/support/organizations/users", methods=["GET"])
+@restrict_access_support
+def list_users_by_organization():
+    string_io = io.StringIO()
+    csv_writer = csv.writer(string_io)
+    headers = ["Organization Name", "Audit Name", "Role", "Email", "Jurisdiction Name"]
+    csv_writer.writerow(headers)
+
+    elections_with_users = (
+        Election.query.filter(
+            Election.deleted_at.is_(None),
+            Election.created_at > datetime.now(timezone.utc) - timedelta(weeks=12),
+        )
+        .options(
+            subqueryload(Election.jurisdictions)
+            # pylint: disable=no-member
+            .subqueryload(Jurisdiction.jurisdiction_administrations).subqueryload(
+                JurisdictionAdministration.user
+            ),
+            subqueryload(Election.organization)
+            # pylint: disable=no-member
+            .subqueryload(Organization.audit_administrations).subqueryload(
+                AuditAdministration.user
+            ),
+        )
+        .all()
+    )
+
+    for election in elections_with_users:
+        if is_audit_complete(get_current_round(election)):
+            # Audit Admins
+            for administration in election.organization.audit_administrations:
+                csv_writer.writerow(
+                    [
+                        election.organization.name,
+                        election.audit_name,
+                        "Audit Admin",
+                        administration.user.email,
+                    ]
+                )
+
+            # Jurisdiction Managers
+            for jurisdiction in election.jurisdictions:
+                for administration in jurisdiction.jurisdiction_administrations:
+                    csv_writer.writerow(
+                        [
+                            election.organization.name,
+                            election.audit_name,
+                            "Jurisdiction Manager",
+                            administration.user.email,
+                            jurisdiction.name,
+                        ]
+                    )
+
+    string_io.seek(0)
+    timestamp = datetime.now(timezone.utc).isoformat()
+    return csv_response(
+        string_io,
+        filename=f"users_by_organization-{timestamp}.csv",
     )
 
 

@@ -81,6 +81,7 @@ const SupportTools: React.FC = () => {
               <Row>
                 <ActiveAudits />
                 <Organizations />
+                <SupportUserTools />
               </Row>
             </Route>
             <Route path="/support/orgs/:organizationId">
@@ -203,6 +204,28 @@ const Organizations = () => {
           </LinkItem>
         ))}
       </List>
+    </Column>
+  )
+}
+
+const DownloadUsersButton = styled(AnchorButton)`
+  margin-bottom: 10px;
+`
+
+const SupportUserTools = () => {
+  return (
+    <Column>
+      <H2>Downloads</H2>
+      <DownloadUsersButton
+        icon="download"
+        href="/api/support/organizations/users"
+      >
+        Download User List
+      </DownloadUsersButton>
+      <p>
+        Export a list of Audit Admins and Jurisdiction Managers for all audits
+        completed in the last 12 weeks.
+      </p>
     </Column>
   )
 }

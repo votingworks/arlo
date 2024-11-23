@@ -1001,3 +1001,32 @@ def test_support_reopen_current_round_when_round_in_progress(
             }
         ]
     }
+
+
+def test_list_users_by_organization(
+    client: FlaskClient,
+    election_id: str,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    contest_ids: List[str],
+    round_1_id: str,
+):
+    run_audit_round(round_1_id, contest_ids[0], contest_ids, 0.9)
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
+    assert_ok(rv)
+
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
+
+    rv = client.get("/api/support/organizations/users")
+    assert rv.status_code == 200
+    csv_contents = rv.data.decode("utf-8")
+    # Loads all users from all fixture orgs, so we can't check exact value
+    headers = "Organization Name,Audit Name,Role,Email,Jurisdiction Name\r\n"
+    assert csv_contents.startswith(headers) is True
+    expected_users = [
+        "Test Org test_list_users_by_organization,Test Audit test_list_users_by_organization,Audit Admin,admin@example.com\r\n"
+        f"Test Org test_list_users_by_organization,Test Audit test_list_users_by_organization,Jurisdiction Manager,jurisdiction.admin-{election_id}@example.com,J1\r\n"
+        f"Test Org test_list_users_by_organization,Test Audit test_list_users_by_organization,Jurisdiction Manager,jurisdiction.admin-{election_id}@example.com,J2\r\n"
+        f"Test Org test_list_users_by_organization,Test Audit test_list_users_by_organization,Jurisdiction Manager,j3-{election_id}@example.com,J3\r\n"
+    ]
+    for line in expected_users:
+        assert line in csv_contents
