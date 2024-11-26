@@ -17,7 +17,6 @@ from server.api.cvrs import read_ess_ballots_file
 # searches, so we make some wrapper functions
 ns = "http://tempuri.org/CVRDesign.xsd"
 
-
 def find(xml, tag):
     return xml.find(tag, namespaces={"": ns})
 
@@ -27,6 +26,7 @@ def findall(xml, tag):
 
 
 NUM_CAST = "# Number of Votes Cast in Contest"
+FILTER_NAME = "State Senator 18th Legislative District"
 
 
 def get_directory_name(file_path):
@@ -180,8 +180,12 @@ if __name__ == "__main__":
     print("Writing CSV...")
 
     contest_choice_pairs = []
+    filtered_contest_name = ""
     for contest_name, choices in contest_choices.items():
         contest_name_cleaned = contest_name.replace("\n", " ")
+        if contest_name_cleaned != FILTER_NAME:
+            continue
+        filtered_contest_name = contest_name
         for choice_name in choices:
             if choice_name != NUM_CAST:
                 contest_choice_pairs.append((contest_name, choice_name))
@@ -215,6 +219,10 @@ if __name__ == "__main__":
         writer.writerow(headers)
 
         for i, cvr in enumerate(cvrs):
+            if filtered_contest_name not in cvr["Contests"]:
+                continue
+            if cvr["Contests"][filtered_contest_name][NUM_CAST] != 0:
+                continue
             row = [
                 i,
                 cvr["BatchNumber"],
