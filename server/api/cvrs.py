@@ -19,7 +19,6 @@ from typing import (
     Tuple,
     TypeVar,
     TypedDict,
-    Union,
     cast as typing_cast,
     Generator,
 )
@@ -60,7 +59,9 @@ from ..util.file import (
 from ..util.csv_download import csv_response
 from ..util.csv_parse import (
     CSVIterator,
+    column_value,
     decode_csv,
+    get_header_indices,
     reject_no_rows,
     validate_comma_delimited,
     validate_not_empty,
@@ -268,55 +269,6 @@ def csv_reader_for_cvr(cvr_file: BinaryIO) -> CSVIterator:
     text_file = decode_csv(cvr_file)
     validate_comma_delimited(text_file)
     return csv.reader(text_file, delimiter=",")
-
-
-def get_header_indices(headers_row: List[str]) -> Dict[str, int]:
-    return {header: i for i, header in enumerate(headers_row)}
-
-
-# Allow a 2-string tuple for Dominion's two-row CSV headers
-# pylint: disable=invalid-name
-HeaderType = TypeVar("HeaderType", str, Tuple[str, str])
-
-
-def column_value(
-    row: List[str],
-    header: HeaderType,
-    row_number: int,
-    header_indices: Dict[HeaderType, int],
-    required: bool = True,
-    file_name: str = None,
-    remove_leading_equal_sign: bool = False,
-    header_readable_string_override: Union[str, None] = None,
-):
-    header_readable_string: str = header_readable_string_override or str(header)
-    index = header_indices.get(header)
-    if index is None:
-        if required:
-            raise UserError(
-                f"Missing required column {header_readable_string} in {file_name}."
-                if file_name is not None
-                else f"Missing required column {header_readable_string}."
-            )
-        # We haven't seen CVRs with entirely optional columns, so it's hard to test this case
-        return None  # pragma: no cover
-    value = row[index] if index < len(row) else None
-    if required and (value is None or value == ""):
-        raise UserError(
-            f"Missing required column {header_readable_string} in row {row_number} in {file_name}."
-            if file_name is not None
-            else f"Missing required column {header_readable_string} in row {row_number}."
-        )
-    # Dominion sometimes exports CVR CSVs with equal signs in front of certain columns' values,
-    # e.g. ="3",="1002",="1",="10",="1002-1-10","Mail-in",...
-    if (
-        remove_leading_equal_sign
-        and value
-        and value.startswith('="')
-        and value.endswith('"')
-    ):
-        value = value[2:-1]
-    return value
 
 
 def parse_clearballot_cvrs(
@@ -1049,7 +1001,7 @@ def parse_hart_cvrs(
 
     cvr_zip_files: Dict[str, BinaryIO] = {}  # { file_name: file }
     scanned_ballot_information_files: List[BinaryIO] = []
-    nonCsvZipFiles = []
+    non_csv_zip_files = []
     for file_name in file_names:
         if file_name.lower().endswith(".zip"):
             # pylint: disable=consider-using-with
@@ -1062,7 +1014,7 @@ def parse_hart_cvrs(
                 open(os.path.join(working_directory, file_name), "rb")
             )
         else:
-            nonCsvZipFiles.append(file_name)
+            non_csv_zip_files.append(file_name)
 
     # If there are no zip files inside the "wrapper" we assume it was not a wrapper and there was only one cvr zip file uploaded, unwrapped.
     if len(cvr_zip_files) == 0 and len(scanned_ballot_information_files) == 0:
@@ -1071,9 +1023,9 @@ def parse_hart_cvrs(
     else:
         # The user submitted a wrapper zip file, so we close it and make sure it only contained zip and csv files.
         wrapper_zip_file.close()
-        if len(nonCsvZipFiles) > 0:
+        if len(non_csv_zip_files) > 0:
             raise UserError(
-                f"Unsupported file type. Expected either a ZIP file or a CSV file, but found {comma_join_until_limit(nonCsvZipFiles, 3)}."
+                f"Unsupported file type. Expected either a ZIP file or a CSV file, but found {comma_join_until_limit(non_csv_zip_files, 3)}."
             )
 
     def parse_scanned_ballot_information_file(
