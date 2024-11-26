@@ -359,9 +359,7 @@ const Progress: React.FC<IProgressProps> = ({
     if (showDiscrepancies) {
       columns.push({
         Header: 'Discrepancies',
-        accessor: ({ id, currentRoundStatus: s }) =>
-          s &&
-          s.status === JurisdictionRoundStatus.COMPLETE &&
+        accessor: ({ id }) =>
           discrepancyQuery.isSuccess &&
           countDiscrepanciesForJurisdiction(discrepancyQuery.data, id),
         Cell: ({

@@ -16,6 +16,10 @@ from .shared import (
     sampled_ballot_interpretations_to_cvrs,
     sampled_batch_results,
 )
+from .jurisdictions import (
+    JurisdictionAuditBoardStatus,
+    jurisdiction_audit_board_status,
+)
 
 DiscrepanciesByJurisdiction = Dict[
     str, Dict[str, Dict[str, Dict[str, Union[Dict[str, int], Dict[str, str]]]]]
@@ -42,13 +46,13 @@ def get_discrepancies_by_jurisdiction(election: Election):
 
     if election.audit_type == AuditType.BATCH_COMPARISON:
         discrepancies_by_jurisdiction = (
-            get_batch_comparison_audit_discrepancies_by_jurisdiction(
+            get_batch_comparison_discrepancies_by_jurisdiction(
                 election, current_round.id
             )
         )
     elif election.audit_type == AuditType.BALLOT_COMPARISON:
         discrepancies_by_jurisdiction = (
-            get_ballot_comparison_audit_discrepancies_by_jurisdiction(
+            get_ballot_comparison_discrepancies_by_jurisdiction(
                 election, current_round.id
             )
         )
@@ -60,7 +64,7 @@ def get_discrepancies_by_jurisdiction(election: Election):
     return jsonify(discrepancies_by_jurisdiction)
 
 
-def get_batch_comparison_audit_discrepancies_by_jurisdiction(
+def get_batch_comparison_discrepancies_by_jurisdiction(
     election: Election, round_id: str
 ) -> DiscrepanciesByJurisdiction:
     discrepancies_by_jurisdiction: DiscrepanciesByJurisdiction = defaultdict(
@@ -102,6 +106,10 @@ def get_batch_comparison_audit_discrepancies_by_jurisdiction(
         for combined_batch in combined_batches
     }
 
+    show_discrepancies_by_jurisdiction = (
+        show_batch_comparison_discrepancies_by_jurisdiction(election)
+    )
+
     for contest in list(election.contests):
         audited_batch_results = sampled_batch_results(
             contest, include_non_rla_batches=True
@@ -109,6 +117,11 @@ def get_batch_comparison_audit_discrepancies_by_jurisdiction(
         reported_batch_results = batch_tallies(contest)
 
         for batch_key, audited_batch_result in audited_batch_results.items():
+            jurisdiction_name, batch_name = batch_key
+            jurisdiction_id = jurisdiction_name_to_id[jurisdiction_name]
+            if not show_discrepancies_by_jurisdiction[jurisdiction_id]:
+                continue
+
             if batch_key not in batch_keys_in_round:
                 continue
 
@@ -142,8 +155,6 @@ def get_batch_comparison_audit_discrepancies_by_jurisdiction(
             if not vote_deltas:
                 continue
 
-            jurisdiction_name, batch_name = batch_key
-            jurisdiction_id = jurisdiction_name_to_id[jurisdiction_name]
             discrepancies_by_jurisdiction[jurisdiction_id][
                 combined_batch_name or batch_name
             ][contest.id] = {
@@ -155,7 +166,30 @@ def get_batch_comparison_audit_discrepancies_by_jurisdiction(
     return discrepancies_by_jurisdiction
 
 
-def get_ballot_comparison_audit_discrepancies_by_jurisdiction(
+# In multi-jurisdiction audits, hide discrepancies if the jurisdiction hasn't finalized tallies
+def show_batch_comparison_discrepancies_by_jurisdiction(
+    election: Election,
+) -> Dict[str, bool]:
+    jurisdictions = list(election.jurisdictions)
+    is_single_jurisdiction_election = len(jurisdictions) == 1
+    if is_single_jurisdiction_election:
+        jurisidiction_id = jurisdictions[0].id
+        return {jurisidiction_id: True}
+
+    finalized_jurisdiction_ids = {
+        jurisdiction_id
+        for jurisdiction_id, in BatchResultsFinalized.query.with_entities(
+            BatchResultsFinalized.jurisdiction_id
+        )
+    }
+
+    return {
+        jurisdiction.id: (jurisdiction.id in finalized_jurisdiction_ids)
+        for jurisdiction in jurisdictions
+    }
+
+
+def get_ballot_comparison_discrepancies_by_jurisdiction(
     election: Election, round_id: str
 ) -> DiscrepanciesByJurisdiction:
     discrepancies_by_jurisdiction: DiscrepanciesByJurisdiction = defaultdict(
@@ -176,7 +210,7 @@ def get_ballot_comparison_audit_discrepancies_by_jurisdiction(
     )
     # make a readable identifier of the same format for all ballots
     # Ex. "Container 0, Tabulator X, Batch Y, Ballot Z" or "Tabulator X, Batch Y, Ballot Z"
-    sampled_ballot_id_to_readable_identifier = dict(
+    sampled_ballot_id_to_readable_id = dict(
         (
             sampled_ballot_id,
             (f"Container {container}, " if container is not None else "")
@@ -195,32 +229,61 @@ def get_ballot_comparison_audit_discrepancies_by_jurisdiction(
         )
     )
 
+    show_discrepancies_by_jurisdiction = (
+        show_ballot_comparison_discrepancies_by_jurisdiction(election)
+    )
+
     for contest in election.contests:
         audited_results = sampled_ballot_interpretations_to_cvrs(contest)
         reported_results = cvrs_for_contest(contest)
         for ballot_id, audited_result in audited_results.items():
-            audited_cvr = audited_result["cvr"]
-            reported_cvr = reported_results.get(ballot_id)
-            vote_deltas = ballot_vote_deltas(contest, reported_cvr, audited_cvr)
-            if not vote_deltas or isinstance(vote_deltas, str):
-                continue
-
-            # CVRs are guaranteed to be non-null due to ballot_vote_deltas() checks
-            assert isinstance(audited_cvr, dict)
-            audited_votes = audited_cvr.get(contest.id, {})
-            assert isinstance(reported_cvr, dict)
-            reported_votes = reported_cvr.get(contest.id, {})
             if ballot_id in sampled_ballot_id_to_jurisdiction_id:
                 jurisdiction_id = sampled_ballot_id_to_jurisdiction_id[ballot_id]
-                readable_ballot_identifier = sampled_ballot_id_to_readable_identifier[
-                    ballot_id
-                ]
-                discrepancies_by_jurisdiction[jurisdiction_id][
-                    readable_ballot_identifier
-                ][contest.id] = {
+                if not show_discrepancies_by_jurisdiction[jurisdiction_id]:
+                    continue
+
+                audited_cvr = audited_result["cvr"]
+                reported_cvr = reported_results.get(ballot_id)
+                vote_deltas = ballot_vote_deltas(contest, reported_cvr, audited_cvr)
+                if not vote_deltas or isinstance(vote_deltas, str):
+                    continue
+
+                # CVRs are guaranteed to be non-null due to ballot_vote_deltas() checks
+                assert isinstance(audited_cvr, dict)
+                audited_votes = audited_cvr.get(contest.id, {})
+                assert isinstance(reported_cvr, dict)
+                reported_votes = reported_cvr.get(contest.id, {})
+
+                readable_ballot_id = sampled_ballot_id_to_readable_id[ballot_id]
+                discrepancies_by_jurisdiction[jurisdiction_id][readable_ballot_id][
+                    contest.id
+                ] = {
                     "reportedVotes": reported_votes,
                     "auditedVotes": audited_votes,
                     "discrepancies": vote_deltas,
                 }
 
     return discrepancies_by_jurisdiction
+
+
+# In multi-jurisdiction audits, hide discrepancies if the jurisdiction hasn't signed off
+def show_ballot_comparison_discrepancies_by_jurisdiction(
+    election: Election,
+) -> Dict[str, bool]:
+    jurisdictions = list(election.jurisdictions)
+    is_single_jurisdiction_election = len(jurisdictions) == 1
+    if is_single_jurisdiction_election:
+        jurisidiction_id = jurisdictions[0].id
+        return {jurisidiction_id: True}
+
+    rounds = list(election.rounds)
+    audit_board_status_by_jurisdiction = jurisdiction_audit_board_status(
+        jurisdictions, rounds[-1]
+    )
+    return {
+        jurisdiction.id: (
+            audit_board_status_by_jurisdiction[jurisdiction.id]
+            == JurisdictionAuditBoardStatus.SIGNED_OFF
+        )
+        for jurisdiction in jurisdictions
+    }
