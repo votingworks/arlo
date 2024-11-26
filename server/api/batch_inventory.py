@@ -25,14 +25,14 @@ from ..auth.auth_helpers import (
     get_support_user,
 )
 from .cvrs import (
-    column_value,
     csv_reader_for_cvr,
-    get_header_indices,
     read_ess_ballots_file,
     separate_ess_cvr_and_ballots_files,
 )
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.csv_parse import (
+    column_value,
+    get_header_indices,
     validate_comma_delimited,
     is_filetype_csv_mimetype,
 )
