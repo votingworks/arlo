@@ -39,7 +39,7 @@ def parse_scanned_ballot_file(file_path, cvr_workstation_mapping):
     with open(file_path, "r", encoding="utf-8") as ballots_file:
         headers, rows = read_ess_ballots_file(ballots_file)
         if "CvrId" not in headers or "Workstation" not in headers:
-            return None
+            return cvr_workstation_mapping
 
         header_indices = get_header_indices(headers)
 
@@ -48,7 +48,10 @@ def parse_scanned_ballot_file(file_path, cvr_workstation_mapping):
             workstation = column_value(
                 row, "Workstation", row_index + 1, header_indices
             )
-            cvr_workstation_mapping[cvr_number] = workstation
+            unique_id = column_value(
+                row, "UniqueIdentifier", row_index + 1, header_indices
+            )
+            cvr_workstation_mapping[cvr_number] = [workstation, unique_id]
         return cvr_workstation_mapping
 
 
@@ -140,6 +143,7 @@ if __name__ == "__main__":
             if entry.is_file() and entry.name.endswith(".xml"):
                 cvr_file_paths.append(entry.path)
 
+    print(f"Found {len(scanned_ballot_file_paths)} scanned ballot information files")
     print(f"Found {len(cvr_file_paths)} CVR files")
 
     cvrs = []
@@ -169,7 +173,7 @@ if __name__ == "__main__":
     cvr_workstation_mapping: dict = {}
     for scanned_ballot_path in scanned_ballot_file_paths:
         try:
-            cvr = parse_scanned_ballot_file(
+            cvr_workstation_mapping = parse_scanned_ballot_file(
                 scanned_ballot_path,
                 cvr_workstation_mapping,
             )
@@ -193,12 +197,12 @@ if __name__ == "__main__":
         writer = csv.writer(output_file)
         writer.writerow(["Election Name", "0.00.0.00"])
 
-        contest_headers = ["", "", "", "", "", "", ""] + [
+        contest_headers = ["", "", "", "", "", "", "", ""] + [
             f"{contest_name}" for contest_name, _ in contest_choice_pairs
         ]
         writer.writerow(contest_headers)
 
-        choice_headers = ["", "", "", "", "", "", ""] + [
+        choice_headers = ["", "", "", "", "", "", "", ""] + [
             choice_name for _, choice_name in contest_choice_pairs
         ]
         writer.writerow(choice_headers)
@@ -207,10 +211,11 @@ if __name__ == "__main__":
             "CvrNumber",
             "BatchNumber",
             "BatchSequence",
-            "ImprintedId",
+            "CvrId",
             "PrecinctSplit Name",
             "PrecinctSplit Id",
             "Workstation",
+            "UniqueIdentifier",
         ] + ["NP" for _ in contest_choice_pairs]
         writer.writerow(headers)
 
@@ -224,8 +229,10 @@ if __name__ == "__main__":
                 cvr["PrecinctSplitId"],
             ]
             if cvr["CvrGuid"] in cvr_workstation_mapping:
-                row.append(cvr_workstation_mapping[cvr["CvrGuid"]])
+                row.append(cvr_workstation_mapping[cvr["CvrGuid"]][0])
+                row.append(cvr_workstation_mapping[cvr["CvrGuid"]][1])
             else:
+                row.append("")
                 row.append("")
 
             # Fill in missing contest choices with 0s
