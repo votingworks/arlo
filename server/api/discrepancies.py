@@ -52,9 +52,7 @@ def get_discrepancies_by_jurisdiction(election: Election):
         )
     elif election.audit_type == AuditType.BALLOT_COMPARISON:
         discrepancies_by_jurisdiction = (
-            get_ballot_comparison_discrepancies_by_jurisdiction(
-                election, current_round.id
-            )
+            get_ballot_comparison_discrepancies_by_jurisdiction(election, current_round)
         )
     else:
         raise Conflict(
@@ -190,7 +188,7 @@ def show_batch_comparison_discrepancies_by_jurisdiction(
 
 
 def get_ballot_comparison_discrepancies_by_jurisdiction(
-    election: Election, round_id: str
+    election: Election, round: Round
 ) -> DiscrepanciesByJurisdiction:
     discrepancies_by_jurisdiction: DiscrepanciesByJurisdiction = defaultdict(
         lambda: defaultdict(dict)
@@ -198,7 +196,7 @@ def get_ballot_comparison_discrepancies_by_jurisdiction(
 
     ballots_in_round = (
         SampledBallot.query.join(SampledBallotDraw)
-        .filter_by(round_id=round_id)
+        .filter_by(round_id=round.id)
         .distinct(SampledBallot.id)
         .with_entities(SampledBallot.id)
         .subquery()
@@ -230,45 +228,46 @@ def get_ballot_comparison_discrepancies_by_jurisdiction(
     )
 
     show_discrepancies_by_jurisdiction = (
-        show_ballot_comparison_discrepancies_by_jurisdiction(election)
+        show_ballot_comparison_discrepancies_by_jurisdiction(election, round)
     )
 
     for contest in election.contests:
         audited_results = sampled_ballot_interpretations_to_cvrs(contest)
         reported_results = cvrs_for_contest(contest)
         for ballot_id, audited_result in audited_results.items():
-            if ballot_id in sampled_ballot_id_to_jurisdiction_id:
-                jurisdiction_id = sampled_ballot_id_to_jurisdiction_id[ballot_id]
-                if not show_discrepancies_by_jurisdiction[jurisdiction_id]:
-                    continue
+            if ballot_id not in sampled_ballot_id_to_jurisdiction_id:
+                continue
+            jurisdiction_id = sampled_ballot_id_to_jurisdiction_id[ballot_id]
+            if not show_discrepancies_by_jurisdiction[jurisdiction_id]:
+                continue
 
-                audited_cvr = audited_result["cvr"]
-                reported_cvr = reported_results.get(ballot_id)
-                vote_deltas = ballot_vote_deltas(contest, reported_cvr, audited_cvr)
-                if not vote_deltas or isinstance(vote_deltas, str):
-                    continue
+            audited_cvr = audited_result["cvr"]
+            reported_cvr = reported_results.get(ballot_id)
+            vote_deltas = ballot_vote_deltas(contest, reported_cvr, audited_cvr)
+            if not vote_deltas or isinstance(vote_deltas, str):
+                continue
 
-                # CVRs are guaranteed to be non-null due to ballot_vote_deltas() checks
-                assert isinstance(audited_cvr, dict)
-                audited_votes = audited_cvr.get(contest.id, {})
-                assert isinstance(reported_cvr, dict)
-                reported_votes = reported_cvr.get(contest.id, {})
+            # CVRs are guaranteed to be non-null due to ballot_vote_deltas() checks
+            assert isinstance(audited_cvr, dict)
+            audited_votes = audited_cvr.get(contest.id, {})
+            assert isinstance(reported_cvr, dict)
+            reported_votes = reported_cvr.get(contest.id, {})
 
-                readable_ballot_id = sampled_ballot_id_to_readable_id[ballot_id]
-                discrepancies_by_jurisdiction[jurisdiction_id][readable_ballot_id][
-                    contest.id
-                ] = {
-                    "reportedVotes": reported_votes,
-                    "auditedVotes": audited_votes,
-                    "discrepancies": vote_deltas,
-                }
+            readable_ballot_id = sampled_ballot_id_to_readable_id[ballot_id]
+            discrepancies_by_jurisdiction[jurisdiction_id][readable_ballot_id][
+                contest.id
+            ] = {
+                "reportedVotes": reported_votes,
+                "auditedVotes": audited_votes,
+                "discrepancies": vote_deltas,
+            }
 
     return discrepancies_by_jurisdiction
 
 
 # In multi-jurisdiction audits, hide discrepancies if the jurisdiction hasn't signed off
 def show_ballot_comparison_discrepancies_by_jurisdiction(
-    election: Election,
+    election: Election, round: Round
 ) -> Dict[str, bool]:
     jurisdictions = list(election.jurisdictions)
     is_single_jurisdiction_election = len(jurisdictions) == 1
@@ -276,9 +275,8 @@ def show_ballot_comparison_discrepancies_by_jurisdiction(
         jurisidiction_id = jurisdictions[0].id
         return {jurisidiction_id: True}
 
-    rounds = list(election.rounds)
     audit_board_status_by_jurisdiction = jurisdiction_audit_board_status(
-        jurisdictions, rounds[-1]
+        jurisdictions, round
     )
     return {
         jurisdiction.id: (

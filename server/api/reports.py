@@ -745,7 +745,7 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
     is_ballot_comparison = election.audit_type == AuditType.BALLOT_COMPARISON
     if is_ballot_comparison:
         show_discrepancies_by_jurisdiction = (
-            show_ballot_comparison_discrepancies_by_jurisdiction(election)
+            show_ballot_comparison_discrepancies_by_jurisdiction(election, rounds[-1])
         )
 
     result_columns = []
