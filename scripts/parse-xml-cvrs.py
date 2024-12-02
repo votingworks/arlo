@@ -5,8 +5,7 @@ import csv
 from xml.etree import ElementTree
 from collections import defaultdict
 
-from server.util.csv_parse import get_header_indices, column_value
-from server.api.cvrs import read_ess_ballots_file
+from server.api.cvrs import parse_scanned_ballot_information_file
 
 # This script that parses hart CVRS and outputs a CSV file similar to the dominion format.
 # Run with:
@@ -36,21 +35,13 @@ def get_directory_name(file_path):
 
 
 def parse_scanned_ballot_file(file_path, cvr_workstation_mapping):
-    with open(file_path, "r", encoding="utf-8") as ballots_file:
-        headers, rows = read_ess_ballots_file(ballots_file)
-        if "CvrId" not in headers or "Workstation" not in headers:
-            return cvr_workstation_mapping
+    with open(file_path, "rb") as ballots_file:
+        rows = parse_scanned_ballot_information_file(ballots_file)
 
-        header_indices = get_header_indices(headers)
-
-        for row_index, row in enumerate(rows):
-            cvr_number = column_value(row, "CvrId", row_index + 1, header_indices)
-            workstation = column_value(
-                row, "Workstation", row_index + 1, header_indices
-            )
-            unique_id = column_value(
-                row, "UniqueIdentifier", row_index + 1, header_indices
-            )
+        for row in rows:
+            cvr_number = row["CvrId"]
+            workstation = row["Workstation"]
+            unique_id = row["UniqueIdentifier"]
             cvr_workstation_mapping[cvr_number] = [workstation, unique_id]
         return cvr_workstation_mapping
 
