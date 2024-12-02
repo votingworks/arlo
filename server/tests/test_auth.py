@@ -1257,13 +1257,13 @@ def test_auth_me_not_logged_in(client: FlaskClient):
 
 def test_session_expires_on_inactivity(client: FlaskClient, aa_email: str):
     original_inactivity_timeout = config.SESSION_INACTIVITY_TIMEOUT
-    config.SESSION_INACTIVITY_TIMEOUT = timedelta(milliseconds=100)
+    config.SESSION_INACTIVITY_TIMEOUT = timedelta(milliseconds=500)
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email)
     rv = client.get("/api/me")
     assert json.loads(rv.data)["user"] is not None
 
-    time.sleep(0.5)
+    time.sleep(1)
 
     rv = client.get("/api/me")
     assert json.loads(rv.data)["user"] is None
@@ -1289,7 +1289,7 @@ def test_session_expires_after_lifetime(client: FlaskClient, aa_email: str):
 
 def test_support_session_expires_on_inactivity(client: FlaskClient, aa_email: str):
     original_inactivity_timeout = config.SESSION_INACTIVITY_TIMEOUT
-    config.SESSION_INACTIVITY_TIMEOUT = timedelta(milliseconds=100)
+    config.SESSION_INACTIVITY_TIMEOUT = timedelta(milliseconds=500)
 
     set_support_user(client, SA_EMAIL)
     rv = client.get("/api/support/organizations")
@@ -1300,7 +1300,7 @@ def test_support_session_expires_on_inactivity(client: FlaskClient, aa_email: st
     assert json.loads(rv.data)["user"] is not None
     assert json.loads(rv.data)["supportUser"] is not None
 
-    time.sleep(0.5)
+    time.sleep(1)
 
     rv = client.get("/api/support/organizations")
     assert rv.status_code == 403
