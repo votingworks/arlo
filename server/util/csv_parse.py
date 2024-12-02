@@ -12,6 +12,8 @@ from typing import (
     NamedTuple,
     TextIO,
     Tuple,
+    TypeVar,
+    Union,
 )
 import csv as py_csv
 import io, re, locale, chardet
@@ -390,3 +392,52 @@ def convert_rows_to_dicts(csv: CSVIterator) -> CSVDictIterator:
 
 def pluralize(word: str, num: int) -> str:
     return word if num == 1 else f"{word}s"
+
+
+def get_header_indices(headers_row: List[str]) -> Dict[str, int]:
+    return {header: i for i, header in enumerate(headers_row)}
+
+
+# Allow a 2-string tuple for Dominion's two-row CSV headers
+# pylint: disable=invalid-name
+HeaderType = TypeVar("HeaderType", str, Tuple[str, str])
+
+
+def column_value(
+    row: List[str],
+    header: HeaderType,
+    row_number: int,
+    header_indices: Dict[HeaderType, int],
+    required: bool = True,
+    file_name: str = None,
+    remove_leading_equal_sign: bool = False,
+    header_readable_string_override: Union[str, None] = None,
+):
+    header_readable_string: str = header_readable_string_override or str(header)
+    index = header_indices.get(header)
+    if index is None:
+        if required:
+            raise UserError(
+                f"Missing required column {header_readable_string} in {file_name}."
+                if file_name is not None
+                else f"Missing required column {header_readable_string}."
+            )
+        # We haven't seen CVRs with entirely optional columns, so it's hard to test this case
+        return None  # pragma: no cover
+    value = row[index] if index < len(row) else None
+    if required and (value is None or value == ""):
+        raise UserError(
+            f"Missing required column {header_readable_string} in row {row_number} in {file_name}."
+            if file_name is not None
+            else f"Missing required column {header_readable_string} in row {row_number}."
+        )
+    # Dominion sometimes exports CVR CSVs with equal signs in front of certain columns' values,
+    # e.g. ="3",="1002",="1",="10",="1002-1-10","Mail-in",...
+    if (
+        remove_leading_equal_sign
+        and value
+        and value.startswith('="')
+        and value.endswith('"')
+    ):
+        value = value[2:-1]
+    return value
