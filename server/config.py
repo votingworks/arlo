@@ -1,6 +1,7 @@
 import os
 import logging
 from datetime import timedelta
+import re
 from typing import Dict
 
 
@@ -166,7 +167,12 @@ RUN_BACKGROUND_TASKS_IMMEDIATELY = parse_bool(
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("arlo.config")
 
-logger.info(f"{DATABASE_URL=}")
+scrubbed_database_url = (
+    re.sub(r"://.+@", "://<redacted>@", DATABASE_URL)
+    if FLASK_ENV == "production"
+    else DATABASE_URL
+)
+logger.info(f"DATABASE_URL={scrubbed_database_url}")
 logger.info(f"{HTTP_ORIGIN=}")
 logger.info(f"{FLASK_ENV=}")
 
