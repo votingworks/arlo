@@ -107,7 +107,7 @@ jobs:
       - node/install-packages:
           pkg-manager: yarn
           app-dir: client
-          cache-version: v10
+          cache-version: v11
       - restore_cache:
           name: "Restoring Cypress cache"
           key: v1-cypress-cache-{{ checksum "client/yarn.lock" }}
