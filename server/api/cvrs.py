@@ -963,6 +963,67 @@ def parse_ess_cvrs(
         raise UserError(f"{cvr_file_name}: {error}") from error
 
 
+def parse_scanned_ballot_information_file(
+    scanned_ballot_information_file: BinaryIO,
+) -> List[Dict[str, str]]:
+    validate_not_empty(scanned_ballot_information_file)
+    text_file = decode_csv(scanned_ballot_information_file)
+
+    # Skip #FormatVersion row
+    first_line = text_file.readline()
+    if "#FormatVersion" not in first_line:
+        raise UserError(
+            "Expected first line of scanned ballot information CSV to contain '#FormatVersion'."
+        )
+    validate_comma_delimited(text_file)
+    # validate_comma_delimited resets the cursor to the start of the file so skip the
+    # #FormatVersion row again
+    text_file.readline()
+    scanned_ballot_information_csv: CSVIterator = csv.reader(text_file, delimiter=",")
+    scanned_ballot_information_csv = reject_no_rows(scanned_ballot_information_csv)
+
+    headers_row = next(scanned_ballot_information_csv)
+    if len(headers_row) > 0:
+        headers_row[0] = headers_row[0].lstrip("#")
+    header_indices = get_header_indices(headers_row)
+
+    scanned_ballot_information_rows: List[Dict[str, str]] = []
+    for i, row in enumerate(scanned_ballot_information_csv):
+        row_number = (
+            i + 3
+        )  # Account for zero indexing, #FormatVersion row, and header row
+        cvr_id = column_value(
+            row,
+            "CvrId",
+            row_number,
+            header_indices,
+            file_name="scanned ballot information CSV",
+        )
+        unique_identifier = column_value(
+            row,
+            "UniqueIdentifier",
+            row_number,
+            header_indices,
+            file_name="scanned ballot information CSV",
+        )
+        workstation = column_value(
+            row,
+            "Workstation",
+            row_number,
+            header_indices,
+            file_name="scanned ballot information CSV",
+        )
+        scanned_ballot_information_rows.append(
+            {
+                "CvrId": cvr_id,
+                "UniqueIdentifier": unique_identifier,
+                "Workstation": workstation,
+            }
+        )
+
+    return scanned_ballot_information_rows
+
+
 def parse_hart_cvrs(
     jurisdiction: Jurisdiction,
     working_directory: str,
@@ -1027,68 +1088,6 @@ def parse_hart_cvrs(
             raise UserError(
                 f"Unsupported file type. Expected either a ZIP file or a CSV file, but found {comma_join_until_limit(non_csv_zip_files, 3)}."
             )
-
-    def parse_scanned_ballot_information_file(
-        scanned_ballot_information_file: BinaryIO,
-    ) -> List[Dict[str, str]]:
-        validate_not_empty(scanned_ballot_information_file)
-        text_file = decode_csv(scanned_ballot_information_file)
-
-        # Skip #FormatVersion row
-        first_line = text_file.readline()
-        if "#FormatVersion" not in first_line:
-            raise UserError(
-                "Expected first line of scanned ballot information CSV to contain '#FormatVersion'."
-            )
-        validate_comma_delimited(text_file)
-        # validate_comma_delimited resets the cursor to the start of the file so skip the
-        # #FormatVersion row again
-        text_file.readline()
-        scanned_ballot_information_csv: CSVIterator = csv.reader(
-            text_file, delimiter=","
-        )
-        scanned_ballot_information_csv = reject_no_rows(scanned_ballot_information_csv)
-
-        headers_row = next(scanned_ballot_information_csv)
-        if len(headers_row) > 0:
-            headers_row[0] = headers_row[0].lstrip("#")
-        header_indices = get_header_indices(headers_row)
-
-        scanned_ballot_information_rows: List[Dict[str, str]] = []
-        for i, row in enumerate(scanned_ballot_information_csv):
-            row_number = (
-                i + 3
-            )  # Account for zero indexing, #FormatVersion row, and header row
-            cvr_id = column_value(
-                row,
-                "CvrId",
-                row_number,
-                header_indices,
-                file_name="scanned ballot information CSV",
-            )
-            unique_identifier = column_value(
-                row,
-                "UniqueIdentifier",
-                row_number,
-                header_indices,
-                file_name="scanned ballot information CSV",
-            )
-            workstation = column_value(
-                row,
-                "Workstation",
-                row_number,
-                header_indices,
-                file_name="scanned ballot information CSV",
-            )
-            scanned_ballot_information_rows.append(
-                {
-                    "CvrId": cvr_id,
-                    "UniqueIdentifier": unique_identifier,
-                    "Workstation": workstation,
-                }
-            )
-
-        return scanned_ballot_information_rows
 
     scanned_ballot_information_by_cvr_id: Dict[str, Dict[str, str]] = {}
     for scanned_ballot_information_file in scanned_ballot_information_files:
