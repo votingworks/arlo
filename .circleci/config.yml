@@ -116,6 +116,13 @@ jobs:
           key: v1-cypress-cache-{{ checksum "client/yarn.lock" }}
           paths:
             - ~/.cache/Cypress
+      # We've seen a weird issue where the Cypress cache appears to restore
+      # successfully but the Cypress binary is still missing. So we just check
+      # for it and reinstall if necessary.
+      - run:
+          name: "Verifying Cypress installation"
+          command: |
+            yarn --cwd client cypress verify || yarn --cwd client cypress install
       - browser-tools/install-chrome
       - create-data-model
       - run:
