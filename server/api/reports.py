@@ -20,10 +20,6 @@ from ..audit_math import supersimple, sampler_contest, macro
 from .ballot_manifest import hybrid_contest_total_ballots
 from .cvrs import hybrid_contest_choice_vote_counts
 from .batches import construct_batch_last_edited_by_string
-from .jurisdictions import (
-    JurisdictionAuditBoardStatus,
-    jurisdiction_audit_board_status,
-)
 from .shared import (
     ContestVoteDeltas,
     ballot_vote_deltas,
@@ -34,6 +30,10 @@ from .shared import (
     is_full_hand_tally,
     sampled_ballot_interpretations_to_cvrs,
     samples_not_found_by_round,
+)
+from .discrepancies import (
+    show_ballot_comparison_discrepancies_by_jurisdiction,
+    show_batch_comparison_discrepancies_by_jurisdiction,
 )
 
 
@@ -742,11 +742,11 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
     show_tabulator = one_batch and one_batch.tabulator is not None
     show_cvrs = election.audit_type in [AuditType.BALLOT_COMPARISON, AuditType.HYBRID]
 
-    audit_board_status = (
-        jurisdiction_audit_board_status(list(election.jurisdictions), rounds[-1])
-        if election.audit_type == AuditType.BALLOT_COMPARISON
-        else None
-    )
+    is_ballot_comparison = election.audit_type == AuditType.BALLOT_COMPARISON
+    if is_ballot_comparison:
+        show_discrepancies_by_jurisdiction = (
+            show_ballot_comparison_discrepancies_by_jurisdiction(election, rounds[-1])
+        )
 
     result_columns = []
     if election.online:
@@ -785,10 +785,6 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
             for contest in election.contests
         }
 
-    is_single_jurisdiction_election = (
-        Jurisdiction.query.filter_by(election_id=election.id).count() == 1
-    )
-
     for ballot in ballots:
         (
             ballot,
@@ -801,17 +797,9 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
 
         result_values = []
         if election.online:
-            # In multi-jurisdiction audits, hide audit results if the
-            # jurisdiction hasn't signed off (this will only impact the
-            # discrepancy report, since the audit report can only be generated
-            # at the end of the audit).
             if (
-                not is_single_jurisdiction_election
-                and audit_board_status
-                and (
-                    audit_board_status[batch.jurisdiction_id]
-                    != JurisdictionAuditBoardStatus.SIGNED_OFF
-                )
+                is_ballot_comparison
+                and not show_discrepancies_by_jurisdiction[batch.jurisdiction_id]
             ):
                 result_values = ["NOT_AUDITED"] + ([""] * (len(result_columns) - 1))
             else:
@@ -896,12 +884,6 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
             audit_result_tuples, lambda tuple: tuple[0]
         ).items()
     }
-    finalized_jurisdiction_ids = {
-        jurisdiction_id
-        for jurisdiction_id, in BatchResultsFinalized.query.values(
-            BatchResultsFinalized.jurisdiction_id
-        )
-    }
 
     combined_sub_batches = (
         Batch.query.join(Jurisdiction)
@@ -948,8 +930,8 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
         contest.id: {choice.id: 0 for choice in contest.choices} for contest in contests
     }
 
-    is_single_jurisdiction_election = (
-        Jurisdiction.query.filter_by(election_id=election.id).count() == 1
+    show_discrepancies_by_jurisdiction = (
+        show_batch_comparison_discrepancies_by_jurisdiction(election)
     )
 
     for batch in batches:
@@ -959,15 +941,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
             batch.num_ballots,
             *pretty_batch_ticket_numbers(batch, round_id_to_num, contests),
         ]
-
-        # In multi-jurisdiction elections, hide audit results if jurisdiction
-        # hasn't yet finalized tallies. This will only impact the discrepancy
-        # report, since the audit report can only be generated at the end of the
-        # audit.
-        if (
-            not is_single_jurisdiction_election
-            and batch.jurisdiction.id not in finalized_jurisdiction_ids
-        ):
+        if not show_discrepancies_by_jurisdiction[batch.jurisdiction.id]:
             row += [pretty_boolean(False)]
             row += [""] * (len(result_columns) + 1)
             rows.append(row)

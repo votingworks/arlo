@@ -314,6 +314,11 @@ def test_batch_comparison_round_2(
         assert jurisdictions[0]["currentRoundStatus"]["numSamplesAudited"] == i + 1
         snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
 
+    # Discrepancies should not show before the results are finalized
+    rv = client.get(f"/api/election/{election_id}/discrepancy")
+    discrepancies = json.loads(rv.data)
+    assert len(discrepancies) == 0
+
     # Finalize the results
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)

@@ -856,7 +856,12 @@ def test_ballot_comparison_two_rounds(
         == -1
     )
 
-    # Check the discrepancy report - only the first jurisdiction should have
+    # Discrepancies should not show before the audit board is signed off, check J2
+    rv = client.get(f"/api/election/{election_id}/discrepancy")
+    discrepancies = json.loads(rv.data)
+    assert jurisdictions[1]["id"] not in discrepancies
+
+    # Also check the discrepancy report - only the first jurisdiction should have
     # audit results so far since the second jurisdiction hasn't signed off yet
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/discrepancy-report")
@@ -884,6 +889,11 @@ def test_ballot_comparison_two_rounds(
     assert jurisdictions[1]["currentRoundStatus"]["status"] == "COMPLETE"
     snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
     snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
+
+    # Discrepancies should now show for J2
+    rv = client.get(f"/api/election/{election_id}/discrepancy")
+    discrepancies = json.loads(rv.data)
+    assert jurisdictions[1]["id"] in discrepancies
 
     # End the round
     rv = client.post(f"/api/election/{election_id}/round/current/finish")
@@ -972,6 +982,11 @@ def test_ballot_comparison_two_rounds(
     # End the round
     rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert_ok(rv)
+
+    # Check the discrepancies
+    rv = client.get(f"/api/election/{election_id}/discrepancy")
+    discrepancies = json.loads(rv.data)
+    assert len(discrepancies) == 2
 
     # Check the audit report
     rv = client.get(f"/api/election/{election_id}/report")
