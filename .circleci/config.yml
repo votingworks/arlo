@@ -1,8 +1,17 @@
 version: 2.1
 orbs:
-  python: circleci/python@2.2.0
-  node: circleci/node@6.3.0
   browser-tools: circleci/browser-tools@1.4.0
+  node: circleci/node@6.3.0
+  python: circleci/python@2.2.0
+
+workflows:
+  version: 2
+  build-and-test:
+    jobs:
+      - preflight
+      - build-and-test-server
+      - build-and-test-client
+      - cypress
 
 executors:
   arlo:
@@ -127,12 +136,3 @@ jobs:
           path: client/cypress/screenshots
       - store_artifacts:
           path: client/cypress/videos
-
-workflows:
-  version: 2
-  build-and-test:
-    jobs:
-      - preflight
-      - build-and-test-server
-      - build-and-test-client
-      - cypress
