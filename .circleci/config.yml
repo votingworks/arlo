@@ -107,16 +107,16 @@ jobs:
           cache-version: v10
       - restore_cache:
           name: "Restoring Cypress cache"
-          key: v3-cypress-cache-{{ checksum "client/yarn.lock" }}
+          key: v4-cypress-cache-{{ checksum "client/yarn.lock" }}
       - run:
           name: "Verifying Cypress installation"
           command: |
             yarn --cwd client cypress verify || yarn --cwd client cypress install
       - save_cache:
           name: "Saving Cypress cache"
-          key: v3-cypress-cache-{{ checksum "client/yarn.lock" }}
+          key: v4-cypress-cache-{{ checksum "client/yarn.lock" }}
           paths:
-            - /.cache/Cypress
+            - /home/circleci/.cache/Cypress
       - browser-tools/install-chrome
       - create-data-model
       - run:
