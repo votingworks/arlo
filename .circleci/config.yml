@@ -108,6 +108,10 @@ jobs:
       - restore_cache:
           name: "Restoring Cypress cache"
           key: v2-cypress-cache-{{ checksum "client/yarn.lock" }}
+      - run:
+          name: "Verifying Cypress installation"
+          command: |
+            yarn --cwd client cypress verify || yarn --cwd client cypress install
       - save_cache:
           name: "Saving Cypress cache"
           key: v2-cypress-cache-{{ checksum "client/yarn.lock" }}
