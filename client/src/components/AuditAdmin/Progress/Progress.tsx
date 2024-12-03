@@ -3,14 +3,7 @@ import React, { useState, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { Column, Cell, TableInstance, SortingRule } from 'react-table'
-import {
-  Button,
-  Switch,
-  ITagProps,
-  Icon,
-  AnchorButton,
-  Spinner,
-} from '@blueprintjs/core'
+import { Button, Switch, Icon, AnchorButton, Spinner } from '@blueprintjs/core'
 import H2Title from '../../Atoms/H2Title'
 import {
   JurisdictionRoundStatus,
@@ -29,7 +22,7 @@ import {
   downloadTableAsCSV,
 } from '../../Atoms/Table'
 import { IRound } from '../useRoundsAuditAdmin'
-import StatusTag from '../../Atoms/StatusTag'
+import StatusTag, { IStatusTagProps } from '../../Atoms/StatusTag'
 import { IAuditSettings } from '../../useAuditSettings'
 import { FileProcessingStatus, IFileInfo } from '../../useCSV'
 import ProgressMap from './ProgressMap'
@@ -138,7 +131,7 @@ const Progress: React.FC<IProgressProps> = ({
       accessor: jurisdiction => {
         const { ballotManifest, batchTallies, cvrs } = jurisdiction
 
-        const Status = (props: Omit<ITagProps, 'minimal'>) => (
+        const Status = (props: IStatusTagProps) => (
           <StatusTag
             {...props}
             interactive
@@ -159,6 +152,7 @@ const Progress: React.FC<IProgressProps> = ({
           jurisdiction,
           lastLoginQuery.data![jurisdiction.id]
         )
+
         switch (jurisdictionStatus) {
           case JurisdictionProgressStatus.UPLOADS_COMPLETE:
             return (
@@ -179,7 +173,7 @@ const Progress: React.FC<IProgressProps> = ({
           case JurisdictionProgressStatus.UPLOADS_IN_PROGRESS:
             return <Status intent="warning">{filesUploadedText}</Status>
           case JurisdictionProgressStatus.UPLOADS_NOT_STARTED_LOGGED_IN:
-            return <Status intent="warning">Logged in</Status>
+            return <Status intent="alert">Logged in</Status>
           case JurisdictionProgressStatus.UPLOADS_NOT_STARTED_NO_LOGIN:
             return <Status>Not logged in</Status>
           case JurisdictionProgressStatus.AUDIT_IN_PROGRESS:
@@ -187,7 +181,7 @@ const Progress: React.FC<IProgressProps> = ({
           case JurisdictionProgressStatus.AUDIT_COMPLETE:
             return <Status intent="success">Complete</Status>
           case JurisdictionProgressStatus.AUDIT_NOT_STARTED_LOGGED_IN:
-            return <Status intent="warning">Logged in</Status>
+            return <Status intent="alert">Logged in</Status>
           case JurisdictionProgressStatus.AUDIT_NOT_STARTED_NO_LOGIN:
             return <Status>Not logged in</Status>
           /* istanbul ignore next - unreachable when exhaustive */

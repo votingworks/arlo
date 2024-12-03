@@ -1,7 +1,6 @@
 import React from 'react'
 import { screen, within, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { Intent } from '@blueprintjs/core'
 import { QueryClientProvider } from 'react-query'
 import { Route } from 'react-router-dom'
 import {
@@ -23,6 +22,7 @@ import {
 import Progress, { IProgressProps } from './Progress'
 import { dummyBallots } from '../../AuditBoard/_mocks'
 import * as utilities from '../../utilities'
+import { ExtendedIntent } from '../../Atoms/StatusTag'
 
 // Borrowed from generateSheets.test.tsx
 const mockSavePDF = jest.fn()
@@ -40,7 +40,11 @@ jest.mock('jspdf', () => {
 window.URL.createObjectURL = jest.fn()
 window.open = jest.fn()
 
-const expectStatusTag = (cell: HTMLElement, status: string, intent: Intent) => {
+const expectStatusTag = (
+  cell: HTMLElement,
+  status: string,
+  intent: ExtendedIntent
+) => {
   const statusTag = within(cell)
     .getByText(status)
     .closest('.bp3-tag') as HTMLElement
@@ -107,7 +111,7 @@ describe('Progress screen', () => {
       expect(row1[2]).toBeEmpty()
       const row2 = within(rows[2]).getAllByRole('cell')
       expect(row2[0]).toHaveTextContent('Jurisdiction 2')
-      expectStatusTag(row2[1], 'Logged in', 'warning')
+      expectStatusTag(row2[1], 'Logged in', 'alert')
       expect(row2[2]).toBeEmpty()
       const row3 = within(rows[3]).getAllByRole('cell')
       expect(row3[0]).toHaveTextContent('Jurisdiction 3')
@@ -257,7 +261,7 @@ describe('Progress screen', () => {
       expect(row1[4]).toHaveTextContent('6')
       const row2 = within(rows[2]).getAllByRole('cell')
       expect(row2[0]).toHaveTextContent('Jurisdiction 2')
-      expectStatusTag(row2[1], 'Logged in', 'warning')
+      expectStatusTag(row2[1], 'Logged in', 'alert')
       expect(row2[2]).toHaveTextContent('2,117')
       expect(row2[3]).toHaveTextContent('0')
       expect(row2[4]).toHaveTextContent('20')
@@ -756,7 +760,7 @@ describe('Progress screen', () => {
       expect(row2[5]).toHaveTextContent('10')
       // Jurisdiction 3 - no manifest, no CVR
       const row3 = within(rows[3]).getAllByRole('cell')
-      expectStatusTag(row3[1], 'Logged in', 'warning')
+      expectStatusTag(row3[1], 'Logged in', 'alert')
       expect(row3[2]).toBeEmpty()
       expect(row3[3]).toBeEmpty()
       expect(row3[4]).toBeEmpty()
