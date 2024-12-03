@@ -503,7 +503,7 @@ def test_last_login_by_jurisdiction_most_recent(client: FlaskClient, election_id
     )
     assert_ok(rv)
 
-    election = Election.query.filter_by(id=election_id).one()
+    election = Election.query.get(election_id)
     assert [j.name for j in election.jurisdictions] == ["J1"]
 
     jurisdiction = election.jurisdictions[0]
@@ -511,6 +511,8 @@ def test_last_login_by_jurisdiction_most_recent(client: FlaskClient, election_id
         "a1@example.com",
         "a2@example.com",
     ]
+
+    db_session.expunge(election)
 
     user_1 = User.query.filter_by(email="a1@example.com").one()
     user_2 = User.query.filter_by(email="a2@example.com").one()
@@ -548,6 +550,8 @@ def test_last_login_by_jurisdiction_most_recent(client: FlaskClient, election_id
             error=None,
         )
     )
+
+    db_session.commit()
 
     rv = client.get(f"/api/election/{election_id}/jurisdictions/last-login")
     logins = json.loads(rv.data)
