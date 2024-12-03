@@ -112,7 +112,7 @@ jobs:
           name: "Saving Cypress cache"
           key: v1-cypress-cache-{{ checksum "client/yarn.lock" }}
           paths:
-            - ~/.cache/Cypress
+            - /.cache/Cypress
       - browser-tools/install-chrome
       - create-data-model
       - run:
