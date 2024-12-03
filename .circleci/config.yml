@@ -107,10 +107,10 @@ jobs:
           cache-version: v10
       - restore_cache:
           name: "Restoring Cypress cache"
-          key: v1-cypress-cache-{{ checksum "client/yarn.lock" }}
+          key: v2-cypress-cache-{{ checksum "client/yarn.lock" }}
       - save_cache:
           name: "Saving Cypress cache"
-          key: v1-cypress-cache-{{ checksum "client/yarn.lock" }}
+          key: v2-cypress-cache-{{ checksum "client/yarn.lock" }}
           paths:
             - /.cache/Cypress
       - browser-tools/install-chrome
