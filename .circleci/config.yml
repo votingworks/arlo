@@ -42,12 +42,10 @@ jobs:
       - python/install-packages:
           pkg-manager: poetry
       - create-data-model
-
       - run:
           name: typecheck server
           command: |
             make typecheck-server
-
       - run:
           name: format server
           command: |
@@ -88,7 +86,6 @@ jobs:
           command: |
             sudo apt-get update
             sudo apt-get install graphicsmagick
-
       - run:
           name: test client
           command: |
@@ -116,13 +113,6 @@ jobs:
           key: v1-cypress-cache-{{ checksum "client/yarn.lock" }}
           paths:
             - ~/.cache/Cypress
-      # We've seen a weird issue where the Cypress cache appears to restore
-      # successfully but the Cypress binary is still missing. So we just check
-      # for it and reinstall if necessary.
-      - run:
-          name: "Verifying Cypress installation"
-          command: |
-            yarn --cwd client cypress verify || yarn --cwd client cypress install
       - browser-tools/install-chrome
       - create-data-model
       - run:
@@ -133,6 +123,7 @@ jobs:
           path: client/cypress/screenshots
       - store_artifacts:
           path: client/cypress/videos
+
 workflows:
   version: 2
   build-and-test:
