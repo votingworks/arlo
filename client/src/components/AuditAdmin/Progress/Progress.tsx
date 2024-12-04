@@ -171,17 +171,17 @@ const Progress: React.FC<IProgressProps> = ({
               </Status>
             )
           case JurisdictionProgressStatus.UPLOADS_IN_PROGRESS:
-            return <Status intent="warning">{filesUploadedText}</Status>
+            return <Status intent="in-progress">{filesUploadedText}</Status>
           case JurisdictionProgressStatus.UPLOADS_NOT_STARTED_LOGGED_IN:
-            return <Status intent="alert">Logged in</Status>
+            return <Status intent="warning">Logged in</Status>
           case JurisdictionProgressStatus.UPLOADS_NOT_STARTED_NO_LOGIN:
             return <Status>Not logged in</Status>
           case JurisdictionProgressStatus.AUDIT_IN_PROGRESS:
-            return <Status intent="warning">In progress</Status>
+            return <Status intent="in-progress">In progress</Status>
           case JurisdictionProgressStatus.AUDIT_COMPLETE:
             return <Status intent="success">Complete</Status>
           case JurisdictionProgressStatus.AUDIT_NOT_STARTED_LOGGED_IN:
-            return <Status intent="alert">Logged in</Status>
+            return <Status intent="warning">Logged in</Status>
           case JurisdictionProgressStatus.AUDIT_NOT_STARTED_NO_LOGIN:
             return <Status>Not logged in</Status>
           /* istanbul ignore next - unreachable when exhaustive */

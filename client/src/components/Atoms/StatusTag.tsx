@@ -13,10 +13,10 @@ const StyledTag = styled(({ hasProgressBar: _, ...props }) => (
   text-transform: uppercase;
   font-weight: 500;
   ${p =>
-    p.intent === 'alert' &&
-    // Gold 4 in RGBA
-    `background-color: rgba(240, 183, 38, 0.2);
-     color: ${Colors.GOLD1}`}
+    p.intent === 'in-progress' &&
+    // Cobalt 4 in RGBA
+    `background-color: rgba(69, 128, 230, 0.2);
+     color: ${Colors.COBALT1}`}
   ${props =>
     props.hasProgressBar &&
     `border-bottom-left-radius: 0;
@@ -35,7 +35,7 @@ const StyledProgressBar = styled(ProgressBar).attrs({ stripes: false })`
   }
 `
 
-export type ExtendedIntent = Intent | 'alert'
+export type ExtendedIntent = Intent | 'in-progress'
 
 export interface IStatusTagProps extends Omit<ITagProps, 'minimal' | 'intent'> {
   progress?: number
@@ -54,7 +54,9 @@ const StatusTag: React.FC<IStatusTagProps> = ({
         value={progress}
         // Filter out nonstandard Intent
         intent={
-          props.intent && props.intent !== 'alert' ? props.intent : undefined
+          props.intent && props.intent !== 'in-progress'
+            ? props.intent
+            : undefined
         }
       />
     )}
