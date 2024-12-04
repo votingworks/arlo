@@ -58,7 +58,10 @@ const SVGMap = styled.svg`
   .success {
     fill: ${Colors.GREEN4};
   }
-  .progress {
+  .progress-2 {
+    fill: ${Colors.COBALT4};
+  }
+  .progress-1 {
     fill: ${Colors.ORANGE4};
   }
   .gray {
@@ -102,7 +105,10 @@ const MapLabelsBoxes = styled.div`
   &.success {
     background-color: ${Colors.GREEN4};
   }
-  &.progress {
+  &.progress-2 {
+    background-color: ${Colors.COBALT4};
+  }
+  &.progress-1 {
     background-color: ${Colors.ORANGE4};
   }
   &.gray {
@@ -140,6 +146,7 @@ const Map: React.FC<IProps> = ({
   ) => {
     const jurisdictionStatus =
       jurisdiction && getJurisdictionStatus(jurisdiction)
+
     switch (jurisdictionStatus) {
       case JurisdictionProgressStatus.UPLOADS_COMPLETE:
       case JurisdictionProgressStatus.AUDIT_COMPLETE:
@@ -148,9 +155,10 @@ const Map: React.FC<IProps> = ({
         return 'danger'
       case JurisdictionProgressStatus.UPLOADS_IN_PROGRESS:
       case JurisdictionProgressStatus.AUDIT_IN_PROGRESS:
+        return 'progress-2'
       case JurisdictionProgressStatus.UPLOADS_NOT_STARTED_LOGGED_IN:
       case JurisdictionProgressStatus.AUDIT_NOT_STARTED_LOGGED_IN:
-        return 'progress'
+        return 'progress-1'
       case JurisdictionProgressStatus.UPLOADS_NOT_STARTED_NO_LOGIN:
       case JurisdictionProgressStatus.AUDIT_NOT_STARTED_NO_LOGIN:
         return 'gray'
@@ -271,10 +279,13 @@ const Map: React.FC<IProps> = ({
                 <MapLabelsBoxes className="success" /> Complete
               </MapLabelsRow>
               <MapLabelsRow>
-                <MapLabelsBoxes className="progress" /> In progress
+                <MapLabelsBoxes className="progress-2" /> In progress
               </MapLabelsRow>
               <MapLabelsRow>
-                <MapLabelsBoxes className="gray" /> Not started
+                <MapLabelsBoxes className="progress-1" /> Logged in
+              </MapLabelsRow>
+              <MapLabelsRow>
+                <MapLabelsBoxes className="gray" /> Not logged in
               </MapLabelsRow>
               <MapLabelsRow>
                 <MapLabelsBoxes className="default" /> No data
@@ -289,7 +300,10 @@ const Map: React.FC<IProps> = ({
                 <MapLabelsBoxes className="danger" /> Manifest upload failed
               </MapLabelsRow>
               <MapLabelsRow>
-                <MapLabelsBoxes className="gray" /> No manifest uploaded
+                <MapLabelsBoxes className="progress-1" /> Logged in
+              </MapLabelsRow>
+              <MapLabelsRow>
+                <MapLabelsBoxes className="gray" /> Not logged in
               </MapLabelsRow>
               <MapLabelsRow>
                 <MapLabelsBoxes className="default" /> No data
@@ -304,10 +318,13 @@ const Map: React.FC<IProps> = ({
                 <MapLabelsBoxes className="danger" /> File upload failed
               </MapLabelsRow>
               <MapLabelsRow>
-                <MapLabelsBoxes className="progress" /> Uploads in progress
+                <MapLabelsBoxes className="progress-2" /> Uploads in progress
               </MapLabelsRow>
               <MapLabelsRow>
-                <MapLabelsBoxes className="gray" /> No files uploaded
+                <MapLabelsBoxes className="progress-1" /> Logged in
+              </MapLabelsRow>
+              <MapLabelsRow>
+                <MapLabelsBoxes className="gray" /> Not logged in
               </MapLabelsRow>
               <MapLabelsRow>
                 <MapLabelsBoxes className="default" /> No data

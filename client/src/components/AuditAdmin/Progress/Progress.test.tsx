@@ -1,7 +1,6 @@
 import React from 'react'
 import { screen, within, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { Intent } from '@blueprintjs/core'
 import { QueryClientProvider } from 'react-query'
 import { Route } from 'react-router-dom'
 import {
@@ -23,6 +22,7 @@ import {
 import Progress, { IProgressProps } from './Progress'
 import { dummyBallots } from '../../AuditBoard/_mocks'
 import * as utilities from '../../utilities'
+import { ExtendedIntent } from '../../Atoms/StatusTag'
 
 // Borrowed from generateSheets.test.tsx
 const mockSavePDF = jest.fn()
@@ -40,7 +40,11 @@ jest.mock('jspdf', () => {
 window.URL.createObjectURL = jest.fn()
 window.open = jest.fn()
 
-const expectStatusTag = (cell: HTMLElement, status: string, intent: Intent) => {
+const expectStatusTag = (
+  cell: HTMLElement,
+  status: string,
+  intent: ExtendedIntent
+) => {
   const statusTag = within(cell)
     .getByText(status)
     .closest('.bp3-tag') as HTMLElement
@@ -251,7 +255,7 @@ describe('Progress screen', () => {
       expect(rows).toHaveLength(jurisdictionMocks.oneComplete.length + 2) // includes headers and footers
       const row1 = within(rows[1]).getAllByRole('cell')
       expect(row1[0]).toHaveTextContent('Jurisdiction 1')
-      expectStatusTag(row1[1], 'In progress', 'warning')
+      expectStatusTag(row1[1], 'In progress', 'in-progress')
       expect(row1[2]).toHaveTextContent('2,117')
       expect(row1[3]).toHaveTextContent('4')
       expect(row1[4]).toHaveTextContent('6')
@@ -489,7 +493,7 @@ describe('Progress screen', () => {
       expect(rows).toHaveLength(jurisdictionMocks.oneComplete.length + 2) // includes headers and footers
       const row1 = within(rows[1]).getAllByRole('cell')
       expect(row1[0]).toHaveTextContent('Jurisdiction 1')
-      expectStatusTag(row1[1], 'In progress', 'warning')
+      expectStatusTag(row1[1], 'In progress', 'in-progress')
       expect(row1[2]).toHaveTextContent('2,117')
       // Discrepancies hidden until jurisdiction is complete
       expect(row1[3]).toHaveTextContent('')
@@ -651,7 +655,7 @@ describe('Progress screen', () => {
       expect(row1[4]).toBeEmpty()
       // Jurisdiction 2 - manifest success, no tallies
       const row2 = within(rows[2]).getAllByRole('cell')
-      expectStatusTag(row2[1], '1/2 files uploaded', 'warning')
+      expectStatusTag(row2[1], '1/2 files uploaded', 'in-progress')
       expect(row2[2]).toHaveTextContent('2,117')
       expect(row2[3]).toHaveTextContent('10')
       expect(row2[4]).toBeEmpty()
@@ -693,7 +697,7 @@ describe('Progress screen', () => {
       const rows = screen.getAllByRole('row')
       // Jurisdiction 1 - manifest success, no CVR
       const row1 = within(rows[1]).getAllByRole('cell')
-      expectStatusTag(row1[1], '1/2 files uploaded', 'warning')
+      expectStatusTag(row1[1], '1/2 files uploaded', 'in-progress')
       expect(row1[2]).toHaveTextContent('2,117')
       expect(row1[3]).toBeEmpty()
       // Jurisdiction 2 - manifest success, CVR success
@@ -703,7 +707,7 @@ describe('Progress screen', () => {
       expect(row2[3]).toHaveTextContent('10')
       // Jurisdiction 3 - manifest success, no CVR
       const row3 = within(rows[3]).getAllByRole('cell')
-      expectStatusTag(row3[1], '1/2 files uploaded', 'warning')
+      expectStatusTag(row3[1], '1/2 files uploaded', 'in-progress')
       expect(row3[2]).toHaveTextContent('2,117')
       expect(row3[3]).toBeEmpty()
 
@@ -742,7 +746,7 @@ describe('Progress screen', () => {
       const rows = screen.getAllByRole('row')
       // Jurisdiction 1 - manifest success, no CVR
       const row1 = within(rows[1]).getAllByRole('cell')
-      expectStatusTag(row1[1], '1/2 files uploaded', 'warning')
+      expectStatusTag(row1[1], '1/2 files uploaded', 'in-progress')
       expect(row1[2]).toHaveTextContent('2,117')
       expect(row1[3]).toHaveTextContent('117')
       expect(row1[4]).toHaveTextContent('2,000')
@@ -1156,7 +1160,7 @@ describe('Progress screen', () => {
       expectStatusTag(
         within(rows[2]).getAllByRole('cell')[1],
         '1/2 files uploaded',
-        'warning'
+        'in-progress'
       )
       expectStatusTag(
         within(rows[3]).getAllByRole('cell')[1],
@@ -1192,14 +1196,14 @@ describe('Progress screen', () => {
       expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
 
       expect(container.querySelectorAll('.county.gray').length).toBe(1) // not logged in
-      expect(container.querySelectorAll('.county.progress').length).toBe(1) // in progress
+      expect(container.querySelectorAll('.county.progress-2').length).toBe(1) // in progress
       expect(container.querySelectorAll('.county.danger').length).toBe(1) // errored
 
       // Check that the county tooltip shows on hover
-      userEvent.hover(container.querySelector('.county.progress')!)
+      userEvent.hover(container.querySelector('.county.progress-2')!)
       expect(container.querySelector('#tooltip')).toBeVisible()
       expect(container.querySelector('#tooltip')).toHaveTextContent('Geneva')
-      userEvent.unhover(container.querySelector('.county.progress')!)
+      userEvent.unhover(container.querySelector('.county.progress-2')!)
       expect(container.querySelector('#tooltip')).not.toBeVisible()
     })
   })
