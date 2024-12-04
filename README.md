@@ -148,5 +148,3 @@ To run tests while developing, you can use these commands to make things more in
 - Server tests: `poetry run pytest` (you can add flags - e.g. `-k <pattern>` only runs tests that match the pattern, `-n auto` to run the tests in parallel)
 - Client tests: `yarn --cwd client test` (runs interactive test CLI)
 - End-to-end tests: first run `FLASK_ENV=test ./run-dev.sh` to run the server, then, in a separate shell, run `yarn --cwd client run cypress open` (opens the Cypress test app for interactive test running/debugging)
-
-Another test
