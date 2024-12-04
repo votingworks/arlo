@@ -297,7 +297,7 @@ const Map: React.FC<IProps> = ({
                 <MapLabelsBoxes className="success" /> Manifest uploaded
               </MapLabelsRow>
               <MapLabelsRow>
-                <MapLabelsBoxes className="progress-2" /> Manifest upload failed
+                <MapLabelsBoxes className="danger" /> Manifest upload failed
               </MapLabelsRow>
               <MapLabelsRow>
                 <MapLabelsBoxes className="progress-1" /> Logged in
