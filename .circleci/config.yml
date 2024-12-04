@@ -1,8 +1,17 @@
 version: 2.1
 orbs:
-  python: circleci/python@2.2.0
-  node: circleci/node@6.3.0
   browser-tools: circleci/browser-tools@1.4.0
+  node: circleci/node@6.3.0
+  python: circleci/python@2.2.0
+
+workflows:
+  version: 2
+  build-and-test:
+    jobs:
+      - preflight
+      - build-and-test-server
+      - build-and-test-client
+      - cypress
 
 executors:
   arlo:
@@ -42,12 +51,10 @@ jobs:
       - python/install-packages:
           pkg-manager: poetry
       - create-data-model
-
       - run:
           name: typecheck server
           command: |
             make typecheck-server
-
       - run:
           name: format server
           command: |
@@ -88,7 +95,6 @@ jobs:
           command: |
             sudo apt-get update
             sudo apt-get install graphicsmagick
-
       - run:
           name: test client
           command: |
@@ -110,19 +116,16 @@ jobs:
           cache-version: v10
       - restore_cache:
           name: "Restoring Cypress cache"
-          key: v1-cypress-cache-{{ checksum "client/yarn.lock" }}
-      - save_cache:
-          name: "Saving Cypress cache"
-          key: v1-cypress-cache-{{ checksum "client/yarn.lock" }}
-          paths:
-            - ~/.cache/Cypress
-      # We've seen a weird issue where the Cypress cache appears to restore
-      # successfully but the Cypress binary is still missing. So we just check
-      # for it and reinstall if necessary.
+          key: v4-cypress-cache-{{ checksum "client/yarn.lock" }}
       - run:
           name: "Verifying Cypress installation"
           command: |
             yarn --cwd client cypress verify || yarn --cwd client cypress install
+      - save_cache:
+          name: "Saving Cypress cache"
+          key: v4-cypress-cache-{{ checksum "client/yarn.lock" }}
+          paths:
+            - /home/circleci/.cache/Cypress
       - browser-tools/install-chrome
       - create-data-model
       - run:
@@ -133,11 +136,3 @@ jobs:
           path: client/cypress/screenshots
       - store_artifacts:
           path: client/cypress/videos
-workflows:
-  version: 2
-  build-and-test:
-    jobs:
-      - preflight
-      - build-and-test-server
-      - build-and-test-client
-      - cypress
