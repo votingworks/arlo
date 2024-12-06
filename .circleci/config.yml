@@ -31,7 +31,7 @@ commands:
       - run:
           name: create data model
           command: |
-            make resetdb
+            make db-clean
       # Generate the en_US.UTF-8 locale (which for some reason isn't set up in
       # the Docker container we use). arlo uses this locale to parse numbers in CSVs.
       - run:
@@ -54,16 +54,16 @@ jobs:
       - run:
           name: typecheck server
           command: |
-            make typecheck-server
+            make typecheck
       - run:
           name: format server
           command: |
-            make format-server
+            make format
             git diff-index --quiet HEAD -- || (echo "Found unexpected changes!" && git diff && exit 1)
       - run:
           name: lint server
           command: |
-            make lint-server
+            make lint
 
   build-and-test-server:
     executor: arlo
