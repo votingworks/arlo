@@ -135,7 +135,7 @@ const ActiveAudits = () => {
 
   return (
     <Column>
-      <H2>Active Audits</H2>
+      <H3>Active Audits</H3>
       <List>
         {elections.data.map(election => (
           <LinkItem key={election.id} to={`/support/audits/${election.id}`}>
@@ -172,7 +172,7 @@ const Organizations = () => {
 
   return (
     <Column>
-      <H2>Organizations</H2>
+      <H3>Organizations</H3>
       <form
         style={{ display: 'flex', marginBottom: '10px' }}
         onSubmit={handleSubmit(onSubmitCreateOrganization)}
@@ -215,7 +215,7 @@ const DownloadUsersButton = styled(AnchorButton)`
 const SupportUserTools = () => {
   return (
     <Column>
-      <H2>Downloads</H2>
+      <H3>Downloads</H3>
       <DownloadUsersButton
         icon="download"
         href="/api/support/organizations/users"
