@@ -14,6 +14,7 @@ import {
   HTMLSelect,
   Card,
   MenuItem,
+  Tooltip,
 } from '@blueprintjs/core'
 import { MultiSelect } from '@blueprintjs/select'
 import { useForm, Controller } from 'react-hook-form'
@@ -79,9 +80,15 @@ const SupportTools: React.FC = () => {
           <Switch>
             <Route exact path="/support">
               <Row>
-                <SupportUserTools />
-                <ActiveAudits />
-                <Organizations />
+                <Column1>
+                  <Organizations />
+                </Column1>
+                <Column2>
+                  <ActiveAudits />
+                </Column2>
+                <Column3>
+                  <SupportUserTools />
+                </Column3>
               </Row>
             </Route>
             <Route path="/support/orgs/:organizationId">
@@ -105,13 +112,28 @@ const SupportTools: React.FC = () => {
 }
 
 const Column = styled.div`
-  width: 50%;
+  width: 33%;
   padding-right: 30px;
+`
+
+const Column1 = styled.div`
+  flex: 0 0 30%;
+  padding-right: 30px;
+`
+
+const Column2 = styled.div`
+  flex: 0 0 45%;
+  padding-right: 30px;
+`
+
+const Column3 = styled.div`
+  flex: 0 0 25%;
 `
 
 const Row = styled.div`
   display: flex;
   width: 100%;
+  justify-content: flex-start;
 `
 
 const AuditStatusTag = ({ currentRound }: { currentRound: IRound | null }) => {
@@ -134,20 +156,31 @@ const ActiveAudits = () => {
   if (!elections.isSuccess) return null
 
   return (
-    <Column>
+    <>
       <H3>Active Audits</H3>
       <List>
         {elections.data.map(election => (
           <LinkItem key={election.id} to={`/support/audits/${election.id}`}>
-            <div>
-              <div style={{ color: 'black' }}>{election.organization.name}</div>
-              <div className="bp3-text-large">{election.auditName}</div>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                width: '100%',
+              }}
+            >
+              <div>
+                <div style={{ color: 'black' }}>
+                  {election.organization.name}
+                </div>
+                <div className="bp3-text-large">{election.auditName}</div>
+              </div>
               <AuditStatusTag currentRound={election.currentRound} />
             </div>
           </LinkItem>
         ))}
       </List>
-    </Column>
+    </>
   )
 }
 
@@ -156,7 +189,7 @@ const Organizations = () => {
   if (!organizations.isSuccess) return null
 
   return (
-    <Column>
+    <>
       <H3>Organizations</H3>
       <List>
         {organizations.data.map(organization => (
@@ -168,7 +201,7 @@ const Organizations = () => {
           </LinkItem>
         ))}
       </List>
-    </Column>
+    </>
   )
 }
 
@@ -179,7 +212,7 @@ const DownloadUsersButton = styled(AnchorButton)`
 const SupportUserTools = () => {
   const createOrganization = useCreateOrganization()
 
-  const { register, handleSubmit, reset, formState, getValues } = useForm<{
+  const { register, handleSubmit, reset, formState } = useForm<{
     name: string
   }>()
 
@@ -192,16 +225,14 @@ const SupportUserTools = () => {
     }
   }
 
-  console.log(getValues('name'), formState)
-
   return (
-    <Column>
+    <>
       <H3>Tools</H3>
       <div
         style={{
           display: 'flex',
           flexDirection: 'column',
-          gap: '32px',
+          gap: '24px',
           paddingTop: '24px',
         }}
       >
@@ -215,37 +246,43 @@ const SupportUserTools = () => {
         >
           <Button
             type="submit"
-            // icon="insert"
+            icon="insert"
             style={{}}
             loading={formState.isSubmitting}
             className={Classes.BUTTON}
             disabled={!formState.isDirty || formState.isSubmitting}
           >
-            Create
+            Create Org
           </Button>
           <input
             type="text"
             name="name"
             className={Classes.INPUT}
-            placeholder="New organization name"
+            placeholder="Organization name"
             ref={register}
             style={{ flexGrow: 1 }}
           />
         </form>
         <div>
-          <DownloadUsersButton
-            icon="download"
-            href="/api/support/organizations/users"
+          <Tooltip
+            content={
+              <p>
+                Export a list of Audit Admins and Jurisdiction Managers for all
+                audits completed in the last 12 weeks.
+              </p>
+            }
           >
-            Download User List
-          </DownloadUsersButton>
-          <p>
-            Export a list of Audit Admins and Jurisdiction Managers for all
-            audits completed in the last 12 weeks.
-          </p>
+            <DownloadUsersButton
+              icon="download"
+              intent="none"
+              href="/api/support/organizations/users"
+            >
+              Download User List
+            </DownloadUsersButton>
+          </Tooltip>
         </div>
       </div>
-    </Column>
+    </>
   )
 }
 
