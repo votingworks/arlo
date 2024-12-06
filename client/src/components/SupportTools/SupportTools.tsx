@@ -79,9 +79,9 @@ const SupportTools: React.FC = () => {
           <Switch>
             <Route exact path="/support">
               <Row>
+                <SupportUserTools />
                 <ActiveAudits />
                 <Organizations />
-                <SupportUserTools />
               </Row>
             </Route>
             <Route path="/support/orgs/:organizationId">
@@ -153,47 +153,11 @@ const ActiveAudits = () => {
 
 const Organizations = () => {
   const organizations = useOrganizations()
-  const createOrganization = useCreateOrganization()
-
-  const { register, handleSubmit, reset, formState } = useForm<{
-    name: string
-  }>()
-
   if (!organizations.isSuccess) return null
-
-  const onSubmitCreateOrganization = async ({ name }: { name: string }) => {
-    try {
-      await createOrganization.mutateAsync({ name })
-      reset()
-    } catch (error) {
-      // Do nothing - errors toasted by queryClient
-    }
-  }
 
   return (
     <Column>
       <H3>Organizations</H3>
-      <form
-        style={{ display: 'flex', marginBottom: '10px' }}
-        onSubmit={handleSubmit(onSubmitCreateOrganization)}
-      >
-        <input
-          type="text"
-          name="name"
-          className={Classes.INPUT}
-          placeholder="New organization name"
-          ref={register}
-          style={{ flexGrow: 1 }}
-        />
-        <Button
-          type="submit"
-          icon="insert"
-          style={{ marginLeft: '20px' }}
-          loading={formState.isSubmitting}
-        >
-          Create Organization
-        </Button>
-      </form>
       <List>
         {organizations.data.map(organization => (
           <LinkItem
@@ -213,19 +177,74 @@ const DownloadUsersButton = styled(AnchorButton)`
 `
 
 const SupportUserTools = () => {
+  const createOrganization = useCreateOrganization()
+
+  const { register, handleSubmit, reset, formState, getValues } = useForm<{
+    name: string
+  }>()
+
+  const onSubmitCreateOrganization = async ({ name }: { name: string }) => {
+    try {
+      await createOrganization.mutateAsync({ name })
+      reset()
+    } catch (error) {
+      // Do nothing - errors toasted by queryClient
+    }
+  }
+
+  console.log(getValues('name'), formState)
+
   return (
     <Column>
-      <H3>Downloads</H3>
-      <DownloadUsersButton
-        icon="download"
-        href="/api/support/organizations/users"
+      <H3>Tools</H3>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '32px',
+          paddingTop: '24px',
+        }}
       >
-        Download User List
-      </DownloadUsersButton>
-      <p>
-        Export a list of Audit Admins and Jurisdiction Managers for all audits
-        completed in the last 12 weeks.
-      </p>
+        <form
+          style={{
+            display: 'flex',
+            // flexDirection: 'column',
+            gap: '8px',
+          }}
+          onSubmit={handleSubmit(onSubmitCreateOrganization)}
+        >
+          <Button
+            type="submit"
+            // icon="insert"
+            style={{}}
+            loading={formState.isSubmitting}
+            className={Classes.BUTTON}
+            disabled={!formState.isDirty || formState.isSubmitting}
+          >
+            Create
+          </Button>
+          <input
+            type="text"
+            name="name"
+            className={Classes.INPUT}
+            placeholder="New organization name"
+            ref={register}
+            style={{ flexGrow: 1 }}
+          />
+        </form>
+        <div>
+          <DownloadUsersButton
+            icon="download"
+            href="/api/support/organizations/users"
+          >
+            Download User List
+          </DownloadUsersButton>
+          <p>
+            Export a list of Audit Admins and Jurisdiction Managers for all
+            audits completed in the last 12 weeks.
+          </p>
+        </div>
+      </div>
     </Column>
   )
 }
