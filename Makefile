@@ -1,68 +1,70 @@
-# Set path so we can find poetry after install
-PATH := $(PATH):$(HOME)/.local/bin
+## Prepare environment for development
 
-deps:
+prepare:
 	sudo apt update
-	sudo apt install -y python3.9 python3.9-venv libpython3.9-dev libpq-dev graphicsmagick gcc python-dev
+	# Install python with virtual env and dev extensions, graphicsmagick, and gcc
+	sudo apt install -y python3.9 python3.9-venv libpython3.9-dev python-dev libpq-dev graphicsmagick gcc postgresql
 	# Install node: https://github.com/nodesource/distributions/blob/master/README.md#deb		
 	curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
 	sudo apt-get install -y nodejs
 	# Install poetry: https://python-poetry.org/docs/#installing-with-the-official-installer
 	curl -sSL https://install.python-poetry.org | python3.9 -
+	# Install yarn
 	sudo npm install -g yarn
-	sudo apt install -y postgresql
-	sudo systemctl start postgresql
+	yarn install
+	yarn prepare # Sets up Git hooks
+	# Ensure poetry can be called from the command line and make commands
+	@echo "User action required: Make poetry available in your PATH. This will vary depending on your configuration"
+	@echo "If using bash, add 'export PATH=\"\$$PATH:\$$HOME/.local/bin\"' to your .bashrc and then run 'source ~/.bashrc'"
 
-# this should only be used for development
-initdevdb:
+db-prepare:
+	sudo systemctl start postgresql
 	sudo -u postgres psql -c "create user arlo superuser password 'arlo';"
 	sudo -u postgres psql -c "create database arlo with owner arlo;"
+	make db-clean
 
-install-development:
+## Local development
+
+dev-environment: prepare db-prepare install 
+
+run: # Used for development, not during production deployment. Defaults to 3 ports - 8080, 3000, 3001
+	./run-dev.sh
+
+## Following commands are mainly for server development, since client is encapsulated in a subdirectory
+
+install:
 	poetry install
 	yarn install
-	yarn --cwd client install
+	make -C client install
 
-setup-git-hooks:
-	yarn prepare
-
-resettestdb:
-	FLASK_ENV=test make resetdb
-
-resetdb:
-	FLASK_ENV=$${FLASK_ENV:-development} poetry run python -m scripts.resetdb
-
-migratedb:
-	FLASK_ENV=$${FLASK_ENV:-development} poetry run alembic upgrade head
-
-dev-environment: deps initdevdb install-development setup-git-hooks resetdb
-
-typecheck-server:
+typecheck:
 	poetry run mypy server scripts fixtures
 
-format-server:
+format:
 	poetry run black .
 
-lint-server:
+lint:
 	poetry run pylint server scripts fixtures
 
-test-client:
-	yarn --cwd client lint
-	yarn --cwd client test
+test:
+	poetry run pytest -n auto --ignore=server/tests/arlo-extra-tests 
 
-test-server:
-	poetry run pytest -n auto --ignore=server/tests/arlo-extra-tests
+test-clean:
+	FLASK_ENV=test make db-clean
 
-test-server-coverage:
+test-coverage:
 	poetry run pytest -n auto --cov=. --ignore=server/tests/arlo-extra-tests
 
-# This runs all tests. If you have the extra files repo included, it runs those as well.
-test-server-extra: 
+test-extra: # This runs the _extra files_ repo tests as well (must download first)
 	poetry run pytest -n auto 
 
-test-server-extra-coverage:
-	poetry run pytest -n auto --cov=. 
+test-extra-coverage:
+	poetry run pytest -n auto --cov=.
 
+## Database
 
-run-dev:
-	./run-dev.sh
+db-clean:
+	FLASK_ENV=$${FLASK_ENV:-development} poetry run python -m scripts.resetdb
+
+db-migrate:
+	FLASK_ENV=$${FLASK_ENV:-development} poetry run alembic upgrade head
