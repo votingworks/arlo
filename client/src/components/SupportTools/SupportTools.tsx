@@ -14,11 +14,12 @@ import {
   HTMLSelect,
   Card,
   MenuItem,
+  Tooltip,
 } from '@blueprintjs/core'
 import { MultiSelect } from '@blueprintjs/select'
 import { useForm, Controller } from 'react-hook-form'
 import { useAuthDataContext } from '../UserContext'
-import { Wrapper, Inner } from '../Atoms/Wrapper'
+import { Wrapper, SupportToolsInner } from '../Atoms/Wrapper'
 import {
   useOrganizations,
   useOrganization,
@@ -74,32 +75,36 @@ const SupportTools: React.FC = () => {
 
   return (
     <Wrapper>
-      <Inner>
-        <div style={{ margin: '30px 0', width: '100%' }}>
-          <Switch>
-            <Route exact path="/support">
-              <Row>
-                <ActiveAudits />
+      <SupportToolsInner>
+        <Switch>
+          <Route exact path="/support">
+            <Row>
+              <Column1>
                 <Organizations />
+              </Column1>
+              <Column2>
+                <ActiveAudits />
+              </Column2>
+              <Column3>
                 <SupportUserTools />
-              </Row>
-            </Route>
-            <Route path="/support/orgs/:organizationId">
-              {({ match }) => (
-                <Organization organizationId={match!.params.organizationId} />
-              )}
-            </Route>
-            <Route path="/support/audits/:electionId">
-              {({ match }) => <Audit electionId={match!.params.electionId} />}
-            </Route>
-            <Route path="/support/jurisdictions/:jurisdictionId">
-              {({ match }) => (
-                <Jurisdiction jurisdictionId={match!.params.jurisdictionId} />
-              )}
-            </Route>
-          </Switch>
-        </div>
-      </Inner>
+              </Column3>
+            </Row>
+          </Route>
+          <Route path="/support/orgs/:organizationId">
+            {({ match }) => (
+              <Organization organizationId={match!.params.organizationId} />
+            )}
+          </Route>
+          <Route path="/support/audits/:electionId">
+            {({ match }) => <Audit electionId={match!.params.electionId} />}
+          </Route>
+          <Route path="/support/jurisdictions/:jurisdictionId">
+            {({ match }) => (
+              <Jurisdiction jurisdictionId={match!.params.jurisdictionId} />
+            )}
+          </Route>
+        </Switch>
+      </SupportToolsInner>
     </Wrapper>
   )
 }
@@ -107,6 +112,20 @@ const SupportTools: React.FC = () => {
 const Column = styled.div`
   width: 50%;
   padding-right: 30px;
+`
+
+const Column1 = styled.div`
+  flex: 0 0 25%;
+  padding-right: 30px;
+`
+
+const Column2 = styled.div`
+  flex: 0 0 50%;
+  padding-right: 30px;
+`
+
+const Column3 = styled.div`
+  flex: 0 0 25%;
 `
 
 const Row = styled.div`
@@ -134,66 +153,41 @@ const ActiveAudits = () => {
   if (!elections.isSuccess) return null
 
   return (
-    <Column>
-      <H2>Active Audits</H2>
+    <>
+      <H3 style={{ paddingBottom: '12px' }}>Active Audits</H3>
       <List>
         {elections.data.map(election => (
           <LinkItem key={election.id} to={`/support/audits/${election.id}`}>
-            <div>
-              <div style={{ color: 'black' }}>{election.organization.name}</div>
-              <div className="bp3-text-large">{election.auditName}</div>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                width: '100%',
+              }}
+            >
+              <div>
+                <div style={{ color: 'black' }}>
+                  {election.organization.name}
+                </div>
+                <div className="bp3-text-large">{election.auditName}</div>
+              </div>
               <AuditStatusTag currentRound={election.currentRound} />
             </div>
           </LinkItem>
         ))}
       </List>
-    </Column>
+    </>
   )
 }
 
 const Organizations = () => {
   const organizations = useOrganizations()
-  const createOrganization = useCreateOrganization()
-
-  const { register, handleSubmit, reset, formState } = useForm<{
-    name: string
-  }>()
-
   if (!organizations.isSuccess) return null
 
-  const onSubmitCreateOrganization = async ({ name }: { name: string }) => {
-    try {
-      await createOrganization.mutateAsync({ name })
-      reset()
-    } catch (error) {
-      // Do nothing - errors toasted by queryClient
-    }
-  }
-
   return (
-    <Column>
-      <H2>Organizations</H2>
-      <form
-        style={{ display: 'flex', marginBottom: '10px' }}
-        onSubmit={handleSubmit(onSubmitCreateOrganization)}
-      >
-        <input
-          type="text"
-          name="name"
-          className={Classes.INPUT}
-          placeholder="New organization name"
-          ref={register}
-          style={{ flexGrow: 1 }}
-        />
-        <Button
-          type="submit"
-          icon="insert"
-          style={{ marginLeft: '20px' }}
-          loading={formState.isSubmitting}
-        >
-          Create Organization
-        </Button>
-      </form>
+    <>
+      <H3 style={{ paddingBottom: '12px' }}>Organizations</H3>
       <List>
         {organizations.data.map(organization => (
           <LinkItem
@@ -204,7 +198,7 @@ const Organizations = () => {
           </LinkItem>
         ))}
       </List>
-    </Column>
+    </>
   )
 }
 
@@ -213,20 +207,80 @@ const DownloadUsersButton = styled(AnchorButton)`
 `
 
 const SupportUserTools = () => {
+  const createOrganization = useCreateOrganization()
+
+  const { register, handleSubmit, reset, formState } = useForm<{
+    name: string
+  }>()
+
+  const onSubmitCreateOrganization = async ({ name }: { name: string }) => {
+    try {
+      await createOrganization.mutateAsync({ name })
+      toast.success(
+        `Created organization for '${name}'. You will find it in the Organizations list.`
+      )
+      reset()
+    } catch (error) {
+      // Do nothing - errors toasted by queryClient
+    }
+  }
+
   return (
-    <Column>
-      <H2>Downloads</H2>
-      <DownloadUsersButton
-        icon="download"
-        href="/api/support/organizations/users"
+    <>
+      <H3 style={{ paddingBottom: '12px' }}>Tools</H3>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '24px',
+        }}
       >
-        Download User List
-      </DownloadUsersButton>
-      <p>
-        Export a list of Audit Admins and Jurisdiction Managers for all audits
-        completed in the last 12 weeks.
-      </p>
-    </Column>
+        <form
+          style={{
+            display: 'flex',
+            // flexDirection: 'column',
+            gap: '8px',
+          }}
+          onSubmit={handleSubmit(onSubmitCreateOrganization)}
+        >
+          <Button
+            type="submit"
+            icon="insert"
+            loading={formState.isSubmitting}
+            className={Classes.BUTTON}
+            disabled={!formState.isDirty || formState.isSubmitting}
+          >
+            Create Org
+          </Button>
+          <input
+            type="text"
+            name="name"
+            className={Classes.INPUT}
+            placeholder="Organization name"
+            ref={register}
+            style={{ flexGrow: 1 }}
+          />
+        </form>
+        <div>
+          <Tooltip
+            content={
+              <p>
+                Export a list of Audit Admins and Jurisdiction Managers for all
+                audits completed in the last 12 weeks.
+              </p>
+            }
+          >
+            <DownloadUsersButton
+              icon="download"
+              intent="none"
+              href="/api/support/organizations/users"
+            >
+              Download User List
+            </DownloadUsersButton>
+          </Tooltip>
+        </div>
+      </div>
+    </>
   )
 }
 
@@ -352,7 +406,7 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
   }
 
   return (
-    <div style={{ width: '100%' }}>
+    <div style={{ width: '70%' }}>
       <div style={{ display: 'flex', alignItems: 'baseline' }}>
         <H2>{name}</H2>
         <Button
@@ -373,10 +427,9 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
         </Button>
       </div>
       <p>Default State: {defaultState ? states[defaultState] : 'None'}</p>
-
       <div style={{ display: 'flex', width: '100%' }}>
         <Column>
-          <H3>Audits</H3>
+          <H3 style={{ paddingBottom: '12px' }}>Audits</H3>
           <List style={{ marginBottom: '30px' }}>
             {sortedElections
               .filter(election => !election.deletedAt)
@@ -495,7 +548,7 @@ const Audit = ({ electionId }: { electionId: string }) => {
   } = election.data
 
   return (
-    <div>
+    <div style={{ width: '70%' }}>
       <Breadcrumbs>
         <Link to={`/support/orgs/${organization.id}`}>{organization.name}</Link>
       </Breadcrumbs>
@@ -629,7 +682,7 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
   }
 
   return (
-    <div style={{ width: '100%' }}>
+    <div style={{ width: '70%' }}>
       <Breadcrumbs>
         <Link to={`/support/orgs/${organization.id}`}>{organization.name}</Link>
         <Link to={`/support/audits/${election.id}`}>{election.auditName}</Link>

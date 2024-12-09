@@ -23,4 +23,13 @@ export const Inner = styled.div<IInnerProps>`
   flex-direction: ${props => props.flexDirection || undefined};
 `
 
+export const SupportToolsInner = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-right: auto;
+  margin-left: auto;
+  width: 90%;
+  padding: 30px 0;
+`
+
 export default Wrapper
