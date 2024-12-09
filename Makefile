@@ -1,4 +1,4 @@
-# Prepare environment for development
+## Prepare environment for development
 
 prepare:
 	sudo apt update
@@ -17,15 +17,13 @@ prepare:
 	@echo "User action required: Make poetry available in your PATH. This will vary depending on your configuration"
 	@echo "If using bash, add 'export PATH=\"\$$PATH:\$$HOME/.local/bin\"' to your .bashrc and then run 'source ~/.bashrc'"
 
-# Local 
-
 db-prepare:
 	sudo systemctl start postgresql
 	sudo -u postgres psql -c "create user arlo superuser password 'arlo';"
 	sudo -u postgres psql -c "create database arlo with owner arlo;"
 	make db-clean
 
-# Local development
+## Local development
 
 dev-environment: prepare db-prepare install 
 
