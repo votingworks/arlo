@@ -9,14 +9,18 @@ prepare:
 	sudo apt-get install -y nodejs
 	# Install poetry: https://python-poetry.org/docs/#installing-with-the-official-installer
 	curl -sSL https://install.python-poetry.org | python3.9 -
-	# Allow poetry to be called from the command line and make commands
-	@if ! echo "$$PATH" | grep -q "$$HOME/.local/bin"; then \
-		export PATH="$$PATH:$$HOME/.local/bin"; \
-	fi
 	# Install yarn
 	sudo npm install -g yarn
 	yarn install
 	yarn prepare # Sets up Git hooks
+	# Ensure poetry can be called from the command line and make commands; add to .bashrc and current shell
+	@if ! echo "$$PATH" | grep -q "$$HOME/.local/bin"; then \
+		echo 'export PATH="$$PATH:$$HOME/.local/bin"' >> $$HOME/.bashrc; \
+		export PATH="$$PATH:$$HOME/.local/bin"; \
+		echo "Added $$HOME/.local/bin to PATH for current shell and future sessions."; \
+	fi
+
+# Local 
 
 db-prepare:
 	sudo systemctl start postgresql
@@ -36,7 +40,7 @@ run: # Used for development, not during production deployment. Defaults to 3 por
 install:
 	poetry install
 	yarn install
-	yarn --cwd client install
+	make -C client install
 
 typecheck:
 	poetry run mypy server scripts fixtures
@@ -51,20 +55,16 @@ test:
 	poetry run pytest -n auto --ignore=server/tests/arlo-extra-tests 
 
 test-clean:
-	FLASK_ENV=test make resetdb
+	FLASK_ENV=test make db-clean
 
-test-with-coverage:
+test-coverage:
 	poetry run pytest -n auto --cov=. --ignore=server/tests/arlo-extra-tests
 
-test-all: # This runs the _extra files_ repo tests as well (must download first)
+test-extra: # This runs the _extra files_ repo tests as well (must download first)
 	poetry run pytest -n auto 
 
-test-all-with-coverage:
+test-extra-coverage:
 	poetry run pytest -n auto --cov=.
-
-test-client:
-	yarn --cwd client lint
-	yarn --cwd client test
 
 ## Database
 
