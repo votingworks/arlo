@@ -19,7 +19,7 @@ import {
 import { MultiSelect } from '@blueprintjs/select'
 import { useForm, Controller } from 'react-hook-form'
 import { useAuthDataContext } from '../UserContext'
-import { Wrapper, Inner } from '../Atoms/Wrapper'
+import { Wrapper, SupportToolsInner } from '../Atoms/Wrapper'
 import {
   useOrganizations,
   useOrganization,
@@ -75,54 +75,52 @@ const SupportTools: React.FC = () => {
 
   return (
     <Wrapper>
-      <Inner>
-        <div style={{ margin: '30px 0', width: '100%' }}>
-          <Switch>
-            <Route exact path="/support">
-              <Row>
-                <Column1>
-                  <Organizations />
-                </Column1>
-                <Column2>
-                  <ActiveAudits />
-                </Column2>
-                <Column3>
-                  <SupportUserTools />
-                </Column3>
-              </Row>
-            </Route>
-            <Route path="/support/orgs/:organizationId">
-              {({ match }) => (
-                <Organization organizationId={match!.params.organizationId} />
-              )}
-            </Route>
-            <Route path="/support/audits/:electionId">
-              {({ match }) => <Audit electionId={match!.params.electionId} />}
-            </Route>
-            <Route path="/support/jurisdictions/:jurisdictionId">
-              {({ match }) => (
-                <Jurisdiction jurisdictionId={match!.params.jurisdictionId} />
-              )}
-            </Route>
-          </Switch>
-        </div>
-      </Inner>
+      <SupportToolsInner>
+        <Switch>
+          <Route exact path="/support">
+            <Row>
+              <Column1>
+                <Organizations />
+              </Column1>
+              <Column2>
+                <ActiveAudits />
+              </Column2>
+              <Column3>
+                <Tools />
+              </Column3>
+            </Row>
+          </Route>
+          <Route path="/support/orgs/:organizationId">
+            {({ match }) => (
+              <Organization organizationId={match!.params.organizationId} />
+            )}
+          </Route>
+          <Route path="/support/audits/:electionId">
+            {({ match }) => <Audit electionId={match!.params.electionId} />}
+          </Route>
+          <Route path="/support/jurisdictions/:jurisdictionId">
+            {({ match }) => (
+              <Jurisdiction jurisdictionId={match!.params.jurisdictionId} />
+            )}
+          </Route>
+        </Switch>
+      </SupportToolsInner>
     </Wrapper>
   )
 }
 
 const Column = styled.div`
-  width: 33%;
+  width: 50%;
   padding-right: 30px;
 `
 
 const Column1 = styled.div`
-  flex: 0 0 30%;
+  flex: 0 0 25%;
   padding-right: 30px;
 `
 
 const Column2 = styled.div`
-  flex: 0 0 45%;
+  flex: 0 0 50%;
   padding-right: 30px;
 `
 
@@ -133,7 +131,6 @@ const Column3 = styled.div`
 const Row = styled.div`
   display: flex;
   width: 100%;
-  justify-content: flex-start;
 `
 
 const AuditStatusTag = ({ currentRound }: { currentRound: IRound | null }) => {
@@ -157,7 +154,7 @@ const ActiveAudits = () => {
 
   return (
     <>
-      <H3>Active Audits</H3>
+      <H3 style={{ marginBottom: '20px' }}>Active Audits</H3>
       <List>
         {elections.data.map(election => (
           <LinkItem key={election.id} to={`/support/audits/${election.id}`}>
@@ -190,7 +187,7 @@ const Organizations = () => {
 
   return (
     <>
-      <H3>Organizations</H3>
+      <H3 style={{ marginBottom: '20px' }}>Organizations</H3>
       <List>
         {organizations.data.map(organization => (
           <LinkItem
@@ -209,7 +206,7 @@ const DownloadUsersButton = styled(AnchorButton)`
   margin-bottom: 10px;
 `
 
-const SupportUserTools = () => {
+const Tools = () => {
   const createOrganization = useCreateOrganization()
 
   const { register, handleSubmit, reset, formState } = useForm<{
@@ -219,6 +216,9 @@ const SupportUserTools = () => {
   const onSubmitCreateOrganization = async ({ name }: { name: string }) => {
     try {
       await createOrganization.mutateAsync({ name })
+      toast.success(
+        `Created organization for '${name}'. You will find it in the Organizations list.`
+      )
       reset()
     } catch (error) {
       // Do nothing - errors toasted by queryClient
@@ -227,13 +227,12 @@ const SupportUserTools = () => {
 
   return (
     <>
-      <H3>Tools</H3>
+      <H3 style={{ marginBottom: '20px' }}>Tools</H3>
       <div
         style={{
           display: 'flex',
           flexDirection: 'column',
-          gap: '24px',
-          paddingTop: '24px',
+          gap: '20px',
         }}
       >
         <form
@@ -247,7 +246,6 @@ const SupportUserTools = () => {
           <Button
             type="submit"
             icon="insert"
-            style={{}}
             loading={formState.isSubmitting}
             className={Classes.BUTTON}
             disabled={!formState.isDirty || formState.isSubmitting}
@@ -429,7 +427,6 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
         </Button>
       </div>
       <p>Default State: {defaultState ? states[defaultState] : 'None'}</p>
-
       <div style={{ display: 'flex', width: '100%' }}>
         <Column>
           <H3>Audits</H3>
@@ -551,7 +548,7 @@ const Audit = ({ electionId }: { electionId: string }) => {
   } = election.data
 
   return (
-    <div>
+    <div style={{ width: '100%' }}>
       <Breadcrumbs>
         <Link to={`/support/orgs/${organization.id}`}>{organization.name}</Link>
       </Breadcrumbs>
