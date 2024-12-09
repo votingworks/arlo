@@ -13,12 +13,9 @@ prepare:
 	sudo npm install -g yarn
 	yarn install
 	yarn prepare # Sets up Git hooks
-	# Ensure poetry can be called from the command line and make commands; add to .bashrc and current shell
-	@if ! echo "$$PATH" | grep -q "$$HOME/.local/bin"; then \
-		echo 'export PATH="$$PATH:$$HOME/.local/bin"' >> $$HOME/.bashrc; \
-		export PATH="$$PATH:$$HOME/.local/bin"; \
-		echo "Added $$HOME/.local/bin to PATH for current shell and future sessions."; \
-	fi
+	# Ensure poetry can be called from the command line and make commands
+	@echo "User action required: Make poetry available in your PATH. This will vary depending on your configuration"
+	@echo "If using bash, add 'export PATH=\"\$$PATH:\$$HOME/.local/bin\"' to your .bashrc and then run 'source ~/.bashrc'"
 
 # Local 
 
