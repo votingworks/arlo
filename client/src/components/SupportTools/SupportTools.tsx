@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ChangeEvent, useState } from 'react'
 import { Redirect, Route, Switch, Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import styled from 'styled-components'
@@ -183,20 +183,43 @@ const ActiveAudits = () => {
 
 const Organizations = () => {
   const organizations = useOrganizations()
+  const [filterText, setFilterText] = useState<string>('')
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
+    setFilterText(e.target.value)
+  }
+
   if (!organizations.isSuccess) return null
 
   return (
     <>
       <H3 style={{ marginBottom: '20px' }}>Organizations</H3>
+      <input
+        className={Classes.INPUT}
+        onChange={handleInputChange}
+        placeholder="Filter organizations..."
+        style={{
+          marginBottom: '20px',
+          width: '100%',
+        }}
+        type="text"
+        value={filterText}
+      />
       <List>
-        {organizations.data.map(organization => (
-          <LinkItem
-            key={organization.id}
-            to={`/support/orgs/${organization.id}`}
-          >
-            {organization.name}
-          </LinkItem>
-        ))}
+        {organizations.data
+          .filter(org =>
+            org.name
+              .toLocaleLowerCase()
+              .includes(filterText.toLocaleLowerCase())
+          )
+          .map(organization => (
+            <LinkItem
+              key={organization.id}
+              to={`/support/orgs/${organization.id}`}
+            >
+              {organization.name}
+            </LinkItem>
+          ))}
       </List>
     </>
   )
