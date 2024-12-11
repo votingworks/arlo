@@ -287,6 +287,7 @@ describe('Support Tools', () => {
   it('home screen shows active audits', async () => {
     const expectedCalls = [
       supportApiCalls.getUser,
+      apiCalls.getOrganizations([]),
       apiCalls.getActiveElections([
         mockElectionForSupport,
         {
@@ -297,7 +298,6 @@ describe('Support Tools', () => {
           currentRound: { id: 'round-1', endedAt: null, roundNum: 1 },
         },
       ]),
-      apiCalls.getOrganizations([]),
       apiCalls.getElection(mockElection),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -318,11 +318,11 @@ describe('Support Tools', () => {
   it('home screen shows a list of orgs', async () => {
     const expectedCalls = [
       supportApiCalls.getUser,
-      apiCalls.getActiveElections([]),
       apiCalls.getOrganizations([
         mockOrganizationBase,
         { id: 'organization-id-2', name: 'Organization 2' },
       ]),
+      apiCalls.getActiveElections([]),
       apiCalls.getOrganization(mockOrganization),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -342,8 +342,8 @@ describe('Support Tools', () => {
   it('home screen handles error', async () => {
     const expectedCalls = [
       supportApiCalls.getUser,
-      apiCalls.getActiveElections([]),
       serverError('getOrganizations', apiCalls.getOrganizations([])),
+      apiCalls.getActiveElections([]),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderRoute('/support')
@@ -354,8 +354,8 @@ describe('Support Tools', () => {
   it('home screen shows a form to create a new org', async () => {
     const expectedCalls = [
       supportApiCalls.getUser,
-      apiCalls.getActiveElections([]),
       apiCalls.getOrganizations([]),
+      apiCalls.getActiveElections([]),
       apiCalls.postOrganization,
       apiCalls.getOrganizations([
         { id: 'new-organization-id', name: 'New Organization' },
@@ -367,12 +367,10 @@ describe('Support Tools', () => {
       await screen.findByRole('heading', { name: 'Organizations' })
 
       userEvent.type(
-        screen.getByPlaceholderText('New organization name'),
+        screen.getByPlaceholderText('Organization name'),
         'New Organization'
       )
-      userEvent.click(
-        screen.getByRole('button', { name: /Create Organization/ })
-      )
+      userEvent.click(screen.getByRole('button', { name: /Create Org/ }))
 
       await screen.findByRole('link', { name: 'New Organization' })
     })
@@ -381,8 +379,8 @@ describe('Support Tools', () => {
   it('home screen handles error on create org', async () => {
     const expectedCalls = [
       supportApiCalls.getUser,
-      apiCalls.getActiveElections([]),
       apiCalls.getOrganizations([]),
+      apiCalls.getActiveElections([]),
       serverError('postOrganization', apiCalls.postOrganization),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -391,12 +389,10 @@ describe('Support Tools', () => {
       await screen.findByRole('heading', { name: 'Organizations' })
 
       userEvent.type(
-        screen.getByPlaceholderText('New organization name'),
+        screen.getByPlaceholderText('Organization name'),
         'New Organization'
       )
-      userEvent.click(
-        screen.getByRole('button', { name: /Create Organization/ })
-      )
+      userEvent.click(screen.getByRole('button', { name: /Create Org/ }))
 
       await findAndCloseToast('something went wrong: postOrganization')
     })
@@ -740,8 +736,8 @@ describe('Support Tools', () => {
       supportApiCalls.getUser,
       apiCalls.getOrganization(mockOrganization),
       apiCalls.deleteOrganization,
-      apiCalls.getActiveElections([]),
       apiCalls.getOrganizations([]),
+      apiCalls.getActiveElections([]),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { history } = renderRoute('/support/orgs/organization-id-1')
