@@ -6,7 +6,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
     class="sc-bdVaJa bKocXA"
   >
     <div
-      class="bp3-callout sc-bxivhb dweKfW"
+      class="bp3-callout sc-ifAKCX dZENeW"
     >
       <div
         class="sc-bwzfXH ijTqJq"
@@ -15,7 +15,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
           class="text"
         >
           <h3
-            class="bp3-heading sc-htpNat hodhlw"
+            class="bp3-heading sc-bxivhb fRKsxU"
           >
             Test Audit
           </h3>
@@ -38,10 +38,10 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
       class="sc-bwzfXH ijTqJq"
     >
       <div
-        class="sc-brqgnP lgMuXE"
+        class="sc-cMljjf caNgGf"
       >
         <h2
-          class="bp3-heading sc-bZQynM bTVHiW"
+          class="bp3-heading sc-gzVnrw eWpiCn"
         >
           Audit Setup
         </h2>
@@ -138,20 +138,20 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
         </ul>
       </div>
       <div
-        class="sc-gzVnrw gJSMJx"
+        class="sc-htoDjs tELUi"
       >
         <h2
-          class="bp3-heading sc-bZQynM bTVHiW"
+          class="bp3-heading sc-gzVnrw eWpiCn"
         >
           Participants
         </h2>
         <form>
           <div
-            class="sc-gzVnrw gJSMJx"
+            class="sc-htoDjs tELUi"
           >
             <div>
               <div
-                class="sc-dnqmqq kGMqKN"
+                class="sc-iwsKbI bncGzX"
               >
                 Click "Browse" to choose the appropriate file from your computer. This file should be a comma-separated list of all the jurisdictions participating in the audit, plus email addresses for audit administrators in each participating jurisdiction.
               </div>
@@ -165,7 +165,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
                 file name
               </p>
               <p
-                class="sc-gZMcBi jnaCUP"
+                class="sc-gqjmRU sZbzH"
               >
                 Uploaded at
                  
@@ -174,7 +174,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
               </p>
               <div>
                 <button
-                  class="bp3-button sc-VigVT cQCGhc"
+                  class="bp3-button sc-jTzLTM kWdIFo"
                   type="button"
                 >
                   <span
@@ -203,7 +203,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
           </div>
         </form>
         <div
-          class="sc-EHOje jmejrp"
+          class="sc-bZQynM bYVib"
           style="margin-top: 20px;"
         >
           <button
