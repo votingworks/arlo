@@ -9,19 +9,19 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
       class="sc-kGXeez fSmIyR"
     >
       <div
-        class="sc-dxgOiQ cnAnsE"
+        class="sc-ckVGcZ bxAWbg"
       >
         <div
-          class="sc-ckVGcZ dWmLvW"
+          class="sc-jKJlTe ebZSAv"
         >
           <div
-            class="sc-jKJlTe BtGnJ"
+            class="sc-eNQAEJ eawDHL"
           >
             <div
-              class="sc-kEYyzF bYnpXO"
+              class="sc-kkGfuU cJRsCh"
             >
               <button
-                class="bp3-button bp3-minimal sc-hMqMXs gLjYcq"
+                class="bp3-button bp3-minimal sc-kEYyzF cIpjCt"
                 href="/election/1/audit-board/1"
                 type="button"
               >
@@ -51,7 +51,7 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
                 </span>
               </button>
               <h3
-                class="bp3-heading sc-kpOJdX gOTkwU"
+                class="bp3-heading sc-dxgOiQ iNhIYv"
               >
                 Audit Ballot Selections
               </h3>
@@ -264,7 +264,7 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
             </div>
           </div>
           <div
-            class="sc-eNQAEJ fdspOC"
+            class="sc-hMqMXs zBIpE"
           >
             <h4
               class="bp3-heading"
@@ -272,7 +272,7 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
               Instructions
             </h4>
             <ol
-              class="bp3-list sc-kkGfuU drhJhK"
+              class="bp3-list sc-iAyFgw jCvUMF"
             >
               <li>
                 Confirm that you are looking at the correct ballot for the batch and position. If the ballot was not located, select
@@ -323,19 +323,19 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
       class="sc-kGXeez fSmIyR"
     >
       <div
-        class="sc-dxgOiQ cnAnsE"
+        class="sc-ckVGcZ bxAWbg"
       >
         <div
-          class="sc-ckVGcZ dWmLvW"
+          class="sc-jKJlTe ebZSAv"
         >
           <div
-            class="sc-jKJlTe BtGnJ"
+            class="sc-eNQAEJ eawDHL"
           >
             <div
-              class="sc-kEYyzF bYnpXO"
+              class="sc-kkGfuU cJRsCh"
             >
               <button
-                class="bp3-button bp3-minimal sc-hMqMXs gLjYcq"
+                class="bp3-button bp3-minimal sc-kEYyzF cIpjCt"
                 href="/election/1/audit-board/1"
                 type="button"
               >
@@ -365,7 +365,7 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
                 </span>
               </button>
               <h3
-                class="bp3-heading sc-kpOJdX gOTkwU"
+                class="bp3-heading sc-dxgOiQ iNhIYv"
               >
                 Audit Ballot Selections
               </h3>
@@ -577,7 +577,7 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
             </div>
           </div>
           <div
-            class="sc-eNQAEJ fdspOC"
+            class="sc-hMqMXs zBIpE"
           >
             <h4
               class="bp3-heading"
@@ -585,7 +585,7 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
               Instructions
             </h4>
             <ol
-              class="bp3-list sc-kkGfuU drhJhK"
+              class="bp3-list sc-iAyFgw jCvUMF"
             >
               <li>
                 Confirm that you are looking at the correct ballot for the batch and position. If the ballot was not located, select
@@ -636,19 +636,19 @@ exports[`Ballot selects Blank Vote 1`] = `
       class="sc-kGXeez fSmIyR"
     >
       <div
-        class="sc-dxgOiQ cnAnsE"
+        class="sc-ckVGcZ bxAWbg"
       >
         <div
-          class="sc-ckVGcZ dWmLvW"
+          class="sc-jKJlTe ebZSAv"
         >
           <div
-            class="sc-jKJlTe BtGnJ"
+            class="sc-eNQAEJ eawDHL"
           >
             <div
-              class="sc-kEYyzF bYnpXO"
+              class="sc-kkGfuU cJRsCh"
             >
               <button
-                class="bp3-button bp3-minimal sc-hMqMXs gLjYcq"
+                class="bp3-button bp3-minimal sc-kEYyzF cIpjCt"
                 href="/election/1/audit-board/1"
                 type="button"
               >
@@ -678,7 +678,7 @@ exports[`Ballot selects Blank Vote 1`] = `
                 </span>
               </button>
               <h3
-                class="bp3-heading sc-kpOJdX gOTkwU"
+                class="bp3-heading sc-dxgOiQ iNhIYv"
               >
                 Audit Ballot Selections
               </h3>
@@ -888,7 +888,7 @@ exports[`Ballot selects Blank Vote 1`] = `
             </div>
           </div>
           <div
-            class="sc-eNQAEJ fdspOC"
+            class="sc-hMqMXs zBIpE"
           >
             <h4
               class="bp3-heading"
@@ -896,7 +896,7 @@ exports[`Ballot selects Blank Vote 1`] = `
               Instructions
             </h4>
             <ol
-              class="bp3-list sc-kkGfuU drhJhK"
+              class="bp3-list sc-iAyFgw jCvUMF"
             >
               <li>
                 Confirm that you are looking at the correct ballot for the batch and position. If the ballot was not located, select
@@ -947,19 +947,19 @@ exports[`Ballot selects Not on Ballot 1`] = `
       class="sc-kGXeez fSmIyR"
     >
       <div
-        class="sc-dxgOiQ cnAnsE"
+        class="sc-ckVGcZ bxAWbg"
       >
         <div
-          class="sc-ckVGcZ dWmLvW"
+          class="sc-jKJlTe ebZSAv"
         >
           <div
-            class="sc-jKJlTe BtGnJ"
+            class="sc-eNQAEJ eawDHL"
           >
             <div
-              class="sc-kEYyzF bYnpXO"
+              class="sc-kkGfuU cJRsCh"
             >
               <button
-                class="bp3-button bp3-minimal sc-hMqMXs gLjYcq"
+                class="bp3-button bp3-minimal sc-kEYyzF cIpjCt"
                 href="/election/1/audit-board/1"
                 type="button"
               >
@@ -989,7 +989,7 @@ exports[`Ballot selects Not on Ballot 1`] = `
                 </span>
               </button>
               <h3
-                class="bp3-heading sc-kpOJdX gOTkwU"
+                class="bp3-heading sc-dxgOiQ iNhIYv"
               >
                 Audit Ballot Selections
               </h3>
@@ -1199,7 +1199,7 @@ exports[`Ballot selects Not on Ballot 1`] = `
             </div>
           </div>
           <div
-            class="sc-eNQAEJ fdspOC"
+            class="sc-hMqMXs zBIpE"
           >
             <h4
               class="bp3-heading"
@@ -1207,7 +1207,7 @@ exports[`Ballot selects Not on Ballot 1`] = `
               Instructions
             </h4>
             <ol
-              class="bp3-list sc-kkGfuU drhJhK"
+              class="bp3-list sc-iAyFgw jCvUMF"
             >
               <li>
                 Confirm that you are looking at the correct ballot for the batch and position. If the ballot was not located, select
@@ -1258,19 +1258,19 @@ exports[`Ballot switches audit and review views 1`] = `
       class="sc-kGXeez fSmIyR"
     >
       <div
-        class="sc-dxgOiQ cnAnsE"
+        class="sc-ckVGcZ bxAWbg"
       >
         <div
-          class="sc-ckVGcZ dWmLvW"
+          class="sc-jKJlTe ebZSAv"
         >
           <div
-            class="sc-jKJlTe BtGnJ"
+            class="sc-eNQAEJ eawDHL"
           >
             <div
-              class="sc-kEYyzF bYnpXO"
+              class="sc-kkGfuU cJRsCh"
             >
               <button
-                class="bp3-button bp3-minimal sc-hMqMXs gLjYcq"
+                class="bp3-button bp3-minimal sc-kEYyzF cIpjCt"
                 href="/election/1/audit-board/1"
                 type="button"
               >
@@ -1300,7 +1300,7 @@ exports[`Ballot switches audit and review views 1`] = `
                 </span>
               </button>
               <h3
-                class="bp3-heading sc-kpOJdX gOTkwU"
+                class="bp3-heading sc-dxgOiQ iNhIYv"
               >
                 Audit Ballot Selections
               </h3>
@@ -1510,7 +1510,7 @@ exports[`Ballot switches audit and review views 1`] = `
             </div>
           </div>
           <div
-            class="sc-eNQAEJ fdspOC"
+            class="sc-hMqMXs zBIpE"
           >
             <h4
               class="bp3-heading"
@@ -1518,7 +1518,7 @@ exports[`Ballot switches audit and review views 1`] = `
               Instructions
             </h4>
             <ol
-              class="bp3-list sc-kkGfuU drhJhK"
+              class="bp3-list sc-iAyFgw jCvUMF"
             >
               <li>
                 Confirm that you are looking at the correct ballot for the batch and position. If the ballot was not located, select
