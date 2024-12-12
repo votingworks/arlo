@@ -22,7 +22,7 @@ import LinkButton from './Atoms/LinkButton'
 const SupportBar = styled(Navbar)`
   background-color: ${Colors.ROSE3};
   height: 35px;
-  padding: 0 10%;
+  padding: 0 150px;
   color: ${Colors.WHITE};
   font-weight: 500;
   .bp3-navbar-group {

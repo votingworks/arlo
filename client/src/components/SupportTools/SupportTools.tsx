@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from 'react'
+import React, { useState } from 'react'
 import { Redirect, Route, Switch, Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import styled from 'styled-components'
@@ -50,6 +50,7 @@ import Breadcrumbs from './Breadcrumbs'
 import { stateOptions, states } from '../AuditAdmin/Setup/Settings/states'
 import StatusTag from '../Atoms/StatusTag'
 import { sortBy } from '../../utils/array'
+import { FilterInput } from '../Atoms/Table'
 
 const Table = styled(HTMLTable)`
   margin: 10px 0;
@@ -79,15 +80,15 @@ const SupportTools: React.FC = () => {
         <Switch>
           <Route exact path="/support">
             <Row>
-              <Column1>
+              <div style={{ flex: '0 0 25%' }}>
                 <Organizations />
-              </Column1>
-              <Column2>
+              </div>
+              <div style={{ flex: '0 1 50%' }}>
                 <ActiveAudits />
-              </Column2>
-              <Column3>
+              </div>
+              <div style={{ flex: '0 0 25%' }}>
                 <Tools />
-              </Column3>
+              </div>
             </Row>
           </Route>
           <Route path="/support/orgs/:organizationId">
@@ -114,22 +115,9 @@ const Column = styled.div`
   padding-right: 30px;
 `
 
-const Column1 = styled.div`
-  flex: 0 0 25%;
-  padding-right: 30px;
-`
-
-const Column2 = styled.div`
-  flex: 0 0 50%;
-  padding-right: 30px;
-`
-
-const Column3 = styled.div`
-  flex: 0 0 25%;
-`
-
 const Row = styled.div`
   display: flex;
+  gap: 30px;
   width: 100%;
 `
 
@@ -185,27 +173,17 @@ const Organizations = () => {
   const organizations = useOrganizations()
   const [filterText, setFilterText] = useState<string>('')
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
-    setFilterText(e.target.value)
-  }
-
   if (!organizations.isSuccess) return null
 
   return (
     <>
       <H3 style={{ marginBottom: '20px' }}>Organizations</H3>
-      <input
-        className={Classes.INPUT}
-        onChange={handleInputChange}
+      <FilterInput
+        onChange={setFilterText}
         placeholder="Filter organizations..."
-        style={{
-          marginBottom: '20px',
-          width: '100%',
-        }}
-        type="text"
         value={filterText}
       />
-      <List>
+      <List style={{ marginTop: '20px' }}>
         {organizations.data
           .filter(org =>
             org.name
@@ -261,7 +239,6 @@ const Tools = () => {
         <form
           style={{
             display: 'flex',
-            // flexDirection: 'column',
             gap: '8px',
           }}
           onSubmit={handleSubmit(onSubmitCreateOrganization)}
@@ -270,8 +247,8 @@ const Tools = () => {
             type="submit"
             icon="insert"
             loading={formState.isSubmitting}
-            className={Classes.BUTTON}
-            disabled={!formState.isDirty || formState.isSubmitting}
+            disabled={!formState.isDirty}
+            style={{ flexShrink: 0 }}
           >
             Create Org
           </Button>
@@ -281,7 +258,7 @@ const Tools = () => {
             className={Classes.INPUT}
             placeholder="Organization name"
             ref={register}
-            style={{ flexGrow: 1 }}
+            style={{ width: '100%' }}
           />
         </form>
         <div>

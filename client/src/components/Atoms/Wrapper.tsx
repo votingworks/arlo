@@ -28,8 +28,8 @@ export const SupportToolsInner = styled.div`
   justify-content: center;
   margin-left: auto;
   margin-right: auto;
-  padding: 30px 0;
-  width: 80%;
+  padding: 30px 150px;
+  width: 100%;
 `
 
 export default Wrapper
