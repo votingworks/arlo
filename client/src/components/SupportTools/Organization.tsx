@@ -1,13 +1,14 @@
 import React from 'react'
 import { toast } from 'react-toastify'
 import {
-  H3,
   Button,
   Classes,
   H2,
   AnchorButton,
   Intent,
   HTMLSelect,
+  Tag,
+  H4,
 } from '@blueprintjs/core'
 import { useForm } from 'react-hook-form'
 import {
@@ -24,7 +25,7 @@ import { useConfirm, Confirm } from '../Atoms/Confirm'
 import { List, LinkItem } from './List'
 import { stateOptions, states } from '../AuditAdmin/Setup/Settings/states'
 import { sortBy } from '../../utils/array'
-import { AuditStatusTag, Column, Table } from './shared'
+import { AuditStatusTag, Column, Row, Table } from './shared'
 
 const Organization = ({ organizationId }: { organizationId: string }) => {
   const organization = useOrganization(organizationId)
@@ -52,6 +53,7 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
     try {
       await createAuditAdmin.mutateAsync(auditAdmin)
       resetCreateAdmin()
+      toast.success(`Created audit admin: ${auditAdmin.email}`)
     } catch (error) {
       // Do nothing - errors toasted by queryClient
     }
@@ -148,30 +150,47 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
   }
 
   return (
-    <div style={{ width: '100%' }}>
-      <div style={{ display: 'flex', alignItems: 'baseline' }}>
-        <H2>{name}</H2>
-        <Button
-          icon="edit"
-          minimal
-          onClick={onClickEditOrg}
-          style={{ marginLeft: '10px' }}
-        >
-          Edit
-        </Button>
-        <Button
-          icon="delete"
-          intent={Intent.DANGER}
-          minimal
-          onClick={onClickDeleteOrg}
-        >
-          Delete
-        </Button>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '20px',
+        marginTop: '20px',
+        width: '100%',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+        }}
+      >
+        <H2 style={{ margin: 0 }}>{name}</H2>
+        <div>
+          <Button
+            icon="edit"
+            minimal
+            onClick={onClickEditOrg}
+            style={{ marginLeft: '10px' }}
+          >
+            Edit
+          </Button>
+          <Button
+            icon="delete"
+            intent={Intent.DANGER}
+            minimal
+            onClick={onClickDeleteOrg}
+          >
+            Delete
+          </Button>
+        </div>
       </div>
-      <p>Default State: {defaultState ? states[defaultState] : 'None'}</p>
-      <div style={{ display: 'flex', width: '100%' }}>
+      <Tag large style={{ alignSelf: 'flex-start' }}>
+        {`Default State: ${defaultState ? states[defaultState] : 'None'}`}
+      </Tag>
+      <Row>
         <Column>
-          <H3>Audits</H3>
+          <H4>Audits</H4>
           <List style={{ marginBottom: '30px' }}>
             {sortedElections
               .filter(election => !election.deletedAt)
@@ -187,7 +206,7 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
                 )
               })}
           </List>
-          <H3>Deleted Audits</H3>
+          <H4>Deleted Audits</H4>
           <Table striped>
             <tbody>
               {elections
@@ -211,7 +230,7 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
           </Table>
         </Column>
         <Column>
-          <H3>Audit Admins</H3>
+          <H4>Audit Admins</H4>
           <form
             style={{ display: 'flex' }}
             onSubmit={handleSubmitCreateAdmin(onSubmitCreateAuditAdmin)}
@@ -261,7 +280,7 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
             </tbody>
           </Table>
         </Column>
-      </div>
+      </Row>
       <Confirm {...confirmProps} />
     </div>
   )
