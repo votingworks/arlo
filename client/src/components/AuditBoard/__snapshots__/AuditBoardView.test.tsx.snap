@@ -597,7 +597,7 @@ exports[`AuditBoardView ballot interaction renders board table with ballots 1`] 
               class="sc-GMQeP FVNiK"
             >
               <table
-                class="sc-kpOJdX dLlwHp"
+                class="sc-ckVGcZ diiVgN"
                 role="table"
               >
                 <thead>
@@ -2878,7 +2878,7 @@ exports[`AuditBoardView ballot interaction renders board table with no audited b
               class="sc-GMQeP FVNiK"
             >
               <table
-                class="sc-kpOJdX dLlwHp"
+                class="sc-ckVGcZ diiVgN"
                 role="table"
               >
                 <thead>
@@ -4781,7 +4781,7 @@ exports[`AuditBoardView ballot interaction renders board table with no ballots 1
               class="sc-GMQeP FVNiK"
             >
               <table
-                class="sc-kpOJdX dLlwHp"
+                class="sc-ckVGcZ diiVgN"
                 role="table"
               >
                 <thead>
@@ -5105,7 +5105,7 @@ exports[`AuditBoardView member form submits, goes to ballot table, and header sh
               class="sc-GMQeP FVNiK"
             >
               <table
-                class="sc-kpOJdX dLlwHp"
+                class="sc-ckVGcZ diiVgN"
                 role="table"
               >
                 <thead>
