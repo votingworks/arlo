@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import styled from 'styled-components'
 import {
-  H3,
+  H4,
   Button,
   Classes,
   H2,
@@ -25,7 +25,7 @@ import {
 import { useConfirm, Confirm } from '../Atoms/Confirm'
 import AuditBoardsTable from '../AuditAdmin/Progress/AuditBoardsTable'
 import Breadcrumbs from './Breadcrumbs'
-import { Column, Table } from './shared'
+import { Column, Row, Table } from './shared'
 
 const CombinedBatchForm = styled.form`
   display: flex;
@@ -111,17 +111,25 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
   }
 
   return (
-    <div style={{ width: '100%' }}>
+    <div
+      style={{
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '20px',
+        marginTop: '20px',
+      }}
+    >
       <Breadcrumbs>
         <Link to={`/support/orgs/${organization.id}`}>{organization.name}</Link>
         <Link to={`/support/audits/${election.id}`}>{election.auditName}</Link>
       </Breadcrumbs>
       <H2>{name}</H2>
-      <div style={{ display: 'flex', width: '100%' }}>
+      <Row>
         <Column>
           {election.auditType !== 'BATCH_COMPARISON' && (
             <>
-              <H3>Current Round Audit Boards</H3>
+              <H4>Current Round Audit Boards</H4>
               {auditBoards.length === 0 ? (
                 <p>The jurisdiction hasn&apos;t created audit boards yet.</p>
               ) : (
@@ -140,7 +148,7 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
           )}
           {election.auditType === 'BALLOT_POLLING' && !election.online && (
             <>
-              <H3>Offline Results</H3>
+              <H4>Offline Results</H4>
               {recordedResultsAt ? (
                 <>
                   <p>
@@ -161,7 +169,7 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
           )}
           {election.auditType === 'BATCH_COMPARISON' && batches.isSuccess && (
             <>
-              <H3>Combined Batches</H3>
+              <H4>Combined Batches</H4>
               <Card>
                 <CombinedBatchForm>
                   <div>
@@ -285,7 +293,7 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
           )}
         </Column>
         <Column>
-          <H3>Jurisdiction Admins</H3>
+          <H4>Jurisdiction Admins</H4>
           <Table striped>
             <tbody>
               {jurisdictionAdmins.map(jurisdictionAdmin => (
@@ -305,7 +313,7 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
           </Table>
         </Column>
         <Confirm {...confirmProps} />
-      </div>
+      </Row>
     </div>
   )
 }
