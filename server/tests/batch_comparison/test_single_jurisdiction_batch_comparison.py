@@ -100,6 +100,12 @@ def test_batch_comparison_single_jurisdiction_discrepancies(
     choice_names = [choice["name"] for choice in contests[0]["choices"]]
     choice_ids = [choice["id"] for choice in contests[0]["choices"]]
 
+    # No discrepancies should show before any batches are audited
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/discrepancy")
+    discrepancies = json.loads(rv.data)
+    assert len(discrepancies) == 0
+
     # Audit batches
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)

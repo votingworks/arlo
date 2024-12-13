@@ -76,6 +76,7 @@ def get_batch_comparison_discrepancies_by_jurisdiction(
         .with_entities(Jurisdiction.name, Batch.name)
         .all()
     )
+
     jurisdiction_name_to_id = dict(
         Jurisdiction.query.filter_by(election_id=election.id).with_entities(
             Jurisdiction.name, Jurisdiction.id
@@ -108,6 +109,8 @@ def get_batch_comparison_discrepancies_by_jurisdiction(
         show_batch_comparison_discrepancies_by_jurisdiction(election)
     )
 
+    is_single_jurisdiction_election = len(list(election.jurisdictions)) == 1
+
     for contest in list(election.contests):
         audited_batch_results = sampled_batch_results(
             contest, include_non_rla_batches=True
@@ -121,6 +124,13 @@ def get_batch_comparison_discrepancies_by_jurisdiction(
                 continue
 
             if batch_key not in batch_keys_in_round:
+                continue
+
+            # Special case: for single jurisdiction elections we show discrepancies even if the round isn't closed,
+            # but we only want to show a batch's discrepancies if the batch is finalized
+            if is_single_jurisdiction_election and not is_audited_batch_finalized(
+                audited_batch_result
+            ):
                 continue
 
             audited_contest_result = audited_batch_result[contest.id]
@@ -185,6 +195,15 @@ def show_batch_comparison_discrepancies_by_jurisdiction(
         jurisdiction.id: (jurisdiction.id in finalized_jurisdiction_ids)
         for jurisdiction in jurisdictions
     }
+
+
+# Check if any value is non-zero for the audited batch result, indicating the batch has actually been audited
+def is_audited_batch_finalized(audited_batch_result: Dict[str, Dict[str, int]]) -> bool:
+    return any(
+        value != 0
+        for contest in audited_batch_result.values()
+        for value in contest.values()
+    )
 
 
 def get_ballot_comparison_discrepancies_by_jurisdiction(
