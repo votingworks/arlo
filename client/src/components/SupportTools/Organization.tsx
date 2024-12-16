@@ -162,17 +162,13 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
       <div
         style={{
           display: 'flex',
-          justifyContent: 'space-between',
+          gap: '20px',
+          alignItems: 'end',
         }}
       >
         <H2 style={{ margin: 0 }}>{name}</H2>
         <div>
-          <Button
-            icon="edit"
-            minimal
-            onClick={onClickEditOrg}
-            style={{ marginLeft: '10px' }}
-          >
+          <Button icon="edit" minimal onClick={onClickEditOrg}>
             Edit
           </Button>
           <Button
