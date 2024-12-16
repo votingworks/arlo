@@ -159,6 +159,7 @@ def sampled_batch_results(
         .filter(Contest.id == contest.id)
         .join(ContestChoice)
         .outerjoin(BatchResultTallySheet)
+        .filter(BatchResultTallySheet.batch_id.isnot(None))
         .outerjoin(
             BatchResult,
             and_(

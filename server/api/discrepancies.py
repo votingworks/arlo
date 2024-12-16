@@ -76,6 +76,7 @@ def get_batch_comparison_discrepancies_by_jurisdiction(
         .with_entities(Jurisdiction.name, Batch.name)
         .all()
     )
+
     jurisdiction_name_to_id = dict(
         Jurisdiction.query.filter_by(election_id=election.id).with_entities(
             Jurisdiction.name, Jurisdiction.id
