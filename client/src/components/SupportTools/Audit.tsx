@@ -35,47 +35,36 @@ const Audit = ({ electionId }: { electionId: string }) => {
         width: '100%',
         display: 'flex',
         flexDirection: 'column',
-        gap: '20px',
         marginTop: '20px',
       }}
     >
       <Row>
+        <Breadcrumbs>
+          <Link to={`/support/orgs/${organization.id}`}>
+            {organization.name}
+          </Link>
+        </Breadcrumbs>
+      </Row>
+      <Row>
         <div
           style={{
             display: 'flex',
-            flexDirection: 'column',
-            gap: '20px',
-            alignItems: 'flex-start',
             width: '100%',
+            justifyContent: 'space-between',
+            margin: '10px 0 20px 0',
           }}
         >
-          <div
-            style={{
-              display: 'flex',
-              width: '100%',
-              alignItems: 'flex-start',
-              justifyContent: 'space-between',
-            }}
-          >
-            <H2 style={{ margin: '0', maxWidth: '80%' }}>{auditName}</H2>
-            <AnchorButton
-              href={`/api/support/elections/${id}/login`}
-              icon="log-in"
-              intent="primary"
-            >
-              Log in as audit admin
-            </AnchorButton>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <H2 style={{ marginBottom: 0 }}>{auditName}</H2>
+            <Tag large>{prettyAuditType(auditType)}</Tag>
           </div>
-        </div>
-      </Row>
-      <Row>
-        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-          <Tag large>{prettyAuditType(auditType)}</Tag> for
-          <Breadcrumbs>
-            <Link to={`/support/orgs/${organization.id}`}>
-              {organization.name}
-            </Link>
-          </Breadcrumbs>
+          <AnchorButton
+            href={`/api/support/elections/${id}/login`}
+            icon="log-in"
+            intent="primary"
+          >
+            Log in as audit admin
+          </AnchorButton>
         </div>
       </Row>
       <Row>
