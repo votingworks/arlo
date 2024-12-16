@@ -22,7 +22,7 @@ import LinkButton from './Atoms/LinkButton'
 const SupportBar = styled(Navbar)`
   background-color: ${Colors.ROSE3};
   height: 35px;
-  padding: 0;
+  padding: 0 150px;
   color: ${Colors.WHITE};
   font-weight: 500;
   .bp3-navbar-group {
@@ -109,19 +109,17 @@ const Header: React.FC = () => {
     <>
       {auth && auth.supportUser && (
         <SupportBar>
-          <InnerBar>
-            <NavbarGroup align={Alignment.LEFT}>
-              <a href="/support">
-                <Icon icon="eye-open" />
-                <span>Arlo Support Tools</span>
-              </a>
-            </NavbarGroup>
-            <NavbarGroup align={Alignment.RIGHT}>
-              <span>{auth.supportUser.email}</span>
-              <NavbarDivider />
-              <a href="/auth/support/logout">Log out</a>
-            </NavbarGroup>
-          </InnerBar>
+          <NavbarGroup align={Alignment.LEFT}>
+            <a href="/support">
+              <Icon icon="eye-open" />
+              <span style={{ fontWeight: 600 }}>Arlo Support Tools</span>
+            </a>
+          </NavbarGroup>
+          <NavbarGroup align={Alignment.RIGHT}>
+            <span>{auth.supportUser.email}</span>
+            <NavbarDivider />
+            <a href="/auth/support/logout">Log out</a>
+          </NavbarGroup>
         </SupportBar>
       )}
       {!supportMatch && (
