@@ -79,6 +79,8 @@ jobs:
           name: test server
           command: |
             poetry run pytest -n 8 --cov=.
+      - store_test_results:
+          path: server/reports
 
   build-and-test-client:
     executor: arlo
@@ -99,6 +101,8 @@ jobs:
           name: test client
           command: |
             make -C client test
+      - store_test_results:
+          path: client/reports
 
   cypress:
     executor: arlo
@@ -136,3 +140,5 @@ jobs:
           path: client/cypress/screenshots
       - store_artifacts:
           path: client/cypress/videos
+      - store_test_results:
+          path: client/cypress/reports
