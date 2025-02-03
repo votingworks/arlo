@@ -93,7 +93,8 @@ disable=raw-checker-failed,
         logging-fstring-interpolation,
         broad-exception-raised,
         use-dict-literal,
-        use-implicit-booleaness-not-comparison
+        use-implicit-booleaness-not-comparison,
+        too-many-return-statements
 
 
 
