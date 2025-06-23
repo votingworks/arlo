@@ -165,9 +165,9 @@ def process_batch_inventory_cvr_file(
         choice_indices = {
             (
                 contests[expected_contest_headers.index(contest_header)].name,
-                choice_name,
+                choice_name_untrimmed.strip(),  # CVR choice names sometimes have accidental leading/trailing spaces
             ): index
-            for index, (contest_header, choice_name) in enumerate(
+            for index, (contest_header, choice_name_untrimmed) in enumerate(
                 zip(contests_row, contest_choices_row)
             )
             if contest_header in expected_contest_headers

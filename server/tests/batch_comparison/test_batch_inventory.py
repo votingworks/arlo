@@ -57,7 +57,7 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
 
 TEST_CVRS_WITH_EXTRA_SPACES = """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,,,,,,
 ,,,,,,,,Contest 1  (Vote For=1),Contest 1  (Vote For=1),Contest 1  (Vote For=1),Contest 2  (Vote For=2),Contest 2  (Vote For=2),Contest 2  (Vote For=2),Contest 2  (Vote For=2)
-,,,,,,,,Choice 1-1,Choice 1-2,Write-In,Choice 2-1,Choice 2-2,Choice 2-3,Write-In
+,,,,,,,,Choice 1-1 ,  Choice 1-2  ,Write-In,Choice 2-1,Choice 2-2,Choice 2-3,Write-In
 CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM,LBR,IND,,
 1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,0,1,1,1,0,0
 2,TABULATOR1,BATCH1,2,1-1-2,Election Day,12345,COUNTY,1,0,0,1,0,1,0
