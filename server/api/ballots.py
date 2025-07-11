@@ -40,7 +40,13 @@ def ballot_retrieval_list(jurisdiction: Jurisdiction, round: Round) -> TextIO:
             ),
         )
         .join(SampledBallot.audit_board)
-        .group_by(AuditBoard.id, SampledBallot.id, Batch.id, CvrBallot.imprinted_id)
+        .group_by(
+            AuditBoard.id,
+            SampledBallot.id,
+            Batch.id,
+            CvrBallot.imprinted_id,
+            CvrBallot.record_id,
+        )
         .order_by(
             func.human_sort(AuditBoard.name),
             func.human_sort(Batch.container),
@@ -54,6 +60,7 @@ def ballot_retrieval_list(jurisdiction: Jurisdiction, round: Round) -> TextIO:
             Batch.name,
             SampledBallot.ballot_position,
             CvrBallot.imprinted_id,
+            CvrBallot.record_id,
             func.string_agg(
                 SampledBallotDraw.ticket_number,
                 aggregate_order_by(
@@ -68,6 +75,10 @@ def ballot_retrieval_list(jurisdiction: Jurisdiction, round: Round) -> TextIO:
         AuditType.BALLOT_COMPARISON,
         AuditType.HYBRID,
     ]
+    show_record_id = jurisdiction.election.audit_type in [
+        AuditType.BALLOT_COMPARISON,
+        AuditType.HYBRID,
+    ]
     show_container = len(ballots) > 0 and ballots[0][0] is not None
     show_tabulator = len(ballots) > 0 and ballots[0][1] is not None
 
@@ -79,6 +90,7 @@ def ballot_retrieval_list(jurisdiction: Jurisdiction, round: Round) -> TextIO:
         ("Batch Name", True),
         ("Ballot Number", True),
         ("Imprinted ID", show_imprinted_id),
+        ("Record ID", show_record_id),
         ("Ticket Numbers", True),
         ("Already Audited", True),
         ("Audit Board", True),
@@ -94,6 +106,7 @@ def ballot_retrieval_list(jurisdiction: Jurisdiction, round: Round) -> TextIO:
             batch_name,
             position,
             imprinted_id,
+            record_id,
             ticket_numbers,
             audit_board_name,
         ) = ballot
@@ -106,6 +119,7 @@ def ballot_retrieval_list(jurisdiction: Jurisdiction, round: Round) -> TextIO:
             (batch_name, True),
             (position, True),
             (imprinted_id, show_imprinted_id),
+            (record_id, show_record_id),
             (ticket_numbers, True),
             (previously_audited, True),
             (audit_board_name, True),
