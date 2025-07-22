@@ -355,16 +355,22 @@ def reject_total_rows(csv: CSVDictIterator) -> CSVDictIterator:
 def reject_final_total_row(csv: CSVDictIterator, columns: List[CSVColumnType]):
     numeric_column_values = defaultdict(list)
 
+    num_rows = 0
     for row in csv:
+        num_rows += 1
         for column in columns:
             value = row.get(column.name)
             if column.value_type == CSVValueType.NUMBER and value is not None:
                 numeric_column_values[column.name].append(value)
         yield row
 
-    if len(numeric_column_values) > 0 and all(
-        sum(values[:-1]) == values[-1] and values[-1] != 0
-        for values in numeric_column_values.values()
+    if (
+        num_rows > 2
+        and len(numeric_column_values) > 0
+        and all(
+            sum(values[:-1]) == values[-1] and values[-1] != 0
+            for values in numeric_column_values.values()
+        )
     ):
         raise CSVParseError(
             "It looks like the last row in the CSV might be a total row."
