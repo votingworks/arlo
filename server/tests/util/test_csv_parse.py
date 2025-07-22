@@ -475,6 +475,21 @@ def test_parse_csv_total_row():
         {"Batch Name": "Batch C", "Candidate 1": 40, "Candidate 2": 10},
     ]
 
+    # Shouldn't raise an error if just two rows
+    parsed = list(
+        parse_csv(
+            ("Batch Name,Number of Ballots\n" "Batch A,10\n" "Batch B,10\n"),
+            [
+                CSVColumnType("Batch Name", CSVValueType.TEXT, unique=True),
+                CSVColumnType("Number of Ballots", CSVValueType.NUMBER),
+            ],
+        )
+    )
+    assert parsed == [
+        {"Batch Name": "Batch A", "Number of Ballots": 10},
+        {"Batch Name": "Batch B", "Number of Ballots": 10},
+    ]
+
 
 # Cases where we are lenient
 
