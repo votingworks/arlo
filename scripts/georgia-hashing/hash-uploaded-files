@@ -2,8 +2,8 @@
 
 set -euo pipefail
 
-AUDIT_ID="b68a4209-6601-4d4c-bd74-a336786117cb"
-ZIP_FILE_NAME="ga-2025-06-files"
+AUDIT_ID="2f7d5b10-fe55-49e9-8f5b-44970ca30eef"
+ZIP_FILE_NAME="ga-2025-07-files"
 
 if [[ -z "${DATABASE_URL:-}" ]]; then
     echo "Usage: DATABASE_URL=<database-url> hash-uploaded-files"
