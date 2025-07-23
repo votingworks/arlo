@@ -12,7 +12,25 @@ def test_not_found_ballots(
     audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
     snapshot,
 ):
-    round = Round.query.get(round_1_id)
+    def finish_round():
+        rv = client.post(f"/api/election/{election_id}/round/current/finish")
+        assert_ok(rv)
+
+    def unfinish_round():
+        round = Round.query.get(round_1_id)
+        round.ended_at = None
+        for round_contest in round.round_contests:
+            round_contest.results = []
+
+    def mark_ballots_as_not_found(num_not_found: int):
+        ballot_draws = (
+            SampledBallotDraw.query.filter_by(round_id=round_1_id)
+            .order_by(SampledBallotDraw.ticket_number)
+            .all()
+        )
+        for draw in ballot_draws[:num_not_found]:
+            draw.sampled_ballot.status = BallotStatus.NOT_FOUND
+
     targeted_contest = Contest.query.get(contest_ids[0])
     opportunistic_contest = Contest.query.get(contest_ids[1])
 
@@ -42,8 +60,8 @@ def test_not_found_ballots(
     db_session.commit()
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.post(f"/api/election/{election_id}/round/current/finish")
-    assert_ok(rv)
+
+    finish_round()
 
     all_audited_p_values = dict(
         RoundContest.query.filter_by(round_id=round_1_id).values(
@@ -51,25 +69,10 @@ def test_not_found_ballots(
         )
     )
 
-    # Un-finish the round
-    round = Round.query.get(round_1_id)
-    round.ended_at = None
-    for round_contest in round.round_contests:
-        round_contest.results = []
-
-    # Next, try the same thing with some of the ballots marked not found
-    num_not_found = 10
-    ballot_draws = (
-        SampledBallotDraw.query.filter_by(round_id=round_1_id)
-        .order_by(SampledBallotDraw.ticket_number)
-        .all()
-    )
-    for draw in ballot_draws[:num_not_found]:
-        draw.sampled_ballot.status = BallotStatus.NOT_FOUND
-
-    # End the round
-    rv = client.post(f"/api/election/{election_id}/round/current/finish")
-    assert_ok(rv)
+    # Repeat but with some ballots marked as not found
+    unfinish_round()
+    mark_ballots_as_not_found(10)
+    finish_round()
 
     not_found_p_values = dict(
         RoundContest.query.filter_by(round_id=round_1_id).values(
@@ -90,6 +93,22 @@ def test_not_found_ballots(
         < not_found_p_values[opportunistic_contest.id]
     )
 
-    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)
+
+    # Repeat but with even more ballots marked as not found, enough to require auditing more
+    # ballots
+    unfinish_round()
+    mark_ballots_as_not_found(100)
+    finish_round()
+
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/2")
+    response = json.loads(rv.data)
+    assert response["task"]["status"] == ProcessingStatus.PROCESSED
+    assert list(response["sampleSizes"].values())[0] == [
+        {
+            "key": "0.9",
+            "prob": 0.9,
+            "size": 460,
+        }
+    ]

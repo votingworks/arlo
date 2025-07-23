@@ -19,6 +19,7 @@ def get_sample_size(
     risk_limit: int,
     contest: Contest,
     sample_results: Optional[BALLOT_POLLING_SAMPLE_RESULTS],
+    samples_not_found: Dict[str, int],
     math_type: AuditMathType,
     round_sizes: Optional[BALLOT_POLLING_ROUND_SIZES],
 ) -> Dict[str, SampleSizeOption]:
@@ -34,6 +35,11 @@ def get_sample_size(
         - A sample size dictionary containing sample sizes for different
           finishing probabilities
     """
+    # When a sampled ballot can't be found, count it as a vote for every loser
+    if sample_results:
+        for round_id, num_not_found in samples_not_found.items():
+            for loser in contest.losers:
+                sample_results[round_id][loser] += num_not_found
 
     if math_type == AuditMathType.MINERVA:
         return minerva.get_sample_size(risk_limit, contest, sample_results, round_sizes)
