@@ -8,7 +8,7 @@ from werkzeug.exceptions import BadRequest
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
 from ..database import db_session
-from .shared import BatchTallies, combined_batch_keys
+from .shared import BatchTallies, combined_batch_keys, samples_not_found_by_round
 from ..auth import restrict_access, UserType
 from ..audit_math import (
     ballot_polling,
@@ -133,6 +133,7 @@ def sample_size_options(election: Election) -> Dict[str, Dict[str, SampleSizeOpt
                 election.risk_limit,
                 sampler_contest.from_db_contest(contest),
                 sample_results,
+                samples_not_found_by_round(contest),
                 AuditMathType(election.audit_math_type),
                 rounds.round_sizes(contest),
             )
