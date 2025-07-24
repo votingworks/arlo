@@ -15,6 +15,7 @@ from typing import (
     Iterator,
     List,
     Optional,
+    Set,
     TextIO,
     Tuple,
     TypeVar,
@@ -93,6 +94,8 @@ class CvrContestMetadata(TypedDict):
     total_ballots_cast: int
     # { choice_name: CvrChoiceMetadata }
     choices: Dict[str, CvrChoiceMetadata]
+    # { batch_id: List[int ballot_position] }
+    ballots_with_contest: Dict[str, List[int]]
 
 
 # { contest_id: CvrContestMetadata }
@@ -310,7 +313,12 @@ def parse_clearballot_cvrs(
     # "Choice_1_1:Presidential Primary:Vote For 1:Joe Schmo:Non-Partisan"
     # We want to parse: contest_name="Presidential Primary", votes_allowed=1, choice_name="Joe Schmo"
     contests_metadata: CVR_CONTESTS_METADATA = defaultdict(
-        lambda: dict(choices=dict(), votes_allowed=0, total_ballots_cast=0)
+        lambda: dict(
+            choices=dict(),
+            votes_allowed=0,
+            total_ballots_cast=0,
+            ballots_with_contest=dict(),
+        )
     )
     for column, header in enumerate(headers[first_contest_column:]):
         match = re.match(r"^.*:(.*):Vote For (\d+):(.*):.*$", header)
@@ -326,6 +334,9 @@ def parse_clearballot_cvrs(
         )
         # Will be counted while parsing rows
         contests_metadata[contest_name]["total_ballots_cast"] = 0
+        contests_metadata[contest_name]["ballots_with_contest"] = {
+            batch.id: [] for batch in jurisdiction.batches
+        }
 
     batches_by_key = {
         (batch.tabulator, batch.name): batch for batch in jurisdiction.batches
@@ -419,7 +430,12 @@ def parse_dominion_cvrs(
     # Parse out metadata about the contests to store - we'll later use this
     # to populate the Contest object.
     contests_metadata: CVR_CONTESTS_METADATA = defaultdict(
-        lambda: dict(choices=dict(), votes_allowed=0, total_ballots_cast=0)
+        lambda: dict(
+            choices=dict(),
+            votes_allowed=0,
+            total_ballots_cast=0,
+            ballots_with_contest=dict(),
+        )
     )
     for column, (contest_name, votes_allowed, choice_name) in enumerate(
         zip(contest_names, contest_votes_allowed, contest_choices)
@@ -431,8 +447,11 @@ def parse_dominion_cvrs(
             column=column,
             num_votes=0,  # Will be counted while parsing rows
         )
-        # Will be counted while parsing rows
+        # The following will be filled while parsing rows
         contests_metadata[contest_name]["total_ballots_cast"] = 0
+        contests_metadata[contest_name]["ballots_with_contest"] = {
+            batch.id: [] for batch in jurisdiction.batches
+        }
 
     batches_by_key = {
         (batch.tabulator, batch.name): batch for batch in jurisdiction.batches
@@ -859,6 +878,9 @@ def parse_ess_cvrs(
                     for choice in sorted(choices)
                 },
                 total_ballots_cast=0,  # Will be counted while parsing rows
+                ballots_with_contest={  # Will be filled while parsing rows
+                    batch.id: [] for batch in jurisdiction.batches
+                },
             )
             for contest_name, choices in contest_choices.items()
             if len(choices) > 0
@@ -1171,6 +1193,9 @@ def parse_hart_cvrs(
                 for choice in sorted(choices)
             },
             total_ballots_cast=0,  # Will be counted while parsing rows
+            ballots_with_contest={  # Will be filled while parsing rows
+                batch.id: [] for batch in jurisdiction.batches
+            },
         )
         for contest_name, choices in contest_choices.items()
     }
@@ -1322,6 +1347,11 @@ def process_cvr_file(
 
         contests_metadata, cvr_ballots = parse_cvrs()
 
+        # Map ballots to the contests they contain while parsing the ballots
+        # This will be used to populate ballots_with_contest later
+        # { (batch_id, record_id): set(contest_names) }
+        ballot_to_contest_names: Dict[Tuple[str, int], Set[str]] = dict()
+
         # Store ballot rows as CvrBallots in the database. Since we may have
         # millions of rows, we write this data into a tempfile and load it into
         # the db using the COPY command (muuuuch faster than INSERT).
@@ -1350,7 +1380,7 @@ def process_cvr_file(
                 # Add to our running totals for ContestChoice.num_votes and
                 # Contest.total_ballots_cast
                 interpretations = cvr_ballot.interpretations.split(",")
-                contests_on_ballot = set()
+                contests_on_ballot: Set[str] = set()
                 for contest_name, contest_metadata in contests_metadata.items():
                     contest_interpretations = {
                         choice_name: interpretations[choice_metadata["column"]]
@@ -1406,8 +1436,9 @@ def process_cvr_file(
 
                 for contest_name in contests_on_ballot:
                     contests_metadata[contest_name]["total_ballots_cast"] += 1
-
-            jurisdiction.cvr_contests_metadata = contests_metadata
+                ballot_to_contest_names[
+                    (str(cvr_ballot.batch.id), cvr_ballot.record_id)
+                ] = contests_on_ballot
 
             # In order to use the COPY command, we have to get the raw psycopg2
             # connection. Note that we use the underlying connection from the
@@ -1440,7 +1471,7 @@ def process_cvr_file(
         # Assign ballot_position for each CvrBallot by counting each ballot's
         # index within the batch in the CVR, ordering by record_id within the
         # batch
-        ballot_position = (
+        ballot_position_subquery = (
             CvrBallot.query.join(Batch)
             .filter_by(jurisdiction_id=jurisdiction.id)
             .with_entities(
@@ -1452,17 +1483,38 @@ def process_cvr_file(
             )
             .subquery()
         )
+
         db_session.execute(
             CvrBallot.__table__.update()  # pylint: disable=no-member
-            .values(ballot_position=ballot_position.c.ballot_position)
+            .values(ballot_position=ballot_position_subquery.c.ballot_position)
             .where(
                 and_(
-                    CvrBallot.batch_id == ballot_position.c.batch_id,
-                    CvrBallot.record_id == ballot_position.c.record_id,
+                    CvrBallot.batch_id == ballot_position_subquery.c.batch_id,
+                    CvrBallot.record_id == ballot_position_subquery.c.record_id,
                 )
             )
         )
 
+        # Use the ballot contests map to fill the ballots_with_contest per contest
+        for batch_id, record_id, ballot_position in (
+            CvrBallot.query.join(Batch)
+            .filter(Batch.jurisdiction_id == jurisdiction.id)
+            .with_entities(
+                CvrBallot.batch_id,
+                CvrBallot.record_id,
+                CvrBallot.ballot_position,
+            )
+            .yield_per(1000)
+        ):
+            contests_on_this_ballot = ballot_to_contest_names[
+                (str(batch_id), record_id)
+            ]
+            for contest_name in contests_on_this_ballot:
+                contests_metadata[contest_name]["ballots_with_contest"][
+                    batch_id
+                ].append(ballot_position)
+
+        jurisdiction.cvr_contests_metadata = contests_metadata
         contests.set_contest_metadata(jurisdiction.election)
 
         emit_progress(total_records, total_records)

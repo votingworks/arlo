@@ -838,14 +838,17 @@ def compute_sample_ballots(
             .count()
         )
 
-        # Create the pool of ballots to sample (aka manifest) by combining the
-        # manifests from every jurisdiction in the contest's universe.
-        manifest = {
-            batch_id_to_key[batch.id]: list(range(1, batch.num_ballots + 1))
-            for jurisdiction in contest.jurisdictions
-            for batch in jurisdiction.batches
-            if batch.has_cvrs == filter_has_cvrs
-        }
+        # Create the pool of ballots to sample (aka manifest)
+        manifest = defaultdict(list)
+        for jurisdiction in contest.jurisdictions:
+            contests_metadata = cvr_contests_metadata(jurisdiction)
+            assert contests_metadata is not None
+            ballots_with_contest = contests_metadata[contest.name][
+                "ballots_with_contest"
+            ]
+            for batch_id, ballot_positions in ballots_with_contest.items():
+                batch_key = batch_id_to_key[batch_id]
+                manifest[batch_key].extend(ballot_positions)
 
         if filter_has_cvrs is None:
             sample_size_num = sample_size["size"]
