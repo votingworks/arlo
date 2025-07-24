@@ -205,6 +205,19 @@ def cvr_contests_metadata(
     return standardized_metadata
 
 
+def set_total_ballots_from_cvrs(contest: Contest):
+    if not are_uploaded_cvrs_valid(contest) or len(list(contest.jurisdictions)) == 0:
+        return
+
+    total_ballots = 0
+    for jurisdiction in contest.jurisdictions:
+        metadata = cvr_contests_metadata(jurisdiction)
+        assert metadata is not None
+        total_ballots += metadata[contest.name]["total_ballots_cast"]
+
+    contest.total_ballots_cast = total_ballots
+
+
 def set_contest_metadata_from_cvrs(contest: Contest):
     if not are_uploaded_cvrs_valid(contest) or len(list(contest.jurisdictions)) == 0:
         return
