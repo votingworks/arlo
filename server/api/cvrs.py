@@ -1322,17 +1322,24 @@ def process_cvr_file(
 
         contests_metadata, cvr_ballots = parse_cvrs()
         contest_name_to_id = {c.name: c.id for c in jurisdiction.election.contests}
+        should_save_cvr_ballot_contests = (
+            jurisdiction.election.audit_math_type == AuditMathType.CARDSTYLEDATA
+        )
 
         # Store ballot rows as CvrBallots in the database. Since we may have
         # millions of rows, we write this data into a tempfile and load it into
         # the db using the COPY command (muuuuch faster than INSERT).
         with tempfile.TemporaryFile(
-            mode="w+"
+            mode="w+", newline=""
         ) as ballots_tempfile, tempfile.TemporaryFile(
-            mode="w+"
+            mode="w+", newline=""
         ) as ballot_contests_tempfile:
             ballots_csv = csv.writer(ballots_tempfile)
-            ballot_contests_csv = csv.writer(ballot_contests_tempfile)
+            ballot_contests_csv = (
+                csv.writer(ballot_contests_tempfile)
+                if should_save_cvr_ballot_contests
+                else None
+            )
             for i, cvr_ballot in enumerate(cvr_ballots):
                 if i % 1000 == 0:
                     emit_progress(i, total_records)
@@ -1412,17 +1419,17 @@ def process_cvr_file(
 
                 for contest_name in contests_on_ballot:
                     contests_metadata[contest_name]["total_ballots_cast"] += 1
-                    contest_id = contest_name_to_id.get(contest_name)
-                    # If contest_id is None, it means the contest is not being audited
-                    if contest_id is None:
-                        continue
-                    ballot_contests_csv.writerow(
-                        [
-                            cvr_ballot.batch.id,
-                            cvr_ballot.record_id,
-                            contest_id,
-                        ]
-                    )
+                    if should_save_cvr_ballot_contests and ballot_contests_csv:
+                        contest_id = contest_name_to_id.get(contest_name)
+                        # If contest_id is None, the contest is not being audited
+                        if contest_id is not None:
+                            ballot_contests_csv.writerow(
+                                [
+                                    cvr_ballot.batch.id,
+                                    cvr_ballot.record_id,
+                                    contest_id,
+                                ]
+                            )
 
             jurisdiction.cvr_contests_metadata = contests_metadata
 
@@ -1432,7 +1439,6 @@ def process_cvr_file(
             # transaction.
             cursor = db_session.connection().connection.cursor()
             ballots_tempfile.seek(0)
-            ballot_contests_tempfile.seek(0)
             try:
                 cursor.copy_expert(
                     """
@@ -1450,17 +1456,21 @@ def process_cvr_file(
                     """,
                     ballots_tempfile,
                 )
-                cursor.copy_expert(
-                    """
-                    COPY cvr_ballot_contest (
-                        cvr_batch_id,
-                        cvr_record_id,
-                        contest_id
+
+                # Only copy ballot contest data if we created the file
+                if should_save_cvr_ballot_contests and ballot_contests_tempfile:
+                    ballot_contests_tempfile.seek(0)
+                    cursor.copy_expert(
+                        """
+                        COPY cvr_ballot_contest (
+                            cvr_batch_id,
+                            cvr_record_id,
+                            contest_id
+                        )
+                        FROM STDIN WITH (FORMAT CSV, DELIMITER ',')
+                        """,
+                        ballot_contests_tempfile,
                     )
-                    FROM STDIN WITH (FORMAT CSV, DELIMITER ',')
-                    """,
-                    ballot_contests_tempfile,
-                )
             except Exception as exc:
                 raise exc
             finally:
