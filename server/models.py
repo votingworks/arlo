@@ -134,6 +134,7 @@ class AuditMathType(str, enum.Enum):
     SUPERSIMPLE = "SUPERSIMPLE"
     MACRO = "MACRO"
     SUITE = "SUITE"
+    CARDSTYLEDATA = "CARDSTYLEDATA"
 
 
 # Election is a slight misnomer - this model represents an audit.
@@ -503,6 +504,13 @@ class Contest(BaseModel):
         "RoundContestResult",
         back_populates="contest",
         uselist=True,
+        passive_deletes=True,
+    )
+    cvr_ballots = relationship(
+        "CvrBallotContest",
+        back_populates="contest",
+        uselist=True,
+        cascade="all, delete-orphan",
         passive_deletes=True,
     )
 
@@ -1013,10 +1021,40 @@ class CvrBallot(Base):
     # fast. We parse them when needed by the audit math using the contest
     # headers saved in Juridsiction.cvr_contests_metadata.
     interpretations = Column(Text, nullable=False)
+    # ballot_contests are the contests on this ballot
+    ballot_contests = relationship(
+        "CvrBallotContest",
+        back_populates="cvr_ballot",
+        uselist=True,
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
 
     __table_args__ = (
         PrimaryKeyConstraint("batch_id", "record_id"),
         UniqueConstraint("batch_id", "ballot_position"),
+    )
+
+
+class CvrBallotContest(Base):
+    cvr_batch_id = Column(String(200), nullable=False)
+    cvr_record_id = Column(Integer, nullable=False)
+    contest_id = Column(
+        String(200), ForeignKey("contest.id", ondelete="cascade"), nullable=False
+    )
+
+    cvr_ballot = relationship("CvrBallot", back_populates="ballot_contests")
+    contest = relationship("Contest", back_populates="cvr_ballots")
+
+    # The primary key starts with contest_id to optimize for getting
+    # all ballots with a contest
+    __table_args__ = (
+        PrimaryKeyConstraint("contest_id", "cvr_batch_id", "cvr_record_id"),
+        ForeignKeyConstraint(
+            ["cvr_batch_id", "cvr_record_id"],
+            ["cvr_ballot.batch_id", "cvr_ballot.record_id"],
+            ondelete="cascade",
+        ),
     )
 
 

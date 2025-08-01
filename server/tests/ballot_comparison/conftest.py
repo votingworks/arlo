@@ -72,12 +72,14 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,PrecinctPortion,BallotType,R
 
 @pytest.fixture
 def election_id(client: FlaskClient, org_id: str, request):
+    params = getattr(request, "param", None) or {}
+    audit_math_type = params.get("audit_math_type", AuditMathType.SUPERSIMPLE)
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     return create_election(
         client,
         audit_name=f"Test Audit {request.node.name}",
         audit_type=AuditType.BALLOT_COMPARISON,
-        audit_math_type=AuditMathType.SUPERSIMPLE,
+        audit_math_type=audit_math_type,
         organization_id=org_id,
     )
 
