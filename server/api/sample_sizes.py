@@ -184,9 +184,12 @@ def sample_size_options(election: Election) -> Dict[str, Dict[str, SampleSizeOpt
             sample_size = supersimple.get_sample_sizes(
                 election.risk_limit, contest_for_sampler, discrepancy_counts
             )
-            return {
-                "supersimple": {"key": "supersimple", "size": sample_size, "prob": None}
-            }
+            key = (
+                "supersimple"
+                if election.audit_math_type == AuditMathType.SUPERSIMPLE
+                else "cardstyledata"
+            )
+            return {key: {"key": key, "size": sample_size, "prob": None}}
 
         else:
             assert election.audit_type == AuditType.HYBRID
@@ -241,7 +244,7 @@ def autoselect_sample_size(options: Dict[str, SampleSizeOption], audit_type: Aud
     elif audit_type == AuditType.BATCH_COMPARISON:
         return options["macro"]
     elif audit_type == AuditType.BALLOT_COMPARISON:
-        return options["supersimple"]
+        return options.get("supersimple", options.get("cardstyledata"))
     else:
         assert audit_type == AuditType.HYBRID
         return options["suite"]
