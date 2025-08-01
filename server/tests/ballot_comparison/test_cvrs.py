@@ -1,5 +1,6 @@
 import io, json
 from typing import List, TypedDict, Tuple
+import pytest
 from flask.testing import FlaskClient
 
 from ...models import *  # pylint: disable=wildcard-import
@@ -3178,3 +3179,127 @@ def test_remove_ballot_manifest_fails_while_processing_cvr_file(
                 }
             ]
         }
+
+
+@pytest.mark.parametrize(
+    "election_id",
+    [{"audit_math_type": AuditMathType.CARDSTYLEDATA}],
+    indirect=True,
+)
+def test_cvr_upload_with_cardstyledata(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    manifests,  # pylint: disable=unused-argument
+    snapshot,
+):
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    assert rv.status_code == 200
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+
+    manifest_num_ballots = jurisdictions[0]["ballotManifest"]["numBallots"]
+
+    # Upload contests
+    contests = [
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Contest 1",
+            "isTargeted": True,
+            "numWinners": 1,
+            "jurisdictionIds": jurisdiction_ids[:1],
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Contest 2",
+            "isTargeted": False,
+            "numWinners": 1,
+            "jurisdictionIds": jurisdiction_ids[:1],
+        },
+    ]
+    rv = put_json(client, f"/api/election/{election_id}/contest", contests)
+    assert_ok(rv)
+
+    # Upload CVRs
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = upload_cvrs(
+        client,
+        io.BytesIO(TEST_CVRS.encode()),
+        election_id,
+        jurisdiction_ids[0],
+        "DOMINION",
+    )
+    assert_ok(rv)
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
+    )
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {
+                "name": asserts_startswith("cvrs"),
+                "uploadedAt": assert_is_date,
+                "cvrFileType": "DOMINION",
+            },
+            "processing": {
+                "status": ProcessingStatus.PROCESSED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": None,
+                "workProgress": manifest_num_ballots,
+                "workTotal": manifest_num_ballots,
+            },
+        },
+    )
+
+    cvr_ballots = (
+        CvrBallot.query.join(Batch)
+        .filter_by(jurisdiction_id=jurisdiction_ids[0])
+        .order_by(CvrBallot.imprinted_id)
+        .all()
+    )
+    assert len(cvr_ballots) == manifest_num_ballots - 1
+    snapshot.assert_match(
+        [
+            dict(
+                batch_name=cvr.batch.name,
+                tabulator=cvr.batch.tabulator,
+                ballot_position=cvr.ballot_position,
+                imprinted_id=cvr.imprinted_id,
+                interpretations=cvr.interpretations,
+            )
+            for cvr in cvr_ballots
+        ]
+    )
+    snapshot.assert_match(
+        Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata
+    )
+
+    cvr_ballot_contests = (
+        CvrBallotContest.query.join(CvrBallotContest.cvr_ballot)
+        .join(CvrBallot.batch)
+        .join(CvrBallotContest.contest)
+        .filter(Batch.jurisdiction_id == jurisdiction_ids[0])
+        .order_by(Contest.name, Batch.name, Batch.tabulator, CvrBallot.ballot_position)
+        .all()
+    )
+    # 2 contests per ballot - 1 missing ballot - 3 ballots with only 1 contest
+    assert len(cvr_ballot_contests) == manifest_num_ballots * 2 - 1 * 2 - 3
+    snapshot.assert_match(
+        [
+            dict(
+                contest_name=cvr_ballot_contest.contest.name,
+                batch_name=cvr_ballot_contest.cvr_ballot.batch.name,
+                tabulator=cvr_ballot_contest.cvr_ballot.batch.tabulator,
+                ballot_position=cvr_ballot_contest.cvr_ballot.ballot_position,
+            )
+            for cvr_ballot_contest in cvr_ballot_contests
+        ]
+    )
