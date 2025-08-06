@@ -1,6 +1,6 @@
 from collections import defaultdict
 import random
-from typing import Dict, List, Optional, Set, Tuple, TypedDict, Union
+from typing import Dict, List, Optional, Set, Tuple, TypedDict, Union, cast
 from sqlalchemy import and_, func, literal
 from sqlalchemy.orm import joinedload, load_only
 
@@ -837,27 +837,40 @@ def compute_sample_ballots(
             .filter_by(has_cvrs=filter_has_cvrs)
             .count()
         )
-        manifest: Dict[Tuple[str, Optional[str], str], List[int]] = (
-            {}  # { batch_key: [ballot_position] }
-        )
+
         if election.audit_math_type == AuditMathType.CARDSTYLEDATA:
+            # Get all standardized CVR contest names that might be used in different jurisdictions
+            standardized_names = {contest.name}
+            for jurisdiction in contest.jurisdictions:
+                contest_name_standardizations = (
+                    cast(
+                        Optional[Dict[str, Optional[str]]],
+                        jurisdiction.contest_name_standardizations,
+                    )
+                ) or {}
+                cvr_contest_name = contest_name_standardizations.get(contest.name)
+                if cvr_contest_name:
+                    standardized_names.add(cvr_contest_name)
+
             # The sampling pool will be all ballots in the audit with the contest
+            manifest: Dict[Tuple[str, Optional[str], str], List[int]] = defaultdict(
+                list  # { batch_key: [ballot_position] }
+            )
+            jurisdiction_ids = {
+                jurisdiction.id for jurisdiction in contest.jurisdictions
+            }
             ballots_with_contest = (
-                CvrBallotContest.query.join(
-                    CvrBallot,
-                    and_(
-                        CvrBallotContest.cvr_batch_id == CvrBallot.batch_id,
-                        CvrBallotContest.cvr_record_id == CvrBallot.record_id,
-                    ),
+                CvrBallotContest.query.join(CvrBallotContest.cvr_ballot)
+                .join(CvrBallot.batch)
+                .filter(
+                    Batch.jurisdiction_id.in_(jurisdiction_ids),
+                    CvrBallotContest.contest_name.in_(standardized_names),
                 )
-                .filter(CvrBallotContest.contest_id == contest.id)
                 .with_entities(CvrBallot.batch_id, CvrBallot.ballot_position)
                 .order_by(CvrBallot.batch_id, CvrBallot.ballot_position)
             )
             for batch_id, ballot_position in ballots_with_contest.yield_per(100):
-                manifest.setdefault(batch_id_to_key[batch_id], []).append(
-                    ballot_position
-                )
+                manifest[batch_id_to_key[batch_id]].append(ballot_position)
         else:
             # The sampling pool will be all ballots in the audit
             manifest = {

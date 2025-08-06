@@ -506,13 +506,6 @@ class Contest(BaseModel):
         uselist=True,
         passive_deletes=True,
     )
-    cvr_ballots = relationship(
-        "CvrBallotContest",
-        back_populates="contest",
-        uselist=True,
-        cascade="all, delete-orphan",
-        passive_deletes=True,
-    )
 
 
 class ContestChoice(BaseModel):
@@ -1039,17 +1032,14 @@ class CvrBallot(Base):
 class CvrBallotContest(Base):
     cvr_batch_id = Column(String(200), nullable=False)
     cvr_record_id = Column(Integer, nullable=False)
-    contest_id = Column(
-        String(200), ForeignKey("contest.id", ondelete="cascade"), nullable=False
-    )
+    contest_name = Column(String(200), nullable=False)
 
     cvr_ballot = relationship("CvrBallot", back_populates="ballot_contests")
-    contest = relationship("Contest", back_populates="cvr_ballots")
 
-    # The primary key starts with contest_id to optimize for getting
+    # The primary key starts with contest_name to optimize for getting
     # all ballots with a contest
     __table_args__ = (
-        PrimaryKeyConstraint("contest_id", "cvr_batch_id", "cvr_record_id"),
+        PrimaryKeyConstraint("contest_name", "cvr_batch_id", "cvr_record_id"),
         ForeignKeyConstraint(
             ["cvr_batch_id", "cvr_record_id"],
             ["cvr_ballot.batch_id", "cvr_ballot.record_id"],

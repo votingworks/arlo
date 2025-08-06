@@ -3285,9 +3285,13 @@ def test_cvr_upload_with_cardstyledata(
     cvr_ballot_contests = (
         CvrBallotContest.query.join(CvrBallotContest.cvr_ballot)
         .join(CvrBallot.batch)
-        .join(CvrBallotContest.contest)
         .filter(Batch.jurisdiction_id == jurisdiction_ids[0])
-        .order_by(Contest.name, Batch.name, Batch.tabulator, CvrBallot.ballot_position)
+        .order_by(
+            CvrBallotContest.contest_name,
+            Batch.name,
+            Batch.tabulator,
+            CvrBallot.ballot_position,
+        )
         .all()
     )
     # 2 contests per ballot - 1 missing ballot - 3 ballots with only 1 contest
@@ -3295,7 +3299,7 @@ def test_cvr_upload_with_cardstyledata(
     snapshot.assert_match(
         [
             dict(
-                contest_name=cvr_ballot_contest.contest.name,
+                contest_name=cvr_ballot_contest.contest_name,
                 batch_name=cvr_ballot_contest.cvr_ballot.batch.name,
                 tabulator=cvr_ballot_contest.cvr_ballot.batch.tabulator,
                 ballot_position=cvr_ballot_contest.cvr_ballot.ballot_position,

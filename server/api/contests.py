@@ -281,13 +281,16 @@ def validate_contests(contests: List[JSONDict], election: Election):
 # metadata.
 def set_contest_metadata(election: Election):
     for contest in election.contests:
-        if election.audit_math_type == AuditMathType.CARDSTYLEDATA:
-            cvrs.set_total_ballots_from_cvrs(contest)
-        elif election.audit_type != AuditType.BALLOT_POLLING:
+        if (
+            election.audit_type != AuditType.BALLOT_POLLING
+            and election.audit_math_type != AuditMathType.CARDSTYLEDATA
+        ):
             ballot_manifest.set_total_ballots_from_manifests(contest)
 
         if election.audit_type == AuditType.BALLOT_COMPARISON:
             cvrs.set_contest_metadata_from_cvrs(contest)
+            if election.audit_math_type == AuditMathType.CARDSTYLEDATA:
+                cvrs.set_total_ballots_from_cvrs(contest)
 
 
 # We need to reprocess batch tallies files if any of the contest info changes

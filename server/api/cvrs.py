@@ -1321,7 +1321,6 @@ def process_cvr_file(
                 )  # pragma: no cover
 
         contests_metadata, cvr_ballots = parse_cvrs()
-        contest_name_to_id = {c.name: c.id for c in jurisdiction.election.contests}
         should_save_cvr_ballot_contests = (
             jurisdiction.election.audit_math_type == AuditMathType.CARDSTYLEDATA
         )
@@ -1420,16 +1419,13 @@ def process_cvr_file(
                 for contest_name in contests_on_ballot:
                     contests_metadata[contest_name]["total_ballots_cast"] += 1
                     if should_save_cvr_ballot_contests and ballot_contests_csv:
-                        contest_id = contest_name_to_id.get(contest_name)
-                        # If contest_id is None, the contest is not being audited
-                        if contest_id is not None:
-                            ballot_contests_csv.writerow(
-                                [
-                                    cvr_ballot.batch.id,
-                                    cvr_ballot.record_id,
-                                    contest_id,
-                                ]
-                            )
+                        ballot_contests_csv.writerow(
+                            [
+                                cvr_ballot.batch.id,
+                                cvr_ballot.record_id,
+                                contest_name,
+                            ]
+                        )
 
             jurisdiction.cvr_contests_metadata = contests_metadata
 
@@ -1457,14 +1453,14 @@ def process_cvr_file(
                     ballots_tempfile,
                 )
 
-                if should_save_cvr_ballot_contests and ballot_contests_tempfile:
+                if should_save_cvr_ballot_contests:
                     ballot_contests_tempfile.seek(0)
                     cursor.copy_expert(
                         """
                         COPY cvr_ballot_contest (
                             cvr_batch_id,
                             cvr_record_id,
-                            contest_id
+                            contest_name
                         )
                         FROM STDIN WITH (FORMAT CSV, DELIMITER ',')
                         """,
