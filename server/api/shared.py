@@ -1,6 +1,6 @@
 from collections import defaultdict
 import random
-from typing import Dict, List, Optional, Set, Tuple, TypedDict, Union, cast
+from typing import Dict, List, Optional, Set, Tuple, TypedDict, Union
 from sqlalchemy import and_, func, literal
 from sqlalchemy.orm import joinedload, load_only
 
@@ -839,37 +839,55 @@ def compute_sample_ballots(
         )
 
         if election.audit_math_type == AuditMathType.CARDSTYLEDATA:
-            # Get all standardized CVR contest names that might be used in different jurisdictions
-            standardized_names = {contest.name}
-            for jurisdiction in contest.jurisdictions:
-                contest_name_standardizations = (
-                    cast(
-                        Optional[Dict[str, Optional[str]]],
-                        jurisdiction.contest_name_standardizations,
-                    )
-                ) or {}
-                cvr_contest_name = contest_name_standardizations.get(contest.name)
-                if cvr_contest_name:
-                    standardized_names.add(cvr_contest_name)
-
             # The sampling pool will be all ballots in the audit with the contest
             manifest: Dict[Tuple[str, Optional[str], str], List[int]] = defaultdict(
                 list  # { batch_key: [ballot_position] }
             )
-            jurisdiction_ids = {
-                jurisdiction.id for jurisdiction in contest.jurisdictions
-            }
-            ballots_with_contest = (
-                CvrBallotContest.query.join(CvrBallotContest.cvr_ballot)
-                .join(CvrBallot.batch)
+            # Filter down to only ballots in jurisdictions with the contest, and then
+            # filter to ballots that have a CVR interpretation for the contest
+            ballots_in_jurisdictions_with_contest = (
+                CvrBallot.query.join(Batch)
+                .join(Jurisdiction)
+                .join(Jurisdiction.contests)
                 .filter(
-                    Batch.jurisdiction_id.in_(jurisdiction_ids),
-                    CvrBallotContest.contest_name.in_(standardized_names),
+                    Contest.id == contest.id,
                 )
-                .with_entities(CvrBallot.batch_id, CvrBallot.ballot_position)
-                .order_by(CvrBallot.batch_id, CvrBallot.ballot_position)
+                .with_entities(
+                    Jurisdiction.id,
+                    CvrBallot.batch_id,
+                    CvrBallot.ballot_position,
+                    CvrBallot.interpretations,
+                )
             )
-            for batch_id, ballot_position in ballots_with_contest.yield_per(100):
+            metadata_by_jurisdictions = {
+                jurisdiction.id: cvr_contests_metadata(jurisdiction)
+                for jurisdiction in contest.jurisdictions
+            }
+            for (
+                jurisdiction_id,
+                batch_id,
+                ballot_position,
+                interpretations_str,
+            ) in ballots_in_jurisdictions_with_contest.yield_per(100):
+                metadata = metadata_by_jurisdictions[jurisdiction_id]
+                assert metadata is not None
+                choices_metadata = metadata[contest.name]["choices"]
+                # interpretations is the raw CVR string: 1,0,0,1,0,1,0. We need to
+                # pick out the interpretation for each contest choice. We saved the
+                # column index for each choice when we parsed the CVR.
+                interpretations = interpretations_str.split(",")
+                choice_interpretations = {
+                    choice_name: interpretations[choice_metadata["column"]]
+                    for choice_name, choice_metadata in choices_metadata.items()
+                }
+
+                # If the interpretations are empty, it means the contest wasn't
+                # on the ballot, so we don't add it to the manifest
+                if all(
+                    interpretation == ""
+                    for interpretation in choice_interpretations.values()
+                ):
+                    continue
                 manifest[batch_id_to_key[batch_id]].append(ballot_position)
         else:
             # The sampling pool will be all ballots in the audit
