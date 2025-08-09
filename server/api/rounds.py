@@ -495,7 +495,7 @@ def validate_sample_size(round: dict, election: Election):
             AuditType.BALLOT_POLLING: (
                 ["asn", "0.9", "0.8", "0.7", "custom", "all-ballots"]
             ),
-            AuditType.BALLOT_COMPARISON: ["supersimple", "custom"],
+            AuditType.BALLOT_COMPARISON: ["default", "custom"],
             AuditType.BATCH_COMPARISON: ["macro", "custom"],
             AuditType.HYBRID: ["suite", "custom"],
         }[AuditType(election.audit_type)]
