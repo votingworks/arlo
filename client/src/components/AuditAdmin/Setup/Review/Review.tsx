@@ -203,6 +203,7 @@ const Review: React.FC<IProps> = ({
     riskLimit,
     online,
     auditType,
+    auditMathType,
   } = auditSettingsQuery.data
   const contestChoiceNameStandardizations =
     contestChoiceNameStandardizationsQuery.data.standardizations
@@ -505,6 +506,19 @@ const Review: React.FC<IProps> = ({
             {riskLimit && `${riskLimit}%`}
           </LabeledValue>
           <LabeledValue label="Random Seed">{randomSeed}</LabeledValue>
+          <LabeledValue label="Audit Math Type">
+            {
+              {
+                BRAVO: 'BRAVO',
+                MINERVA: 'Minerva',
+                PROVIDENCE: 'Providence',
+                SUPERSIMPLE: 'Super-Simple',
+                MACRO: 'MACRO',
+                SUITE: 'SUITE',
+                CARD_STYLE_DATA: 'Card Style Data',
+              }[auditMathType]
+            }
+          </LabeledValue>
           <LabeledValue label="Audit Board Data Entry">
             {online ? 'Online' : 'Offline'}
           </LabeledValue>

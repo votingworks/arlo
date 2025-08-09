@@ -449,7 +449,7 @@ const CreateAuditWrapper = styled.div`
   padding: 30px;
 `
 
-const BallotPollingWrapper = styled.div`
+const MathTypeWrapper = styled.div`
   margin: 20px 0;
   background-color: #ffffff;
   padding-top: 10px;
@@ -559,7 +559,7 @@ const CreateAudit = ({ organizations }: { organizations: IOrganization[] }) => {
               >
                 <Radio value="BALLOT_POLLING">Ballot Polling</Radio>
                 {values.auditType === 'BALLOT_POLLING' && (
-                  <BallotPollingWrapper>
+                  <MathTypeWrapper>
                     <label htmlFor="auditMathType">
                       <p>Ballot polling type</p>
                       <RadioGroup
@@ -573,10 +573,29 @@ const CreateAudit = ({ organizations }: { organizations: IOrganization[] }) => {
                         <Radio value="MINERVA">Minerva (Beta)</Radio>
                       </RadioGroup>
                     </label>
-                  </BallotPollingWrapper>
+                  </MathTypeWrapper>
                 )}
                 <Radio value="BATCH_COMPARISON">Batch Comparison</Radio>
                 <Radio value="BALLOT_COMPARISON">Ballot Comparison</Radio>
+                {values.auditType === 'BALLOT_COMPARISON' && (
+                  <MathTypeWrapper>
+                    <label htmlFor="auditMathType">
+                      <p>Ballot comparison type</p>
+                      <RadioGroup
+                        name="auditMathType"
+                        onChange={e =>
+                          setFieldValue('auditMathType', e.currentTarget.value)
+                        }
+                        selectedValue={values.auditMathType}
+                      >
+                        <Radio value="SUPERSIMPLE">Default</Radio>
+                        <Radio value="CARD_STYLE_DATA">
+                          Card Style Data (Beta)
+                        </Radio>
+                      </RadioGroup>
+                    </label>
+                  </MathTypeWrapper>
+                )}
                 <Radio value="HYBRID">
                   Hybrid (SUITE - Ballot Comparison &amp; Ballot Polling)
                 </Radio>
