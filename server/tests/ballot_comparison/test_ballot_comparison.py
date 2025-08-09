@@ -1188,7 +1188,7 @@ def test_ballot_comparison_sample_size_validation(
             "For a full hand tally, use the ballot polling or batch comparison audit type.",
         ),
         (
-            {contest_id: {"key": "supersimple", "size": 31, "prob": None}},
+            {contest_id: {"key": "default", "size": 31, "prob": None}},
             "For a full hand tally, use the ballot polling or batch comparison audit type.",
         ),
     ]
