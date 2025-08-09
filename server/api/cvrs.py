@@ -205,6 +205,19 @@ def cvr_contests_metadata(
     return standardized_metadata
 
 
+def set_total_ballots_from_cvrs(contest: Contest):
+    if not are_uploaded_cvrs_valid(contest) or len(list(contest.jurisdictions)) == 0:
+        return
+
+    total_ballots = 0
+    for jurisdiction in contest.jurisdictions:
+        metadata = cvr_contests_metadata(jurisdiction)
+        assert metadata is not None
+        total_ballots += metadata[contest.name]["total_ballots_cast"]
+
+    contest.total_ballots_cast = total_ballots
+
+
 def set_contest_metadata_from_cvrs(contest: Contest):
     if not are_uploaded_cvrs_valid(contest) or len(list(contest.jurisdictions)) == 0:
         return
@@ -1634,6 +1647,11 @@ def download_cvr_file(
     )
 
 
+def clear_contests_total_ballots_cast(election: Election):
+    for contest in election.contests:
+        contest.total_ballots_cast = 0
+
+
 @api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs",
     methods=["DELETE"],
@@ -1659,6 +1677,8 @@ def clear_cvrs(
         #   election, so this task is guaranteed to be completed before a newly
         #   uploaded CVR file will be processed.
         File.query.filter_by(id=jurisdiction.cvr_file_id).delete()
+        if election.audit_math_type == AuditMathType.CARD_STYLE_DATA:
+            clear_contests_total_ballots_cast(election)
         clear_cvr_contests_metadata(jurisdiction)
         create_background_task(
             clear_cvr_ballots,

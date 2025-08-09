@@ -184,9 +184,7 @@ def sample_size_options(election: Election) -> Dict[str, Dict[str, SampleSizeOpt
             sample_size = supersimple.get_sample_sizes(
                 election.risk_limit, contest_for_sampler, discrepancy_counts
             )
-            return {
-                "supersimple": {"key": "supersimple", "size": sample_size, "prob": None}
-            }
+            return {"default": {"key": "default", "size": sample_size, "prob": None}}
 
         else:
             assert election.audit_type == AuditType.HYBRID
@@ -241,7 +239,8 @@ def autoselect_sample_size(options: Dict[str, SampleSizeOption], audit_type: Aud
     elif audit_type == AuditType.BATCH_COMPARISON:
         return options["macro"]
     elif audit_type == AuditType.BALLOT_COMPARISON:
-        return options["supersimple"]
+        # Support legacy key 'supersimple' for backwards compatibility
+        return options.get("default", options.get("supersimple"))
     else:
         assert audit_type == AuditType.HYBRID
         return options["suite"]
