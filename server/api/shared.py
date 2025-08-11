@@ -877,16 +877,15 @@ def compute_sample_ballots(
                 # pick out the interpretation for each contest choice to see if
                 # any are non-empty, indicating the ballot has the contest
                 interpretations = interpretations_str.split(",")
-                choice_interpretations = {
-                    choice_name: interpretations[choice_metadata["column"]]
-                    for choice_name, choice_metadata in choices_metadata.items()
-                }
+                choice_interpretations = [
+                    interpretations[choice_metadata["column"]]
+                    for choice_metadata in choices_metadata.values()
+                ]
 
                 # If the interpretations are empty, it means the contest wasn't
                 # on the ballot, so we don't add it to the manifest
                 if all(
-                    interpretation == ""
-                    for interpretation in choice_interpretations.values()
+                    interpretation == "" for interpretation in choice_interpretations
                 ):
                     continue
                 manifest[batch_id_to_key[batch_id]].append(ballot_position)
