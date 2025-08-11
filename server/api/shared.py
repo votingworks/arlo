@@ -838,14 +838,65 @@ def compute_sample_ballots(
             .count()
         )
 
-        # Create the pool of ballots to sample (aka manifest) by combining the
-        # manifests from every jurisdiction in the contest's universe.
-        manifest = {
-            batch_id_to_key[batch.id]: list(range(1, batch.num_ballots + 1))
-            for jurisdiction in contest.jurisdictions
-            for batch in jurisdiction.batches
-            if batch.has_cvrs == filter_has_cvrs
-        }
+        if election.audit_math_type == AuditMathType.CARD_STYLE_DATA:
+            # The sampling pool will be all ballots in the audit with the contest
+            manifest: Dict[Tuple[str, Optional[str], str], List[int]] = defaultdict(
+                list  # { batch_key: [ballot_position] }
+            )
+            # Filter down to only ballots in jurisdictions with the contest, and then
+            # filter to ballots that have a CVR interpretation for the contest
+            ballots_in_jurisdictions_with_contest = (
+                CvrBallot.query.join(Batch)
+                .join(Jurisdiction)
+                .join(Jurisdiction.contests)
+                .filter(
+                    Contest.id == contest.id,
+                )
+                .with_entities(
+                    Jurisdiction.id,
+                    CvrBallot.batch_id,
+                    CvrBallot.ballot_position,
+                    CvrBallot.interpretations,
+                )
+                .order_by(CvrBallot.batch_id, CvrBallot.ballot_position)
+            )
+            metadata_by_jurisdictions = {
+                jurisdiction.id: cvr_contests_metadata(jurisdiction)
+                for jurisdiction in contest.jurisdictions
+            }
+            for (
+                jurisdiction_id,
+                batch_id,
+                ballot_position,
+                interpretations_str,
+            ) in ballots_in_jurisdictions_with_contest.yield_per(100):
+                metadata = metadata_by_jurisdictions[jurisdiction_id]
+                assert metadata is not None
+                choices_metadata = metadata[contest.name]["choices"]
+                # interpretations is the raw CVR string: 1,0,0,1,0,1,0. We need to
+                # pick out the interpretation for each contest choice to see if
+                # any are non-empty, indicating the ballot has the contest
+                interpretations = interpretations_str.split(",")
+                choice_interpretations = [
+                    interpretations[choice_metadata["column"]]
+                    for choice_metadata in choices_metadata.values()
+                ]
+
+                # If the interpretations are empty, it means the contest wasn't
+                # on the ballot, so we don't add it to the manifest
+                if all(
+                    interpretation == "" for interpretation in choice_interpretations
+                ):
+                    continue
+                manifest[batch_id_to_key[batch_id]].append(ballot_position)
+        else:
+            # The sampling pool will be all ballots in the audit
+            manifest = {
+                batch_id_to_key[batch.id]: list(range(1, batch.num_ballots + 1))
+                for jurisdiction in contest.jurisdictions
+                for batch in jurisdiction.batches
+                if batch.has_cvrs == filter_has_cvrs
+            }
 
         if filter_has_cvrs is None:
             sample_size_num = sample_size["size"]
