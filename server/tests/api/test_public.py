@@ -573,6 +573,29 @@ def test_public_file_upload(client: FlaskClient):
             assert stored_file.read() == b"hello, I am a file"
 
 
+def test_public_file_upload_path_traversal(client: FlaskClient):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.post(
+        "/api/file-upload",
+        data={
+            "file": (
+                io.BytesIO(b"hello, I am a file"),
+                "random.txt",
+            ),
+            "key": "../test_dir/random.txt",
+        },
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "Invalid storage path",
+            }
+        ]
+    }
+
+
 def test_public_file_upload_unauthorized(client: FlaskClient):
     rv = client.post(
         "/api/file-upload",
