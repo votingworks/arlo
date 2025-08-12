@@ -595,6 +595,7 @@ def test_public_file_upload_path_traversal(client: FlaskClient):
         ]
     }
 
+
 def test_public_file_upload_unauthorized(client: FlaskClient):
     rv = client.post(
         "/api/file-upload",
