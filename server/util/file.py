@@ -141,7 +141,9 @@ def get_full_storage_path(file_path: str) -> str:
         return f"s3://{bucket_name}/{file_path}"
     else:
         full_path = os.path.normpath(os.path.join(config.FILE_UPLOAD_STORAGE_PATH, file_path))
-        if os.path.relpath(full_path, config.FILE_UPLOAD_STORAGE_PATH).startswith("../"):
+        storage_root = os.path.realpath(config.FILE_UPLOAD_STORAGE_PATH)
+        full_path = os.path.realpath(os.path.normpath(os.path.join(storage_root, file_path)))
+        if os.path.commonpath([full_path, storage_root]) != storage_root:
             raise BadRequest("Invalid storage path")
         return full_path
 
