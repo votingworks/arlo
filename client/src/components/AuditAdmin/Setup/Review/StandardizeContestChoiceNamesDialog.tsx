@@ -138,11 +138,13 @@ export const StandardizeContestChoiceNamesDialog: React.FC<IDialogProps> = ({
                           }
                         >
                           <option key="" value="" />
-                          {standardizedContestChoiceNames.map(name => (
-                            <option value={name} key={name}>
-                              {name}
-                            </option>
-                          ))}
+                          {standardizedContestChoiceNames
+                            .sort((a, b) => a.localeCompare(b))
+                            .map(name => (
+                              <option value={name} key={name}>
+                                {name}
+                              </option>
+                            ))}
                         </HTMLSelect>
                       </td>
                     </tr>
