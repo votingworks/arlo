@@ -81,7 +81,7 @@ const MemberForm: React.FC<IProps> = ({
               intent="primary"
               type="button"
               loading={isSubmitting}
-              disabled={!(values[0].name || (values[0].name && values[1].name))}
+              disabled={!values[0].name || !values[1].name}
               onClick={handleSubmit}
             >
               Next
