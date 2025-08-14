@@ -105,14 +105,16 @@ const StandardizeContestNamesDialog: React.FC<IStandardizeContestNamesDialogProp
                                 {[<option key="" value="" />].concat(
                                   standardizations.cvrContestNames[
                                     jurisdictionId
-                                  ].map(cvrContestName => (
-                                    <option
-                                      value={cvrContestName}
-                                      key={cvrContestName}
-                                    >
-                                      {cvrContestName}
-                                    </option>
-                                  ))
+                                  ]
+                                    .sort((a, b) => a.localeCompare(b))
+                                    .map(cvrContestName => (
+                                      <option
+                                        value={cvrContestName}
+                                        key={cvrContestName}
+                                      >
+                                        {cvrContestName}
+                                      </option>
+                                    ))
                                 )}
                               </HTMLSelect>
                             </td>
