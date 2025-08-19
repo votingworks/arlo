@@ -1,5 +1,5 @@
 import enum
-from typing import Type
+from typing import Any, Type, TypeVar, cast
 from datetime import datetime as dt, timezone
 from werkzeug.exceptions import NotFound
 import sqlalchemy
@@ -1167,8 +1167,11 @@ class USState(str, enum.Enum):
     ArmedForcesPacific = "AP"
 
 
-def get_or_404(model: Type[Base], primary_key: str):
+T = TypeVar("T", bound=Base)
+
+
+def get_or_404(model: Type[T], primary_key: str) -> T:
     instance = model.query.get(primary_key)
     if instance:
         return instance
-    raise NotFound(f"{model.__class__.__name__} {primary_key} not found")
+    raise NotFound(f"{cast(Any, model.__class__).__name__} {primary_key} not found")
