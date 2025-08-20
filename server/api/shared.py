@@ -527,6 +527,7 @@ def ballot_vote_deltas(
         reported = {choice.id: "0" for choice in contest.choices}
 
     deltas = {}
+    total_audited_votes = 0
     for choice in contest.choices:
         reported_vote = (
             0 if reported[choice.id] in ["o", "u"] else int(reported[choice.id])
@@ -535,6 +536,18 @@ def ballot_vote_deltas(
             0 if audited[choice.id] in ["o", "u"] else int(audited[choice.id])
         )
         deltas[choice.id] = reported_vote - audited_vote
+        total_audited_votes += audited_vote
+
+    # If the reported CVR indicates an ES&S overvote and the audit confirms an overvote, record no
+    # discrepancy
+    reported_ess_overvote = "o" in reported.values()
+    audited_overvote = (
+        contest.votes_allowed is not None
+        and total_audited_votes > contest.votes_allowed
+    )
+    if reported_ess_overvote and audited_overvote:
+        for choice in contest.choices:
+            deltas[choice.id] = 0
 
     if all(delta == 0 for delta in deltas.values()):
         return None
