@@ -527,6 +527,7 @@ def ballot_vote_deltas(
         reported = {choice.id: "0" for choice in contest.choices}
 
     deltas = {}
+    total_audited_votes = 0
     for choice in contest.choices:
         reported_vote = (
             0 if reported[choice.id] in ["o", "u"] else int(reported[choice.id])
@@ -534,7 +535,15 @@ def ballot_vote_deltas(
         audited_vote = (
             0 if audited[choice.id] in ["o", "u"] else int(audited[choice.id])
         )
+        total_audited_votes += audited_vote
         deltas[choice.id] = reported_vote - audited_vote
+
+    # If this is an overvote, and that was expected, there's no discrepancy here.
+    # TODO: do we need to do this for undervotes too?
+    if contest.votes_allowed and total_audited_votes > contest.votes_allowed:
+        for choice in contest.choices:
+            if reported[choice.id] == "o":
+                deltas[choice.id] = 0
 
     if all(delta == 0 for delta in deltas.values()):
         return None
