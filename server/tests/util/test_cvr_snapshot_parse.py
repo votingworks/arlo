@@ -79,7 +79,7 @@ def test_read_cvr_snapshot_many_entries_happy_path():
             ],
         )
     ]
-    assert len(entries), 9
+    assert len(entries) == 9
 
 
 def test_read_cvr_snapshot_malformed_iterator():
