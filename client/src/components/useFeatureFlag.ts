@@ -41,6 +41,10 @@ const BATCH_INVENTORY_CONFIGS: {
   'a67791e3-90a0-4d4e-a5e7-929f82bf4ce6': {
     showBallotManifest: false,
   },
+  // Maryland (Brian local development)
+  'b6c82242-7737-49dd-b315-cc34f8ad8de0': {
+    showBallotManifest: true,
+  },
 }
 
 // eslint-disable-next-line import/prefer-default-export

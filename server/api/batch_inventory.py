@@ -1,4 +1,7 @@
+import itertools
+import logging
 import os
+from os.path import join
 import re
 import shutil
 import tempfile
@@ -10,9 +13,11 @@ from typing import TypedDict, Dict, Tuple, Optional
 import uuid
 from xml.etree import ElementTree
 from flask import request, jsonify, session
+from server.util.collections import diff_file_lists_ignoring_order_and_case
 from werkzeug.exceptions import BadRequest, Conflict
 from sqlalchemy.orm import Session
 
+from server.util.cvr_snapshot_parse import read_cvr_snapshots
 from server.util.string import strip_optional_string
 
 
@@ -32,6 +37,7 @@ from .cvrs import (
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.csv_parse import (
     column_value,
+    decode_csv,
     get_header_indices,
     validate_comma_delimited,
     is_filetype_csv_mimetype,
@@ -40,6 +46,7 @@ from ..util.file import (
     FileType,
     get_file_upload_url,
     get_jurisdiction_folder_path,
+    read_zip_filenames,
     validate_and_get_standard_file_upload_request_params,
     retrieve_file,
     retrieve_file_to_buffer,
@@ -56,6 +63,7 @@ from .batch_tallies import construct_contest_choice_csv_headers
 from ..activity_log.activity_log import UploadFile, activity_base, record_activity
 from ..util.get_json import safe_get_json_dict
 
+logger = logging.getLogger("arlo.batch_inventory")
 
 TABULATOR_ID = "Tabulator Id"
 NAME = "Name"
@@ -65,6 +73,7 @@ TABULATOR_STATUS_FILE_NAME_PREFIX = "batch_inventory_tabulator_status"
 
 EXPECTED_CVR_FILE_TYPE_MAPPING = {
     CvrFileType.ESS: [FileType.CSV, FileType.ZIP],
+    CvrFileType.ESS_MD: [FileType.ZIP],
     CvrFileType.HART: [FileType.ZIP],
     CvrFileType.DOMINION: [FileType.CSV],
 }
@@ -89,8 +98,11 @@ def batch_key_to_name(
 
 
 class ElectionResults(TypedDict):
+    # { batch_key: count }
     ballot_count_by_batch: Dict[BatchKey, int]
+    # { choice_id: count }
     ballot_count_by_group: Optional[Dict[str, int]]
+    # { batch_key: counting_group }
     batch_to_counting_group: Optional[Dict[BatchKey, str]]
     # { batch_key: { choice_id: count } }
     batch_tallies: Dict[BatchKey, Dict[str, int]]
@@ -281,7 +293,9 @@ def process_batch_inventory_cvr_file(
             lambda: defaultdict(int)
         )
 
-        def validate_choice_name_and_get_choice_id(choice_name: str) -> Optional[str]:
+        def validate_choice_name_and_get_choice_id(
+            contest: Contest, choice_name: str
+        ) -> Optional[str]:
             choice_id = None
             for choice in contest.choices:
                 if choice.name == choice_name:
@@ -390,7 +404,9 @@ def process_batch_inventory_cvr_file(
                         header_indices,
                         required=False,
                     )
-                    choice_id = validate_choice_name_and_get_choice_id(choice_name)
+                    choice_id = validate_choice_name_and_get_choice_id(
+                        contest, choice_name
+                    )
 
                     if choice_id:
                         batch_tallies[batch_key][choice_id] += 1
@@ -430,7 +446,9 @@ def process_batch_inventory_cvr_file(
                     )
 
                     batch_key: BatchKey = ("", batch)
-                    choice_id = validate_choice_name_and_get_choice_id(choice_name)
+                    choice_id = validate_choice_name_and_get_choice_id(
+                        contest, choice_name
+                    )
 
                     ballot_count_by_batch[batch_key] += 1
                     if choice_id:
@@ -451,6 +469,129 @@ def process_batch_inventory_cvr_file(
             ballot_count_by_batch=dict_to_items_list(ballot_count_by_batch),
             ballot_count_by_group=None,
             batch_to_counting_group=None,
+            batch_tallies=dict_to_items_list(batch_tallies),
+        )
+        batch_inventory_data.election_results = election_results
+
+    def process_ess_md():
+        """Process CVR files from an older version of ES&S that's currently in use in Maryland.
+        These files do not have a "counting group", and so are given to us as a ZIP file
+        with 5 CSV snapshot files for the ends of the various stages of counting:
+
+        1. Early Voting (EV.csv)
+        2. Election Day (ED.csv)
+        3. Mail-in Ballots #1 (MIB1.csv)
+        4. Mail-in Ballots #2 (MIB2.csv)
+        5. Provisional Ballots (Prov.csv)
+
+        Each file is expected to contain the same rows as all the files above it in the same
+        order, with zero or more rows added compared to the previous file.
+        """
+        ballot_count_by_batch: Dict[BatchKey, int] = defaultdict(int)
+        batch_to_counting_group: Dict[BatchKey, str] = {}
+        batch_tallies: Dict[BatchKey, Dict[str, int]] = defaultdict(
+            lambda: defaultdict(int)
+        )
+
+        def validate_choice_name_and_get_choice_id(choice_name: str) -> Optional[str]:
+            choice_id = None
+            for choice in contest.choices:
+                if choice.name == choice_name:
+                    choice_id = choice.id
+                    break
+                # handle capitalization mismatches for the write in column
+                if choice.name.lower() == choice_name.lower() == "write-in":
+                    choice_id = choice.id
+                    break
+
+            if (
+                not choice_id
+                and choice_name
+                and choice_name.lower() != "overvote"
+                and choice_name.lower() != "undervote"
+                # If the user configured a write-in candidate choice when setting up the audit choice_id
+                # will be set in the for loop above. If the audit wasn't configured for write-ins we can parse them out.
+                and choice_name.lower() != "write-in"
+            ):
+                raise UserError(f"Unrecognized choice in CVR file: {choice_name}")
+            return choice_id
+
+        CVR_FILE_ORDER = ["EV.csv", "ED.csv", "MIB1.csv", "MIB2.csv", "Prov.csv"]
+
+        actual_file_names = read_zip_filenames(cvr_file)
+        (file_names, unexpected_files, missing_files) = (
+            diff_file_lists_ignoring_order_and_case(CVR_FILE_ORDER, actual_file_names)
+        )
+
+        logger.info(
+            f"Snapshot ZIP files: expected={CVR_FILE_ORDER}, actual={actual_file_names}, missing={missing_files}, unexpected={unexpected_files}, ordered files to use={file_names}"
+        )
+        if len(unexpected_files) != 0:
+            raise UserError(
+                f"ZIP contains unexpected files: {', '.join(unexpected_files)}"
+            )
+
+        if len(missing_files) != 0:
+            raise UserError(
+                f"ZIP is missing expected files: {', '.join(missing_files)}"
+            )
+
+        cvr_file.seek(0)
+        unzip_files(cvr_file, working_directory)
+        cvr_file.close()
+
+        cvr_file_readers = [
+            csv_reader_for_cvr(retrieve_file(join(working_directory, file_name)))
+            for file_name in file_names
+        ]
+        cvr_csv = read_cvr_snapshots(file_names, cvr_file_readers)
+
+        (_, headers) = next(cvr_csv)
+        header_indices = get_header_indices(headers)
+
+        contest_names = [contest.name for contest in contests]
+        missing_contest_names = set(contest_names) - set(headers)
+        if len(missing_contest_names) != 0:
+            raise UserError(
+                f"CVR file is missing contest names: {', '.join(missing_contest_names)}"
+            )
+
+        for row_index, (source_file_name, row) in enumerate(cvr_csv):
+            batch = column_value(
+                row, "Precinct", row_index + 1, header_indices, required=True
+            )
+            batch_key: BatchKey = (source_file_name, batch)
+            ballot_count_by_batch[batch_key] += 1
+            batch_to_counting_group.setdefault(batch_key, source_file_name)
+
+            for contest in contests:
+                choice_name = column_value(
+                    row,
+                    contest.name,
+                    row_index + 1,
+                    header_indices,
+                    required=False,
+                )
+                choice_id = validate_choice_name_and_get_choice_id(choice_name)
+
+                if choice_id:
+                    batch_tallies[batch_key][choice_id] += 1
+
+        # Set explicit zeros for choices with zero votes in a batch to avoid KeyErrors when
+        # generating files and to make sure every batch is included even if it has no votes for the contest(s)
+        for batch_key in ballot_count_by_batch.keys():
+            if batch_key not in batch_tallies:
+                batch_tallies[batch_key] = defaultdict(int)
+        for tallies in batch_tallies.values():
+            for contest in contests:
+                for choice in contest.choices:
+                    if choice.id not in tallies:
+                        tallies[choice.id] = 0
+
+        election_results: ElectionResults = dict(
+            ballot_count_by_batch=dict_to_items_list(ballot_count_by_batch),
+            ballot_count_by_group=None,
+            batch_to_counting_group=dict_to_items_list(batch_to_counting_group),
             batch_tallies=dict_to_items_list(batch_tallies),
         )
         batch_inventory_data.election_results = election_results
@@ -545,10 +686,15 @@ def process_batch_inventory_cvr_file(
         batch_inventory_data.election_results = election_results
 
     def process():
+        logging.info(
+            "batch_inventory_data.system_type = %s", batch_inventory_data.system_type
+        )
         if batch_inventory_data.system_type == CvrFileType.DOMINION:
             process_dominion()
         elif batch_inventory_data.system_type == CvrFileType.ESS:
             process_ess()
+        elif batch_inventory_data.system_type == CvrFileType.ESS_MD:
+            process_ess_md()
         elif batch_inventory_data.system_type == CvrFileType.HART:
             process_hart()
         else:
@@ -727,12 +873,18 @@ def process_batch_inventory_tabulator_status_file(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def set_batch_inventory_system_type(
-    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
+    election: Election,
+    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
     system_type = safe_get_json_dict(request)["systemType"]
     if system_type is None:
         raise BadRequest("Missing systemType param")
-    if system_type not in [CvrFileType.DOMINION, CvrFileType.ESS, CvrFileType.HART]:
+    if system_type not in [
+        CvrFileType.DOMINION,
+        CvrFileType.ESS,
+        CvrFileType.ESS_MD,
+        CvrFileType.HART,
+    ]:
         raise BadRequest(f"Unrecognized systemType param: {system_type}")
 
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
@@ -760,7 +912,8 @@ def set_batch_inventory_system_type(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def get_batch_inventory_system_type(
-    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
+    election: Election,
+    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
     return jsonify(
@@ -778,7 +931,8 @@ def get_batch_inventory_system_type(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def start_upload_for_batch_inventory_cvr(
-    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
+    election: Election,
+    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
     file_type = request.args.get("fileType")
     if file_type is None:
@@ -805,7 +959,8 @@ def start_upload_for_batch_inventory_cvr(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def complete_upload_for_batch_inventory_cvr(
-    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
+    election: Election,
+    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
     if len(list(jurisdiction.contests)) == 0:
         raise Conflict("Jurisdiction does not have any contests assigned.")
@@ -860,7 +1015,8 @@ def complete_upload_for_batch_inventory_cvr(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def get_batch_inventory_cvr(
-    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
+    election: Election,
+    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
     if not batch_inventory_data:
@@ -946,9 +1102,9 @@ def start_upload_for_batch_inventory_tabulator_status(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def complete_upload_for_batch_inventory_tabulator_status(
-    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
+    election: Election,
+    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
-
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
     if not batch_inventory_data or not batch_inventory_data.cvr_file_id:
         raise Conflict("Must upload CVR file before uploading tabulator status file.")
@@ -988,7 +1144,8 @@ def complete_upload_for_batch_inventory_tabulator_status(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def get_batch_inventory_tabulator_status(
-    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
+    election: Election,
+    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
     if not batch_inventory_data:
@@ -1114,7 +1271,8 @@ def download_batch_inventory_worksheet(election: Election, jurisdiction: Jurisdi
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def batch_inventory_sign_off_status(
-    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
+    election: Election,
+    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
     return jsonify(
@@ -1136,7 +1294,8 @@ def clear_sign_off(batch_inventory_data: BatchInventoryData):
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def sign_off_batch_inventory(
-    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
+    election: Election,
+    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
     batch_inventory_data = get_or_404(BatchInventoryData, jurisdiction.id)
     batch_inventory_data.signed_off_at = datetime.now(timezone.utc)
@@ -1153,7 +1312,8 @@ def sign_off_batch_inventory(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def undo_sign_off_batch_inventory(
-    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
+    election: Election,
+    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
     batch_inventory_data = get_or_404(BatchInventoryData, jurisdiction.id)
     clear_sign_off(batch_inventory_data)
@@ -1195,6 +1355,9 @@ def download_batch_inventory_ballot_manifest(
         )
         if should_include_container_column:
             counting_group = batch_to_counting_group.get(batch_key)
+            assert counting_group is not None and counting_group != "", (
+                f"counting_group for batch_key={batch_key} is blank!"
+            )
             ballot_manifest.writerow([counting_group, batch_name, ballot_count])
         else:
             ballot_manifest.writerow([batch_name, ballot_count])

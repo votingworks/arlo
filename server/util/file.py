@@ -122,6 +122,11 @@ def zip_files(files: Mapping[str, IO[bytes]]) -> IO[bytes]:
     return zip_file
 
 
+def read_zip_filenames(zip_file: BinaryIO) -> List[str]:
+    with ZipFile(zip_file, "r") as zip_archive:
+        return zip_archive.namelist()
+
+
 # Extracts the contents of the provided zip file to the specified directory and returns the list of
 # extracted file names
 def unzip_files(zip_file: BinaryIO, directory_to_extract_to: str) -> List[str]:

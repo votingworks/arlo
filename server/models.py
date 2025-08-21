@@ -73,9 +73,9 @@ class UTCDateTime(TypeDecorator):  # pylint: disable=abstract-method
     # Ensure UTC timezone on write
     def process_bind_param(self, value, dialect):
         if value:
-            assert (
-                value.tzinfo == timezone.utc
-            ), "All datetimes must have UTC timezone - use datetime.now(timezone.utc)"
+            assert value.tzinfo == timezone.utc, (
+                "All datetimes must have UTC timezone - use datetime.now(timezone.utc)"
+            )
         return value
 
     # Repopulate UTC timezone on read
@@ -235,6 +235,7 @@ class CvrFileType(str, enum.Enum):
     DOMINION = "DOMINION"
     CLEARBALLOT = "CLEARBALLOT"
     ESS = "ESS"
+    ESS_MD = "ESS_MD"
     HART = "HART"
 
 
