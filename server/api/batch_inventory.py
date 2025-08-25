@@ -38,7 +38,6 @@ from .cvrs import (
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.csv_parse import (
     column_value,
-    decode_csv,
     get_header_indices,
     validate_comma_delimited,
     is_filetype_csv_mimetype,
@@ -495,24 +494,24 @@ def process_batch_inventory_cvr_file(
             lambda: defaultdict(int)
         )
 
-        CVR_FILE_ORDER = ["EV.csv", "ED.csv", "MIB1.csv", "MIB2.csv", "Prov.csv"]
+        expected_files = ["EV.csv", "ED.csv", "MIB1.csv", "MIB2.csv", "Prov.csv"]
 
         actual_file_names = read_zip_filenames(cvr_file)
         (file_names, unexpected_files, missing_files) = (
-            diff_file_lists_ignoring_order_and_case(CVR_FILE_ORDER, actual_file_names)
+            diff_file_lists_ignoring_order_and_case(expected_files, actual_file_names)
         )
 
         logger.info(
-            f"Snapshot ZIP files: expected={CVR_FILE_ORDER}, actual={actual_file_names}, missing={missing_files}, unexpected={unexpected_files}, ordered files to use={file_names}"
+            f"Snapshot ZIP files: expected={expected_files}, actual={actual_file_names}, missing={missing_files}, unexpected={unexpected_files}, ordered files to use={file_names}"
         )
         if len(unexpected_files) != 0:
             raise UserError(
-                f"ZIP contains unexpected files: {', '.join(unexpected_files)}. Expected files are {', '.join(CVR_FILE_ORDER)}"
+                f"ZIP contains unexpected files: {', '.join(unexpected_files)}. Expected files are {', '.join(expected_files)}"
             )
 
         if len(missing_files) != 0:
             raise UserError(
-                f"ZIP is missing expected files: {', '.join(missing_files)}. Expected files are {', '.join(CVR_FILE_ORDER)}"
+                f"ZIP is missing expected files: {', '.join(missing_files)}. Expected files are {', '.join(expected_files)}"
             )
 
         cvr_file.seek(0)
@@ -1316,9 +1315,9 @@ def download_batch_inventory_ballot_manifest(
         )
         if should_include_container_column:
             counting_group = batch_to_counting_group.get(batch_key)
-            assert (
-                counting_group is not None and counting_group != ""
-            ), f"counting_group for batch_key={batch_key} is blank!"
+            assert counting_group is not None and counting_group != "", (
+                f"counting_group for batch_key={batch_key} is blank!"
+            )
             ballot_manifest.writerow([counting_group, batch_name, ballot_count])
         else:
             ballot_manifest.writerow([batch_name, ballot_count])
