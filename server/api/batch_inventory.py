@@ -1315,9 +1315,9 @@ def download_batch_inventory_ballot_manifest(
         )
         if should_include_container_column:
             counting_group = batch_to_counting_group.get(batch_key)
-            assert counting_group is not None and counting_group != "", (
-                f"counting_group for batch_key={batch_key} is blank!"
-            )
+            assert (
+                counting_group is not None and counting_group != ""
+            ), f"counting_group for batch_key={batch_key} is blank!"
             ballot_manifest.writerow([counting_group, batch_name, ballot_count])
         else:
             ballot_manifest.writerow([batch_name, ballot_count])
