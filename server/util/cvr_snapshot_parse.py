@@ -37,7 +37,7 @@ def read_cvr_snapshots(
                     max_completed_snapshot_file_index = file_index
             else:
                 assert file_index > max_completed_snapshot_file_index, (
-                    f"None-returning row iterator ({file_index + 1}/{len(row_iterators)}, '{file_names[file_index]}') must always return None thereafter"
+                    f"Once an iterator for file '{file_names[file_index]}' (index {file_index + 1}/{len(row_iterators)}) returns None for a row, it must return None for all subsequent rows."
                 )
                 if first_file_containing_row is None:
                     first_file_containing_row = file_names[file_index]
