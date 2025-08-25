@@ -12,12 +12,14 @@ from ...util.file import (
     FileType,
     delete_file,
     get_full_storage_path,
+    read_zip_filenames,
     retrieve_file,
     retrieve_file_to_buffer,
     store_file,
     get_file_upload_url,
     validate_and_get_standard_file_upload_request_params,
     timestamp_filename,
+    zip_files,
 )
 from ... import config
 
@@ -318,3 +320,8 @@ def test_get_full_storage_path():
         get_full_storage_path("test_dir/test_file.csv")
         == "s3://test_bucket/test_dir/test_file.csv"
     )
+
+
+def test_read_zip_filenames():
+    zip = zip_files({"a": io.BytesIO(b"hello"), "b": io.BytesIO(b"world")})
+    assert read_zip_filenames(io.BytesIO(zip.read())) == ["a", "b"]

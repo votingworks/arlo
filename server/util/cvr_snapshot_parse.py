@@ -49,8 +49,10 @@ def read_cvr_snapshots(
 
             last_row = row
 
-        if last_row is None:
-            break
+        # The last row cannot be None because that would mean all rows are None,
+        # but that should not happen because `zip_longest` should only yield
+        # values as long as at least one iterator yielded one.
+        assert last_row is not None
 
         assert first_file_containing_row is not None
         yield (first_file_containing_row, last_row)
