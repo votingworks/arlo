@@ -121,6 +121,32 @@ def items_list_to_dict(items):
     }
 
 
+def validate_choice_name_and_get_choice_id(
+    contest: Contest, choice_name: str
+) -> Optional[str]:
+    choice_id = None
+    for choice in contest.choices:
+        if choice.name == choice_name:
+            choice_id = choice.id
+            break
+        # handle capitalization mismatches for the write in column
+        if choice.name.lower() == choice_name.lower() == "write-in":
+            choice_id = choice.id
+            break
+
+    if (
+        not choice_id
+        and choice_name
+        and choice_name.lower() != "overvote"
+        and choice_name.lower() != "undervote"
+        # If the user configured a write-in candidate choice when setting up the audit choice_id
+        # will be set in the for loop above. If the audit wasn't configured for write-ins we can parse them out.
+        and choice_name.lower() != "write-in"
+    ):
+        raise UserError(f"Unrecognized choice in CVR file: {choice_name}")
+    return choice_id
+
+
 @background_task
 def process_batch_inventory_cvr_file(
     election_id: str,  # pylint: disable=unused-argument
@@ -292,31 +318,6 @@ def process_batch_inventory_cvr_file(
         batch_tallies: Dict[BatchKey, Dict[str, int]] = defaultdict(
             lambda: defaultdict(int)
         )
-
-        def validate_choice_name_and_get_choice_id(
-            contest: Contest, choice_name: str
-        ) -> Optional[str]:
-            choice_id = None
-            for choice in contest.choices:
-                if choice.name == choice_name:
-                    choice_id = choice.id
-                    break
-                # handle capitalization mismatches for the write in column
-                if choice.name.lower() == choice_name.lower() == "write-in":
-                    choice_id = choice.id
-                    break
-
-            if (
-                not choice_id
-                and choice_name
-                and choice_name.lower() != "overvote"
-                and choice_name.lower() != "undervote"
-                # If the user configured a write-in candidate choice when setting up the audit choice_id
-                # will be set in the for loop above. If the audit wasn't configured for write-ins we can parse them out.
-                and choice_name.lower() != "write-in"
-            ):
-                raise UserError(f"Unrecognized choice in CVR file: {choice_name}")
-            return choice_id
 
         # ZIP file with multiple CSVs
         if batch_inventory_data.cvr_file.storage_path.endswith(".zip"):
@@ -493,29 +494,6 @@ def process_batch_inventory_cvr_file(
             lambda: defaultdict(int)
         )
 
-        def validate_choice_name_and_get_choice_id(choice_name: str) -> Optional[str]:
-            choice_id = None
-            for choice in contest.choices:
-                if choice.name == choice_name:
-                    choice_id = choice.id
-                    break
-                # handle capitalization mismatches for the write in column
-                if choice.name.lower() == choice_name.lower() == "write-in":
-                    choice_id = choice.id
-                    break
-
-            if (
-                not choice_id
-                and choice_name
-                and choice_name.lower() != "overvote"
-                and choice_name.lower() != "undervote"
-                # If the user configured a write-in candidate choice when setting up the audit choice_id
-                # will be set in the for loop above. If the audit wasn't configured for write-ins we can parse them out.
-                and choice_name.lower() != "write-in"
-            ):
-                raise UserError(f"Unrecognized choice in CVR file: {choice_name}")
-            return choice_id
-
         CVR_FILE_ORDER = ["EV.csv", "ED.csv", "MIB1.csv", "MIB2.csv", "Prov.csv"]
 
         actual_file_names = read_zip_filenames(cvr_file)
@@ -572,7 +550,7 @@ def process_batch_inventory_cvr_file(
                     header_indices,
                     required=False,
                 )
-                choice_id = validate_choice_name_and_get_choice_id(choice_name)
+                choice_id = validate_choice_name_and_get_choice_id(contest, choice_name)
 
                 if choice_id:
                     batch_tallies[batch_key][choice_id] += 1
@@ -601,26 +579,6 @@ def process_batch_inventory_cvr_file(
         batch_tallies: Dict[BatchKey, Dict[str, int]] = defaultdict(
             lambda: defaultdict(int)
         )
-
-        def validate_choice_name_and_get_choice_id(choice_name: str) -> Optional[str]:
-            choice_id = None
-            for choice in contest.choices:
-                if choice.name == choice_name:
-                    choice_id = choice.id
-                    break
-                # handle capitalization mismatches for the write in column
-                if choice.name.lower() == choice_name.lower() == "write-in":
-                    choice_id = choice.id
-                    break
-            if (
-                not choice_id
-                and choice_name
-                # If the user configured a write-in candidate choice when setting up the audit choice_id
-                # will be set in the for loop above. If the audit wasn't configured for write-ins we can parse them out.
-                and choice_name.lower() != "write-in"
-            ):
-                raise UserError(f"Unrecognized choice in CVR file: {choice_name}")
-            return choice_id
 
         # cvr_file is a ZIP file with multiple XMLs
         zip_entry_names = unzip_files(cvr_file, working_directory)
@@ -654,7 +612,7 @@ def process_batch_inventory_cvr_file(
                 validated_choice_ids = []
                 for choice_name in choices:
                     validated_choice_id = validate_choice_name_and_get_choice_id(
-                        choice_name
+                        contest, choice_name
                     )
                     if validated_choice_id:
                         validated_choice_ids.append(validated_choice_id)
