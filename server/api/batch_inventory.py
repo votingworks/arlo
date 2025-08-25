@@ -507,12 +507,12 @@ def process_batch_inventory_cvr_file(
         )
         if len(unexpected_files) != 0:
             raise UserError(
-                f"ZIP contains unexpected files: {', '.join(unexpected_files)}"
+                f"ZIP contains unexpected files: {', '.join(unexpected_files)}. Expected files are {', '.join(CVR_FILE_ORDER)}"
             )
 
         if len(missing_files) != 0:
             raise UserError(
-                f"ZIP is missing expected files: {', '.join(missing_files)}"
+                f"ZIP is missing expected files: {', '.join(missing_files)}. Expected files are {', '.join(CVR_FILE_ORDER)}"
             )
 
         cvr_file.seek(0)
