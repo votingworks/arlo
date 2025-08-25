@@ -24,6 +24,10 @@ const BATCH_INVENTORY_CONFIGS: {
   '541e7ab0-5d05-4635-b988-f66a254902c7': {
     showBallotManifest: false,
   },
+  // Maryland
+  'd563f551-0d7a-4a89-aa45-2f60147d0337': {
+    showBallotManifest: false,
+  },
 
   // Audit Specialist Sandbox
   'b7b99303-b1ac-4b52-8a02-22c10846cff3': {
@@ -40,10 +44,6 @@ const BATCH_INVENTORY_CONFIGS: {
   // VotingWorks Internal Sandbox
   'a67791e3-90a0-4d4e-a5e7-929f82bf4ce6': {
     showBallotManifest: false,
-  },
-  // Maryland (Brian local development)
-  'b6c82242-7737-49dd-b315-cc34f8ad8de0': {
-    showBallotManifest: true,
   },
 }
 
