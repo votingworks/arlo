@@ -1,4 +1,3 @@
-import itertools
 import logging
 import os
 from os.path import join
@@ -14,10 +13,10 @@ from typing import TypedDict, Dict, Tuple, Optional
 import uuid
 from xml.etree import ElementTree
 from flask import request, jsonify, session
-from server.util.collections import diff_file_lists_ignoring_order_and_case
 from werkzeug.exceptions import BadRequest, Conflict
 from sqlalchemy.orm import Session
 
+from server.util.collections import diff_file_lists_ignoring_order_and_case
 from server.util.cvr_snapshot_parse import read_cvr_snapshots
 from server.util.string import strip_optional_string
 
@@ -833,8 +832,8 @@ def process_batch_inventory_tabulator_status_file(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def set_batch_inventory_system_type(
-    election: Election,
-    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
     system_type = safe_get_json_dict(request)["systemType"]
     if system_type is None:
@@ -872,8 +871,8 @@ def set_batch_inventory_system_type(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def get_batch_inventory_system_type(
-    election: Election,
-    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
     return jsonify(
@@ -891,8 +890,8 @@ def get_batch_inventory_system_type(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def start_upload_for_batch_inventory_cvr(
-    election: Election,
-    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
     file_type = request.args.get("fileType")
     if file_type is None:
@@ -919,8 +918,8 @@ def start_upload_for_batch_inventory_cvr(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def complete_upload_for_batch_inventory_cvr(
-    election: Election,
-    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
     if len(list(jurisdiction.contests)) == 0:
         raise Conflict("Jurisdiction does not have any contests assigned.")
@@ -975,8 +974,8 @@ def complete_upload_for_batch_inventory_cvr(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def get_batch_inventory_cvr(
-    election: Election,
-    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
     if not batch_inventory_data:
@@ -1104,8 +1103,8 @@ def complete_upload_for_batch_inventory_tabulator_status(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def get_batch_inventory_tabulator_status(
-    election: Election,
-    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
     if not batch_inventory_data:
@@ -1231,8 +1230,8 @@ def download_batch_inventory_worksheet(election: Election, jurisdiction: Jurisdi
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def batch_inventory_sign_off_status(
-    election: Election,
-    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
     return jsonify(
@@ -1254,8 +1253,8 @@ def clear_sign_off(batch_inventory_data: BatchInventoryData):
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def sign_off_batch_inventory(
-    election: Election,
-    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
     batch_inventory_data = get_or_404(BatchInventoryData, jurisdiction.id)
     batch_inventory_data.signed_off_at = datetime.now(timezone.utc)
@@ -1272,8 +1271,8 @@ def sign_off_batch_inventory(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def undo_sign_off_batch_inventory(
-    election: Election,
-    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
     batch_inventory_data = get_or_404(BatchInventoryData, jurisdiction.id)
     clear_sign_off(batch_inventory_data)

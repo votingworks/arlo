@@ -452,8 +452,8 @@ def tally_entry_jurisdiction_generate_passphrase(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def tally_entry_jurisdiction_status(
-    election: Election,
-    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
     tally_entry_users = (
         TallyEntryUser.query.filter_by(jurisdiction_id=jurisdiction.id)
@@ -482,8 +482,8 @@ def tally_entry_jurisdiction_status(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def tally_entry_jurisdiction_confirm_login_code(
-    election: Election,
-    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
     body = safe_get_json_dict(request)
     tally_entry_user = TallyEntryUser.query.get(body.get("tallyEntryUserId"))
@@ -506,8 +506,8 @@ def tally_entry_jurisdiction_confirm_login_code(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def tally_entry_jurisdiction_reject_request(
-    election: Election,
-    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
     body = safe_get_json_dict(request)
     tally_entry_user = TallyEntryUser.query.get(body.get("tallyEntryUserId"))
