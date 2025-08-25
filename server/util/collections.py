@@ -1,5 +1,5 @@
 # pylint: disable=invalid-name
-from typing import Iterator, List, Optional, Tuple, TypeVar, Iterable
+from typing import List, Optional, Tuple, TypeVar, Iterable
 import itertools
 
 T = TypeVar("T")
