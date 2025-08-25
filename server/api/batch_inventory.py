@@ -2,6 +2,7 @@ import itertools
 import logging
 import os
 from os.path import join
+from pathlib import Path
 import re
 import shutil
 import tempfile
@@ -535,12 +536,14 @@ def process_batch_inventory_cvr_file(
             )
 
         for row_index, (source_file_name, row) in enumerate(cvr_csv):
+            source_file_path = Path(source_file_name)
+            source_name = source_file_path.stem
             batch = column_value(
                 row, "Precinct", row_index + 1, header_indices, required=True
             )
-            batch_key: BatchKey = (source_file_name, batch)
+            batch_key: BatchKey = (source_name, batch)
             ballot_count_by_batch[batch_key] += 1
-            batch_to_counting_group.setdefault(batch_key, source_file_name)
+            batch_to_counting_group.setdefault(batch_key, source_name)
 
             for contest in contests:
                 choice_name = column_value(
