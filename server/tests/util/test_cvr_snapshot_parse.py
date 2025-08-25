@@ -94,5 +94,5 @@ def test_read_cvr_snapshot_malformed_iterator():
     except Exception as e:
         assert (
             str(e)
-            == "None-returning row iterator (1/2, 'file1.csv') must always return None thereafter"
+            == "Once an iterator for file 'file1.csv' (index 1/2) returns None for a row, it must return None for all subsequent rows."
         )
