@@ -87,7 +87,7 @@ def process_batch_tallies_file(
             for contest_choice_csv_header in contest_choice_csv_headers.values()
         ]
 
-        batch_tallies_file = retrieve_file(jurisdiction.batch_tallies_file.storage_path)
+        batch_tallies_file = retrieve_file(jurisdiction.batch_tallies_file)
         batch_tallies_csv = list(parse_csv(batch_tallies_file, columns))
         batch_tallies_file.close()
 
@@ -324,7 +324,7 @@ def download_batch_tallies_file(
         return NotFound()
 
     return csv_response(
-        retrieve_file(jurisdiction.batch_tallies_file.storage_path),
+        retrieve_file(jurisdiction.batch_tallies_file),
         jurisdiction.batch_tallies_file.name,
     )
 

@@ -146,7 +146,7 @@ def process_ballot_manifest_file(
                 CSVColumnType(CVR, CSVValueType.YES_NO, required_column=True)
             )
 
-        manifest_file = retrieve_file(jurisdiction.manifest_file.storage_path)
+        manifest_file = retrieve_file(jurisdiction.manifest_file)
         validate_is_not_batch_inventory_worksheet(manifest_file)
         manifest_csv = parse_csv(manifest_file, columns)
 
@@ -366,7 +366,7 @@ def download_ballot_manifest_file(
         return NotFound()
 
     return csv_response(
-        retrieve_file(jurisdiction.manifest_file.storage_path),
+        retrieve_file(jurisdiction.manifest_file),
         jurisdiction.manifest_file.name,
     )
 

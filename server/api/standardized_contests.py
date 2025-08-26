@@ -53,9 +53,7 @@ STANDARDIZED_CONTESTS_FILE_NAME_PREFIX = "standardized_contests"
 @background_task
 def process_standardized_contests_file(election_id: str):
     election = Election.query.get(election_id)
-    standardized_contests_file = retrieve_file(
-        election.standardized_contests_file.storage_path
-    )
+    standardized_contests_file = retrieve_file(election.standardized_contests_file)
     standardized_contests_csv = parse_csv(
         standardized_contests_file, STANDARDIZED_CONTEST_COLUMNS
     )
@@ -259,6 +257,6 @@ def download_standardized_contests_file(election: Election):
         return NotFound()
 
     return csv_response(
-        retrieve_file(election.standardized_contests_file.storage_path),
+        retrieve_file(election.standardized_contests_file),
         election.standardized_contests_file.name,
     )
