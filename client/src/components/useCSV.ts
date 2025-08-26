@@ -16,6 +16,7 @@ export enum CvrFileType {
   DOMINION = 'DOMINION',
   CLEARBALLOT = 'CLEARBALLOT',
   ESS = 'ESS',
+  ESS_MD = 'ESS_MD',
   HART = 'HART',
 }
 

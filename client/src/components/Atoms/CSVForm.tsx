@@ -87,171 +87,119 @@ const CSVFile: React.FC<IProps> = ({
         handleBlur,
         isSubmitting,
       }: FormikProps<IValues>) => (
-        <form>
-          <FormWrapper>
-            <div>
-              {title && <H4>{title}</H4>}
-              <FormSectionDescription>{description}</FormSectionDescription>
-            </div>
-            {showCvrFileType && (
-              <p>
-                <label>
-                  <span style={{ marginRight: '5px' }}>CVR File Type:</span>
-                  <HTMLSelect
-                    value={values.cvrFileType}
-                    disabled={!enabled || !(isEditing || !file)}
-                    onChange={e => setFieldValue('cvrFileType', e.target.value)}
-                  >
-                    <option value={CvrFileType.DOMINION}>Dominion</option>
-                    <option value={CvrFileType.CLEARBALLOT}>ClearBallot</option>
-                    <option value={CvrFileType.ESS}>ES&amp;S</option>
-                    <option value={CvrFileType.HART}>Hart</option>
-                  </HTMLSelect>
-                </label>
-              </p>
-            )}
-            {isEditing || !file || isProcessing ? (
-              <>
-                <div>
-                  <FileInput
-                    inputProps={{
-                      // While this component is named CSVFile, it can accept zip files in the case
-                      // of Hart and ESS CVRs
-                      // TODO: Consider renaming the component and its internals accordingly
-                      accept:
-                        values.cvrFileType &&
-                        [CvrFileType.HART, CvrFileType.ESS].includes(
-                          values.cvrFileType
+          <form>
+            <FormWrapper>
+              <div>
+                {title && <H4>{title}</H4>}
+                <FormSectionDescription>{description}</FormSectionDescription>
+              </div>
+              {showCvrFileType && (
+                <p>
+                  <label>
+                    <span style={{ marginRight: '5px' }}>CVR File Type:</span>
+                    <HTMLSelect
+                      value={values.cvrFileType}
+                      disabled={!enabled || !(isEditing || !file)}
+                      onChange={e => setFieldValue('cvrFileType', e.target.value)}
+                    >
+                      <option value={CvrFileType.DOMINION}>Dominion</option>
+                      <option value={CvrFileType.CLEARBALLOT}>ClearBallot</option>
+                      <option value={CvrFileType.ESS}>ES&amp;S</option>
+                      <option value={CvrFileType.ESS_MD}>ES&amp;S (MD)</option>
+                      <option value={CvrFileType.HART}>Hart</option>
+                    </HTMLSelect>
+                  </label>
+                </p>
+              )}
+              {isEditing || !file || isProcessing ? (
+                <>
+                  <div>
+                    <FileInput
+                      inputProps={{
+                        // While this component is named CSVFile, it can accept zip files in the case
+                        // of Hart and ESS CVRs
+                        // TODO: Consider renaming the component and its internals accordingly
+                        accept:
+                          values.cvrFileType &&
+                            [
+                              CvrFileType.HART,
+                              CvrFileType.ESS,
+                              CvrFileType.ESS_MD,
+                            ].includes(values.cvrFileType)
+                            ? '.zip'
+                            : '.csv',
+                        name: 'csv',
+                      }}
+                      onInputChange={e => {
+                        const { files } = e.currentTarget
+                        setFieldValue(
+                          'csv',
+                          files && files.length === 1 ? files[0] : null
                         )
-                          ? '.zip'
-                          : '.csv',
-                      name: 'csv',
-                    }}
-                    onInputChange={e => {
-                      const { files } = e.currentTarget
-                      setFieldValue(
-                        'csv',
-                        files && files.length === 1 ? files[0] : null
-                      )
-                    }}
-                    hasSelection={!!values.csv}
-                    text={(() => {
-                      if (!values.csv) {
-                        return 'Select a file...'
-                      }
-                      return values.csv.name
-                    })()}
-                    onBlur={handleBlur}
-                    disabled={isSubmitting || isProcessing || !enabled}
-                  />
-                  {errors.csv && touched.csv && (
-                    <ErrorLabel>{errors.csv}</ErrorLabel>
-                  )}
-                  <div
-                    style={{
-                      display: 'flex',
-                      marginTop: '15px',
-                      marginBottom: '10px',
-                      alignItems: 'center',
-                      width: '300px',
-                    }}
-                  >
-                    {isProcessing && (
-                      <>
-                        <span style={{ marginRight: '5px' }}>
-                          Processing...
-                        </span>
-                        {processing!.workTotal && (
-                          <ProgressBar
-                            stripes={false}
-                            intent={Intent.PRIMARY}
-                            value={
-                              processing!.workProgress! / processing!.workTotal
-                            }
-                          />
-                        )}
-                      </>
+                      }}
+                      hasSelection={!!values.csv}
+                      text={(() => {
+                        if (!values.csv) {
+                          return 'Select a file...'
+                        }
+                        return values.csv.name
+                      })()}
+                      onBlur={handleBlur}
+                      disabled={isSubmitting || isProcessing || !enabled}
+                    />
+                    {errors.csv && touched.csv && (
+                      <ErrorLabel>{errors.csv}</ErrorLabel>
                     )}
-                    {upload &&
-                      // Only show upload progress for large sets of files (over 1 MB),
-                      // otherwise it will just flash on the screen
-                      upload.file.size >= 1000 * 1000 && (
+                    <div
+                      style={{
+                        display: 'flex',
+                        marginTop: '15px',
+                        marginBottom: '10px',
+                        alignItems: 'center',
+                        width: '300px',
+                      }}
+                    >
+                      {isProcessing && (
                         <>
                           <span style={{ marginRight: '5px' }}>
-                            Uploading...
-                          </span>
-                          <ProgressBar
-                            stripes={false}
-                            intent={Intent.PRIMARY}
-                            value={upload.progress}
-                          />
+                            Processing...
+                        </span>
+                          {processing!.workTotal && (
+                            <ProgressBar
+                              stripes={false}
+                              intent={Intent.PRIMARY}
+                              value={
+                                processing!.workProgress! / processing!.workTotal
+                              }
+                            />
+                          )}
                         </>
                       )}
-                  </div>
-                  <FormButton
-                    type="submit"
-                    intent="primary"
-                    onClick={handleSubmit}
-                    loading={isSubmitting || isProcessing}
-                    disabled={!enabled}
-                  >
-                    Upload File
-                  </FormButton>
-                  {sampleFileLink && (
-                    <AnchorButton
-                      href={sampleFileLink}
-                      rel="noopener noreferrer"
-                      style={{ marginLeft: '5px' }}
-                      target="_blank"
-                    >
-                      Download Template
-                    </AnchorButton>
-                  )}
-                </div>
-              </>
-            ) : (
-              <>
-                <div>
-                  <p>
-                    <strong>Current file:</strong> {file.name}
-                  </p>
-                  {processing && processing.error && (
-                    <ErrorLabel>{processing.error}</ErrorLabel>
-                  )}
-                  {processing &&
-                    processing.status === FileProcessingStatus.PROCESSED && (
-                      <SuccessLabel>
-                        Uploaded at{' '}
-                        {new Date(`${processing.completedAt}`).toLocaleString()}
-                        .
-                      </SuccessLabel>
-                    )}
-                  <div>
-                    {/* We give these buttons a key to make sure React doesnt
-                    reuse the submit button for one of them. */}
+                      {upload &&
+                        // Only show upload progress for large sets of files (over 1 MB),
+                        // otherwise it will just flash on the screen
+                        upload.file.size >= 1000 * 1000 && (
+                          <>
+                            <span style={{ marginRight: '5px' }}>
+                              Uploading...
+                          </span>
+                            <ProgressBar
+                              stripes={false}
+                              intent={Intent.PRIMARY}
+                              value={upload.progress}
+                            />
+                          </>
+                        )}
+                    </div>
                     <FormButton
-                      key="replace"
-                      onClick={() => {
-                        setFieldValue('csv', null)
-                        setIsEditing(true)
-                      }}
+                      type="submit"
+                      intent="primary"
+                      onClick={handleSubmit}
+                      loading={isSubmitting || isProcessing}
                       disabled={!enabled}
                     >
-                      Replace File
-                    </FormButton>
-                    {deleteCSVFile && (
-                      <AsyncButton
-                        key="delete"
-                        onClick={async () => {
-                          await deleteCSVFile()
-                          setFieldValue('csv', null)
-                        }}
-                        disabled={!enabled}
-                        style={{ marginLeft: '5px' }}
-                      >
-                        Delete File
-                      </AsyncButton>
-                    )}
+                      Upload File
+                  </FormButton>
                     {sampleFileLink && (
                       <AnchorButton
                         href={sampleFileLink}
@@ -263,12 +211,67 @@ const CSVFile: React.FC<IProps> = ({
                       </AnchorButton>
                     )}
                   </div>
-                </div>
-              </>
-            )}
-          </FormWrapper>
-        </form>
-      )}
+                </>
+              ) : (
+                  <>
+                    <div>
+                      <p>
+                        <strong>Current file:</strong> {file.name}
+                      </p>
+                      {processing && processing.error && (
+                        <ErrorLabel>{processing.error}</ErrorLabel>
+                      )}
+                      {processing &&
+                        processing.status === FileProcessingStatus.PROCESSED && (
+                          <SuccessLabel>
+                            Uploaded at{' '}
+                            {new Date(`${processing.completedAt}`).toLocaleString()}
+                        .
+                          </SuccessLabel>
+                        )}
+                      <div>
+                        {/* We give these buttons a key to make sure React doesnt
+                    reuse the submit button for one of them. */}
+                        <FormButton
+                          key="replace"
+                          onClick={() => {
+                            setFieldValue('csv', null)
+                            setIsEditing(true)
+                          }}
+                          disabled={!enabled}
+                        >
+                          Replace File
+                    </FormButton>
+                        {deleteCSVFile && (
+                          <AsyncButton
+                            key="delete"
+                            onClick={async () => {
+                              await deleteCSVFile()
+                              setFieldValue('csv', null)
+                            }}
+                            disabled={!enabled}
+                            style={{ marginLeft: '5px' }}
+                          >
+                            Delete File
+                          </AsyncButton>
+                        )}
+                        {sampleFileLink && (
+                          <AnchorButton
+                            href={sampleFileLink}
+                            rel="noopener noreferrer"
+                            style={{ marginLeft: '5px' }}
+                            target="_blank"
+                          >
+                            Download Template
+                          </AnchorButton>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
+            </FormWrapper>
+          </form>
+        )}
     </Formik>
   )
 }
