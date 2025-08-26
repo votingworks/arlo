@@ -83,7 +83,7 @@ def retrieve_file(file: File) -> BinaryIO:
 
 # Similar functionality to retrieve_file expect when retrieving s3 files they are streamed
 # to a temporary file on disk to avoid loading the file in memory. Should be used for large file retrieval
-# The caller of this function is repsonsible for making sure that the working_directory is cleaned up and removed.
+# The caller of this function is responsible for making sure that the working_directory is cleaned up and removed.
 def retrieve_file_to_buffer(file: File, working_directory: str) -> BinaryIO:
     if config.FILE_UPLOAD_STORAGE_PATH.startswith("s3://"):
         assert file.storage_path.startswith(config.FILE_UPLOAD_STORAGE_PATH)
