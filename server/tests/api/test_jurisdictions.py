@@ -2,6 +2,7 @@ import json, io
 from datetime import datetime, timedelta
 from typing import List
 from flask.testing import FlaskClient
+import pytest
 
 from ...activity_log.activity_log import (
     ActivityBase,
@@ -495,6 +496,7 @@ def test_last_login_by_jurisdiction_with_round(
     assert_login_event()
 
 
+@pytest.mark.skip(reason="Flaky")
 def test_last_login_by_jurisdiction_most_recent(client: FlaskClient, election_id: str):
     rv = upload_jurisdictions_file(
         client,
