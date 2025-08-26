@@ -10,9 +10,11 @@ def test_read_cvr_snapshot_one_entry():
 
 def test_read_cvr_snapshot_two_entries_equal_length():
     entries = list(
-        read_cvr_snapshots(["file.csv"], [repeat("test", 3), repeat("test", 3)])
+        read_cvr_snapshots(
+            ["file1.csv", "file2.csv"], [repeat("test", 3), repeat("test", 3)]
+        )
     )
-    assert entries == [("file.csv", "test")] * 3
+    assert entries == [("file1.csv", "test")] * 3
 
 
 def test_read_cvr_snapshot_two_entries_earlier_snapshot_ends_sooner():

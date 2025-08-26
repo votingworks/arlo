@@ -35,3 +35,8 @@ def test_diff_file_lists_ignoring_order_and_case():
     assert diff_file_lists_ignoring_order_and_case(["a"], ["b"]) == ([], ["b"], ["a"])
     assert diff_file_lists_ignoring_order_and_case(["a"], ["a"]) == (["a"], [], [])
     assert diff_file_lists_ignoring_order_and_case(["a"], []) == ([], [], ["a"])
+    assert diff_file_lists_ignoring_order_and_case(["a", "b"], ["a"]) == (
+        ["a"],
+        [],
+        ["b"],
+    )
