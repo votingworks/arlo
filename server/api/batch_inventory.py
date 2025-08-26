@@ -518,7 +518,11 @@ def process_batch_inventory_cvr_file(
         cvr_file.close()
 
         cvr_file_readers = [
-            csv_reader_for_cvr(retrieve_file(join(working_directory, file_name)))
+            csv_reader_for_cvr(
+                # TODO: Revisit file cleanup holistically
+                # pylint: disable=consider-using-with
+                open(join(working_directory, file_name), "rb")
+            )
             for file_name in file_names
         ]
         cvr_csv = read_cvr_snapshots(file_names, cvr_file_readers)
