@@ -1,13 +1,9 @@
 import json, io
-from datetime import datetime, timedelta
+from datetime import datetime
+import time
 from typing import List
 from flask.testing import FlaskClient
 
-from ...activity_log.activity_log import (
-    ActivityBase,
-    JurisdictionAdminLogin,
-    record_activity,
-)
 from ...auth.auth_routes import record_login
 from ..helpers import *  # pylint: disable=wildcard-import
 from ...auth import UserType
@@ -504,7 +500,7 @@ def test_last_login_by_jurisdiction_most_recent(client: FlaskClient, election_id
     assert_ok(rv)
 
     election = Election.query.get(election_id)
-    election_created_at = election.created_at
+
     assert [j.name for j in election.jurisdictions] == ["J1"]
 
     jurisdiction = election.jurisdictions[0]
@@ -517,39 +513,10 @@ def test_last_login_by_jurisdiction_most_recent(client: FlaskClient, election_id
     user_1 = User.query.filter_by(email="a1@example.com").one()
     user_2 = User.query.filter_by(email="a2@example.com").one()
 
-    organization = list(user_1.jurisdictions)[0].election.organization
-    record_activity(
-        JurisdictionAdminLogin(
-            timestamp=election_created_at + timedelta(hours=0, minutes=5),
-            base=ActivityBase(
-                organization_id=organization.id,
-                organization_name=organization.name,
-                election_id=election_id,
-                audit_name=None,
-                audit_type=None,
-                user_type="jurisdiction_admin",
-                user_key=user_1.email,
-                support_user_email=None,
-            ),
-            error=None,
-        )
-    )
-    record_activity(
-        JurisdictionAdminLogin(
-            timestamp=election_created_at + timedelta(hours=0, minutes=10),
-            base=ActivityBase(
-                organization_id=organization.id,
-                organization_name=organization.name,
-                election_id=election_id,
-                audit_name=None,
-                audit_type=None,
-                user_type="jurisdiction_admin",
-                user_key=user_2.email,
-                support_user_email=None,
-            ),
-            error=None,
-        )
-    )
+    time.sleep(1)
+    record_login(user_1)
+    time.sleep(1)
+    record_login(user_2)
 
     db_session.commit()
 
