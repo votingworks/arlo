@@ -10,13 +10,13 @@ def migrate_file(file, path):
     if not file.storage_path:
         storage_path = store_file(io.BytesIO(contents), path)
         file.storage_path = storage_path
-        stored_file = retrieve_file(file.storage_path)
+        stored_file = retrieve_file(file)
         assert stored_file.read() == contents
         return storage_path
     else:
         print("Already migrated")
         if len(contents) > 0:
-            stored_file = retrieve_file(file.storage_path)
+            stored_file = retrieve_file(file)
             assert stored_file.read() == contents
         return None
 

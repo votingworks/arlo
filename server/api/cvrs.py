@@ -288,9 +288,7 @@ def parse_clearballot_cvrs(
     jurisdiction: Jurisdiction,
     working_directory: str,
 ) -> Tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
-    cvr_file = retrieve_file_to_buffer(
-        jurisdiction.cvr_file.storage_path, working_directory
-    )
+    cvr_file = retrieve_file_to_buffer(jurisdiction.cvr_file, working_directory)
     cvrs = csv_reader_for_cvr(cvr_file)
     headers = next(cvrs)
 
@@ -389,9 +387,7 @@ def parse_dominion_cvrs(
     jurisdiction: Jurisdiction,
     working_directory: str,
 ) -> Tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
-    cvr_file = retrieve_file_to_buffer(
-        jurisdiction.cvr_file.storage_path, working_directory
-    )
+    cvr_file = retrieve_file_to_buffer(jurisdiction.cvr_file, working_directory)
     cvrs = csv_reader_for_cvr(cvr_file)
 
     # Parse out all the initial metadata
@@ -655,9 +651,7 @@ def parse_ess_cvrs(
     #   - Second, parse out the interpretations.
     # 5. Concatenate the parsed CVRBallot lists and join that to the parsed interpretation
 
-    zip_file = retrieve_file_to_buffer(
-        jurisdiction.cvr_file.storage_path, working_directory
-    )
+    zip_file = retrieve_file_to_buffer(jurisdiction.cvr_file, working_directory)
     file_names = unzip_files(zip_file, working_directory)
     zip_file.close()
 
@@ -1068,9 +1062,7 @@ def parse_hart_cvrs(
        scheme for interpretations requires knowing all of the contest and choice names up front.
     6. Parse the interpretations.
     """
-    wrapper_zip_file = retrieve_file_to_buffer(
-        jurisdiction.cvr_file.storage_path, working_directory
-    )
+    wrapper_zip_file = retrieve_file_to_buffer(jurisdiction.cvr_file, working_directory)
     file_names = unzip_files(wrapper_zip_file, working_directory)
 
     cvr_zip_files: Dict[str, BinaryIO] = {}  # { file_name: file }
@@ -1643,7 +1635,7 @@ def download_cvr_file(
         return NotFound()
 
     return csv_response(
-        retrieve_file(jurisdiction.cvr_file.storage_path), jurisdiction.cvr_file.name
+        retrieve_file(jurisdiction.cvr_file), jurisdiction.cvr_file.name
     )
 
 

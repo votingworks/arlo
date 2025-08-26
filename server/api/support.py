@@ -339,9 +339,9 @@ def permanently_delete_election(election_id: str):
     all_file_ids = [
         file_id for file_id in election_file_ids + jurisdiction_file_ids if file_id
     ]
-    file_paths = File.query.filter(File.id.in_(all_file_ids)).values(File.storage_path)
-    for (file_path,) in file_paths:
-        delete_file(file_path)
+    files = File.query.filter(File.id.in_(all_file_ids))
+    for file in files:
+        delete_file(file)
 
     db_session.delete(election)
     db_session.commit()

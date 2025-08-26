@@ -8,6 +8,8 @@ from unittest.mock import patch
 from werkzeug.exceptions import BadRequest
 import pytest
 
+from server.models import File
+
 from ...util.file import (
     FileType,
     delete_file,
@@ -66,7 +68,8 @@ def test_store_file_raises_with_s3_config(mock_boto_client):
     mock_boto_client.return_value.download_fileobj.side_effect = (
         lambda bucket, key, stream: stream.write(file.read())
     )
-    retrieved_file = retrieve_file("s3://test_bucket/test_dir/test_file.csv")
+    file_record = File(storage_path="s3://test_bucket/test_dir/test_file.csv")
+    retrieved_file = retrieve_file(file_record)
     mock_boto_client.return_value.download_fileobj.assert_called_once()
     assert (
         mock_boto_client.return_value.download_fileobj.call_args[0][0] == "test_bucket"
@@ -78,9 +81,9 @@ def test_store_file_raises_with_s3_config(mock_boto_client):
     assert retrieved_file.read() == b"test file contents"
 
     with pytest.raises(AssertionError):
-        retrieve_file("invalid/path/to/file")
+        retrieve_file(File(storage_path="invalid/path/to/file"))
 
-    delete_file("s3://test_bucket/test_dir/test_file.csv")
+    delete_file(file_record)
     mock_boto_client.return_value.delete_object.assert_called_once()
     assert (
         mock_boto_client.return_value.delete_object.call_args.kwargs["Bucket"]
@@ -108,7 +111,9 @@ def test_retrieve_file_streaming(mock_boto_client):
     )
 
     with tempfile.TemporaryDirectory() as working_dir:
-        file = retrieve_file_to_buffer("s3://test_bucket/test_file.csv", working_dir)
+        file = retrieve_file_to_buffer(
+            File(storage_path="s3://test_bucket/test_file.csv"), working_dir
+        )
         assert file.read() == b"test data"
         temp_file_path = os.path.join(working_dir, file.name)
 
@@ -133,16 +138,17 @@ def test_file_storage_local_file():
         assert upload_url == {"url": "/api/file-upload", "fields": {"key": full_path}}
 
         storage_path = store_file(file, full_path)
+        file_record = File(storage_path=storage_path)
 
         with open(
             f"{config.FILE_UPLOAD_STORAGE_PATH}/{full_path}", "rb"
         ) as stored_file:
             assert stored_file.read() == b"test file contents"
 
-        retrieved_file = retrieve_file(storage_path)
+        retrieved_file = retrieve_file(file_record)
         assert retrieved_file.read() == b"test file contents"
 
-        delete_file(storage_path)
+        delete_file(file_record)
         assert not os.path.exists(f"{config.FILE_UPLOAD_STORAGE_PATH}/{full_path}")
 
         config.FILE_UPLOAD_STORAGE_PATH = original_file_upload_storage_path

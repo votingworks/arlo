@@ -67,27 +67,27 @@ def store_file(file: IO[bytes], storage_path: str) -> str:
     return full_path
 
 
-def retrieve_file(storage_path: str) -> BinaryIO:
+def retrieve_file(file: File) -> BinaryIO:
     if config.FILE_UPLOAD_STORAGE_PATH.startswith("s3://"):
-        assert storage_path.startswith(config.FILE_UPLOAD_STORAGE_PATH)
-        parsed_path = urlparse(storage_path)
+        assert file.storage_path.startswith(config.FILE_UPLOAD_STORAGE_PATH)
+        parsed_path = urlparse(file.storage_path)
         bucket_name = parsed_path.netloc
         key = parsed_path.path[1:]
-        file = io.BytesIO()
-        s3().download_fileobj(bucket_name, key, file)
-        file.seek(0)
-        return file
+        buffer = io.BytesIO()
+        s3().download_fileobj(bucket_name, key, buffer)
+        buffer.seek(0)
+        return buffer
     else:
-        return open(storage_path, "rb")
+        return open(file.storage_path, "rb")
 
 
-# Similar functionality to retrieve_file expect when retrieving s3 files they are streamed
+# Similar functionality to retrieve_file except when retrieving s3 files they are streamed
 # to a temporary file on disk to avoid loading the file in memory. Should be used for large file retrieval
-# The caller of this function is repsonsible for making sure that the working_directory is cleaned up and removed.
-def retrieve_file_to_buffer(storage_path: str, working_directory: str) -> BinaryIO:
+# The caller of this function is responsible for making sure that the working_directory is cleaned up and removed.
+def retrieve_file_to_buffer(file: File, working_directory: str) -> BinaryIO:
     if config.FILE_UPLOAD_STORAGE_PATH.startswith("s3://"):
-        assert storage_path.startswith(config.FILE_UPLOAD_STORAGE_PATH)
-        parsed_path = urlparse(storage_path)
+        assert file.storage_path.startswith(config.FILE_UPLOAD_STORAGE_PATH)
+        parsed_path = urlparse(file.storage_path)
         bucket_name = parsed_path.netloc
         key = parsed_path.path[1:]
         with tempfile.NamedTemporaryFile(
@@ -98,18 +98,18 @@ def retrieve_file_to_buffer(storage_path: str, working_directory: str) -> Binary
         # reopen the file to have a read only pointer
         return open(temp_file_path, "rb")
     else:
-        return open(storage_path, "rb")
+        return open(file.storage_path, "rb")
 
 
-def delete_file(storage_path: str):
+def delete_file(file: File):
     if config.FILE_UPLOAD_STORAGE_PATH.startswith("s3://"):
-        assert storage_path.startswith("s3://")
-        parsed_path = urlparse(storage_path)
+        assert file.storage_path.startswith("s3://")
+        parsed_path = urlparse(file.storage_path)
         bucket_name = parsed_path.netloc
         key = parsed_path.path[1:]
         s3().delete_object(Bucket=bucket_name, Key=key)
     else:
-        os.remove(storage_path)
+        os.remove(file.storage_path)
 
 
 def zip_files(files: Mapping[str, IO[bytes]]) -> IO[bytes]:

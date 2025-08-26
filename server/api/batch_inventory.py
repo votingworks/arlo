@@ -164,9 +164,7 @@ def process_batch_inventory_cvr_file(
         jurisdiction_id
     )
     contests = list(jurisdiction.contests)
-    cvr_file = retrieve_file_to_buffer(
-        batch_inventory_data.cvr_file.storage_path, working_directory
-    )
+    cvr_file = retrieve_file_to_buffer(batch_inventory_data.cvr_file, working_directory)
 
     def process_dominion():
         cvrs = csv_reader_for_cvr(cvr_file)
@@ -774,7 +772,7 @@ def process_batch_inventory_tabulator_status_file(
         return {tabulator.get("tid"): tabulator.get("name") for tabulator in tabulators}
 
     def process():
-        file = retrieve_file(batch_inventory_data.tabulator_status_file.storage_path)
+        file = retrieve_file(batch_inventory_data.tabulator_status_file)
         try:
             cvr_xml = ElementTree.parse(file)
         except Exception as error:
@@ -1032,7 +1030,7 @@ def download_batch_inventory_cvr(
         raise NotFound()
 
     return csv_response(
-        retrieve_file(batch_inventory_data.cvr_file.storage_path),
+        retrieve_file(batch_inventory_data.cvr_file),
         batch_inventory_data.cvr_file.name,
     )
 
@@ -1160,7 +1158,7 @@ def download_batch_inventory_tabulator_status(
         raise NotFound()
 
     return csv_response(
-        retrieve_file(batch_inventory_data.tabulator_status_file.storage_path),
+        retrieve_file(batch_inventory_data.tabulator_status_file),
         batch_inventory_data.tabulator_status_file.name,
     )
 
