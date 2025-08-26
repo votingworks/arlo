@@ -2,7 +2,6 @@ import json, io
 from datetime import datetime, timedelta
 from typing import List
 from flask.testing import FlaskClient
-import pytest
 
 from ...activity_log.activity_log import (
     ActivityBase,
@@ -496,7 +495,6 @@ def test_last_login_by_jurisdiction_with_round(
     assert_login_event()
 
 
-@pytest.mark.skip(reason="Flaky")
 def test_last_login_by_jurisdiction_most_recent(client: FlaskClient, election_id: str):
     rv = upload_jurisdictions_file(
         client,
@@ -506,15 +504,15 @@ def test_last_login_by_jurisdiction_most_recent(client: FlaskClient, election_id
     assert_ok(rv)
 
     election = Election.query.get(election_id)
+    election_created_at = election.created_at
     assert [j.name for j in election.jurisdictions] == ["J1"]
 
     jurisdiction = election.jurisdictions[0]
+    jurisdiction_id = jurisdiction.id
     assert [a.user.email for a in jurisdiction.jurisdiction_administrations] == [
         "a1@example.com",
         "a2@example.com",
     ]
-
-    db_session.expunge(election)
 
     user_1 = User.query.filter_by(email="a1@example.com").one()
     user_2 = User.query.filter_by(email="a2@example.com").one()
@@ -522,11 +520,11 @@ def test_last_login_by_jurisdiction_most_recent(client: FlaskClient, election_id
     organization = list(user_1.jurisdictions)[0].election.organization
     record_activity(
         JurisdictionAdminLogin(
-            timestamp=datetime.now(timezone.utc) - timedelta(hours=0, minutes=5),
+            timestamp=election_created_at + timedelta(hours=0, minutes=5),
             base=ActivityBase(
                 organization_id=organization.id,
                 organization_name=organization.name,
-                election_id=None,
+                election_id=election_id,
                 audit_name=None,
                 audit_type=None,
                 user_type="jurisdiction_admin",
@@ -538,11 +536,11 @@ def test_last_login_by_jurisdiction_most_recent(client: FlaskClient, election_id
     )
     record_activity(
         JurisdictionAdminLogin(
-            timestamp=datetime.now(timezone.utc) + timedelta(hours=0, minutes=1),
+            timestamp=election_created_at + timedelta(hours=0, minutes=10),
             base=ActivityBase(
                 organization_id=organization.id,
                 organization_name=organization.name,
-                election_id=None,
+                election_id=election_id,
                 audit_name=None,
                 audit_type=None,
                 user_type="jurisdiction_admin",
@@ -558,7 +556,7 @@ def test_last_login_by_jurisdiction_most_recent(client: FlaskClient, election_id
     rv = client.get(f"/api/election/{election_id}/jurisdictions/last-login")
     logins = json.loads(rv.data)
     expectation = {}
-    expectation[election.jurisdictions[0].id] = {
+    expectation[jurisdiction_id] = {
         "activityName": "JurisdictionAdminLogin",
         "election": None,
         "id": assert_is_id,
