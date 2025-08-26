@@ -124,7 +124,12 @@ def zip_files(files: Mapping[str, IO[bytes]]) -> IO[bytes]:
 
 def read_zip_filenames(zip_file: BinaryIO) -> List[str]:
     with ZipFile(zip_file, "r") as zip_archive:
-        return zip_archive.namelist()
+        return [
+            entry_name
+            for entry_name in zip_archive.namelist()
+            # ZIP files created on Macs include a hidden __MACOSX folder
+            if not entry_name.startswith("__") and not entry_name.startswith(".")
+        ]
 
 
 # Extracts the contents of the provided zip file to the specified directory and returns the list of
