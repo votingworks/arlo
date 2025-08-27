@@ -522,7 +522,7 @@ def test_last_login_by_jurisdiction_most_recent(client: FlaskClient, election_id
     organization = list(user_1.jurisdictions)[0].election.organization
     record_activity(
         JurisdictionAdminLogin(
-            timestamp=datetime.now(timezone.utc) - timedelta(hours=0, minutes=5),
+            timestamp=datetime.now(timezone.utc) + timedelta(hours=0, minutes=1),
             base=ActivityBase(
                 organization_id=organization.id,
                 organization_name=organization.name,
@@ -538,7 +538,7 @@ def test_last_login_by_jurisdiction_most_recent(client: FlaskClient, election_id
     )
     record_activity(
         JurisdictionAdminLogin(
-            timestamp=datetime.now(timezone.utc) + timedelta(hours=0, minutes=1),
+            timestamp=datetime.now(timezone.utc) + timedelta(hours=0, minutes=5),
             base=ActivityBase(
                 organization_id=organization.id,
                 organization_name=organization.name,
