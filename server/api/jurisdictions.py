@@ -543,7 +543,9 @@ def get_last_login_by_jurisdiction(election: Election):
     print("Query timestamp after is", query_timestamp_after)
 
     records = (
-        ActivityLogRecord.query.filter_by(organization_id=election.organization_id)
+        ActivityLogRecord.query.filter(
+            ActivityLogRecord.activity_name == "JurisdictionAdminLogin"
+        )
         .order_by(ActivityLogRecord.timestamp.desc())
         .all()
     )
