@@ -11,7 +11,6 @@ from . import activity_log
 from ..sentry import configure_sentry
 
 
-# pylint: disable=too-many-return-statements
 def slack_message(activity: activity_log.Activity):
     base = activity.base
     org_link = urljoin(config.HTTP_ORIGIN, f"/support/orgs/{base.organization_id}")
