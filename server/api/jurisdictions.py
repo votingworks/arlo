@@ -540,6 +540,7 @@ def get_last_login_by_jurisdiction(election: Election):
     query_timestamp_after = (
         current_round.created_at if current_round else election.created_at
     )
+    assert query_timestamp_after.tzinfo is not None
     print("Query timestamp after is", query_timestamp_after)
 
     records = (
