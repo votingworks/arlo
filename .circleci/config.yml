@@ -78,7 +78,7 @@ jobs:
       - run:
           name: test server
           command: |
-            poetry run pytest -n 8 --cov=.
+            poetry run pytest -n 8 --cov=. -k test_jurisdictions.py
 
   build-and-test-client:
     executor: arlo

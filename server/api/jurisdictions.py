@@ -550,9 +550,7 @@ def get_last_login_by_jurisdiction(election: Election):
         .order_by(ActivityLogRecord.timestamp.desc())
         .all()
     )
-    print(
-        f"Found {len(records)} ActivityLogRecord(s) for organization {election.organization_id}"
-    )
+    print(f"Found {len(records)} ActivityLogRecord(s)")
     for rec in records:
         record_dict = {
             col.name: getattr(rec, col.name) for col in rec.__table__.columns
