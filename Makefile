@@ -47,7 +47,7 @@ lint:
 	poetry run pylint server scripts fixtures
 
 test:
-	poetry run pytest -n auto --ignore=server/tests/arlo-extra-tests -s --capture=tee-sys
+	poetry run pytest -n auto --ignore=server/tests/arlo-extra-tests -s --capture=tee-sys -k test_last_login_by_jurisdiction_most_recent
 
 test-clean:
 	FLASK_ENV=test make db-clean

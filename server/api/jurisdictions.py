@@ -542,6 +542,20 @@ def get_last_login_by_jurisdiction(election: Election):
     )
     print("Query timestamp after is", query_timestamp_after)
 
+    records = (
+        ActivityLogRecord.query.filter_by(organization_id=election.organization_id)
+        .order_by(ActivityLogRecord.timestamp.desc())
+        .all()
+    )
+    print(
+        f"Found {len(records)} ActivityLogRecord(s) for organization {election.organization_id}"
+    )
+    for rec in records:
+        record_dict = {
+            col.name: getattr(rec, col.name) for col in rec.__table__.columns
+        }
+        print("ActivityLogRecord:", record_dict)
+
     # Query for login activities from users who are related to jurisdictions we found earlier
     activities = dict(
         ActivityLogRecord.query.join(
