@@ -540,6 +540,7 @@ def get_last_login_by_jurisdiction(election: Election):
     query_timestamp_after = (
         current_round.created_at if current_round else election.created_at
     )
+    print("Query timestamp after is", query_timestamp_after)
 
     # Query for login activities from users who are related to jurisdictions we found earlier
     activities = dict(
@@ -565,6 +566,7 @@ def get_last_login_by_jurisdiction(election: Election):
         jurisdiction_id: serialize_activity(activity)
         for jurisdiction_id, activity in activities.items()
     }
+    print("Serialized are: ", serialized)
 
     return jsonify({"lastLoginByJurisdiction": serialized})
 

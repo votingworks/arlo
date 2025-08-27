@@ -500,6 +500,7 @@ def test_last_login_by_jurisdiction_most_recent(client: FlaskClient, election_id
     assert_ok(rv)
 
     election = Election.query.get(election_id)
+    print("Election created at ", election.created_at)
 
     assert [j.name for j in election.jurisdictions] == ["J1"]
 
@@ -522,6 +523,7 @@ def test_last_login_by_jurisdiction_most_recent(client: FlaskClient, election_id
 
     rv = client.get(f"/api/election/{election_id}/jurisdictions/last-login")
     logins = json.loads(rv.data)
+    print("Logins are ", logins)
     expectation = {}
     expectation[jurisdiction_id] = {
         "activityName": "JurisdictionAdminLogin",
@@ -535,4 +537,7 @@ def test_last_login_by_jurisdiction_most_recent(client: FlaskClient, election_id
             "type": "jurisdiction_admin",
         },
     }
+    print("Expectations are ", expectation)
+
     compare_json(logins, {"lastLoginByJurisdiction": expectation})
+    compare_json(logins, {})
