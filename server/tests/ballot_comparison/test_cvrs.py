@@ -3,8 +3,8 @@ import json
 from typing import List, TypedDict, Tuple
 from flask.testing import FlaskClient
 
-from ...models import *  # pylint: disable=wildcard-import
-from ..helpers import *  # pylint: disable=wildcard-import
+from ...models import *
+from ..helpers import *
 from .conftest import TEST_CVRS
 
 
@@ -12,7 +12,7 @@ def test_dominion_cvr_upload(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    manifests,  # pylint: disable=unused-argument
+    manifests,
     snapshot,
 ):
     # Test that the AA jurisdictions list includes empty CVRs
@@ -151,7 +151,7 @@ def test_cvrs_counting_group(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    manifests,  # pylint: disable=unused-argument
+    manifests,
     snapshot,
 ):
     set_logged_in_user(
@@ -246,7 +246,7 @@ def test_dominion_cvr_unique_voting_identifier(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    manifests,  # pylint: disable=unused-argument
+    manifests,
     snapshot,
 ):
     set_logged_in_user(
@@ -340,7 +340,7 @@ def test_dominion_cvrs_with_leading_equal_signs(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    manifests,  # pylint: disable=unused-argument
+    manifests,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -390,7 +390,7 @@ def test_cvrs_clear(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    manifests,  # pylint: disable=unused-argument
+    manifests,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -439,7 +439,7 @@ def test_cvrs_replace_as_audit_admin(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    manifests,  # pylint: disable=unused-argument
+    manifests,
 ):
     # Check that AA can also get/put/clear batch tallies
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -492,7 +492,7 @@ def test_cvrs_upload_missing_file(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    manifests,  # pylint: disable=unused-argument
+    manifests,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -516,7 +516,7 @@ def test_cvrs_upload_bad_csv(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    manifests,  # pylint: disable=unused-argument
+    manifests,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -564,7 +564,7 @@ def test_cvrs_wrong_audit_type(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    manifests,  # pylint: disable=unused-argument
+    manifests,
 ):
     for audit_type in [AuditType.BALLOT_POLLING, AuditType.BATCH_COMPARISON]:
         # Hackily change the audit type
@@ -648,7 +648,7 @@ def test_cvrs_newlines(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    manifests,  # pylint: disable=unused-argument
+    manifests,
     snapshot,
 ):
     set_logged_in_user(
@@ -721,7 +721,7 @@ def test_invalid_cvrs(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    manifests,  # pylint: disable=unused-argument
+    manifests,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
@@ -1043,8 +1043,8 @@ def test_cvr_reprocess_after_manifest_reupload(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    manifests,  # pylint: disable=unused-argument
-    cvrs,  # pylint: disable=unused-argument
+    manifests,
+    cvrs,
 ):
     # Reupload a manifest but remove a batch
     set_logged_in_user(
@@ -1187,7 +1187,7 @@ def test_clearballot_cvr_upload(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    manifests,  # pylint: disable=unused-argument
+    manifests,
     snapshot,
 ):
     # Upload CVRs
@@ -1261,7 +1261,7 @@ def test_clearballot_cvr_upload_invalid(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    manifests,  # pylint: disable=unused-argument
+    manifests,
 ):
     # Upload CVRs
     set_logged_in_user(
@@ -1437,7 +1437,7 @@ def test_ess_cvr_upload(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    ess_manifests,  # pylint: disable=unused-argument
+    ess_manifests,
     snapshot,
 ):
     test_cases = [
@@ -1535,7 +1535,7 @@ def test_ess_cvr_upload_invalid(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    ess_manifests,  # pylint: disable=unused-argument
+    ess_manifests,
 ):
     def remove_line(string: str, line: int) -> str:
         lines = string.splitlines()
@@ -1864,7 +1864,7 @@ def test_ess_cvr_upload_cvr_file_with_tabulator_cvr_column(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    ess_manifests,  # pylint: disable=unused-argument
+    ess_manifests,
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -2170,7 +2170,7 @@ def test_hart_cvr_upload(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    hart_manifests,  # pylint: disable=unused-argument
+    hart_manifests,
     snapshot,
 ):
     # Upload CVRs
@@ -2242,7 +2242,7 @@ def test_hart_cvr_upload_with_scanned_ballot_information(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    hart_manifests,  # pylint: disable=unused-argument
+    hart_manifests,
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -2432,7 +2432,7 @@ def test_hart_cvr_upload_with_duplicate_batch_names(
     election_id: str,
     jurisdiction_ids: List[str],
     # Use the regular manifests which have batches with the same name but different tabulator
-    manifests,  # pylint: disable=unused-argument
+    manifests,
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -2597,7 +2597,7 @@ def test_hart_cvr_upload_no_batch_match(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    hart_manifests,  # pylint: disable=unused-argument
+    hart_manifests,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
@@ -2653,7 +2653,7 @@ def test_hart_cvr_upload_no_tabulator_plus_batch_match(
     election_id: str,
     jurisdiction_ids: List[str],
     # Use the regular manifests which have batches with the same name but different tabulator
-    manifests,  # pylint: disable=unused-argument
+    manifests,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
@@ -2736,7 +2736,7 @@ def test_hart_cvr_upload_basic_input_validation(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    hart_manifests,  # pylint: disable=unused-argument
+    hart_manifests,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -2787,7 +2787,7 @@ def test_hart_cvr_upload_processing_validation(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    hart_manifests,  # pylint: disable=unused-argument
+    hart_manifests,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -2890,7 +2890,7 @@ def test_cvrs_unexpected_error(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    manifests,  # pylint: disable=unused-argument
+    manifests,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
@@ -2952,7 +2952,7 @@ def test_cvr_invalid_file_type(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    manifests,  # pylint: disable=unused-argument
+    manifests,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -3110,7 +3110,7 @@ def test_upload_ballot_manifest_fails_while_processing_cvr_file(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    manifests,  # pylint: disable=unused-argument
+    manifests,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -3149,7 +3149,7 @@ def test_remove_ballot_manifest_fails_while_processing_cvr_file(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    manifests,  # pylint: disable=unused-argument
+    manifests,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)

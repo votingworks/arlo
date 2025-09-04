@@ -1,4 +1,3 @@
-# pylint: disable=consider-using-f-string
 import pytest
 from ...util.binpacking import Bucket, BucketList, BalancedBucketList
 
@@ -103,66 +102,66 @@ class TestBucket:
         assert not bucket.batches, "Initial batches were non-empty: {}".format(
             bucket.batches
         )
-        assert (
-            not bucket.largest_element
-        ), "Initial largest element was not None: {}".format(bucket.largest_element)
+        assert not bucket.largest_element, (
+            "Initial largest element was not None: {}".format(bucket.largest_element)
+        )
 
     def test_add_batch(self, bucket):
         expected_batches = {"1": 100}
         bucket.add_batch("1", 100)
         expected_size = 100
-        assert (
-            bucket.batches == expected_batches
-        ), "add_batch batches failed, got {}, expected {}".format(
-            bucket.batches, expected_batches
+        assert bucket.batches == expected_batches, (
+            "add_batch batches failed, got {}, expected {}".format(
+                bucket.batches, expected_batches
+            )
         )
-        assert (
-            bucket.size == expected_size
-        ), "add_batch size failed, got {}, expected {}".format(
-            bucket.size, expected_size
+        assert bucket.size == expected_size, (
+            "add_batch size failed, got {}, expected {}".format(
+                bucket.size, expected_size
+            )
         )
-        assert (
-            bucket.largest_element == "1"
-        ), "add_batch largest_element  failed, got {}, expected {}".format(
-            bucket.largest_element, "1"
+        assert bucket.largest_element == "1", (
+            "add_batch largest_element  failed, got {}, expected {}".format(
+                bucket.largest_element, "1"
+            )
         )
 
         expected_batches = {"1": 100, "2": 50}
         bucket.add_batch("2", 50)
         expected_size += 50
-        assert (
-            bucket.batches == expected_batches
-        ), "add_batch batches failed, got {}, expected {}".format(
-            bucket.batches, expected_batches
+        assert bucket.batches == expected_batches, (
+            "add_batch batches failed, got {}, expected {}".format(
+                bucket.batches, expected_batches
+            )
         )
-        assert (
-            bucket.size == expected_size
-        ), "add_batch size failed, got {}, expected {}".format(
-            bucket.size, expected_size
+        assert bucket.size == expected_size, (
+            "add_batch size failed, got {}, expected {}".format(
+                bucket.size, expected_size
+            )
         )
-        assert (
-            bucket.largest_element == "1"
-        ), "add_batch largest_element  failed, got {}, expected {}".format(
-            bucket.largest_element, "1"
+        assert bucket.largest_element == "1", (
+            "add_batch largest_element  failed, got {}, expected {}".format(
+                bucket.largest_element, "1"
+            )
         )
 
         expected_batches = {"1": 100, "2": 50, "3": 150}
         bucket.add_batch("3", 150)
         expected_size += 150
-        assert (
-            bucket.batches == expected_batches
-        ), "add_batch batches failed, got {}, expected {}".format(
-            bucket.batches, expected_batches
+        assert bucket.batches == expected_batches, (
+            "add_batch batches failed, got {}, expected {}".format(
+                bucket.batches, expected_batches
+            )
         )
-        assert (
-            bucket.size == expected_size
-        ), "add_batch size failed, got {}, expected {}".format(
-            bucket.size, expected_size
+        assert bucket.size == expected_size, (
+            "add_batch size failed, got {}, expected {}".format(
+                bucket.size, expected_size
+            )
         )
-        assert (
-            bucket.largest_element == "3"
-        ), "add_batch largest_element  failed, got {}, expected {}".format(
-            bucket.largest_element, "3"
+        assert bucket.largest_element == "3", (
+            "add_batch largest_element  failed, got {}, expected {}".format(
+                bucket.largest_element, "3"
+            )
         )
 
     def test_remove_batch(self, bucket):
@@ -180,20 +179,20 @@ class TestBucket:
         assert rem == expected_rem, "remove_batch returned {}, expected {}".format(
             rem, expected_rem
         )
-        assert (
-            bucket.largest_element == expected_largest
-        ), "remove_batch changed largest to {}, should still be {}".format(
-            bucket.largest_element, expected_largest
+        assert bucket.largest_element == expected_largest, (
+            "remove_batch changed largest to {}, should still be {}".format(
+                bucket.largest_element, expected_largest
+            )
         )
-        assert (
-            bucket.batches == expected_batches
-        ), "remove_batch resulted in batches {}, should be {}".format(
-            bucket.batches, expected_batches
+        assert bucket.batches == expected_batches, (
+            "remove_batch resulted in batches {}, should be {}".format(
+                bucket.batches, expected_batches
+            )
         )
-        assert (
-            bucket.size == expected_size
-        ), "remove_batch resulted in size {}, expected size{}".format(
-            bucket.size, expected_size
+        assert bucket.size == expected_size, (
+            "remove_batch resulted in size {}, expected size{}".format(
+                bucket.size, expected_size
+            )
         )
 
         rem = bucket.remove_batch("3")
@@ -206,20 +205,20 @@ class TestBucket:
         assert rem == expected_rem, "remove_batch returned {}, expected {}".format(
             rem, expected_rem
         )
-        assert (
-            bucket.largest_element == expected_largest
-        ), "remove_batch changed largest to {}, should still be {}".format(
-            bucket.largest_element, expected_largest
+        assert bucket.largest_element == expected_largest, (
+            "remove_batch changed largest to {}, should still be {}".format(
+                bucket.largest_element, expected_largest
+            )
         )
-        assert (
-            bucket.batches == expected_batches
-        ), "remove_batch resulted in batches {}, should be {}".format(
-            bucket.batches, expected_batches
+        assert bucket.batches == expected_batches, (
+            "remove_batch resulted in batches {}, should be {}".format(
+                bucket.batches, expected_batches
+            )
         )
-        assert (
-            bucket.size == expected_size
-        ), "remove_batch resulted in size {}, expected size{}".format(
-            bucket.size, expected_size
+        assert bucket.size == expected_size, (
+            "remove_batch resulted in size {}, expected size{}".format(
+                bucket.size, expected_size
+            )
         )
 
         rem = bucket.remove_batch("2")
@@ -231,20 +230,20 @@ class TestBucket:
         assert rem == expected_rem, "remove_batch returned {}, expected {}".format(
             rem, expected_rem
         )
-        assert (
-            bucket.largest_element == expected_largest
-        ), "remove_batch changed largest to {}, should still be {}".format(
-            bucket.largest_element, expected_largest
+        assert bucket.largest_element == expected_largest, (
+            "remove_batch changed largest to {}, should still be {}".format(
+                bucket.largest_element, expected_largest
+            )
         )
-        assert (
-            bucket.batches == expected_batches
-        ), "remove_batch resulted in batches {}, should be {}".format(
-            bucket.batches, expected_batches
+        assert bucket.batches == expected_batches, (
+            "remove_batch resulted in batches {}, should be {}".format(
+                bucket.batches, expected_batches
+            )
         )
-        assert (
-            bucket.size == expected_size
-        ), "remove_batch resulted in size {}, expected size{}".format(
-            bucket.size, expected_size
+        assert bucket.size == expected_size, (
+            "remove_batch resulted in size {}, expected size{}".format(
+                bucket.size, expected_size
+            )
         )
 
     def test_comparator(self, bucket):
@@ -302,44 +301,44 @@ class TestBucketList:
     def test_balance(self, bucketlist):
         new_bl = bucketlist.balance()
 
-        assert (
-            bucketlist.deviation() >= new_bl.deviation()
-        ), "Balanced list has higher deviation than original assignment! {} is greater than {}".format(
-            new_bl.deviation(), bucketlist.deviation()
+        assert bucketlist.deviation() >= new_bl.deviation(), (
+            "Balanced list has higher deviation than original assignment! {} is greater than {}".format(
+                new_bl.deviation(), bucketlist.deviation()
+            )
         )
 
         num_batches = sum(len(bucket.batches) for bucket in bucketlist.buckets)
         balanced_num_batches = sum(len(bucket.batches) for bucket in new_bl.buckets)
 
-        assert (
-            num_batches == balanced_num_batches
-        ), "New batch has different number of batches than expected! Got {}, expected {}".format(
-            balanced_num_batches, num_batches
+        assert num_batches == balanced_num_batches, (
+            "New batch has different number of batches than expected! Got {}, expected {}".format(
+                balanced_num_batches, num_batches
+            )
         )
 
         batches = {batch for bucket in bucketlist.buckets for batch in bucket.batches}
         new_batches = {batch for bucket in new_bl.buckets for batch in bucket.batches}
 
-        assert (
-            batches == new_batches
-        ), "Balanced batches were not the same as original batches!"
+        assert batches == new_batches, (
+            "Balanced batches were not the same as original batches!"
+        )
 
     def test_balance_skewed(self, skewedbucketlist):
         new_bl = skewedbucketlist.balance()
 
-        assert (
-            skewedbucketlist.deviation() >= new_bl.deviation()
-        ), "Balanced list has higher deviation than original assignment! {} is greater than {}".format(
-            new_bl.deviation(), skewedbucketlist.deviation()
+        assert skewedbucketlist.deviation() >= new_bl.deviation(), (
+            "Balanced list has higher deviation than original assignment! {} is greater than {}".format(
+                new_bl.deviation(), skewedbucketlist.deviation()
+            )
         )
 
         num_batches = sum(len(bucket.batches) for bucket in skewedbucketlist.buckets)
         balanced_num_batches = sum(len(bucket.batches) for bucket in new_bl.buckets)
 
-        assert (
-            num_batches == balanced_num_batches
-        ), "New batch has different number of batches than expected! Got {}, expected {}".format(
-            balanced_num_batches, num_batches
+        assert num_batches == balanced_num_batches, (
+            "New batch has different number of batches than expected! Got {}, expected {}".format(
+                balanced_num_batches, num_batches
+            )
         )
 
         batches = {
@@ -347,9 +346,9 @@ class TestBucketList:
         }
         new_batches = {batch for bucket in new_bl.buckets for batch in bucket.batches}
 
-        assert (
-            batches == new_batches
-        ), "Balanced batches were not the same as original batches!"
+        assert batches == new_batches, (
+            "Balanced batches were not the same as original batches!"
+        )
 
     def test_repr_print(self, bucketlist):
         expected = [
@@ -379,80 +378,80 @@ class TestBucketList:
             },
         ]
 
-        assert str(bucketlist) == str(
-            expected
-        ), "repr failed, expected {}, got {}".format(str(expected), str(bucketlist))
+        assert str(bucketlist) == str(expected), (
+            "repr failed, expected {}, got {}".format(str(expected), str(bucketlist))
+        )
 
 
 class TestBalancedBucketList:
     def test_init(self, balancedbucketlist):
-        assert (
-            balancedbucketlist.avg_size == 200
-        ), "Expected avg_size of {}, got {}".format(200, bucketlist.avg_size)
+        assert balancedbucketlist.avg_size == 200, (
+            "Expected avg_size of {}, got {}".format(200, bucketlist.avg_size)
+        )
 
     def test_is_balanced(self, bucketlist, balancedbucketlist):
         new_bl = bucketlist.balance()
         bbl = balancedbucketlist  # for convenience
 
-        assert (
-            new_bl.avg_size == bbl.avg_size
-        ), "BalancedBucketList average size not the same! got {}, expected {}".format(
-            bbl.avg_size, new_bl.avg_size
+        assert new_bl.avg_size == bbl.avg_size, (
+            "BalancedBucketList average size not the same! got {}, expected {}".format(
+                bbl.avg_size, new_bl.avg_size
+            )
         )
 
-        assert (
-            new_bl.deviation() == bbl.deviation()
-        ), "BalancedBucketList has a different deviation! got {}, expected {}".format(
-            bbl.deviation, new_bl.deviation
+        assert new_bl.deviation() == bbl.deviation(), (
+            "BalancedBucketList has a different deviation! got {}, expected {}".format(
+                bbl.deviation, new_bl.deviation
+            )
         )
 
         num_batches = sum(len(bucket.batches) for bucket in bucketlist.buckets)
         balanced_num_batches = sum(len(bucket.batches) for bucket in bbl.buckets)
 
-        assert (
-            num_batches == balanced_num_batches
-        ), "BalancedBucketList has different number of batches than expected! Got {}, expected {}".format(
-            balanced_num_batches, num_batches
+        assert num_batches == balanced_num_batches, (
+            "BalancedBucketList has different number of batches than expected! Got {}, expected {}".format(
+                balanced_num_batches, num_batches
+            )
         )
 
         batches = {batch for bucket in bbl.buckets for batch in bucket.batches}
         new_batches = {batch for bucket in new_bl.buckets for batch in bucket.batches}
 
-        assert (
-            batches == new_batches
-        ), "Balanced batches were not the same as original batches!"
+        assert batches == new_batches, (
+            "Balanced batches were not the same as original batches!"
+        )
 
     def test_balance_skewedbalanced(self, skewedbucketlist, balancedskewedbucketlist):
         new_bl = skewedbucketlist.balance()
         bbl = balancedskewedbucketlist  # for convenience
 
-        assert (
-            new_bl.avg_size == bbl.avg_size
-        ), "BalancedskewedBucketList average size not the same! got {}, expected {}".format(
-            bbl.avg_size, new_bl.avg_size
+        assert new_bl.avg_size == bbl.avg_size, (
+            "BalancedskewedBucketList average size not the same! got {}, expected {}".format(
+                bbl.avg_size, new_bl.avg_size
+            )
         )
 
-        assert (
-            new_bl.deviation() == bbl.deviation()
-        ), "BalancedskewedBucketList has a different deviation! got {}, expected {}".format(
-            bbl.deviation, new_bl.deviation
+        assert new_bl.deviation() == bbl.deviation(), (
+            "BalancedskewedBucketList has a different deviation! got {}, expected {}".format(
+                bbl.deviation, new_bl.deviation
+            )
         )
 
         num_batches = sum(len(bucket.batches) for bucket in skewedbucketlist.buckets)
         balanced_num_batches = sum(len(bucket.batches) for bucket in bbl.buckets)
 
-        assert (
-            num_batches == balanced_num_batches
-        ), "BalancedskewedBucketList has different number of batches than expected! Got {}, expected {}".format(
-            balanced_num_batches, num_batches
+        assert num_batches == balanced_num_batches, (
+            "BalancedskewedBucketList has different number of batches than expected! Got {}, expected {}".format(
+                balanced_num_batches, num_batches
+            )
         )
 
         batches = {batch for bucket in bbl.buckets for batch in bucket.batches}
         new_batches = {batch for bucket in new_bl.buckets for batch in bucket.batches}
 
-        assert (
-            batches == new_batches
-        ), "Balanced batches were not the same as original batches!"
+        assert batches == new_batches, (
+            "Balanced batches were not the same as original batches!"
+        )
 
     def test_get_avg_size(self, balancedbucketlist):
         assert balancedbucketlist.get_avg_size() == 200
@@ -485,8 +484,8 @@ class TestBalancedBucketList:
             },
         ]
 
-        assert str(balancedbucketlist) == str(
-            expected
-        ), "repr failed, expected {}, got {}".format(
-            str(expected), str(balancedbucketlist)
+        assert str(balancedbucketlist) == str(expected), (
+            "repr failed, expected {}, got {}".format(
+                str(expected), str(balancedbucketlist)
+            )
         )

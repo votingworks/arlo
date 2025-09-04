@@ -2,8 +2,8 @@ import io
 import pytest
 
 from ...app import app
-from ...models import *  # pylint: disable=wildcard-import
-from ..helpers import *  # pylint: disable=wildcard-import
+from ...models import *
+from ..helpers import *
 
 
 @pytest.fixture
@@ -106,8 +106,8 @@ def batch_tallies(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_ids: List[str],  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
+    contest_ids: List[str],
+    manifests,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -153,11 +153,11 @@ def batch_tallies(
 def round_1_id(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    contest_ids,  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    batch_tallies,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    contest_ids,
+    election_settings,
+    manifests,
+    batch_tallies,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
@@ -187,7 +187,7 @@ def tally_entry_user_id(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    round_1_id: str,  # pylint: disable=unused-argument
+    round_1_id: str,
 ):
     # Use the second jurisdiction
     jurisdiction_id = jurisdiction_ids[1]

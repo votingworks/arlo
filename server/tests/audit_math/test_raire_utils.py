@@ -79,12 +79,12 @@ def test_raire_assertion_comparator():
     # Counter-intuitively, assertions with smaller difficulties are "greater"
     asrtn_1.difficulty = 6
     asrtn_2.difficulty = 5
-    assert (
-        asrtn_2 > asrtn_1
-    ), f"__gt__ failed! {asrtn_1.difficulty} {asrtn_2.difficulty}"
-    assert (
-        asrtn_1 < asrtn_2
-    ), f"__lt__ failed! {asrtn_1.difficulty} {asrtn_2.difficulty}"
+    assert asrtn_2 > asrtn_1, (
+        f"__gt__ failed! {asrtn_1.difficulty} {asrtn_2.difficulty}"
+    )
+    assert asrtn_1 < asrtn_2, (
+        f"__lt__ failed! {asrtn_1.difficulty} {asrtn_2.difficulty}"
+    )
 
 
 def test_raire_assertion_to_str():
@@ -117,7 +117,6 @@ def test_nebassertion():
     assert asrtn_1.is_vote_for_winner(cvr) == 1
     assert asrtn_1.is_vote_for_loser(cvr) == 0
 
-    # pylint: disable=comparison-with-itself
     assert asrtn_1 == asrtn_1
 
     cvr = {"Contest B": {"winner": 1, "loser": 2}}
@@ -201,7 +200,6 @@ def test_nenassertion_is_vote_for():
     assert asrtn_1.is_vote_for_winner(cvr) == 1
     assert asrtn_1.is_vote_for_loser(cvr) == 0
 
-    # pylint: disable=comparison-with-itself
     assert asrtn_1 == asrtn_1
 
     cvr = {"Contest B": {"winner": 1, "loser": 2}}
@@ -237,7 +235,6 @@ def test_nen_hash():
 
 
 def test_raire_node_descendents():
-
     parent = raire_utils.RaireNode(["b", "a"])
     not_child = raire_utils.RaireNode(["c", "a"])
 
@@ -349,7 +346,6 @@ def test_find_best_audit_simple():
 
     tree = raire_utils.RaireNode(["loser", "winner"])
 
-    # pylint: disable=invalid-name
     def asn_func(m):
         return 1 / m if m > 0 else np.inf
 
@@ -460,7 +456,6 @@ def ballots() -> List[Dict[str, int]]:
     return ballots
 
 
-# pylint: disable=invalid-name
 def asn_func(m):
     return 1 / m if m > 0 else np.inf
 
@@ -553,7 +548,6 @@ def test_find_best_with_eliminated(contest, cvrs, ballots):
 
 
 def test_find_best_with_wrong_elimination(contest, cvrs, ballots):
-
     # Now check that an accidentally eliminated candidate doesn't work
     winner_neb_loser = make_neb_assertion(
         contest, cvrs, asn_func, "winner", "loser", set(["winner"])

@@ -11,9 +11,7 @@ snapshots["test_multi_winner_sample_size 1"] = [
     {"key": "asn", "prob": None, "size": 48}
 ]
 
-snapshots[
-    "test_multi_winner_two_rounds 1"
-] = """######## ELECTION INFO ########\r
+snapshots["test_multi_winner_two_rounds 1"] = """######## ELECTION INFO ########\r
 Organization,Election Name,State\r
 Test Org test_multi_winner_two_rounds,Test Election,CA\r
 \r

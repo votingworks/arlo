@@ -5,7 +5,7 @@ from flask.testing import FlaskClient
 
 from ...auth.auth_routes import auth0_aa
 from ...util.jsonschema import JSONDict
-from ..helpers import *  # pylint: disable=wildcard-import
+from ..helpers import *
 from ..test_auth import parse_login_code_from_smtp
 
 
@@ -183,7 +183,7 @@ def test_list_activities_logins(
     client: FlaskClient,
     org_id: str,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
 ):
     # Try to log in a jurisdiction admin
     with patch("smtplib.SMTP", autospec=True) as smtp:
@@ -325,7 +325,7 @@ def test_file_upload_errors(
 
     rv = upload_ballot_manifest(
         client,
-        io.BytesIO(b"Batch Name,Number of Ballots\n" b"A,1"),
+        io.BytesIO(b"Batch Name,Number of Ballots\nA,1"),
         election_id,
         jurisdiction_ids[0],
     )

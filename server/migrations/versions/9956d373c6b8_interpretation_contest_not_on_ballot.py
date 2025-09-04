@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """Interpretation.CONTEST_NOT_ON_BALLOT
 
 Revision ID: 9956d373c6b8
@@ -6,6 +5,7 @@ Revises: b5fcf654c681
 Create Date: 2020-11-03 01:02:56.245187+00:00
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

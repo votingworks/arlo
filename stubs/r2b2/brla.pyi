@@ -24,7 +24,7 @@ class BayesianRLA(Audit):
         votes_for_winner: int = ...,
         current_round: int = ...,
         *args: Any,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> float: ...
     def next_sample_size(self) -> None: ...
     rounds: Any = ...
@@ -34,7 +34,7 @@ class BayesianRLA(Audit):
         rounds: List[int],
         progress: bool = ...,
         *args: Any,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> Any: ...
     def compute_all_min_winner_ballots(
         self,
@@ -42,6 +42,6 @@ class BayesianRLA(Audit):
         max_sample_size: int = ...,
         progress: bool = ...,
         *args: Any,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> Any: ...
     def get_risk_level(self, *args: Any, **kwargs: Any) -> None: ...

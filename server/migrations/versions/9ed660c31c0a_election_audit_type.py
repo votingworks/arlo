@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """Election.audit_type
 
 Revision ID: 9ed660c31c0a
@@ -6,6 +5,7 @@ Revises: 22c615fe67ab
 Create Date: 2020-08-04 23:59:35.410239+00:00
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

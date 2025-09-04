@@ -1,8 +1,8 @@
 from typing import List
 from flask.testing import FlaskClient
 from .test_audit_boards import set_up_audit_board
-from ...models import *  # pylint: disable=wildcard-import
-from ..helpers import *  # pylint: disable=wildcard-import
+from ...models import *
+from ..helpers import *
 from ...auth import UserType
 
 
@@ -36,7 +36,7 @@ def test_audit_admin_report(
 def test_audit_admin_report_round_2(
     client: FlaskClient,
     election_id: str,
-    round_2_id: str,  # pylint: disable=unused-argument
+    round_2_id: str,
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -127,7 +127,7 @@ def test_report_before_audit_starts(
 def test_discrepancy_report_wrong_audit_type(
     client: FlaskClient,
     election_id: str,
-    round_1_id: str,  # pylint: disable=unused-argument
+    round_1_id: str,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/discrepancy-report")

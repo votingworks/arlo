@@ -4,8 +4,8 @@ import pytest
 from flask.testing import FlaskClient
 
 
-from ...models import *  # pylint: disable=wildcard-import
-from ..helpers import *  # pylint: disable=wildcard-import
+from ...models import *
+from ..helpers import *
 from .conftest import TEST_CVRS
 from .test_ballot_comparison import audit_all_ballots, check_discrepancies
 
@@ -15,9 +15,7 @@ def jurisdiction_ids(client: FlaskClient, election_id: str) -> List[str]:
     rv = upload_jurisdictions_file(
         client,
         io.BytesIO(
-            (
-                "Jurisdiction,Admin Email\n" f"J1,{default_ja_email(election_id)}\n"
-            ).encode()
+            (f"Jurisdiction,Admin Email\nJ1,{default_ja_email(election_id)}\n").encode()
         ),
         election_id,
     )
@@ -58,7 +56,7 @@ def cvrs(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    manifests,  # pylint: disable=unused-argument
+    manifests,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -77,9 +75,9 @@ def test_ballot_comparison_single_jurisdiction_discrepancies(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    cvrs,  # pylint: disable=unused-argument
+    election_settings,
+    manifests,
+    cvrs,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
 

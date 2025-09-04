@@ -12,7 +12,7 @@ import boto3
 from flask import Request
 
 from .. import config
-from ..models import *  # pylint: disable=wildcard-import
+from ..models import *
 from ..worker.tasks import serialize_background_task
 from ..util.isoformat import isoformat
 from ..util.jsonschema import JSONDict
@@ -46,7 +46,7 @@ def timestamp_filename(prefix: str, extension: str) -> str:
     return f"{prefix}_{isoformat(datetime.now(timezone.utc))}.{extension}"
 
 
-def s3():  # pylint: disable=invalid-name
+def s3():
     return boto3.client(
         "s3",
         aws_access_key_id=config.AWS_ACCESS_KEY_ID,

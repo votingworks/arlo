@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name,consider-using-dict-items,consider-using-f-string
 from decimal import Decimal
 import math
 from unittest.mock import patch
@@ -60,10 +59,10 @@ def test_expected_sample_size(contests):
             computed = bravo.get_expected_sample_size(
                 ALPHA, contests[contest], cumulative_sample
             )["size"]
-            assert (
-                computed == expected
-            ), "get_expected_sample_size failed in {}: got {}, expected {}".format(
-                contest, computed, expected
+            assert computed == expected, (
+                "get_expected_sample_size failed in {}: got {}, expected {}".format(
+                    contest, computed, expected
+                )
             )
 
 
@@ -97,10 +96,10 @@ def test_expected_sample_size_second_round(contests):
             computed = bravo.get_expected_sample_size(
                 ALPHA, contests[contest], round1_sample_results[contest]["round1"]
             )["size"]
-            assert (
-                expected == computed
-            ), "get_expected_sample_size failed in {}: got {}, expected {}".format(
-                contest, computed, expected
+            assert expected == computed, (
+                "get_expected_sample_size failed in {}: got {}, expected {}".format(
+                    contest, computed, expected
+                )
             )
 
 
@@ -447,17 +446,17 @@ def test_compute_risk(contests):
         expected_T = expected_Ts[contest.name]
         for pair in expected_T:
             diff = T[pair] - expected_T[pair]
-            assert (
-                abs(diff) < 0.01
-            ), "Risk compute for {} failed! Expected {}, got {}".format(
-                contest.name, expected_Ts[contest.name][pair], T[pair]
+            assert abs(diff) < 0.01, (
+                "Risk compute for {} failed! Expected {}, got {}".format(
+                    contest.name, expected_Ts[contest.name][pair], T[pair]
+                )
             )
 
         expected_decision = expected_decisions[contest.name]
-        assert (
-            decision == expected_decision
-        ), "Risk decision for {} failed! Expected {}, got{}".format(
-            contest.name, expected_decision, decision
+        assert decision == expected_decision, (
+            "Risk decision for {} failed! Expected {}, got{}".format(
+                contest.name, expected_decision, decision
+            )
         )
 
 
@@ -540,17 +539,17 @@ def test_compute_risk_empty(contests):
         expected_T = expected_Ts[contest.name]
         for pair in expected_T:
             diff = T[pair] - expected_T[pair]
-            assert (
-                abs(diff) < 0.01
-            ), "Risk compute for {} failed! Expected {}, got {}".format(
-                contest.name, expected_Ts[contest.name][pair], T[pair]
+            assert abs(diff) < 0.01, (
+                "Risk compute for {} failed! Expected {}, got {}".format(
+                    contest.name, expected_Ts[contest.name][pair], T[pair]
+                )
             )
 
         expected_decision = expected_decisions[contest.name]
-        assert (
-            decision == expected_decision
-        ), "Risk decision for {} failed! Expected {}, got{}".format(
-            contest.name, expected_decision, decision
+        assert decision == expected_decision, (
+            "Risk decision for {} failed! Expected {}, got{}".format(
+                contest.name, expected_decision, decision
+            )
         )
 
 

@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """BackgroundTask.lock_key
 
 Revision ID: 4aec6c8a419f
@@ -6,6 +5,7 @@ Revises: 6c256e8152f8
 Create Date: 2024-10-28 23:56:45.256277+00:00
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

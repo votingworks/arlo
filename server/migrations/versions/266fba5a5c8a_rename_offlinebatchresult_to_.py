@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """Rename OfflineBatchResult to FullHandTallyBatchResult
 
 Revision ID: 266fba5a5c8a
@@ -6,6 +5,7 @@ Revises: 30f47ec7308c
 Create Date: 2021-11-04 17:29:16.156954+00:00
 
 """
+
 from alembic import op
 
 # revision identifiers, used by Alembic.

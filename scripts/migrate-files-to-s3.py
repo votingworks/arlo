@@ -1,6 +1,5 @@
-# pylint: disable=invalid-name
 import io
-from server.models import *  # pylint: disable=wildcard-import
+from server.models import *
 from server.database import db_session
 from server.util.file import retrieve_file, store_file, timestamp_filename
 

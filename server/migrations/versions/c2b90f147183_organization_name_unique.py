@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """Organization.name unique
 
 Revision ID: c2b90f147183
@@ -6,6 +5,7 @@ Revises: 4aa612e28c2e
 Create Date: 2021-01-07 23:41:25.373340+00:00
 
 """
+
 from alembic import op
 
 

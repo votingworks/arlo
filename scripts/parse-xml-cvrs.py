@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 import sys
 import os
 import csv
@@ -184,7 +183,6 @@ if __name__ == "__main__":
             contest_choice_pairs.append((contest_name, NUM_CAST))
 
     with open(output_csv_path, "w", encoding="utf8") as output_file:
-
         writer = csv.writer(output_file)
         writer.writerow(["Election Name", "0.00.0.00"])
 

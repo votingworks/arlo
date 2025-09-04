@@ -3,8 +3,8 @@ import io
 import pytest
 from flask.testing import FlaskClient
 
-from ...models import *  # pylint: disable=wildcard-import
-from ..helpers import *  # pylint: disable=wildcard-import
+from ...models import *
+from ..helpers import *
 from .test_batch_comparison import check_discrepancies
 
 
@@ -13,9 +13,7 @@ def jurisdiction_ids(client: FlaskClient, election_id: str) -> List[str]:
     rv = upload_jurisdictions_file(
         client,
         io.BytesIO(
-            (
-                "Jurisdiction,Admin Email\n" f"J1,{default_ja_email(election_id)}\n"
-            ).encode()
+            (f"Jurisdiction,Admin Email\nJ1,{default_ja_email(election_id)}\n").encode()
         ),
         election_id,
     )
@@ -61,8 +59,8 @@ def batch_tallies(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_ids: List[str],  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
+    contest_ids: List[str],
+    manifests,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)

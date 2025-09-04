@@ -2,8 +2,8 @@ import json
 from flask.testing import FlaskClient
 
 from ...auth import UserType
-from ..helpers import *  # pylint: disable=wildcard-import
-from ...models import *  # pylint: disable=wildcard-import
+from ..helpers import *
+from ...models import *
 
 
 def test_create_election_missing_fields(client: FlaskClient, org_id: str):
@@ -181,7 +181,7 @@ def test_create_election_in_org_with_logged_in_admin_without_access(
 def test_create_election_jurisdiction_admin(
     client: FlaskClient,
     org_id: str,
-    election_id: str,  # pylint: disable=unused-argument
+    election_id: str,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -436,7 +436,7 @@ def test_list_organizations(client: FlaskClient):
 def test_list_organizations_not_authorized(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
 ):
     aa_user = User.query.filter_by(email=DEFAULT_AA_EMAIL).one()
     db_session.expunge(aa_user)

@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """Background sample size options
 
 Revision ID: f8e901e92f0a
@@ -6,6 +5,7 @@ Revises: df1334fc5fe9
 Create Date: 2021-04-06 00:30:45.416380+00:00
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

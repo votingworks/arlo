@@ -51,13 +51,13 @@ oauth.init_app(app)
 app.register_blueprint(api, url_prefix="/api")
 app.register_blueprint(auth)
 
-# pylint: disable=wrong-import-position,cyclic-import,unused-import
-from . import static
-from . import errors
+
+from . import static  # noqa: E402, F401
+from . import errors  # noqa: E402, F401
 
 
 @app.teardown_appcontext
-def shutdown_session(exception=None):  # pylint: disable=unused-argument
+def shutdown_session(exception=None):
     db_session.remove()
 
 

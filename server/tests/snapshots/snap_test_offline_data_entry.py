@@ -15,9 +15,7 @@ snapshots["test_run_offline_audit 1"] = {
     "Contest 2 - candidate 3": 20,
 }
 
-snapshots[
-    "test_run_offline_audit 2"
-] = """######## ELECTION INFO ########\r
+snapshots["test_run_offline_audit 2"] = """######## ELECTION INFO ########\r
 Organization,Election Name,State\r
 Test Org test_run_offline_audit,Test Election,CA\r
 \r

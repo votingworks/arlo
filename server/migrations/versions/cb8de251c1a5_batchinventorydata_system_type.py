@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """BatchInventoryData.system_type
 
 Revision ID: cb8de251c1a5
@@ -6,6 +5,7 @@ Revises: c012fa6b13a9
 Create Date: 2024-03-27 19:17:15.548250+00:00
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

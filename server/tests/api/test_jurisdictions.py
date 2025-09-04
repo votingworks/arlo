@@ -11,10 +11,10 @@ from ...activity_log.activity_log import (
     record_activity,
 )
 from ...auth.auth_routes import record_login
-from ..helpers import *  # pylint: disable=wildcard-import
+from ..helpers import *
 from ...auth import UserType
 from ...database import db_session
-from ...models import *  # pylint: disable=wildcard-import
+from ...models import *
 
 AB1_SAMPLES = 23  # Arbitrary num of ballots to assign to audit board 1
 
@@ -78,9 +78,7 @@ def test_jurisdictions_list_with_manifest(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    manifest = (
-        b"Batch Name,Number of Ballots\n" b"1,23\n" b"2,101\n" b"3,122\n" b"4,400"
-    )
+    manifest = b"Batch Name,Number of Ballots\n1,23\n2,101\n3,122\n4,400"
     rv = upload_ballot_manifest(
         client,
         io.BytesIO(manifest),
@@ -164,7 +162,7 @@ def test_duplicate_batch_name(client, election_id, jurisdiction_ids):
     )
     rv = upload_ballot_manifest(
         client,
-        io.BytesIO(b"Batch Name,Number of Ballots\n" b"1,23\n" b"1,101\n"),
+        io.BytesIO(b"Batch Name,Number of Ballots\n1,23\n1,101\n"),
         election_id,
         jurisdiction_ids[0],
     )
@@ -227,7 +225,7 @@ def test_duplicate_batch_name(client, election_id, jurisdiction_ids):
 def test_jurisdictions_status_round_1_no_audit_boards(
     client: FlaskClient,
     election_id: str,
-    round_1_id: str,  # pylint: disable=unused-argument
+    round_1_id: str,
     snapshot,
 ):
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
@@ -321,8 +319,8 @@ def test_jurisdictions_round_status_offline(
     election_id: str,
     jurisdiction_ids: List[str],
     contest_ids: List[str],
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
+    election_settings,
+    manifests,
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -407,7 +405,7 @@ def test_jurisdictions_round_status_offline(
 def test_discrepancy_before_audit_launch(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
 ):
     rv = client.get(f"/api/election/{election_id}/discrepancy")
     assert rv.status_code == 409
@@ -424,8 +422,8 @@ def test_discrepancy_before_audit_launch(
 def test_discrepancy_non_batch_comparison_enabled(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    round_1_id: str,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    round_1_id: str,
 ):
     rv = client.get(f"/api/election/{election_id}/discrepancy")
     assert rv.status_code == 409

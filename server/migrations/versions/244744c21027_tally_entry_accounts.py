@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """Tally entry accounts
 
 Revision ID: 244744c21027
@@ -6,6 +5,7 @@ Revises: fed66f26125e
 Create Date: 2022-10-12 23:37:55.383296+00:00
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql

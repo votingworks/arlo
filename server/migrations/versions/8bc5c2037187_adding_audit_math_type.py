@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """adding audit math type
 
 Revision ID: 8bc5c2037187
@@ -6,6 +5,7 @@ Revises: b5fcf654c681
 Create Date: 2020-11-03 17:12:18.892422+00:00
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 
