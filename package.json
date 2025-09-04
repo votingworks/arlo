@@ -13,7 +13,7 @@
     "*.py": [
       "poetry run black",
       "poetry run pylint -j 0",
-      "poetry run mypy"
+      "poetry run basedpyright"
     ],
     "package.json": [
       "sort-package-json"
