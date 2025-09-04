@@ -2,13 +2,13 @@ import os
 import logging
 from datetime import timedelta
 import re
-from typing import Dict
+from typing import Dict, Optional
 
 
 def read_env_var(
     name: str,
-    default: str = None,
-    env_defaults: Dict[str, str] = None,
+    default: Optional[str] = None,
+    env_defaults: Optional[Dict[str, str]] = None,
 ) -> str:
     value = os.environ.get(name, (env_defaults or {}).get(FLASK_ENV, default))
     if value is None:

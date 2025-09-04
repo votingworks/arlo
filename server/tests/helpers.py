@@ -96,7 +96,7 @@ def create_user(email=DEFAULT_AA_EMAIL) -> User:
 
 
 def create_org_and_admin(
-    org_name: str = None, user_email: str = DEFAULT_AA_EMAIL
+    org_name: Optional[str] = None, user_email: str = DEFAULT_AA_EMAIL
 ) -> Tuple[str, str]:
     org = Organization(
         id=str(uuid.uuid4()), name=org_name or f"Test Org {datetime.now(timezone.utc)}"
@@ -151,10 +151,10 @@ def create_jurisdiction_and_admin(
 
 def create_election(
     client: FlaskClient,
-    audit_name: str = None,
+    audit_name: Optional[str] = None,
     audit_type: str = AuditType.BALLOT_POLLING,
     audit_math_type: str = AuditMathType.BRAVO,
-    organization_id: str = None,
+    organization_id: Optional[str] = None,
 ) -> str:
     rv = post_json(
         client,
@@ -176,7 +176,7 @@ def audit_ballot(
     ballot: SampledBallot,
     contest_id: str,
     interpretation: Interpretation,
-    choices: List[ContestChoice] = None,
+    choices: Optional[List[ContestChoice]] = None,
     is_overvote: bool = False,
     has_invalid_write_in: bool = False,
 ):

@@ -802,7 +802,7 @@ def compute_sample_ballots(
     # filter_has_cvrs will constrain the ballots to sample based on
     # Batch.has_cvrs. Since Batch.has_cvrs is None for all other audit types,
     # the default filter is None.
-    filter_has_cvrs: bool = None,
+    filter_has_cvrs: Optional[bool] = None,
 ) -> List[BallotDraw]:
     participating_jurisdictions = {
         jurisdiction
