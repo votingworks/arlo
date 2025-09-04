@@ -38,7 +38,7 @@ install:
 	make -C client install
 
 typecheck:
-	poetry run basedpyright
+	poetry run basedpyright --baseline-file .basedpyright/baseline.json
 
 format:
 	poetry run black .
