@@ -605,7 +605,9 @@ def full_hand_tally_result_rows(
     return rows
 
 
-def sampled_ballot_rows(election: Election, jurisdiction: Optional[Jurisdiction] = None):
+def sampled_ballot_rows(
+    election: Election, jurisdiction: Optional[Jurisdiction] = None
+):
     # Special case: if we sampled all ballots, don't show this section
     rounds = list(election.rounds)
     if len(rounds) > 0 and is_full_hand_tally(rounds[0], election):
