@@ -1,5 +1,6 @@
 # pylint: disable=invalid-name
-import sys, uuid
+import sys
+import uuid
 
 from server.models import User, AuditAdministration
 from server.database import db_session

@@ -1,5 +1,6 @@
 import io
-import uuid, json
+import uuid
+import json
 from typing import List, Tuple
 import urllib.parse
 import pytest

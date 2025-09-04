@@ -1,4 +1,5 @@
-import json, io
+import json
+import io
 from flask.testing import FlaskClient
 
 from ...models import *  # pylint: disable=wildcard-import

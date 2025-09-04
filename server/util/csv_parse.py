@@ -16,7 +16,10 @@ from typing import (
     TypeVar,
 )
 import csv as py_csv
-import io, re, locale, chardet
+import io
+import re
+import locale
+import chardet
 
 from .jsonschema import EMAIL_REGEX
 from .collections import find_first_duplicate

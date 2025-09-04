@@ -1,6 +1,8 @@
 # pylint: disable=implicit-str-concat
 from typing import BinaryIO, Union, List
-import os, io, pytest
+import os
+import io
+import pytest
 
 from ...api.jurisdictions import JURISDICTIONS_COLUMNS
 from ...util.csv_parse import (

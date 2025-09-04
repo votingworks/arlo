@@ -1,4 +1,5 @@
-import io, json
+import io
+import json
 from typing import List
 from flask.testing import FlaskClient
 

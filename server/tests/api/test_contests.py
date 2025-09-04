@@ -1,4 +1,5 @@
-import json, uuid
+import json
+import uuid
 from typing import List
 import pytest
 from flask.testing import FlaskClient
