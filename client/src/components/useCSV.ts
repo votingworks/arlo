@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig } from 'axios'
+import axios from 'axios'
 import { toast } from 'react-toastify'
 import { useEffect, useState } from 'react'
 import { api, useInterval } from './utilities'
@@ -42,6 +42,12 @@ interface IUpload {
   progress: number
 }
 
+type UploadUrlResponseData = {
+  url: string
+  fields: Record<string, string>
+  errors: { message: string }[]
+}
+
 export const isFileProcessed = (file: IFileInfo): boolean =>
   !!file.processing && file.processing.status === FileProcessingStatus.PROCESSED
 
@@ -65,13 +71,13 @@ const putCSVFile = async (
       : {
           fileType: file.type,
         }
-    const getUploadResponse = await axios(
+    const getUploadResponse = (await axios<UploadUrlResponseData>(
       `/api${url}/upload-url`,
       addCSRFToken({
         method: 'GET',
         params,
-      }) as AxiosRequestConfig
-    )
+      })
+    )) as any
 
     // Upload the file to s3
     const uploadFileFormData = new FormData()
@@ -88,7 +94,7 @@ const putCSVFile = async (
         data: uploadFileFormData,
         onUploadProgress: progress =>
           trackProgress(progress.loaded / progress.total),
-      }) as AxiosRequestConfig
+      })
     )
 
     // Tell the server that the upload has finished to save the file path reference and kick off processing
@@ -107,13 +113,14 @@ const putCSVFile = async (
         headers: {
           'Content-Type': 'application/json',
         },
-      }) as AxiosRequestConfig
+      })
     )
     return true
-  } catch (error) {
-    const { errors } = error.response ? error.response.data : error
+  } catch (e) {
+    const error = e as any
+    const errors = error.response?.data.errors
     const message =
-      errors && errors.length ? errors[0].message : error.response.statusText
+      errors && errors.length ? errors[0].message : error.response?.statusText
     toast.error(message)
     return false
   }

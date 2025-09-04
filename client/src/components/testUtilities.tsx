@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig, AxiosError } from 'axios'
+import axios, { AxiosRequestConfig, AxiosError, AxiosResponse } from 'axios'
 import React from 'react'
 import { createLocation, createMemoryHistory, MemoryHistory } from 'history'
 import { match as routerMatch, Router } from 'react-router-dom'
@@ -172,15 +172,19 @@ export const withMockFetch = async (
         url: string,
         { onUploadProgress, data, ...options }: AxiosRequestConfig
       ) => {
-        if (onUploadProgress) onUploadProgress({ loaded: 1, total: 2 })
-        const response = await mockFetch(url, { ...options, body: data })
+        if (onUploadProgress)
+          onUploadProgress({ loaded: 1, total: 2 } as ProgressEvent)
+        const response = await mockFetch(url, {
+          ...options,
+          body: data,
+        } as RequestInit)
         if (response.status >= 400) {
           const error = new Error() as AxiosError
-          error.response = {
+          error.response = ({
             config: {},
             ...response,
             data: JSON.parse(await response.text()),
-          }
+          } as unknown) as AxiosResponse
           throw error
         }
         return {

@@ -1,5 +1,6 @@
 import { useRef, useEffect } from 'react'
 import { toast } from 'react-toastify'
+import { ValidationError } from 'yup'
 import number from '../utils/number-schema'
 import { addCSRFToken, tryJson } from '../utils/api'
 
@@ -42,9 +43,9 @@ export const api = async <T>(
     // return response.json() as Promise<T>
   } catch (err) {
     toast.error(
-      err.errorType === 'Internal Server Error'
+      (err as { errorType?: string }).errorType === 'Internal Server Error'
         ? 'Something went wrong. Please try again or contact support.'
-        : err.message
+        : (err as { message: string }).message
     )
     return null
   }
@@ -96,7 +97,7 @@ export const testNumber = (
       await schema.validate(value)
       return undefined
     } catch (error) {
-      return error.errors[0]
+      return (error as ValidationError).errors[0]
     }
   }
 }

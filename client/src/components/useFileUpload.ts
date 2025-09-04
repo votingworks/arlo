@@ -4,7 +4,7 @@ import {
   useQueryClient,
   UseQueryResult,
 } from 'react-query'
-import axios, { AxiosRequestConfig } from 'axios'
+import axios from 'axios'
 import { useState, useRef } from 'react'
 import { IFileInfo, CvrFileType } from './useCSV'
 import { fetchApi, ApiError, addCSRFToken } from '../utils/api'
@@ -62,6 +62,12 @@ type CompleteFileUploadArgs = {
   cvrFileType?: CvrFileType
 }
 
+type UploadUrlResponseData = {
+  url: string
+  fields: Record<string, string>
+  errors: { message: string }[]
+}
+
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const useUploadFiles = (key: string[], url: string) => {
   const [progress, setProgress] = useState<number>()
@@ -80,13 +86,13 @@ export const useUploadFiles = (key: string[], url: string) => {
         : {
             fileType: file.type,
           }
-      const getUploadResponse = await axios(
+      const getUploadResponse = (await axios<UploadUrlResponseData>(
         `${url}/upload-url`,
         addCSRFToken({
           method: 'GET',
           params,
-        }) as AxiosRequestConfig
-      )
+        })
+      )) as any
 
       // Upload the file to s3
       const uploadFileFormData = new FormData()
@@ -102,7 +108,7 @@ export const useUploadFiles = (key: string[], url: string) => {
           method: 'POST',
           data: uploadFileFormData,
           onUploadProgress: p => setProgress(p.loaded / p.total),
-        }) as AxiosRequestConfig
+        })
       )
 
       const jsonData = {
@@ -119,14 +125,15 @@ export const useUploadFiles = (key: string[], url: string) => {
           headers: {
             'Content-Type': 'application/json',
           },
-        }) as AxiosRequestConfig
+        })
       )
       return
-    } catch (error) {
-      const { errors } = error.response.data
+    } catch (e) {
+      const error = e as any
+      const errors = error.response?.data.errors
       const message =
-        errors && errors.length ? errors[0].message : error.response.statusText
-      throw new ApiError(message, error.response.status)
+        errors && errors.length ? errors[0].message : error.response?.statusText
+      throw new ApiError(message, error.response?.status)
     } finally {
       setProgress(undefined)
     }
