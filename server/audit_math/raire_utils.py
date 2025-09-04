@@ -259,13 +259,13 @@ class NENAssertion(RaireAssertion):
         self.eliminated = eliminated
 
     def is_vote_for_winner(self, cvr: CVR) -> Literal[0, 1]:
-        if not self.contest in cvr:
+        if self.contest not in cvr:
             return 0
 
         return vote_for_cand(self.winner, self.eliminated, cvr[self.contest])
 
     def is_vote_for_loser(self, cvr: CVR) -> Literal[0, 1]:
-        if not self.contest in cvr:
+        if self.contest not in cvr:
             return 0
 
         return vote_for_cand(self.loser, self.eliminated, cvr[self.contest])
@@ -461,7 +461,7 @@ def find_best_audit(
             best_asrtn = neb
 
     # 'eliminated' is the list of candidates that are not mentioned in 'tail'.
-    eliminated = {c for c in contest.candidates if not c in node.tail}
+    eliminated = {c for c in contest.candidates if c not in node.tail}
 
     # We now look at whether there is a candidate not mentioned in
     # 'tail' (this means they are assumed to be eliminated at some prior
@@ -541,7 +541,7 @@ def perform_dive(
     starting at the input 'node'.
     """
 
-    rem_cands = [c for c in contest.candidates if not c in node.tail]
+    rem_cands = [c for c in contest.candidates if c not in node.tail]
     next_cand = rem_cands[0]
 
     newn = RaireNode([next_cand] + node.tail)

@@ -1,7 +1,9 @@
 from smtplib import SMTPServerDisconnected
 import time
 from datetime import timedelta
-import json, re, uuid
+import json
+import re
+import uuid
 from typing import List, Optional
 from unittest.mock import Mock, MagicMock, patch
 from urllib.parse import urlparse, parse_qs

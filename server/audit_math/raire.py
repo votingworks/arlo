@@ -159,7 +159,7 @@ def find_assertions(
         # could be used to prune those nodes from the tree of alternate
         # outcomes.
         for cand in contest.candidates:
-            if not cand in to_expand.tail:
+            if cand not in to_expand.tail:
                 newn = RaireNode([cand] + to_expand.tail)
                 newn.expandable = len(newn.tail) < len(contest.candidates)
 

@@ -1,4 +1,7 @@
-import json, random, uuid, itertools
+import json
+import random
+import uuid
+import itertools
 from typing import List, Tuple
 from datetime import datetime
 from collections import defaultdict

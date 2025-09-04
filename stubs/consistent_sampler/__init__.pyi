@@ -3,10 +3,8 @@ from typing import (
     Hashable,
     Iterable,
     Union,
-    overload,
     TypeVar,
     Tuple,
-    NamedTuple,
     Generic,
 )
 from typing_extensions import Literal

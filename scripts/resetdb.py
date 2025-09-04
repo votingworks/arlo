@@ -1,4 +1,5 @@
-import sys, os
+import sys
+import os
 from sqlalchemy_utils import database_exists, create_database, drop_database
 from alembic.config import Config
 from alembic import command
