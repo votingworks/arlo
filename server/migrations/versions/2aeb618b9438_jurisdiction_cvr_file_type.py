@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """Jurisdiction.cvr_file_type
 
 Revision ID: 2aeb618b9438
@@ -6,6 +5,7 @@ Revises: 971d6d153879
 Create Date: 2021-10-06 16:32:19.878853+00:00
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

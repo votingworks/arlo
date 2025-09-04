@@ -7,9 +7,7 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
-snapshots[
-    "test_not_found_ballots 1"
-] = """######## ELECTION INFO ########\r
+snapshots["test_not_found_ballots 1"] = """######## ELECTION INFO ########\r
 Organization,Election Name,State\r
 Test Org test_not_found_ballots,Test Election,CA\r
 \r

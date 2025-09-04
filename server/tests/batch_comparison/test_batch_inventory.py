@@ -1,6 +1,6 @@
 import pytest
 from flask.testing import FlaskClient
-from ..helpers import *  # pylint: disable=wildcard-import
+from ..helpers import *
 from ...models import BatchInventoryData
 from ..ballot_comparison.test_cvrs import (
     ESS_BALLOTS_1,
@@ -164,7 +164,7 @@ def test_batch_inventory_happy_path(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_id: str,  # pylint: disable=unused-argument
+    contest_id: str,
     snapshot,
 ):
     set_logged_in_user(
@@ -375,7 +375,7 @@ def test_batch_inventory_happy_path_cvrs_with_leading_equal_signs(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_id: str,  # pylint: disable=unused-argument
+    contest_id: str,
     snapshot,
 ):
     set_logged_in_user(
@@ -586,7 +586,7 @@ def test_batch_inventory_happy_path_cvrs_with_extra_spaces(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_id: str,  # pylint: disable=unused-argument
+    contest_id: str,
     snapshot,
 ):
     set_logged_in_user(
@@ -797,7 +797,7 @@ def test_batch_inventory_happy_path_multi_contest_batch_comparison(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_ids,  # pylint: disable=unused-argument
+    contest_ids,
     snapshot,
 ):
     set_logged_in_user(
@@ -1008,7 +1008,7 @@ def test_batch_inventory_download_before_upload(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_id: str,  # pylint: disable=unused-argument
+    contest_id: str,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -1031,7 +1031,7 @@ def test_batch_inventory_invalid_file_uploads(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_id: str,  # pylint: disable=unused-argument
+    contest_id: str,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -1168,7 +1168,7 @@ def test_batch_inventory_missing_data_multi_contest_batch_comparison(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_ids,  # pylint: disable=unused-argument
+    contest_ids,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -1223,7 +1223,7 @@ def test_batch_inventory_excel_tabulator_status_file(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_id: str,  # pylint: disable=unused-argument
+    contest_id: str,
     snapshot,
 ):
     set_logged_in_user(
@@ -1405,7 +1405,7 @@ def test_batch_inventory_wrong_tabulator_status_file(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_id: str,  # pylint: disable=unused-argument
+    contest_id: str,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -1533,7 +1533,7 @@ def test_batch_inventory_undo_sign_off(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_id: str,  # pylint: disable=unused-argument
+    contest_id: str,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -1588,7 +1588,7 @@ def test_batch_inventory_delete_cvr_after_sign_off(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_id: str,  # pylint: disable=unused-argument
+    contest_id: str,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -1643,7 +1643,7 @@ def test_batch_inventory_delete_tabulator_status_after_sign_off(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_id: str,  # pylint: disable=unused-argument
+    contest_id: str,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -1731,7 +1731,7 @@ def test_batch_inventory_upload_tabulator_status_before_cvr(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_id: str,  # pylint: disable=unused-argument
+    contest_id: str,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -1849,7 +1849,7 @@ def test_upload_tabulator_status_file_while_cvr_file_is_processing_fails(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_id: str,  # pylint: disable=unused-argument
+    contest_id: str,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -1896,7 +1896,7 @@ def test_remove_tabulator_status_file_while_cvr_file_is_processing_fails(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_id: str,  # pylint: disable=unused-argument
+    contest_id: str,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -1939,7 +1939,7 @@ def test_upload_cvr_file_while_tabulator_status_file_is_processing_fails(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_id: str,  # pylint: disable=unused-argument
+    contest_id: str,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -1994,7 +1994,7 @@ def test_remove_cvr_file_while_tabulator_status_file_is_processing_fails(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_id: str,  # pylint: disable=unused-argument
+    contest_id: str,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -2046,7 +2046,7 @@ def test_batch_inventory_hart_cvr_upload(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_id: str,  # pylint: disable=unused-argument
+    contest_id: str,
     snapshot,
 ):
     set_logged_in_user(
@@ -2185,7 +2185,7 @@ def test_batch_inventory_hart_cvr_upload_multi_contest(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_ids: str,  # pylint: disable=unused-argument
+    contest_ids: str,
     snapshot,
 ):
     set_logged_in_user(
@@ -2321,7 +2321,7 @@ def test_batch_inventory_ess_cvr_upload(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_id: str,  # pylint: disable=unused-argument
+    contest_id: str,
     snapshot,
 ):
     # Set the logged-in user to Jurisdiction Admin
@@ -2367,7 +2367,6 @@ def test_batch_inventory_ess_cvr_upload(
         ],
     ]
     for cvrs in test_cases:
-
         # Upload ESS CVR file
         rv = upload_batch_inventory_cvr(
             client,
@@ -2512,7 +2511,7 @@ def test_batch_inventory_ess_cvr_upload_no_ballot_file(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_id: str,  # pylint: disable=unused-argument
+    contest_id: str,
     snapshot,
 ):
     # Set the logged-in user to Jurisdiction Admin
@@ -2627,7 +2626,7 @@ def test_batch_inventory_ess_cvr_upload_multi_contest(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_ids: str,  # pylint: disable=unused-argument
+    contest_ids: str,
     snapshot,
 ):
     # Set the logged-in user to Jurisdiction Admin

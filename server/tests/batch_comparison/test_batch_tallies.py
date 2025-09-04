@@ -4,8 +4,8 @@ from typing import List
 from flask.testing import FlaskClient
 import pytest
 
-from ...models import *  # pylint: disable=wildcard-import
-from ..helpers import *  # pylint: disable=wildcard-import
+from ...models import *
+from ..helpers import *
 
 
 @pytest.fixture
@@ -16,10 +16,7 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
     rv = upload_ballot_manifest(
         client,
         io.BytesIO(
-            b"Batch Name,Number of Ballots\n"
-            b"Batch 1,200\n"
-            b"Batch 2,300\n"
-            b"Batch 3,400\n"
+            b"Batch Name,Number of Ballots\nBatch 1,200\nBatch 2,300\nBatch 3,400\n"
         ),
         election_id,
         jurisdiction_ids[0],
@@ -32,7 +29,7 @@ def test_batch_tallies_upload(
     election_id: str,
     jurisdiction_ids: List[str],
     contest_id: str,
-    manifests,  # pylint: disable=unused-argument
+    manifests,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
@@ -139,8 +136,8 @@ def test_batch_tallies_clear(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_ids: List[str],  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
+    contest_ids: List[str],
+    manifests,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -188,7 +185,7 @@ def test_batch_tallies_replace_as_audit_admin(
     election_id: str,
     jurisdiction_ids: List[str],
     contest_id: str,
-    manifests,  # pylint: disable=unused-argument
+    manifests,
 ):
     # Check that AA can also get/put/clear batch tallies
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -270,8 +267,8 @@ def test_batch_tallies_upload_missing_file(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_ids: List[str],  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
+    contest_ids: List[str],
+    manifests,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -295,8 +292,8 @@ def test_batch_tallies_upload_bad_csv(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_ids: List[str],  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
+    contest_ids: List[str],
+    manifests,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -352,8 +349,8 @@ def test_batch_tallies_upload_missing_choice(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_ids: List[str],  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
+    contest_ids: List[str],
+    manifests,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -395,8 +392,8 @@ def test_batch_tallies_wrong_batch_names(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_ids: List[str],  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
+    contest_ids: List[str],
+    manifests,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -404,7 +401,7 @@ def test_batch_tallies_wrong_batch_names(
 
     bad_files = [
         (
-            (b"Batch Name,candidate 1,candidate 2,candidate 3\n" b"Batch 1,1,10,100\n"),
+            (b"Batch Name,candidate 1,candidate 2,candidate 3\nBatch 1,1,10,100\n"),
             (
                 "Batch names must match the ballot manifest file.\n"
                 "Found missing batch names: Batch 2, Batch 3"
@@ -486,8 +483,8 @@ def test_batch_tallies_too_many_tallies(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_ids: List[str],  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
+    contest_ids: List[str],
+    manifests,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -529,8 +526,8 @@ def test_batch_tallies_ballot_polling(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_ids: List[str],  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
+    contest_ids: List[str],
+    manifests,
 ):
     # Hackily change the audit type
     election = Election.query.get(election_id)
@@ -567,8 +564,8 @@ def test_batch_tallies_bad_jurisdiction(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_ids: List[str],  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
+    contest_ids: List[str],
+    manifests,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, f"j3-{election_id}@example.com"
@@ -599,7 +596,7 @@ def test_batch_tallies_before_manifests(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_ids: List[str],  # pylint: disable=unused-argument
+    contest_ids: List[str],
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -630,8 +627,8 @@ def test_batch_tallies_reprocess_after_manifest_reupload(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_ids: List[str],  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
+    contest_ids: List[str],
+    manifests,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -654,7 +651,7 @@ def test_batch_tallies_reprocess_after_manifest_reupload(
     # Reupload a manifest but remove a batch
     rv = upload_ballot_manifest(
         client,
-        io.BytesIO(b"Batch Name,Number of Ballots\n" b"Batch 1,200\n" b"Batch 2,300\n"),
+        io.BytesIO(b"Batch Name,Number of Ballots\nBatch 1,200\nBatch 2,300\n"),
         election_id,
         jurisdiction_ids[0],
     )
@@ -686,10 +683,7 @@ def test_batch_tallies_reprocess_after_manifest_reupload(
     rv = upload_ballot_manifest(
         client,
         io.BytesIO(
-            b"Batch Name,Number of Ballots\n"
-            b"Batch 1,200\n"
-            b"Batch 2,300\n"
-            b"Batch 3,400\n"
+            b"Batch Name,Number of Ballots\nBatch 1,200\nBatch 2,300\nBatch 3,400\n"
         ),
         election_id,
         jurisdiction_ids[0],
@@ -723,7 +717,7 @@ def test_batch_tallies_template_csv_generation(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_ids,  # pylint: disable=unused-argument
+    contest_ids,
 ):
     for user_type, user_email in [
         (UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL),
@@ -793,8 +787,8 @@ def test_upload_batch_tallies_fails_while_processing_manifest_file(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    manifests,  # pylint: disable=unused-argument
-    contest_id,  # pylint: disable=unused-argument
+    manifests,
+    contest_id,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
 
@@ -862,8 +856,8 @@ def test_upload_ballot_manifest_fails_while_processing_batch_tallies_file(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    manifests,  # pylint: disable=unused-argument
-    contest_id,  # pylint: disable=unused-argument
+    manifests,
+    contest_id,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
 
@@ -899,8 +893,8 @@ def test_remove_ballot_manifest_fails_while_processing_batch_tallies_file(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    manifests,  # pylint: disable=unused-argument
-    contest_id,  # pylint: disable=unused-argument
+    manifests,
+    contest_id,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
 

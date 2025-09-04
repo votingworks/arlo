@@ -10,7 +10,7 @@ from werkzeug.exceptions import BadRequest, Conflict
 from . import api
 from ..auth import restrict_access, UserType
 from ..database import db_session
-from ..models import *  # pylint: disable=wildcard-import
+from ..models import *
 from .contests import set_contest_metadata
 from ..worker.tasks import (
     UserError,

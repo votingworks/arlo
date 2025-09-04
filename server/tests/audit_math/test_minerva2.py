@@ -1,4 +1,3 @@
-# pylint: disable=consider-using-dict-items
 from r2b2.minerva2 import Minerva2 as Providence
 from r2b2.contest import Contest as rContest, ContestType
 import pytest

@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name,consider-using-dict-items,consider-using-f-string
 from decimal import Decimal
 from typing import cast
 import json
@@ -75,7 +74,6 @@ def assertions(contests, cvrs):
 
 
 def test_find_no_discrepancies(contests, cvrs, assertions):
-
     # Test no discrepancies
     sample_cvr = {
         0: {
@@ -99,7 +97,6 @@ def test_find_no_discrepancies(contests, cvrs, assertions):
 
 
 def test_find_one_discrepancy(contests, cvrs, assertions):
-
     # Test one discrepancy
     sample_cvr = {
         0: {
@@ -173,7 +170,6 @@ def test_two_vote_overstatement_discrepancies(cvrs, assertions):
 
 
 def test_race_not_in_cvr_discrepancy(cvrs, assertions):
-
     sample_cvr = {
         14000: {
             "times_sampled": 1,
@@ -196,7 +192,6 @@ def test_race_not_in_cvr_discrepancy(cvrs, assertions):
 
 
 def test_race_not_in_sample_discrepancy(cvrs, assertions):
-
     sample_cvr = {
         0: {
             "times_sampled": 1,
@@ -262,7 +257,6 @@ def test_fptp(contests, cvrs, assertions):
     # there are only two candidates
 
     for contest in contests:
-
         computed_assertions = compute_raire_assertions(
             contests[contest], cvrs, asn_func, 0
         )
@@ -298,10 +292,10 @@ def test_fptp(contests, cvrs, assertions):
         expected_p = expected_p_values["no_discrepancies"][contest]
         diff = abs(p_value - expected_p)
 
-        assert (
-            diff < 0.001
-        ), "Incorrect p-value. Expected {}, got {} in contest {}".format(
-            expected_p, p_value, contest
+        assert diff < 0.001, (
+            "Incorrect p-value. Expected {}, got {} in contest {}".format(
+                expected_p, p_value, contest
+            )
         )
         if contest != "Contest F":
             assert finished, f"Audit of {contest} should have finished but didn't"
@@ -341,17 +335,17 @@ def test_fptp(contests, cvrs, assertions):
         expected_p = expected_p_values["one_vote_over"][contest]
         diff = abs(p_value - expected_p)
 
-        assert (
-            diff < 0.001
-        ), "Incorrect p-value. Expected {}, got {} in contest {}".format(
-            expected_p, p_value, contest
+        assert diff < 0.001, (
+            "Incorrect p-value. Expected {}, got {} in contest {}".format(
+                expected_p, p_value, contest
+            )
         )
         if contest in ["Contest E"]:
             assert finished, "Audit should have finished but didn't"
         elif contest != "Contest F":
-            assert (
-                not finished
-            ), f"Audit of {contest} shouldn't have finished but did {p_value}!"
+            assert not finished, (
+                f"Audit of {contest} shouldn't have finished but did {p_value}!"
+            )
 
         to_sample = {
             assertion: {
@@ -367,10 +361,10 @@ def test_fptp(contests, cvrs, assertions):
         next_sample_size = supersimple_raire.get_sample_sizes(
             RISK_LIMIT, contests[contest], cvrs, to_sample, assertions[contest]
         )
-        assert (
-            next_sample_size == o1_stopping_size[contest] - sample_size
-        ), "Number of ballots left to sample is not correct in contest {}!".format(
-            contest
+        assert next_sample_size == o1_stopping_size[contest] - sample_size, (
+            "Number of ballots left to sample is not correct in contest {}!".format(
+                contest
+            )
         )
 
         # Test two-vote overstatement
@@ -391,10 +385,10 @@ def test_fptp(contests, cvrs, assertions):
         expected_p = expected_p_values["two_vote_over"][contest]
         diff = abs(p_value - expected_p)
 
-        assert (
-            diff < 0.001
-        ), "Incorrect p-value. Expected {}, got {} in contest {}".format(
-            expected_p, p_value, contest
+        assert diff < 0.001, (
+            "Incorrect p-value. Expected {}, got {} in contest {}".format(
+                expected_p, p_value, contest
+            )
         )
 
         if contest != "Contest F":
@@ -414,10 +408,10 @@ def test_fptp(contests, cvrs, assertions):
         next_sample_size = supersimple_raire.get_sample_sizes(
             RISK_LIMIT, contests[contest], cvrs, to_sample, assertions[contest]
         )
-        assert (
-            next_sample_size == o2_stopping_size[contest] - sample_size
-        ), "Number of ballots left to sample is not correct in contest {}!".format(
-            contest
+        assert next_sample_size == o2_stopping_size[contest] - sample_size, (
+            "Number of ballots left to sample is not correct in contest {}!".format(
+                contest
+            )
         )
 
 
@@ -447,15 +441,14 @@ def test_get_sample_sizes_fptp(contests, cvrs, assertions):
         )
         expected = true_sample_sizes[contest]  # From Stark's tool
 
-        assert (
-            computed == expected
-        ), "Sample size computation incorrect: got {}, expected {} in contest {}".format(
-            computed, expected, contest
+        assert computed == expected, (
+            "Sample size computation incorrect: got {}, expected {} in contest {}".format(
+                computed, expected, contest
+            )
         )
 
 
 def test_normalize_cvr():
-
     expected: CVR = {"contest": {"Alice": 1, "Bob": 2, "Charlie": 0}}
 
     # Idempotent for correct cvrs
@@ -470,7 +463,6 @@ def test_normalize_cvr():
 
 
 def test_discrepancy_validation():
-
     # No discrepancy
     reported: CVR = {"contest": {"Alice": 1, "Bob": 2, "Charlie": 0}}
     audited: CVR = {"contest": {"Alice": 1, "Bob": 2, "Charlie": 0}}

@@ -6,7 +6,7 @@ from sqlalchemy import func
 
 from . import api
 from ..database import db_session
-from ..models import *  # pylint: disable=wildcard-import
+from ..models import *
 from .shared import get_current_round
 from ..auth import restrict_access, UserType
 from ..util.jsonschema import JSONDict, validate
@@ -157,7 +157,7 @@ def serialize_results(round: Round, results: List[JurisdictionResult]) -> JSONDi
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def get_offline_results(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
     round: Round,
 ):

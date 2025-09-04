@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name,consider-using-dict-items,consider-using-f-string
 from decimal import Decimal
 from typing import Dict
 import pytest
@@ -47,7 +46,6 @@ def contests():
 
 @pytest.fixture
 def batches():
-
     batches = {}
     for i in range(200):
         batches["Batch {}".format(i)] = {
@@ -104,7 +102,6 @@ def batches():
 
 
 def test_max_error(contests, batches) -> None:
-
     # this is kind of a hacky way to do this but ¯\_(ツ)_/¯
     expected_ups: Dict = {
         "Contest A": {},
@@ -137,10 +134,10 @@ def test_max_error(contests, batches) -> None:
             computed_up = macro.compute_max_error(batches[batch], contests[contest], 0)
 
             delta = abs(computed_up - expected_up)
-            assert (
-                delta < 0.001
-            ), "Got an incorrect maximum possible overstatement: {} should be {}".format(
-                computed_up, expected_up
+            assert delta < 0.001, (
+                "Got an incorrect maximum possible overstatement: {} should be {}".format(
+                    computed_up, expected_up
+                )
             )
 
 
@@ -180,10 +177,10 @@ def test_get_sizes_extra_contests(contests, batches) -> None:
             RISK_LIMIT, contests[contest], batches, sample, sample_ticket_numbers, []
         )
 
-        assert (
-            expected_first_round[contest] == computed
-        ), "First round sample expected {}, got {}".format(
-            expected_first_round[contest], computed
+        assert expected_first_round[contest] == computed, (
+            "First round sample expected {}, got {}".format(
+                expected_first_round[contest], computed
+            )
         )
 
 
@@ -201,10 +198,10 @@ def test_get_sample_sizes(contests, batches) -> None:
             RISK_LIMIT, contests[contest], batches, sample, sample_ticket_numbers, []
         )
 
-        assert (
-            expected_first_round[contest] == computed
-        ), "First round sample expected {}, got {}".format(
-            expected_first_round[contest], computed
+        assert expected_first_round[contest] == computed, (
+            "First round sample expected {}, got {}".format(
+                expected_first_round[contest], computed
+            )
         )
 
     # Add 4 discrepancy-free batches to the sample
@@ -236,10 +233,10 @@ def test_get_sample_sizes(contests, batches) -> None:
             RISK_LIMIT, contests[contest], batches, sample, sample_ticket_numbers, []
         )
 
-        assert (
-            expected_second_round[contest] == computed
-        ), "Second round sample expected {}, got {}".format(
-            expected_second_round[contest], computed
+        assert expected_second_round[contest] == computed, (
+            "Second round sample expected {}, got {}".format(
+                expected_second_round[contest], computed
+            )
         )
 
     # Now add in some errors with taint for A equal to reported margin
@@ -269,10 +266,10 @@ def test_get_sample_sizes(contests, batches) -> None:
             RISK_LIMIT, contests[contest], batches, sample, sample_ticket_numbers, []
         )
 
-        assert (
-            expected_third_round[contest] == computed
-        ), "Third round sample expected {}, got {}".format(
-            expected_third_round[contest], computed
+        assert expected_third_round[contest] == computed, (
+            "Third round sample expected {}, got {}".format(
+                expected_third_round[contest], computed
+            )
         )
 
     # The "2" for C is conservative: audit should end after one more 0-taint batch
@@ -296,7 +293,6 @@ def test_full_recount(contests, batches) -> None:
     sample = batches
     sample_ticket_numbers = {str(i): batch for i, batch in enumerate(batches)}
     for contest in contests:
-
         with pytest.raises(ValueError, match=r"All ballots have already been counted!"):
             macro.get_sample_sizes(
                 RISK_LIMIT,
@@ -326,7 +322,6 @@ def test_full_recount_with_replacement(contests, batches) -> None:
         for i, batch in enumerate(list(batches.keys()) + list(batches.keys()))
     }
     for contest in contests:
-
         with pytest.raises(ValueError, match=r"All ballots have already been counted!"):
             macro.get_sample_sizes(
                 RISK_LIMIT,
@@ -404,7 +399,6 @@ def test_worst_case() -> None:
 
 
 def test_compute_risk(contests, batches) -> None:
-
     sample = {}
     sample_ticket_numbers = {}
 

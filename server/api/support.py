@@ -15,7 +15,7 @@ from sqlalchemy.orm import contains_eager, subqueryload
 from server.util.csv_download import csv_response
 
 from . import api
-from ..models import *  # pylint: disable=wildcard-import
+from ..models import *
 from ..database import db_session
 from ..auth import (
     restrict_access_support,
@@ -73,7 +73,6 @@ def auth0_create_audit_admin(email: str) -> Optional[str]:
     token = auth0_get_token()
     auth0 = Auth0(AUTH0_DOMAIN, token)
     try:
-        # pylint: disable=no-member
         user = auth0.users.create(
             dict(
                 email=email,
@@ -85,7 +84,6 @@ def auth0_create_audit_admin(email: str) -> Optional[str]:
     except Auth0Error as error:
         # If user already exists in Auth0, no problem!
         if error.status_code == 409:
-            # pylint: disable=no-member
             users = auth0.users_by_email.search_users_by_email(email.lower())
             return str(users[0]["user_id"])
         raise error  # pragma: no cover
@@ -156,15 +154,11 @@ def list_users_by_organization():
         )
         .options(
             subqueryload(Election.jurisdictions)
-            # pylint: disable=no-member
-            .subqueryload(Jurisdiction.jurisdiction_administrations).subqueryload(
-                JurisdictionAdministration.user
-            ),
+            .subqueryload(Jurisdiction.jurisdiction_administrations)
+            .subqueryload(JurisdictionAdministration.user),
             subqueryload(Election.organization)
-            # pylint: disable=no-member
-            .subqueryload(Organization.audit_administrations).subqueryload(
-                AuditAdministration.user
-            ),
+            .subqueryload(Organization.audit_administrations)
+            .subqueryload(AuditAdministration.user),
         )
         .all()
     )
@@ -394,7 +388,7 @@ def create_audit_admin(organization_id: str):
 )
 @restrict_access_support
 def remove_audit_admin_from_org(organization_id: str, audit_admin_id: str):
-    organization = get_or_404(Organization, organization_id)
+    organization = get_or_404(Organization, organization_id)  # noqa: F841
     user = get_or_404(User, audit_admin_id)
     if not any(
         organization.id == organization_id for organization in user.organizations

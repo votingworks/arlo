@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """CVRs
 
 Revision ID: 7f86511c05e0
@@ -6,6 +5,7 @@ Revises: 3edc260ab0b1
 Create Date: 2020-09-30 01:42:33.566537+00:00
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

@@ -4,9 +4,9 @@ from typing import List
 import pytest
 from flask.testing import FlaskClient
 
-from ..helpers import *  # pylint: disable=wildcard-import
+from ..helpers import *
 from ...database import db_session
-from ...models import *  # pylint: disable=wildcard-import
+from ...models import *
 from ...api.contests import JSONDict
 from ...auth import UserType
 
@@ -122,7 +122,7 @@ def test_contests_create_get_update_multiple(
     client: FlaskClient,
     election_id: str,
     json_contests: List[JSONDict],
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
 ):
     rv = put_json(client, f"/api/election/{election_id}/contest", json_contests)
     assert_ok(rv)
@@ -168,7 +168,7 @@ def test_contests_order(
 def test_update_contests_after_audit_starts(
     client: FlaskClient,
     election_id: str,
-    round_1_id: str,  # pylint: disable=unused-argument
+    round_1_id: str,
 ):
     rv = put_json(client, f"/api/election/{election_id}/contest", [])
     assert rv.status_code == 409

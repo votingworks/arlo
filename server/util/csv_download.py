@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import IO
 from flask import Response
 
-from ..models import *  # pylint: disable=wildcard-import
+from ..models import *
 
 clean_name_re = re.compile(r"[^a-zA-Z0-9]+")
 

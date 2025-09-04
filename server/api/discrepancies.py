@@ -4,7 +4,7 @@ from werkzeug.exceptions import Conflict
 from flask import jsonify
 
 from . import api
-from ..models import *  # pylint: disable=wildcard-import
+from ..models import *
 from ..auth import restrict_access, UserType
 from .shared import (
     ballot_vote_deltas,
@@ -177,7 +177,7 @@ def show_batch_comparison_discrepancies_by_jurisdiction(
 
     finalized_jurisdiction_ids = {
         jurisdiction_id
-        for jurisdiction_id, in BatchResultsFinalized.query.with_entities(
+        for (jurisdiction_id,) in BatchResultsFinalized.query.with_entities(
             BatchResultsFinalized.jurisdiction_id
         )
     }

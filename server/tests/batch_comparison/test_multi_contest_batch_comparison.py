@@ -2,8 +2,8 @@ from typing import Dict, List
 import pytest
 from flask.testing import FlaskClient
 
-from ...models import *  # pylint: disable=wildcard-import
-from ..helpers import *  # pylint: disable=wildcard-import
+from ...models import *
+from ..helpers import *
 
 
 @pytest.fixture
@@ -110,8 +110,8 @@ def batch_tallies(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_ids,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
+    contest_ids,
+    manifests,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     batch_tallies_by_jurisdiction = {
@@ -154,9 +154,9 @@ def test_multi_contest_batch_comparison_jurisdiction_upload_validation(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_ids,  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
+    contest_ids,
+    election_settings,
+    manifests,
 ):
     test_cases = [
         # Success cases
@@ -272,10 +272,10 @@ def test_multi_contest_batch_comparison_batch_results_validation(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_ids,  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    batch_tallies,  # pylint: disable=unused-argument
+    contest_ids,
+    election_settings,
+    manifests,
+    batch_tallies,
     round_1_id: str,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -438,9 +438,9 @@ def test_multi_contest_batch_comparison_end_to_end(
     election_id: str,
     jurisdiction_ids: List[str],
     contest_ids: List[str],
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    batch_tallies,  # pylint: disable=unused-argument
+    election_settings,
+    manifests,
+    batch_tallies,
     snapshot,
 ):
     #
@@ -728,10 +728,10 @@ def test_multi_contest_batch_comparison_round_2(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_ids,  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    batch_tallies,  # pylint: disable=unused-argument
+    contest_ids,
+    election_settings,
+    manifests,
+    batch_tallies,
     round_1_id: str,
     snapshot,
 ):
@@ -1067,7 +1067,7 @@ def test_multi_contest_batch_comparison_batch_tallies_template_csv_generation(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_ids,  # pylint: disable=unused-argument
+    contest_ids,
 ):
     for user_type, user_email in [
         (UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL),
@@ -1103,11 +1103,11 @@ def test_multi_contest_batch_comparison_batch_tallies_template_csv_generation(
 def test_multi_contest_batch_comparison_batch_tallies_summed_by_jurisdiction_csv_generation(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids,  # pylint: disable=unused-argument
-    contest_ids,  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    batch_tallies,  # pylint: disable=unused-argument
+    jurisdiction_ids,
+    contest_ids,
+    election_settings,
+    manifests,
+    batch_tallies,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
 
@@ -1129,11 +1129,11 @@ def test_multi_contest_batch_comparison_batch_tallies_summed_by_jurisdiction_csv
 def test_multi_contest_batch_comparison_editing_contests_after_uploads(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids,  # pylint: disable=unused-argument
-    contest_ids,  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    batch_tallies,  # pylint: disable=unused-argument
+    jurisdiction_ids,
+    contest_ids,
+    election_settings,
+    manifests,
+    batch_tallies,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
 
@@ -1181,8 +1181,8 @@ def test_multi_contest_batch_comparison_editing_contests_after_uploads(
 def test_updating_contests_while_jurisdictions_file_is_being_processed(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids,  # pylint: disable=unused-argument
-    contest_ids,  # pylint: disable=unused-argument
+    jurisdiction_ids,
+    contest_ids,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
 
@@ -1218,9 +1218,9 @@ def test_updating_contests_while_jurisdictions_file_is_being_processed(
 def test_updating_contests_while_batch_tallies_file_is_being_processed(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids,  # pylint: disable=unused-argument
-    contest_ids,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
+    jurisdiction_ids,
+    contest_ids,
+    manifests,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
 
@@ -1258,9 +1258,9 @@ def test_batch_tallies_dont_reprocess_when_contest_jurisdictions_change(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_ids,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    batch_tallies,  # pylint: disable=unused-argument
+    contest_ids,
+    manifests,
+    batch_tallies,
 ):
     def get_last_processed_batch_tallies_timestamp():
         set_logged_in_user(

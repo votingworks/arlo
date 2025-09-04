@@ -13,7 +13,7 @@ from .database import db_session
 from . import config
 
 
-class ArloSession(CallbackDict, SessionMixin):  # pylint: disable=too-many-ancestors
+class ArloSession(CallbackDict, SessionMixin):
     def __init__(self, sid=None, initial=None):
         def on_update(self):
             self.modified = True

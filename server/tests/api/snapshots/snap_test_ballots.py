@@ -71,9 +71,7 @@ Batch 10,9,"0.285308249909331883,0.309334178337960539,0.567772721540972627",N,Au
 Batch 10,10,0.793336114269859763,N,Audit Board #1
 """
 
-snapshots[
-    "test_ballots_human_sort_order 2"
-] = """######## SAMPLED BALLOTS ########\r
+snapshots["test_ballots_human_sort_order 2"] = """######## SAMPLED BALLOTS ########\r
 Jurisdiction Name,Batch Name,Ballot Position,Ticket Numbers: Contest 1,Audited?,Audit Result: Contest 1,Audit Result: Contest 2\r
 J1,Batch 1,1,"Round 1: 0.396619499740898467, 0.542505720202081664, 0.733443383954946518, 0.804979788038736603",NOT_AUDITED,,\r
 J1,Batch 1,2,"Round 1: 0.184157045260287747, 0.357762213754095914, 0.668156376865081762, 0.825158130760683213",NOT_AUDITED,,\r

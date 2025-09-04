@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """AuditType.BALLOT_COMPARISON
 
 Revision ID: 3edc260ab0b1
@@ -6,6 +5,7 @@ Revises: aa3978570981
 Create Date: 2020-09-28 22:11:46.110113+00:00
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

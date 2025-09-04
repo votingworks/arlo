@@ -9,7 +9,7 @@ from sqlalchemy import func
 from . import api
 from ..auth import restrict_access, UserType
 from ..database import db_session
-from ..models import *  # pylint: disable=wildcard-import
+from ..models import *
 from .rounds import get_current_round, is_full_hand_tally
 from ..util.jsonschema import JSONDict, validate
 from ..util.isoformat import isoformat
@@ -138,7 +138,7 @@ def serialize_full_hand_tally_batch_results(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def add_full_hand_tally_batch_result(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
     round: Round,
 ):
@@ -172,7 +172,7 @@ def add_full_hand_tally_batch_result(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def update_full_hand_tally_batch_result(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
     round: Round,
     batch_name: str,
@@ -215,9 +215,9 @@ def update_full_hand_tally_batch_result(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def delete_full_hand_tally_batch_result(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
-    round: Round,  # pylint: disable=unused-argument
+    round: Round,
     batch_name: str,
 ):
     validate_full_hand_tally_batch_result_request(election, jurisdiction, round)
@@ -237,7 +237,7 @@ def delete_full_hand_tally_batch_result(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def finalize_full_hand_tally_batch_results(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
     round: Round,
 ):
@@ -277,7 +277,7 @@ def finalize_full_hand_tally_batch_results(
 )
 @restrict_access([UserType.AUDIT_ADMIN])
 def unfinalize_full_hand_tally_batch_results(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
     round: Round,
 ):
@@ -305,9 +305,9 @@ def unfinalize_full_hand_tally_batch_results(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def get_full_hand_tally_batch_results(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
-    round: Round,  # pylint: disable=unused-argument
+    round: Round,
 ):
     # We only support one contest for now
     contest = list(election.contests)[0]

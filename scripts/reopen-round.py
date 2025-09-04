@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 import sys
 
 from server.models import Election

@@ -20,9 +20,7 @@ TABULATOR2,BATCH2,5,2-2-6,6,0.442956417641278897,N,Audit Board #1
 TABULATOR2,BATCH2,6,,,0.300053574780458718,N,Audit Board #1
 """
 
-snapshots[
-    "test_ballot_comparison_ess 1"
-] = """######## ELECTION INFO ########\r
+snapshots["test_ballot_comparison_ess 1"] = """######## ELECTION INFO ########\r
 Organization,Election Name,State\r
 Test Org test_ballot_comparison_ess,Test Election,CA\r
 \r
@@ -87,9 +85,7 @@ snapshots["test_ballot_comparison_two_rounds 10"] = {
     "status": "COMPLETE",
 }
 
-snapshots[
-    "test_ballot_comparison_two_rounds 11"
-] = """######## ELECTION INFO ########\r
+snapshots["test_ballot_comparison_two_rounds 11"] = """######## ELECTION INFO ########\r
 Organization,Election Name,State\r
 Test Org test_ballot_comparison_two_rounds,Test Election,CA\r
 \r
@@ -188,9 +184,7 @@ snapshots["test_ballot_comparison_two_rounds 7"] = {
     "status": "COMPLETE",
 }
 
-snapshots[
-    "test_ballot_comparison_two_rounds 8"
-] = """######## ELECTION INFO ########\r
+snapshots["test_ballot_comparison_two_rounds 8"] = """######## ELECTION INFO ########\r
 Organization,Election Name,State\r
 Test Org test_ballot_comparison_two_rounds,Test Election,CA\r
 \r

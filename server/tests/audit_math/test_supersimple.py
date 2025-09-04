@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name,consider-using-dict-items,consider-using-f-string
 from decimal import Decimal
 import pytest
 
@@ -74,15 +73,14 @@ def contests():
 def test_compute_diluted_margin(contests):
     for contest, expected in true_dms.items():
         computed = contests[contest].diluted_margin
-        assert (
-            computed == expected
-        ), "Diluted margin computation incorrect: got {}, expected {} in contest {}".format(
-            computed, expected, contest
+        assert computed == expected, (
+            "Diluted margin computation incorrect: got {}, expected {} in contest {}".format(
+                computed, expected, contest
+            )
         )
 
 
 def test_find_no_discrepancies(contests, cvrs):
-
     # Test no discrepancies
     sample_cvr = {
         "ballot-0": {
@@ -106,7 +104,6 @@ def test_find_no_discrepancies(contests, cvrs):
 
 
 def test_find_one_discrepancy(contests, cvrs):
-
     # Test one discrepancy
     sample_cvr = {
         "ballot-0": {
@@ -188,7 +185,6 @@ def test_two_vote_overstatement_discrepancies(contests, cvrs):
 
 
 def test_race_not_in_cvr_discrepancy(contests, cvrs):
-
     sample_cvr = {
         "ballot-0": {
             "times_sampled": 1,
@@ -211,7 +207,6 @@ def test_race_not_in_cvr_discrepancy(contests, cvrs):
 
 
 def test_race_not_in_sample_discrepancy(contests, cvrs):
-
     sample_cvr = {
         "ballot-0": {
             "times_sampled": 1,
@@ -470,15 +465,14 @@ def test_get_sample_sizes(contests):
         computed = supersimple.get_sample_sizes(RISK_LIMIT, contests[contest], None)
         expected = true_sample_sizes[contest]  # From Stark's tool
 
-        assert (
-            computed == expected
-        ), "Sample size computation incorrect: got {}, expected {} in contest {}".format(
-            computed, expected, contest
+        assert computed == expected, (
+            "Sample size computation incorrect: got {}, expected {} in contest {}".format(
+                computed, expected, contest
+            )
         )
 
 
 def test_compute_risk(contests, cvrs):
-
     for contest in contests:
         sample_cvr = {}
         sample_size = supersimple.get_sample_sizes(RISK_LIMIT, contests[contest], None)
@@ -508,10 +502,10 @@ def test_compute_risk(contests, cvrs):
         expected_p = expected_p_values["no_discrepancies"][contest]
         diff = abs(p_value - expected_p)
 
-        assert (
-            diff < 0.001
-        ), "Incorrect p-value. Expected {}, got {} in contest {}".format(
-            expected_p, p_value, contest
+        assert diff < 0.001, (
+            "Incorrect p-value. Expected {}, got {} in contest {}".format(
+                expected_p, p_value, contest
+            )
         )
         assert finished, "Audit should have finished but didn't"
 
@@ -548,10 +542,10 @@ def test_compute_risk(contests, cvrs):
         expected_p = expected_p_values["one_vote_over"][contest]
         diff = abs(p_value - expected_p)
 
-        assert (
-            diff < 0.001
-        ), "Incorrect p-value. Expected {}, got {} in contest {}".format(
-            expected_p, p_value, contest
+        assert diff < 0.001, (
+            "Incorrect p-value. Expected {}, got {} in contest {}".format(
+                expected_p, p_value, contest
+            )
         )
         if contest in ["Contest E", "Contest F"]:
             assert finished, "Audit should have finished but didn't"
@@ -569,10 +563,10 @@ def test_compute_risk(contests, cvrs):
         next_sample_size = supersimple.get_sample_sizes(
             RISK_LIMIT, contests[contest], to_sample
         )
-        assert (
-            next_sample_size == o1_stopping_size[contest] - sample_size
-        ), "Number of ballots left to sample is not correct in contest {}!".format(
-            contest
+        assert next_sample_size == o1_stopping_size[contest] - sample_size, (
+            "Number of ballots left to sample is not correct in contest {}!".format(
+                contest
+            )
         )
 
         # Test two-vote overstatement
@@ -594,10 +588,10 @@ def test_compute_risk(contests, cvrs):
         expected_p = expected_p_values["two_vote_over"][contest]
         diff = abs(p_value - expected_p)
 
-        assert (
-            diff < 0.001
-        ), "Incorrect p-value. Expected {}, got {} in contest {}".format(
-            expected_p, p_value, contest
+        assert diff < 0.001, (
+            "Incorrect p-value. Expected {}, got {} in contest {}".format(
+                expected_p, p_value, contest
+            )
         )
 
         if contest in ["Contest F"]:
@@ -616,10 +610,10 @@ def test_compute_risk(contests, cvrs):
         next_sample_size = supersimple.get_sample_sizes(
             RISK_LIMIT, contests[contest], to_sample
         )
-        assert (
-            next_sample_size == o2_stopping_size[contest] - sample_size
-        ), "Number of ballots left to sample is not correct in contest {}!".format(
-            contest
+        assert next_sample_size == o2_stopping_size[contest] - sample_size, (
+            "Number of ballots left to sample is not correct in contest {}!".format(
+                contest
+            )
         )
 
 

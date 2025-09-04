@@ -4,7 +4,7 @@ from unittest.mock import Mock, patch
 from urllib.parse import urlparse
 from flask.testing import FlaskClient
 
-from ..helpers import *  # pylint: disable=wildcard-import
+from ..helpers import *
 from ...api.support import (
     AUTH0_DOMAIN,
     AUDITADMIN_AUTH0_CLIENT_ID,
@@ -256,7 +256,7 @@ def test_support_get_election(
     org_id: str,
     election_id: str,
     jurisdiction_ids: List[str],
-    round_1_id: str,  # pylint: disable=unused-argument
+    round_1_id: str,
 ):
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)
     rv = client.get(f"/api/support/elections/{election_id}")
@@ -294,7 +294,7 @@ def test_support_get_election(
 def test_support_permanently_delete_election(
     client: FlaskClient,
     election_id: str,
-    round_2_id: str,  # pylint: disable=unused-argument
+    round_2_id: str,
 ):
     election = Election.query.get(election_id)
     jurisdictions_file_path = election.jurisdictions_file.storage_path
@@ -318,7 +318,7 @@ def test_support_permanently_delete_election(
 
 @patch("server.api.support.GetToken")
 @patch("server.api.support.Auth0")
-def test_support_create_audit_admin(  # pylint: disable=invalid-name
+def test_support_create_audit_admin(
     MockAuth0,
     MockGetToken,
     client: FlaskClient,
@@ -375,7 +375,7 @@ def test_support_create_audit_admin(  # pylint: disable=invalid-name
 
 @patch("server.api.support.GetToken")
 @patch("server.api.support.Auth0")
-def test_support_create_audit_admin_already_in_auth0(  # pylint: disable=invalid-name
+def test_support_create_audit_admin_already_in_auth0(
     MockAuth0,
     MockGetToken,
     client: FlaskClient,
@@ -428,7 +428,7 @@ def test_support_create_audit_admin_already_in_auth0(  # pylint: disable=invalid
 
 @patch("server.api.support.GetToken")
 @patch("server.api.support.Auth0")
-def test_support_create_audit_admin_already_exists(  # pylint: disable=invalid-name,unused-argument
+def test_support_create_audit_admin_already_exists(
     MockAuth0,
     MockGetToken,
     client: FlaskClient,
@@ -469,7 +469,7 @@ def test_support_create_audit_admin_already_exists(  # pylint: disable=invalid-n
 
 @patch("server.api.support.GetToken")
 @patch("server.api.support.Auth0")
-def test_support_create_audit_admin_already_admin(  # pylint: disable=invalid-name,unused-argument
+def test_support_create_audit_admin_already_admin(
     MockAuth0,
     MockGetToken,
     client: FlaskClient,
@@ -575,7 +575,7 @@ def test_support_get_jurisdiction(
             },
             "jurisdictionAdmins": [{"email": default_ja_email(election_id)}],
             "auditBoards": [
-                {"id": id, "name": f"Audit Board #{i+1}", "signedOffAt": None}
+                {"id": id, "name": f"Audit Board #{i + 1}", "signedOffAt": None}
                 for i, id in enumerate(audit_board_round_1_ids)
             ],
             "recordedResultsAt": None,
@@ -585,7 +585,7 @@ def test_support_get_jurisdiction(
 
 def test_support_log_in_as_audit_admin(
     client: FlaskClient,
-    election_id: str,  # pylint: disable=unused-argument
+    election_id: str,
 ):
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)
 
@@ -716,8 +716,8 @@ def test_support_clear_offline_results_ballot_polling(
     election_id: str,
     jurisdiction_ids: List[str],
     contest_ids: List[str],
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
+    election_settings,
+    manifests,
 ):
     election = Election.query.get(election_id)
     election.online = False
@@ -847,7 +847,7 @@ def test_support_clear_offline_results_wrong_audit_type(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    election_settings,  # pylint: disable=unused-argument
+    election_settings,
 ):
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)
 
@@ -987,7 +987,7 @@ def test_support_reopen_current_round_when_audit_not_started(
 def test_support_reopen_current_round_when_round_in_progress(
     client: FlaskClient,
     election_id: str,
-    round_1_id: str,  # pylint: disable=unused-argument
+    round_1_id: str,
 ):
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)
 
@@ -1005,8 +1005,8 @@ def test_support_reopen_current_round_when_round_in_progress(
 
 def test_list_users_by_organization(
     client: FlaskClient,
-    election_id: str,  # pylint: disable=unused-argument
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    election_id: str,
+    jurisdiction_ids: List[str],
     contest_ids: List[str],
     round_1_id: str,
 ):

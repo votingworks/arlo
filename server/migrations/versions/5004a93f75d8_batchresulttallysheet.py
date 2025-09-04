@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """BatchResultTallySheet
 
 Revision ID: 5004a93f75d8
@@ -6,6 +5,7 @@ Revises: cec7ecc73bd8
 Create Date: 2022-05-02 22:25:04.648947+00:00
 
 """
+
 import uuid
 from alembic import op
 import sqlalchemy as sa

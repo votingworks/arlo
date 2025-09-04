@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """Delete AuditBoard without cascading
 
 Revision ID: 4aa612e28c2e
@@ -6,6 +5,7 @@ Revises: 3efe804f6952
 Create Date: 2021-01-04 22:08:21.241785+00:00
 
 """
+
 from alembic import op
 
 

@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 import sys
 import uuid
 
@@ -10,7 +9,7 @@ if __name__ == "__main__":
         print("Usage: python -m scripts.create-admin <org_id> <user_email>")
         sys.exit(1)
 
-    org_id, email = sys.argv[1:]  # pylint: disable=unbalanced-tuple-unpacking
+    org_id, email = sys.argv[1:]
     user = User.query.filter_by(email=email).first()
     if not user:
         user = User(id=str(uuid.uuid4()), email=email, external_id=email)

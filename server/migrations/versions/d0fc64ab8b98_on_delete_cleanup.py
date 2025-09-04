@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """On delete cleanup
 
 Revision ID: d0fc64ab8b98
@@ -6,6 +5,7 @@ Revises: 141edd274627
 Create Date: 2021-05-10 18:49:43.227048+00:00
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

@@ -1,4 +1,3 @@
-# pylint: disable=implicit-str-concat
 from typing import BinaryIO, Union, List
 import os
 import io
@@ -93,7 +92,7 @@ def test_parse_csv_optional_columns():
 def test_parse_csv_allow_empty_rows():
     parsed = list(
         parse_csv(
-            ("Column 1,Column 2\n" "A,\n" ",2\n" "A,1\n"),
+            ("Column 1,Column 2\nA,\n,2\nA,1\n"),
             [
                 CSVColumnType("Column 1", CSVValueType.TEXT, allow_empty_rows=True),
                 CSVColumnType(
@@ -129,7 +128,7 @@ def test_parse_csv_composite_unique_key():
 
 def test_parse_csv_no_unique_key():
     parsed = parse_csv(
-        ("Column 1,Column 2\n" "A,1\n" "B,2\n" "A,1\n"),
+        ("Column 1,Column 2\nA,1\nB,2\nA,1\n"),
         [
             CSVColumnType("Column 1", CSVValueType.TEXT),
             CSVColumnType("Column 2", CSVValueType.NUMBER),
@@ -150,7 +149,7 @@ def test_parse_csv_empty():
 
 def test_parse_csv_no_headers():
     with pytest.raises(CSVParseError) as error:
-        list(parse_csv(("1,2\n" "3,4"), BALLOT_MANIFEST_COLUMNS))
+        list(parse_csv(("1,2\n3,4"), BALLOT_MANIFEST_COLUMNS))
     assert (
         str(error.value) == "Missing required columns: Batch Name, Number of Ballots."
     )
@@ -164,11 +163,11 @@ def test_parse_csv_no_rows_after_headers():
 
 def test_parse_csv_missing_header():
     with pytest.raises(CSVParseError) as error:
-        list(parse_csv(("Batch Name,\n" "1,2"), BALLOT_MANIFEST_COLUMNS))
+        list(parse_csv(("Batch Name,\n1,2"), BALLOT_MANIFEST_COLUMNS))
     assert str(error.value) == "Missing required column: Number of Ballots."
 
     with pytest.raises(CSVParseError) as error:
-        list(parse_csv(("\n" "1,2"), BALLOT_MANIFEST_COLUMNS))
+        list(parse_csv(("\n1,2"), BALLOT_MANIFEST_COLUMNS))
     assert (
         str(error.value)
         == "Please submit a valid CSV file with columns separated by commas."
@@ -179,7 +178,7 @@ def test_parse_csv_duplicate_header():
     with pytest.raises(CSVParseError) as error:
         list(
             parse_csv(
-                ("Batch Name,Batch Name,Number of Ballots\n" "1,1,2"),
+                ("Batch Name,Batch Name,Number of Ballots\n1,1,2"),
                 BALLOT_MANIFEST_COLUMNS,
             )
         )
@@ -190,7 +189,7 @@ def test_parse_csv_bad_number():
     with pytest.raises(CSVParseError) as error:
         list(
             parse_csv(
-                ("Batch Name,Number of Ballots\n" "1,not a number"),
+                ("Batch Name,Number of Ballots\n1,not a number"),
                 BALLOT_MANIFEST_COLUMNS,
             )
         )
@@ -206,7 +205,7 @@ def test_parse_csv_bad_email():
         with pytest.raises(CSVParseError) as error:
             list(
                 parse_csv(
-                    ("Jurisdiction,Admin Email\n" f"J1,{bad_email}"),
+                    (f"Jurisdiction,Admin Email\nJ1,{bad_email}"),
                     JURISDICTIONS_COLUMNS,
                 )
             )
@@ -222,7 +221,7 @@ def test_parse_csv_bad_yes_no():
         with pytest.raises(CSVParseError) as error:
             list(
                 parse_csv(
-                    ("Batch Name,Number of Ballots,CVR\n" f"A,1,{bad_yes_no}"),
+                    (f"Batch Name,Number of Ballots,CVR\nA,1,{bad_yes_no}"),
                     BALLOT_MANIFEST_COLUMNS,
                 )
             )
@@ -234,9 +233,7 @@ def test_parse_csv_bad_yes_no():
 
 def test_parse_csv_empty_cell_in_column():
     with pytest.raises(CSVParseError) as error:
-        list(
-            parse_csv(("Batch Name,Number of Ballots\n" "1,"), BALLOT_MANIFEST_COLUMNS)
-        )
+        list(parse_csv(("Batch Name,Number of Ballots\n1,"), BALLOT_MANIFEST_COLUMNS))
     assert (
         str(error.value)
         == "A value is required for the cell at column Number of Ballots, row 2."
@@ -244,9 +241,7 @@ def test_parse_csv_empty_cell_in_column():
 
     with pytest.raises(CSVParseError) as error:
         list(
-            parse_csv(
-                ("Batch Name,Number of Ballots\n" "1,\n" "2,"), BALLOT_MANIFEST_COLUMNS
-            )
+            parse_csv(("Batch Name,Number of Ballots\n1,\n2,"), BALLOT_MANIFEST_COLUMNS)
         )
     assert (
         str(error.value)
@@ -257,7 +252,7 @@ def test_parse_csv_empty_cell_in_column():
     with pytest.raises(CSVParseError) as error:
         list(
             parse_csv(
-                ("Batch Name,Number of Ballots,Tabulator\n" "1,2,"),
+                ("Batch Name,Number of Ballots,Tabulator\n1,2,"),
                 BALLOT_MANIFEST_COLUMNS,
             )
         )
@@ -269,7 +264,7 @@ def test_parse_csv_empty_cell_in_column():
 
 def test_parse_csv_missing_cell_in_row():
     with pytest.raises(CSVParseError) as error:
-        list(parse_csv(("Batch Name,Number of Ballots\n" "1"), BALLOT_MANIFEST_COLUMNS))
+        list(parse_csv(("Batch Name,Number of Ballots\n1"), BALLOT_MANIFEST_COLUMNS))
     assert (
         str(error.value)
         == "Wrong number of cells in row 2. Expected 2 cells, got 1 cell."
@@ -279,9 +274,7 @@ def test_parse_csv_missing_cell_in_row():
 def test_parse_csv_extra_cell_in_row():
     with pytest.raises(CSVParseError) as error:
         list(
-            parse_csv(
-                ("Batch Name,Number of Ballots\n" "1,2,3"), BALLOT_MANIFEST_COLUMNS
-            )
+            parse_csv(("Batch Name,Number of Ballots\n1,2,3"), BALLOT_MANIFEST_COLUMNS)
         )
     assert (
         str(error.value)
@@ -293,7 +286,7 @@ def test_parse_csv_extra_column():
     with pytest.raises(CSVParseError) as error:
         list(
             parse_csv(
-                ("Batch Name,Xtra,Number of Ballots\n" "1,,2\n" "2,3,"),
+                ("Batch Name,Xtra,Number of Ballots\n1,,2\n2,3,"),
                 BALLOT_MANIFEST_COLUMNS,
             )
         )
@@ -305,7 +298,7 @@ def test_parse_csv_extra_column():
     with pytest.raises(CSVParseError) as error:
         list(
             parse_csv(
-                ("Batch Name,Xtra,Number of Ballots,Another one\n" "1,,2,\n" "2,3,,"),
+                ("Batch Name,Xtra,Number of Ballots,Another one\n1,,2,\n2,3,,"),
                 BALLOT_MANIFEST_COLUMNS,
             )
         )
@@ -319,7 +312,7 @@ def test_parse_csv_not_comma_delimited():
     with pytest.raises(CSVParseError) as error:
         list(
             parse_csv(
-                ("Batch Name\tNumber of Ballots\n" "1\t2\n"), BALLOT_MANIFEST_COLUMNS
+                ("Batch Name\tNumber of Ballots\n1\t2\n"), BALLOT_MANIFEST_COLUMNS
             )
         )
     assert (
@@ -332,7 +325,7 @@ def test_parse_csv_empty_trailing_columns_with_data_in_those_columns():
     with pytest.raises(CSVParseError) as error:
         list(
             parse_csv(
-                ("Batch Name,Number of Ballots,,\n" "Batch A,20,,z\n" ",,,\n"),
+                ("Batch Name,Number of Ballots,,\nBatch A,20,,z\n,,,\n"),
                 BALLOT_MANIFEST_COLUMNS,
             )
         )
@@ -347,7 +340,7 @@ def test_parse_csv_duplicate_value_in_unique_column():
     with pytest.raises(CSVParseError) as error:
         list(
             parse_csv(
-                ("Batch Name,Number of Ballots\n" "1,2\n" "1,3"),
+                ("Batch Name,Number of Ballots\n1,2\n1,3"),
                 BALLOT_MANIFEST_COLUMNS,
             )
         )
@@ -361,7 +354,7 @@ def test_parse_csv_duplicate_value_with_composite_unique_columns():
     with pytest.raises(CSVParseError) as error:
         list(
             parse_csv(
-                ("Tabulator,Batch Name,Number of Ballots\n" "1,2,4\n" "1,2,3"),
+                ("Tabulator,Batch Name,Number of Ballots\n1,2,4\n1,2,3"),
                 BALLOT_MANIFEST_COLUMNS_COMPOSITE_KEY,
             )
         )
@@ -443,7 +436,7 @@ def test_parse_csv_total_row():
     # Shouldn't raise an error for a column with all 0s
     parsed = list(
         parse_csv(
-            ("Batch Name,Number of Ballots\n" "Batch A,0\n" "Batch B,0\n" "XXX,0\n"),
+            ("Batch Name,Number of Ballots\nBatch A,0\nBatch B,0\nXXX,0\n"),
             BALLOT_MANIFEST_COLUMNS,
         )
     )
@@ -480,7 +473,7 @@ def test_parse_csv_total_row():
     # Shouldn't raise an error if just two rows
     parsed = list(
         parse_csv(
-            ("Batch Name,Number of Ballots\n" "Batch A,10\n" "Batch B,10\n"),
+            ("Batch Name,Number of Ballots\nBatch A,10\nBatch B,10\n"),
             [
                 CSVColumnType("Batch Name", CSVValueType.TEXT, unique=True),
                 CSVColumnType("Number of Ballots", CSVValueType.NUMBER),
@@ -499,7 +492,7 @@ def test_parse_csv_total_row():
 def test_parse_csv_header_wrong_case():
     parsed = list(
         parse_csv(
-            ("BATCH NAME,NUMBER OF BALLOTS\n" "Batch A,20\n"),
+            ("BATCH NAME,NUMBER OF BALLOTS\nBatch A,20\n"),
             BALLOT_MANIFEST_COLUMNS,
         )
     )
@@ -509,7 +502,7 @@ def test_parse_csv_header_wrong_case():
 
     parsed = list(
         parse_csv(
-            ("BaTcH nAmE,nUmBeR oF bAlLoTs\n" "Batch A,20\n"),
+            ("BaTcH nAmE,nUmBeR oF bAlLoTs\nBatch A,20\n"),
             BALLOT_MANIFEST_COLUMNS,
         )
     )
@@ -521,7 +514,7 @@ def test_parse_csv_header_wrong_case():
 def test_parse_csv_space_in_header():
     parsed = list(
         parse_csv(
-            ("Batch Name ,Number of Ballots\n" "Batch A,20\n"),
+            ("Batch Name ,Number of Ballots\nBatch A,20\n"),
             BALLOT_MANIFEST_COLUMNS,
         )
     )
@@ -531,7 +524,7 @@ def test_parse_csv_space_in_header():
 
     parsed = list(
         parse_csv(
-            ("   Batch Name ,  Number of Ballots \n" "Batch A,20\n"),
+            ("   Batch Name ,  Number of Ballots \nBatch A,20\n"),
             BALLOT_MANIFEST_COLUMNS,
         )
     )
@@ -543,7 +536,7 @@ def test_parse_csv_space_in_header():
 def test_parse_csv_space_in_value():
     parsed = list(
         parse_csv(
-            ("Batch Name,Number of Ballots\n" " Batch A,20\n"),
+            ("Batch Name,Number of Ballots\n Batch A,20\n"),
             BALLOT_MANIFEST_COLUMNS,
         )
     )
@@ -553,7 +546,7 @@ def test_parse_csv_space_in_value():
 
     parsed = list(
         parse_csv(
-            ("Batch Name,Number of Ballots\n" " Batch A    ,   20   \n"),
+            ("Batch Name,Number of Ballots\n Batch A    ,   20   \n"),
             BALLOT_MANIFEST_COLUMNS,
         )
     )
@@ -563,7 +556,7 @@ def test_parse_csv_space_in_value():
 def test_parse_csv_comma_in_number():
     parsed = list(
         parse_csv(
-            ("Batch Name,Number of Ballots\n" 'Batch A,"2,020"\n'),
+            ('Batch Name,Number of Ballots\nBatch A,"2,020"\n'),
             BALLOT_MANIFEST_COLUMNS,
         )
     )
@@ -574,7 +567,7 @@ def test_parse_csv_comma_in_number():
 def test_parse_csv_empty_row():
     parsed = list(
         parse_csv(
-            ("Batch Name,Number of Ballots\n" "Batch A,20\n" ",\n"),
+            ("Batch Name,Number of Ballots\nBatch A,20\n,\n"),
             BALLOT_MANIFEST_COLUMNS,
         )
     )
@@ -582,7 +575,7 @@ def test_parse_csv_empty_row():
 
     parsed = list(
         parse_csv(
-            ("Batch Name,Number of Ballots\n" ",\n" "Batch A,20\n"),
+            ("Batch Name,Number of Ballots\n,\nBatch A,20\n"),
             BALLOT_MANIFEST_COLUMNS,
         )
     )
@@ -590,7 +583,7 @@ def test_parse_csv_empty_row():
 
     parsed = list(
         parse_csv(
-            ("Batch Name,Number of Ballots\n" "Batch A,20\n" "\n"),
+            ("Batch Name,Number of Ballots\nBatch A,20\n\n"),
             BALLOT_MANIFEST_COLUMNS,
         )
     )
@@ -598,7 +591,7 @@ def test_parse_csv_empty_row():
 
     parsed = list(
         parse_csv(
-            ("Batch Name,Number of Ballots\n" "Batch A,20\n" "\n" "\n" "\n"),
+            ("Batch Name,Number of Ballots\nBatch A,20\n\n\n\n"),
             BALLOT_MANIFEST_COLUMNS,
         )
     )
@@ -607,7 +600,7 @@ def test_parse_csv_empty_row():
 
 def test_parse_csv_headers_out_of_order():
     parsed = list(
-        parse_csv(("Number of Ballots,Batch Name\n" "1,2"), BALLOT_MANIFEST_COLUMNS)
+        parse_csv(("Number of Ballots,Batch Name\n1,2"), BALLOT_MANIFEST_COLUMNS)
     )
     assert parsed == [{"Batch Name": "2", "Number of Ballots": 1}]
 
@@ -615,7 +608,7 @@ def test_parse_csv_headers_out_of_order():
 def test_parse_csv_headers_out_of_order_with_optional_column():
     parsed = list(
         parse_csv(
-            ("Tabulator,Number of Ballots,Batch Name\n" "A,1,2"),
+            ("Tabulator,Number of Ballots,Batch Name\nA,1,2"),
             BALLOT_MANIFEST_COLUMNS,
         )
     )
@@ -625,7 +618,7 @@ def test_parse_csv_headers_out_of_order_with_optional_column():
 def test_parse_csv_empty_trailing_columns():
     parsed = list(
         parse_csv(
-            ("Batch Name,Number of Ballots,,\n" "Batch A,20,,\n" ",,,\n"),
+            ("Batch Name,Number of Ballots,,\nBatch A,20,,\n,,,\n"),
             BALLOT_MANIFEST_COLUMNS,
         )
     )
@@ -906,7 +899,6 @@ WEST BRANCH,22,
         BALLOT_MANIFEST_COLUMNS,
     ),
     (
-        # pylint: disable=trailing-whitespace
         """Batch Name,Number of Ballots,,
 Ash #1,289,,
 Ash #2,251,,

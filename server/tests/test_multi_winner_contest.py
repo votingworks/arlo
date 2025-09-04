@@ -4,8 +4,8 @@ from typing import List
 import pytest
 from flask.testing import FlaskClient
 
-from .helpers import *  # pylint: disable=wildcard-import
-from ..models import *  # pylint: disable=wildcard-import
+from .helpers import *
+from ..models import *
 
 
 @pytest.fixture
@@ -48,8 +48,8 @@ def contest_ids(
 def test_multi_winner_sample_size(
     client: FlaskClient,
     election_id: str,
-    contest_ids: List[str],  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
+    contest_ids: List[str],
+    election_settings,
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -105,10 +105,10 @@ def run_multi_winner_audit_round(
 def test_multi_winner_two_rounds(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
     contest_ids: List[str],
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
+    election_settings,
+    manifests,
     snapshot,
 ):
     contest_id = contest_ids[0]

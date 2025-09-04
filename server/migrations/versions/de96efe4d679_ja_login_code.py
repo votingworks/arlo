@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """JA login code
 
 Revision ID: de96efe4d679
@@ -6,6 +5,7 @@ Revises: 8ab39ac619ed
 Create Date: 2021-07-26 23:24:40.589600+00:00
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

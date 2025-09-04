@@ -1,7 +1,7 @@
 import json
 import io
-from ...models import *  # pylint: disable=wildcard-import
-from ..helpers import *  # pylint: disable=wildcard-import
+from ...models import *
+from ..helpers import *
 from ..ballot_comparison.test_ballot_comparison import (
     audit_all_ballots,
     check_discrepancies,
@@ -12,9 +12,9 @@ from .conftest import TEST_CVRS
 def test_contest_vote_counts_before_cvrs(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    contest_ids: List[str],  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    contest_ids: List[str],
+    manifests,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/contest")
@@ -75,10 +75,10 @@ def test_contest_vote_counts_before_cvrs(
 def test_contest_vote_counts(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    contest_ids: List[str],  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    cvrs,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    contest_ids: List[str],
+    manifests,
+    cvrs,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/contest")
@@ -138,11 +138,11 @@ def test_contest_vote_counts(
 def test_hybrid_sample_size(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    contest_ids: List[str],  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    cvrs,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    contest_ids: List[str],
+    election_settings,
+    manifests,
+    cvrs,
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -172,9 +172,9 @@ def test_hybrid_sample_size(
 def test_sample_size_before_manifest(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    contest_ids: List[str],  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    contest_ids: List[str],
+    election_settings,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
@@ -197,10 +197,10 @@ def test_sample_size_before_manifest(
 def test_sample_size_before_cvrs(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    contest_ids: List[str],  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    contest_ids: List[str],
+    election_settings,
+    manifests,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
@@ -223,11 +223,11 @@ def test_sample_size_before_cvrs(
 def test_contest_names_dont_match_cvrs(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    contest_ids: List[str],  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    cvrs,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    contest_ids: List[str],
+    election_settings,
+    manifests,
+    cvrs,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     contests = [
@@ -267,11 +267,11 @@ def test_contest_names_dont_match_cvrs(
 def test_contest_choices_dont_match_cvrs(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    contest_ids: List[str],  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    cvrs,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    contest_ids: List[str],
+    election_settings,
+    manifests,
+    cvrs,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     contests = [
@@ -324,11 +324,11 @@ def test_contest_choices_dont_match_cvrs(
 def test_hybrid_two_rounds(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    contest_ids: List[str],  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    cvrs,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    contest_ids: List[str],
+    election_settings,
+    manifests,
+    cvrs,
     snapshot,
 ):
     # AA selects a sample size and launches the audit
@@ -524,7 +524,7 @@ def test_hybrid_manifest_validation_too_many_votes(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    election_settings,  # pylint: disable=unused-argument
+    election_settings,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -594,7 +594,7 @@ def test_hybrid_manifest_validation_too_few_cvr_ballots(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    election_settings,  # pylint: disable=unused-argument
+    election_settings,
 ):
     contests = [
         {
@@ -664,7 +664,7 @@ def test_hybrid_manifest_validation_few_non_cvr_ballots(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    election_settings,  # pylint: disable=unused-argument
+    election_settings,
 ):
     contests = [
         {
@@ -734,9 +734,9 @@ def test_hybrid_manifest_validation_too_many_cvr_votes(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    cvrs,  # pylint: disable=unused-argument
+    election_settings,
+    manifests,
+    cvrs,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     contests = [
@@ -776,11 +776,11 @@ def test_hybrid_manifest_validation_too_many_cvr_votes(
 def test_hybrid_filter_cvrs(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    contest_ids: List[str],  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    cvrs,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    contest_ids: List[str],
+    election_settings,
+    manifests,
+    cvrs,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/contest")
@@ -829,11 +829,11 @@ def test_hybrid_filter_cvrs(
 def test_hybrid_custom_sample_size(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    contest_ids: List[str],  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    cvrs,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    contest_ids: List[str],
+    election_settings,
+    manifests,
+    cvrs,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     sample_size = {
@@ -873,11 +873,11 @@ def test_hybrid_custom_sample_size(
 def test_hybrid_invalid_sample_size(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    contest_ids: List[str],  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    cvrs,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    contest_ids: List[str],
+    election_settings,
+    manifests,
+    cvrs,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     invalid_sample_sizes = [
@@ -954,9 +954,9 @@ def test_hybrid_sample_preview(
     election_id: str,
     jurisdiction_ids: List[str],
     contest_ids: List[str],
-    manifests,  # pylint: disable=unused-argument
-    cvrs,  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
+    manifests,
+    cvrs,
+    election_settings,
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)

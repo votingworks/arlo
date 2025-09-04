@@ -1,4 +1,3 @@
-# pylint: disable=no-member,wrong-import-position
 import sys
 from logging.config import fileConfig
 
@@ -10,7 +9,7 @@ from alembic import context
 # Modify PYTHONPATH so that we can import the Arlo config
 # https://stackoverflow.com/a/58891735
 sys.path = ["", ".."] + sys.path[1:]
-from server.config import DATABASE_URL
+from server.config import DATABASE_URL  # noqa: E402
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -28,8 +27,8 @@ fileConfig(config.config_file_name, disable_existing_loggers=False)  # type: ign
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-from server.database import Base
-import server.models  # pylint: disable=unused-import
+from server.database import Base  # noqa: E402
+import server.models  # noqa: E402, F401
 
 target_metadata = Base.metadata
 

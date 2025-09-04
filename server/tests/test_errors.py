@@ -2,7 +2,7 @@ import json
 from flask.testing import FlaskClient
 
 from ..app import app
-from .helpers import *  # pylint: disable=wildcard-import
+from .helpers import *
 
 
 def test_uncaught_exception_500(client: FlaskClient):

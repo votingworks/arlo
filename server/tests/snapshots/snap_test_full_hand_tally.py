@@ -22,9 +22,7 @@ J1,Batch Three,Election Day,125000,124875,125\r
 J1,Batch Two,Other,250000,249750,250\r
 """
 
-snapshots[
-    "test_all_ballots_audit 3"
-] = """######## ELECTION INFO ########\r
+snapshots["test_all_ballots_audit 3"] = """######## ELECTION INFO ########\r
 Organization,Election Name,State\r
 Test Org test_all_ballots_audit,Test Election,CA\r
 \r

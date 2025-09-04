@@ -41,10 +41,10 @@ typecheck:
 	poetry run basedpyright --baseline-file .basedpyright/baseline.json
 
 format:
-	poetry run black .
+	poetry run ruff format .
 
 lint:
-	poetry run pylint server scripts fixtures
+	poetry run ruff check server scripts fixtures
 
 test:
 	poetry run pytest -n auto --ignore=server/tests/arlo-extra-tests 

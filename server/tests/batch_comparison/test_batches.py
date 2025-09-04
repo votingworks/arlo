@@ -2,8 +2,8 @@ from typing import List
 import io
 from flask.testing import FlaskClient
 
-from ...models import *  # pylint: disable=wildcard-import
-from ..helpers import *  # pylint: disable=wildcard-import
+from ...models import *
+from ..helpers import *
 
 J1_BATCHES_ROUND_1 = 5
 J2_BATCHES_ROUND_1 = 1
@@ -12,7 +12,7 @@ J2_BATCHES_ROUND_1 = 1
 def test_list_batches_bad_round_id(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -26,7 +26,7 @@ def test_list_batches_bad_round_id(
 def test_list_batches(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
     round_1_id: str,
 ):
     set_logged_in_user(
@@ -69,7 +69,7 @@ def test_list_batches(
 def test_batch_retrieval_list_bad_round_id(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -84,7 +84,7 @@ def test_batch_retrieval_list_bad_round_id(
 def test_batch_retrieval_list_round_1(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
     round_1_id: str,
     snapshot,
 ):
@@ -452,7 +452,7 @@ def test_record_batch_results_invalid(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    round_1_id: str,  # pylint: disable=unused-argument
+    round_1_id: str,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -878,7 +878,7 @@ def test_batches_human_sort_order(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    election_settings,  # pylint: disable=unused-argument
+    election_settings,
     snapshot,
 ):
     human_ordered_batches = [

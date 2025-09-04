@@ -2,9 +2,9 @@ from typing import List
 import json
 from flask.testing import FlaskClient
 
-from ...models import *  # pylint: disable=wildcard-import
+from ...models import *
 from ...auth import UserType
-from ..helpers import *  # pylint: disable=wildcard-import
+from ..helpers import *
 
 
 def test_rounds_list_empty(
@@ -29,8 +29,8 @@ def test_rounds_create_one(
     election_id: str,
     jurisdiction_ids: List[str],
     contest_ids: List[str],
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
+    election_settings,
+    manifests,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
@@ -317,7 +317,7 @@ def test_rounds_create_before_previous_round_complete(
     client: FlaskClient,
     election_id: str,
     contest_ids: str,
-    round_1_id: str,  # pylint: disable=unused-argument
+    round_1_id: str,
 ):
     rv = post_json(
         client,
@@ -526,7 +526,7 @@ def test_undo_start_round_before_launch(client: FlaskClient, election_id: str):
 def test_undo_start_round_1(
     client: FlaskClient,
     election_id: str,
-    round_1_id: str,  # pylint: disable=unused-argument
+    round_1_id: str,
 ):
     rv = client.delete(f"/api/election/{election_id}/round/current")
     assert_ok(rv)
@@ -554,8 +554,8 @@ def test_undo_start_round_1(
 def test_undo_start_round_1_with_audit_boards(
     client: FlaskClient,
     election_id: str,
-    round_1_id: str,  # pylint: disable=unused-argument
-    audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
+    round_1_id: str,
+    audit_board_round_1_ids: List[str],
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.delete(f"/api/election/{election_id}/round/current")

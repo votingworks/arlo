@@ -24,7 +24,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship, backref, validates
 from sqlalchemy.types import TypeDecorator
 from sqlalchemy.dialects import postgresql
-from .database import Base  # pylint: disable=cyclic-import
+from .database import Base
 
 # Define a custom function to sort mixed text/number strings
 # From https://stackoverflow.com/a/20667107/1472662
@@ -66,16 +66,16 @@ COMMIT;
 )
 
 
-class UTCDateTime(TypeDecorator):  # pylint: disable=abstract-method
+class UTCDateTime(TypeDecorator):
     # Store with no timezone
     impl = DateTime
 
     # Ensure UTC timezone on write
     def process_bind_param(self, value, dialect):
         if value:
-            assert (
-                value.tzinfo == timezone.utc
-            ), "All datetimes must have UTC timezone - use datetime.now(timezone.utc)"
+            assert value.tzinfo == timezone.utc, (
+                "All datetimes must have UTC timezone - use datetime.now(timezone.utc)"
+            )
         return value
 
     # Repopulate UTC timezone on read
@@ -1106,7 +1106,6 @@ class ProcessingStatus(str, enum.Enum):
     ERRORED = "ERRORED"
 
 
-# pylint: disable=invalid-name
 class USState(str, enum.Enum):
     Alabama = "AL"
     Alaska = "AK"

@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """SampledBatchDraw
 
 Revision ID: a3004ca81e25
@@ -6,6 +5,7 @@ Revises: 11e35dd1c515
 Create Date: 2020-08-25 22:38:13.118998+00:00
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

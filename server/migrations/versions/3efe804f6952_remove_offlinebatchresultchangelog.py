@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """Remove OfflineBatchResultChangelog
 
 Revision ID: 3efe804f6952
@@ -6,6 +5,7 @@ Revises: 5238d088cf62
 Create Date: 2020-12-07 23:08:47.025411+00:00
 
 """
+
 from alembic import op
 
 # revision identifiers, used by Alembic.

@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """CvrFileType.HART
 
 Revision ID: 496ee3db6da8
@@ -6,6 +5,7 @@ Revises: 593823da406d
 Create Date: 2022-04-19 17:30:53.895058+00:00
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """OfflineBatchResultChangelog
 
 Revision ID: 5238d088cf62
@@ -6,6 +5,7 @@ Revises: 95660eea5c1c
 Create Date: 2020-11-12 05:03:21.855470+00:00
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

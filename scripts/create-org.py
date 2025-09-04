@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 import sys
 import uuid
 from server.database import db_session

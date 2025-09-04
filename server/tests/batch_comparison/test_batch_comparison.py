@@ -3,8 +3,8 @@ import io
 from typing import Dict, List
 from flask.testing import FlaskClient
 
-from ...models import *  # pylint: disable=wildcard-import
-from ..helpers import *  # pylint: disable=wildcard-import
+from ...models import *
+from ..helpers import *
 
 
 def parse_vote_deltas(
@@ -44,11 +44,11 @@ def check_discrepancies(
 def test_batch_comparison_sample_size(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
     contest_id: str,
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    batch_tallies,  # pylint: disable=unused-argument
+    election_settings,
+    manifests,
+    batch_tallies,
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -62,10 +62,10 @@ def test_batch_comparison_sample_size(
 def test_batch_comparison_without_all_batch_tallies(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    contest_id: str,  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    contest_id: str,
+    election_settings,
+    manifests,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
@@ -88,11 +88,11 @@ def test_batch_comparison_without_all_batch_tallies(
 def test_batch_comparison_too_many_votes(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    contest_id: str,  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    batch_tallies,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    contest_id: str,
+    election_settings,
+    manifests,
+    batch_tallies,
 ):
     batch_tallies_file = (
         b"Batch Name,candidate 1,candidate 2,candidate 3\n"
@@ -131,9 +131,9 @@ def test_batch_comparison_round_1(
     election_id: str,
     jurisdiction_ids: List[str],
     contest_id: str,
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    batch_tallies,  # pylint: disable=unused-argument
+    election_settings,
+    manifests,
+    batch_tallies,
     snapshot,
 ):
     # Check jurisdiction status before starting the round
@@ -506,9 +506,9 @@ def test_batch_comparison_custom_sample_size_validation(
     client: FlaskClient,
     election_id: str,
     contest_id: str,
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    batch_tallies,  # pylint: disable=unused-argument
+    election_settings,
+    manifests,
+    batch_tallies,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     bad_sample_sizes = [
@@ -542,9 +542,9 @@ def test_batch_comparison_batches_sampled_multiple_times(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    batch_tallies,  # pylint: disable=unused-argument
+    election_settings,
+    manifests,
+    batch_tallies,
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -745,9 +745,9 @@ def test_batch_comparison_sample_all_batches(
     election_id: str,
     jurisdiction_ids: List[str],
     contest_id: str,
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    batch_tallies,  # pylint: disable=unused-argument
+    election_settings,
+    manifests,
+    batch_tallies,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
 
@@ -788,7 +788,7 @@ def test_batch_comparison_sample_all_batches(
 def test_batch_comparison_undo_start_round_1(
     client: FlaskClient,
     election_id: str,
-    round_1_id: str,  # pylint: disable=unused-argument
+    round_1_id: str,
 ):
     rv = client.delete(f"/api/election/{election_id}/round/current")
     assert_ok(rv)
@@ -831,9 +831,9 @@ def test_batch_comparison_sample_preview(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    manifests,  # pylint: disable=unused-argument
-    batch_tallies,  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
+    manifests,
+    batch_tallies,
+    election_settings,
     contest_ids: List[str],
     snapshot,
 ):
@@ -888,11 +888,11 @@ def test_batch_comparison_sample_preview(
 def test_batch_tallies_summed_by_jurisdiction_csv_generation(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids,  # pylint: disable=unused-argument
-    contest_ids,  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    batch_tallies,  # pylint: disable=unused-argument
+    jurisdiction_ids,
+    contest_ids,
+    election_settings,
+    manifests,
+    batch_tallies,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
 
@@ -1196,9 +1196,9 @@ def test_batch_comparison_pending_ballots(
     election_id: str,
     jurisdiction_ids: List[str],
     contest_id: str,
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    batch_tallies,  # pylint: disable=unused-argument
+    election_settings,
+    manifests,
+    batch_tallies,
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -1334,7 +1334,7 @@ def test_batch_comparison_pending_ballots(
 def test_batch_comparison_contests_pending_ballots_validation(
     client: FlaskClient,
     election_id: str,
-    contest_id: str,  # pylint: disable=unused-argument
+    contest_id: str,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/contest")

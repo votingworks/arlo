@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 
 from . import api
 from ..database import db_session, engine
-from ..models import *  # pylint: disable=wildcard-import
+from ..models import *
 from ..auth import restrict_access, UserType, get_loggedin_user, get_support_user
 from ..worker.tasks import (
     UserError,
@@ -70,7 +70,7 @@ def construct_contest_choice_csv_headers(
 
 @background_task
 def process_batch_tallies_file(
-    election_id: str,  # pylint: disable=unused-argument
+    election_id: str,
     jurisdiction_id: str,
     user: Tuple[UserType, str],
     support_user_email: Optional[str],
@@ -240,7 +240,7 @@ def reprocess_batch_tallies_file_if_uploaded(
 )
 @restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def start_upload_for_batch_tallies(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
 ):
     file_type = request.args.get("fileType")
@@ -302,9 +302,7 @@ def complete_upload_for_batch_tallies(
     methods=["GET"],
 )
 @restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
-def get_batch_tallies(
-    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
-):
+def get_batch_tallies(election: Election, jurisdiction: Jurisdiction):
     return jsonify(
         file=serialize_file(jurisdiction.batch_tallies_file),
         processing=serialize_file_processing(jurisdiction.batch_tallies_file),
@@ -317,7 +315,7 @@ def get_batch_tallies(
 )
 @restrict_access([UserType.AUDIT_ADMIN])
 def download_batch_tallies_file(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
 ):
     if not jurisdiction.batch_tallies_file:
@@ -335,7 +333,7 @@ def download_batch_tallies_file(
 )
 @restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def clear_batch_tallies(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
 ):
     if any_jurisdiction_file_is_processing(jurisdiction):
@@ -354,9 +352,7 @@ def clear_batch_tallies(
     methods=["GET"],
 )
 @restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
-def download_batch_tallies_template_csv(
-    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
-):
+def download_batch_tallies_template_csv(election: Election, jurisdiction: Jurisdiction):
     string_io = io.StringIO()
     template = csv.writer(string_io)
 

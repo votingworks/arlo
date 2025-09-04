@@ -11,7 +11,7 @@ from werkzeug.exceptions import Conflict, BadRequest
 
 from . import api
 from .activity import serialize_activity
-from ..models import *  # pylint: disable=wildcard-import
+from ..models import *
 from ..database import db_session
 from ..auth import restrict_access, UserType
 from .shared import (
@@ -322,7 +322,7 @@ def ballot_round_status(election: Election, round: Round) -> Dict[str, JSONDict]
     jurisdictions_with_offline_results_recorded = (
         {
             jurisdiction_id
-            for jurisdiction_id, in (
+            for (jurisdiction_id,) in (
                 JurisdictionResult.query.filter_by(round_id=round.id)
                 .group_by(JurisdictionResult.jurisdiction_id)
                 .values(JurisdictionResult.jurisdiction_id)
@@ -484,7 +484,7 @@ def batch_round_status(election: Election, round: Round) -> Dict[str, JSONDict]:
 
     finalized_jurisdiction_ids = {
         jurisdiction_id
-        for jurisdiction_id, in BatchResultsFinalized.query.filter_by(
+        for (jurisdiction_id,) in BatchResultsFinalized.query.filter_by(
             round_id=round.id
         ).values(BatchResultsFinalized.jurisdiction_id)
     }

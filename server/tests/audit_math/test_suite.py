@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name,consider-using-dict-items,consider-using-f-string
 from decimal import Decimal
 from itertools import product
 import pytest
@@ -37,7 +36,6 @@ def strata():
 
 
 def test_sprt_functionality(strata):
-
     for contest in strata:
         margin = (
             strata[contest].vote_totals["winner"] - strata[contest].vote_totals["loser"]
@@ -97,7 +95,6 @@ def cvr_strata():
 
 
 def test_cvr_compute_risk(cvr_strata):
-
     for contest in cvr_strata:
         sample_size = true_sample_sizes[contest]
 
@@ -119,10 +116,10 @@ def test_cvr_compute_risk(cvr_strata):
         expected_p = expected_p_values["no_discrepancies"][contest]
         diff = abs(p_value - expected_p)
 
-        assert (
-            diff < 0.001
-        ), "Incorrect p-value. Expected {}, got {} in contest {}".format(
-            expected_p, p_value, contest
+        assert diff < 0.001, (
+            "Incorrect p-value. Expected {}, got {} in contest {}".format(
+                expected_p, p_value, contest
+            )
         )
         assert p_value <= ALPHA, "Audit should have finished but didn't"
 
@@ -144,10 +141,10 @@ def test_cvr_compute_risk(cvr_strata):
         diff = abs(p_value - expected_p)
         finished = p_value <= ALPHA
 
-        assert (
-            diff < 0.001
-        ), "Incorrect p-value. Expected {}, got {} in contest {}".format(
-            expected_p, p_value, contest
+        assert diff < 0.001, (
+            "Incorrect p-value. Expected {}, got {} in contest {}".format(
+                expected_p, p_value, contest
+            )
         )
         if contest in ["Contest E"]:
             assert finished, "Audit should have finished but didn't"
@@ -172,10 +169,10 @@ def test_cvr_compute_risk(cvr_strata):
         diff = abs(p_value - expected_p)
         finished = p_value <= ALPHA
 
-        assert (
-            diff < 0.001
-        ), "Incorrect p-value. Expected {}, got {} in contest {}".format(
-            expected_p, p_value, contest
+        assert diff < 0.001, (
+            "Incorrect p-value. Expected {}, got {} in contest {}".format(
+                expected_p, p_value, contest
+            )
         )
 
         assert not finished, "Audit shouldn't have finished but did!"
@@ -261,7 +258,6 @@ def test_fishers_combined():
 
 
 def test_get_sample_size():
-
     contest_dict = {
         "winner": 1011000,
         "loser": 989000,
@@ -322,7 +318,6 @@ def test_get_sample_size():
 
 
 def test_winner_loses_no_cvr():
-
     contest_dict = {
         "winner": 5300,
         "loser": 5100,

@@ -155,14 +155,10 @@ snapshots["test_batch_comparison_round_2 11"] = {
     "status": "NOT_STARTED",
 }
 
-snapshots[
-    "test_batch_comparison_round_2 12"
-] = """Batch Name,Container,Tabulator
+snapshots["test_batch_comparison_round_2 12"] = """Batch Name,Container,Tabulator
 """
 
-snapshots[
-    "test_batch_comparison_round_2 13"
-] = """######## ELECTION INFO ########\r
+snapshots["test_batch_comparison_round_2 13"] = """######## ELECTION INFO ########\r
 Organization,Election Name,State\r
 Test Org test_batch_comparison_round_2,Test Election,CA\r
 \r
@@ -191,9 +187,7 @@ J2,Batch 4,500,Round 2: 0.608147659546583410,No,,candidate 1: 500; candidate 2: 
 Totals,,2700,,,candidate 1: 1600; candidate 2: 550; candidate 3: 450,candidate 1: 2700; candidate 2: 1350; candidate 3: 1350,,\r
 """
 
-snapshots[
-    "test_batch_comparison_round_2 14"
-] = """######## SAMPLED BATCHES ########\r
+snapshots["test_batch_comparison_round_2 14"] = """######## SAMPLED BATCHES ########\r
 Jurisdiction Name,Batch Name,Ballots in Batch,Ticket Numbers: Contest 1,Audited?,Audit Results: Contest 1,Reported Results: Contest 1,Change in Results: Contest 1,Change in Margin: Contest 1,Last Edited By\r
 J1,Batch 1,500,Round 1: 0.720194360819624066,Yes,candidate 1: 400; candidate 2: 50; candidate 3: 40,candidate 1: 500; candidate 2: 250; candidate 3: 250,candidate 1: +100; candidate 2: +200; candidate 3: +210,-100,jurisdiction.admin-UUID@example.com\r
 J1,Batch 2,500,Round 1: 0.474971525750860236,Yes,candidate 1: 400; candidate 2: 50; candidate 3: 40,candidate 1: 500; candidate 2: 250; candidate 3: 250,candidate 1: +100; candidate 2: +200; candidate 3: +210,-100,jurisdiction.admin-UUID@example.com\r

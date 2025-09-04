@@ -3,9 +3,9 @@ import io
 import json
 from flask.testing import FlaskClient
 
-from ..helpers import *  # pylint: disable=wildcard-import
+from ..helpers import *
 from ...auth import UserType
-from ...models import *  # pylint: disable=wildcard-import
+from ...models import *
 from ...util.jsonschema import JSONDict
 
 BALLOT_1_BATCH_NAME = "4"
@@ -32,7 +32,7 @@ def test_ja_ballots_round_1(
     jurisdiction_ids: List[str],
     contest_ids: str,
     round_1_id: str,
-    audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
+    audit_board_round_1_ids: List[str],
     snapshot,
 ):
     set_logged_in_user(
@@ -179,7 +179,7 @@ def test_ja_ballots_round_2(
     election_id: str,
     jurisdiction_ids: List[str],
     round_2_id: str,
-    audit_board_round_2_ids: List[str],  # pylint: disable=unused-argument
+    audit_board_round_2_ids: List[str],
     snapshot,
 ):
     set_logged_in_user(
@@ -233,7 +233,7 @@ def test_ab_list_ballot_round_1(
     jurisdiction_ids: List[str],
     contest_ids: str,
     round_1_id: str,
-    audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
+    audit_board_round_1_ids: List[str],
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
@@ -1160,7 +1160,7 @@ def test_ja_ballot_retrieval_list_round_1(
     election_id: str,
     jurisdiction_ids: List[str],
     round_1_id: str,
-    audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
+    audit_board_round_1_ids: List[str],
     snapshot,
 ):
     set_logged_in_user(
@@ -1188,7 +1188,7 @@ def test_ja_ballot_retrieval_list_round_2(
     election_id: str,
     jurisdiction_ids: List[str],
     round_2_id: str,
-    audit_board_round_2_ids: str,  # pylint: disable=unused-argument
+    audit_board_round_2_ids: str,
     snapshot,
 ):
     set_logged_in_user(
@@ -1233,7 +1233,7 @@ def test_ballots_human_sort_order(
     election_id: str,
     jurisdiction_ids: List[str],
     contest_ids: List[str],
-    election_settings,  # pylint: disable=unused-argument
+    election_settings,
     snapshot,
 ):
     # Upload a manifest with mixed text/number batch names

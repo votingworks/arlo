@@ -8,7 +8,7 @@ from werkzeug.exceptions import Conflict, BadRequest
 
 
 from . import api
-from ..models import *  # pylint: disable=wildcard-import
+from ..models import *
 from ..auth import restrict_access, UserType
 from ..util.csv_download import (
     csv_response,
@@ -89,7 +89,8 @@ def pretty_ballot_ticket_numbers(
         ]
         ticket_numbers = []
         for round_num, round_tuples in group_by(
-            contest_tuples, key=lambda tuple: tuple[0]  # round_num
+            contest_tuples,
+            key=lambda tuple: tuple[0],  # round_num
         ).items():
             ticket_numbers_str = ", ".join(
                 sorted(ticket_number for _, _, ticket_number in round_tuples)
@@ -967,9 +968,9 @@ def sampled_batch_rows(election: Election, jurisdiction: Optional[Jurisdiction] 
                 # unsampled batches. We add these below, so we skip them here.
                 if not is_combined:
                     for choice in contest.choices:
-                        total_reported_results[contest.id][
-                            choice.id
-                        ] += reported_results[choice.id]
+                        total_reported_results[contest.id][choice.id] += (
+                            reported_results[choice.id]
+                        )
 
             reported_results_by_name = reported_results and {
                 choice.name: reported_results[choice.id] for choice in contest.choices

@@ -1,7 +1,6 @@
-# pylint: disable=invalid-name
 import sys
 
-from server.models import *  # pylint: disable=wildcard-import
+from server.models import *
 from server.database import db_session
 
 if __name__ == "__main__":

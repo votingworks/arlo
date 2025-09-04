@@ -14,7 +14,7 @@ from sqlalchemy import and_, func, not_
 
 from . import api
 from ..database import db_session
-from ..models import *  # pylint: disable=wildcard-import
+from ..models import *
 from .shared import (
     BallotDraw,
     SampleSize,
@@ -680,9 +680,7 @@ def list_rounds_audit_admin(election: Election):
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round", methods=["GET"]
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
-def list_rounds_jurisdiction_admin(
-    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
-):
+def list_rounds_jurisdiction_admin(election: Election, jurisdiction: Jurisdiction):
     return jsonify({"rounds": [serialize_round(r) for r in election.rounds]})
 
 

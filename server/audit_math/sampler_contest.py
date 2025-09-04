@@ -82,7 +82,6 @@ class Contest:
 
             self.candidates[cand] = contest_info_dict[cand]
 
-        # pylint: disable=pointless-string-statement
         """
         Initialize a dictionary of diluted margin info:
         {
@@ -129,7 +128,6 @@ class Contest:
             else:
                 self.losers[choice[0]] = choice[1]
 
-        # pylint: disable=consider-using-dict-items
         for loser in self.losers:
             self.margins["losers"][loser] = {
                 "p_l": self.losers[loser] / self.ballots,
@@ -138,7 +136,6 @@ class Contest:
 
         min_margin = self.ballots
 
-        # pylint: disable=consider-using-dict-items
         for winner in self.winners:
             s_w = self.winners[winner] / v_wl
 

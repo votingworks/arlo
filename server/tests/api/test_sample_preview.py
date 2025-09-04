@@ -2,7 +2,7 @@ from typing import List
 import json
 from flask.testing import FlaskClient
 
-from ..helpers import *  # pylint: disable=wildcard-import
+from ..helpers import *
 from ... import config
 
 dummy_sample_size = {"key": "custom", "size": 10, "prob": None}
@@ -12,8 +12,8 @@ def test_sample_preview(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    manifests,  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
+    manifests,
+    election_settings,
     contest_ids: List[str],
     snapshot,
 ):
@@ -78,8 +78,8 @@ def test_sample_preview(
 def test_sample_preview_in_progress(
     client: FlaskClient,
     election_id: str,
-    manifests,  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
+    manifests,
+    election_settings,
     contest_ids: List[str],
 ):
     orig_run_background_tasks_immediately = config.RUN_BACKGROUND_TASKS_IMMEDIATELY
@@ -130,7 +130,7 @@ def test_preview_after_audit_launch(
     client: FlaskClient,
     election_id: str,
     contest_ids: List[str],
-    round_1_id: str,  # pylint: disable=unused-argument
+    round_1_id: str,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = post_json(

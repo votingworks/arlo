@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 import csv
 import sys
 from server.models import BatchInventoryData, Election

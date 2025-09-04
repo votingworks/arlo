@@ -2,18 +2,15 @@ import io
 import json
 from flask.testing import FlaskClient
 
-from ...models import *  # pylint: disable=wildcard-import
-from ..helpers import *  # pylint: disable=wildcard-import
+from ...models import *
+from ..helpers import *
 
 
 def test_upload_standardized_contests(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 ):
     standardized_contests_file = (
-        "Contest Name,Jurisdictions\n"
-        "Contest 1,all\n"
-        'Contest 2,"J1, J3"\n'
-        "Contest 3,J2 \n"
+        'Contest Name,Jurisdictions\nContest 1,all\nContest 2,"J1, J3"\nContest 3,J2 \n'
     )
     rv = upload_standardized_contests(
         client,
@@ -84,7 +81,7 @@ def test_standardized_contests_replace(
 
     rv = upload_standardized_contests(
         client,
-        io.BytesIO(b"Contest Name,Jurisdictions\n" b"Contest 4,all\n"),
+        io.BytesIO(b"Contest Name,Jurisdictions\nContest 4,all\n"),
         election_id,
     )
     assert_ok(rv)
@@ -105,7 +102,7 @@ def test_standardized_contests_replace(
 def test_standardized_contests_bad_jurisdiction(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
 ):
     rv = upload_standardized_contests(
         client,
@@ -141,11 +138,11 @@ def test_standardized_contests_bad_jurisdiction(
 def test_standardized_contests_no_jurisdictions(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
 ):
     rv = upload_standardized_contests(
         client,
-        io.BytesIO(b"Contest Name,Jurisdictions\n" b"Contest 1,"),
+        io.BytesIO(b"Contest Name,Jurisdictions\nContest 1,"),
         election_id,
     )
     assert_ok(rv)
@@ -174,7 +171,7 @@ def test_standardized_contests_no_jurisdictions(
 def test_standardized_contests_missing_file(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
 ):
     rv = client.post(
         f"/api/election/{election_id}/standardized-contests/file/upload-complete",
@@ -194,7 +191,7 @@ def test_standardized_contests_missing_file(
 def test_standardized_contests_bad_csv(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
 ):
     rv = client.post(
         f"/api/election/{election_id}/standardized-contests/file/upload-complete",
@@ -236,7 +233,7 @@ def test_standardized_contests_bad_csv(
 def test_standardized_contests_wrong_audit_type(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
 ):
     for audit_type in [AuditType.BALLOT_POLLING, AuditType.BATCH_COMPARISON]:
         # Hackily change the audit type
@@ -247,7 +244,7 @@ def test_standardized_contests_wrong_audit_type(
 
         rv = upload_standardized_contests(
             client,
-            io.BytesIO(b"Contest Name,Jurisdictions\n" b"Contest 1,all\n"),
+            io.BytesIO(b"Contest Name,Jurisdictions\nContest 1,all\n"),
             election_id,
         )
         assert rv.status_code == 409
@@ -266,7 +263,7 @@ def test_standardized_contests_before_jurisdictions(
 ):
     rv = upload_standardized_contests(
         client,
-        io.BytesIO(b"Contest Name,Jurisdictions\n" b"Contest 1,all\n"),
+        io.BytesIO(b"Contest Name,Jurisdictions\nContest 1,all\n"),
         election_id,
     )
     assert rv.status_code == 409
@@ -398,9 +395,7 @@ def test_standardized_contests_change_jurisdictions_file(
     rv = upload_jurisdictions_file(
         client,
         io.BytesIO(
-            (
-                "Jurisdiction,Admin Email\n" f"J1,{default_ja_email(election_id)}\n"
-            ).encode()
+            (f"Jurisdiction,Admin Email\nJ1,{default_ja_email(election_id)}\n").encode()
         ),
         election_id,
     )
@@ -456,16 +451,13 @@ def test_reupload_standardized_contests_after_contests_selected(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    manifests,  # pylint: disable=unused-argument
-    cvrs,  # pylint: disable=unused-argument
+    manifests,
+    cvrs,
 ):
     # Upload standardized contests
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     standardized_contests_file = (
-        "Contest Name,Jurisdictions\n"
-        "Contest 1,J1\n"
-        'Contest 2,"J1, J3"\n'
-        "Contest 3,J2 \n"
+        'Contest Name,Jurisdictions\nContest 1,J1\nContest 2,"J1, J3"\nContest 3,J2 \n'
     )
     rv = upload_standardized_contests(
         client,
@@ -614,7 +606,7 @@ def test_standardized_contests_get_upload_url(client: FlaskClient, election_id: 
 def test_replace_standardized_contests_file_while_processing_jurisdictions_file_fails(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
 ):
     with no_automatic_task_execution():
         # upload jurisdictions file, but don't process it

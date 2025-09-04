@@ -11,9 +11,7 @@ snapshots["test_standardize_contest_names 1"] = [
     {"key": "default", "prob": None, "size": 20}
 ]
 
-snapshots[
-    "test_standardize_contest_names 2"
-] = """######## ELECTION INFO ########\r
+snapshots["test_standardize_contest_names 2"] = """######## ELECTION INFO ########\r
 Organization,Election Name,State\r
 Test Org test_standardize_contest_names,Test Election,CA\r
 \r

@@ -18,13 +18,13 @@ os.environ["FLASK_ENV"] = "test"
 os.environ["RUN_BACKGROUND_TASKS_IMMEDIATELY"] = "True"
 # Always use the local file system (not S3) for tests.
 os.environ["ARLO_FILE_UPLOAD_STORAGE_PATH"] = "/tmp/arlo-test"
-# pylint: disable=wrong-import-position
+
 
 from ..app import app
 from ..database import reset_db
-from ..models import *  # pylint: disable=wildcard-import
+from ..models import *
 from ..auth import UserType, restrict_access
-from .helpers import *  # pylint: disable=wildcard-import
+from .helpers import *
 
 
 # The fixtures in this module are available in any test via dependency
@@ -59,7 +59,7 @@ def client() -> FlaskClient:
 
 
 @pytest.fixture
-def org_id(client: FlaskClient, request) -> str:  # pylint: disable=unused-argument
+def org_id(client: FlaskClient, request) -> str:
     org_id, _ = create_org_and_admin(f"Test Org {request.node.name}", DEFAULT_AA_EMAIL)
     return org_id
 
@@ -180,18 +180,14 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
     )
     rv = upload_ballot_manifest(
         client,
-        io.BytesIO(
-            b"Batch Name,Number of Ballots\n" b"1,23\n" b"2,101\n" b"3,122\n" b"4,400"
-        ),
+        io.BytesIO(b"Batch Name,Number of Ballots\n1,23\n2,101\n3,122\n4,400"),
         election_id,
         jurisdiction_ids[0],
     )
     assert_ok(rv)
     rv = upload_ballot_manifest(
         client,
-        io.BytesIO(
-            b"Batch Name,Number of Ballots\n" b"1,20\n" b"2,10\n" b"3,220\n" b"4,40"
-        ),
+        io.BytesIO(b"Batch Name,Number of Ballots\n1,20\n2,10\n3,220\n4,40"),
         election_id,
         jurisdiction_ids[1],
     )
@@ -202,10 +198,10 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 def round_1_id(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    contest_ids: str,  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    contest_ids: str,
+    election_settings,
+    manifests,
 ) -> str:
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
@@ -232,7 +228,7 @@ def round_2_id(
     election_id: str,
     contest_ids: List[str],
     round_1_id: str,
-    audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
+    audit_board_round_1_ids: List[str],
 ) -> str:
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     run_audit_round(round_1_id, contest_ids[0], contest_ids, 0.55)
@@ -320,15 +316,13 @@ def audit_board_round_2_ids(
 def auth_decorator_test_routes():
     @app.route("/api/election/<election_id>/test_auth")
     @restrict_access([UserType.AUDIT_ADMIN])
-    def fake_election_route(election: Election):  # pylint: disable=unused-variable
+    def fake_election_route(election: Election):
         assert election
         return jsonify(election.id)
 
     @app.route("/api/election/<election_id>/jurisdiction/<jurisdiction_id>/test_auth")
     @restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
-    def fake_jurisdiction_route(
-        election: Election, jurisdiction: Jurisdiction
-    ):  # pylint: disable=unused-variable
+    def fake_jurisdiction_route(election: Election, jurisdiction: Jurisdiction):
         assert election
         assert jurisdiction
         return jsonify([election.id, jurisdiction.id])
@@ -342,7 +336,7 @@ def auth_decorator_test_routes():
         jurisdiction: Jurisdiction,
         round: Round,
         audit_board: AuditBoard,
-    ):  # pylint: disable=unused-variable
+    ):
         assert election
         assert jurisdiction
         assert round
@@ -353,9 +347,7 @@ def auth_decorator_test_routes():
         "/api/election/<election_id>/jurisdiction/<jurisdiction_id>/tally-entry/test_auth"
     )
     @restrict_access([UserType.TALLY_ENTRY])
-    def fake_tally_entry_route(
-        election: Election, jurisdiction: Jurisdiction
-    ):  # pylint: disable=unused-variable
+    def fake_tally_entry_route(election: Election, jurisdiction: Jurisdiction):
         assert election
         assert jurisdiction
         return jsonify([election.id, jurisdiction.id])
@@ -367,9 +359,9 @@ def auth_decorator_test_routes():
 @pytest.fixture(scope="session", autouse=True)
 def error_test_routes():
     @app.route("/test_uncaught_exception")
-    def fake_uncaught_exception_route():  # pylint: disable=unused-variable
+    def fake_uncaught_exception_route():
         raise Exception("Catch me if you can!")
 
     @app.route("/test_internal_error")
-    def fake_internal_error_route():  # pylint: disable=unused-variable
+    def fake_internal_error_route():
         abort(500)

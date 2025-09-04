@@ -2,12 +2,12 @@ import pytest
 from flask.testing import FlaskClient
 
 from ...database import db_session
-from ...models import *  # pylint: disable=wildcard-import
-from ..helpers import *  # pylint: disable=wildcard-import
+from ...models import *
+from ..helpers import *
 
 
 @pytest.fixture
-def org_id(client: FlaskClient, request) -> str:  # pylint: disable=unused-argument
+def org_id(client: FlaskClient, request) -> str:
     # Allow specifying a custom test org via @pytest.mark.parametrize to toggle relevant feature
     # flags
     org_id = str(request.param)
@@ -258,8 +258,8 @@ def test_sample_extra_batches_with_no_extra_batches_to_sample(
     election_id: str,
     jurisdiction_ids: List[str],
     contest_id: str,
-    batch_tallies,  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
+    batch_tallies,
+    election_settings,
 ):
     # Upload manifests that only have one type of batch (BMD/HMPB) per jurisdiction
     set_logged_in_user(
@@ -361,8 +361,8 @@ def test_sample_extra_batches_min_percentage_of_jurisdiction_ballots_selected(
     election_id: str,
     jurisdiction_ids: List[str],
     contest_id: str,
-    batch_tallies,  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
+    batch_tallies,
+    election_settings,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -436,8 +436,8 @@ def test_sample_extra_batches_hmpb_and_bmd_groups_selected(
     election_id: str,
     jurisdiction_ids: List[str],
     contest_id: str,
-    batch_tallies,  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
+    batch_tallies,
+    election_settings,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -512,12 +512,12 @@ def test_sample_extra_batches_hmpb_and_bmd_groups_selected(
         if batch_name in bmd_batch_names:
             bmd_batch_found = True
 
-    assert (
-        hmpb_batch_found
-    ), f"Expected to find one HMPB batch. HMPB batches: {hmpb_batch_names}. Actual batches: {j1_batch_names}"
-    assert (
-        bmd_batch_found
-    ), f"Expected to find one BMD batch. BMD batches: {bmd_batch_names}. Actual batches: {j1_batch_names}"
+    assert hmpb_batch_found, (
+        f"Expected to find one HMPB batch. HMPB batches: {hmpb_batch_names}. Actual batches: {j1_batch_names}"
+    )
+    assert bmd_batch_found, (
+        f"Expected to find one BMD batch. BMD batches: {bmd_batch_names}. Actual batches: {j1_batch_names}"
+    )
 
 
 @pytest.mark.parametrize(
@@ -531,9 +531,9 @@ def test_sample_extra_batches_with_invalid_counting_group(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_id: str,  # pylint: disable=unused-argument
-    batch_tallies,  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
+    contest_id: str,
+    batch_tallies,
+    election_settings,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -574,7 +574,7 @@ def test_sample_extra_batches_with_invalid_counting_group(
     )
     rv = upload_ballot_manifest(
         client,
-        io.BytesIO(b"Batch Name,Number of Ballots\n" b"Batch 1,500\n"),
+        io.BytesIO(b"Batch Name,Number of Ballots\nBatch 1,500\n"),
         election_id,
         jurisdiction_ids[0],
     )
@@ -612,9 +612,9 @@ def test_sample_extra_batches_with_combined_batches(
     election_id: str,
     jurisdiction_ids: List[str],
     contest_id: str,
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    batch_tallies,  # pylint: disable=unused-argument
+    election_settings,
+    manifests,
+    batch_tallies,
     snapshot,
 ):
     set_logged_in_user(

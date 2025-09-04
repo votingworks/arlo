@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """Election.deleted_at
 
 Revision ID: df1334fc5fe9
@@ -6,6 +5,7 @@ Revises: 07859b6b370b
 Create Date: 2021-03-30 16:54:17.171317+00:00
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

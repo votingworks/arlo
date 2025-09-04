@@ -6,8 +6,8 @@ import urllib.parse
 import pytest
 from flask.testing import FlaskClient
 
-from .helpers import *  # pylint: disable=wildcard-import
-from ..models import *  # pylint: disable=wildcard-import
+from .helpers import *
+from ..models import *
 
 
 @pytest.fixture
@@ -85,8 +85,8 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 def test_all_ballots_sample_size(
     client: FlaskClient,
     election_id: str,
-    contest_ids: List[str],  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
+    contest_ids: List[str],
+    election_settings,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
@@ -100,10 +100,10 @@ def test_all_ballots_sample_size(
 def test_all_ballots_audit(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
     contest_ids: List[str],
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
+    election_settings,
+    manifests,
     snapshot,
 ):
     contest_id = contest_ids[0]
@@ -453,7 +453,7 @@ def test_all_ballots_audit(
 def test_full_hand_tally_results_validation(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
     round_1_id: str,
 ):
     set_logged_in_user(
@@ -742,7 +742,7 @@ def test_full_hand_tally_results_validation(
 def test_full_hand_tally_results_unfinalize(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
     round_1_id: str,
 ):
     set_logged_in_user(

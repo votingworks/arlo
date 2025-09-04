@@ -5,8 +5,8 @@ from collections import defaultdict
 from flask.testing import FlaskClient
 import pytest
 
-from ...models import *  # pylint: disable=wildcard-import
-from ..helpers import *  # pylint: disable=wildcard-import
+from ...models import *
+from ..helpers import *
 
 
 # In one jurisdiction, add the Container column to the manifest. In this
@@ -62,7 +62,7 @@ def cvrs(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    manifests,  # pylint: disable=unused-argument
+    manifests,
 ):
     j1_cvr_lines = [
         f"TABULATOR{tabulator},BATCH{batch},{ballot},{tabulator}-{batch}-{ballot},x,x,{tabulator % 2},0,0,1,0"
@@ -74,9 +74,7 @@ def cvrs(
 ,,,,,,,Contest 1 (Vote For=1),Contest 1 (Vote For=1),Contest 2 (Vote For=2),Contest 2 (Vote For=2),Contest 2 (Vote For=2)
 ,,,,,,,Choice 1-1,Choice 1-2,Choice 2-1,Choice 2-2,Choice 2-3
 CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,PrecinctPortion,BallotType,REP,DEM,LBR,IND,,
-    """ + "\n".join(
-        [f"{i},{line}" for i, line in enumerate(j1_cvr_lines)]
-    )
+    """ + "\n".join([f"{i},{line}" for i, line in enumerate(j1_cvr_lines)])
 
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -99,9 +97,7 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,PrecinctPortion,BallotType,R
 ,,,,,,,Contest 1 (Vote For=1),Contest 1 (Vote For=1),Contest 2 (Vote For=2),Contest 2 (Vote For=2),Contest 2 (Vote For=2)
 ,,,,,,,Choice 1-1,Choice 1-2,Choice 2-1,Choice 2-2,Choice 2-3
 CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,PrecinctPortion,BallotType,REP,DEM,LBR,IND,,
-    """ + "\n".join(
-        [f"{i},{line}" for i, line in enumerate(j2_cvr_lines)]
-    )
+    """ + "\n".join([f"{i},{line}" for i, line in enumerate(j2_cvr_lines)])
 
     upload_cvrs(
         client,
@@ -115,10 +111,10 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,PrecinctPortion,BallotType,R
 def test_ballot_comparison_container_manifest(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    cvrs,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    election_settings,
+    manifests,
+    cvrs,
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -211,9 +207,9 @@ def test_ballot_comparison_container_manifest(
                 audit_board["id"]
             )
     for audit_board_ids in audit_boards_by_container.values():
-        assert (
-            len(audit_board_ids) == 1
-        ), "Different audit boards assigned ballots from the same container"
+        assert len(audit_board_ids) == 1, (
+            "Different audit boards assigned ballots from the same container"
+        )
 
     # Check that the second jurisdiction's audit boards have ballots divvied up by tabulator+batch name
     set_logged_in_user(
@@ -236,9 +232,9 @@ def test_ballot_comparison_container_manifest(
                 (ballot["batch"]["tabulator"], ballot["batch"]["name"])
             ].add(audit_board["id"])
     for audit_board_ids in audit_boards_by_tabulator_and_name.values():
-        assert (
-            len(audit_board_ids) == 1
-        ), "Different audit boards assigned ballots from the same tabulator+name"
+        assert len(audit_board_ids) == 1, (
+            "Different audit boards assigned ballots from the same tabulator+name"
+        )
 
     # Check that ballots are ordered by audit board then container for JA
     set_logged_in_user(
@@ -277,7 +273,7 @@ def test_ballot_comparison_container_manifest(
 def test_ballot_comparison_manifest_missing_tabulator(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -324,7 +320,7 @@ def test_ballot_comparison_manifest_missing_tabulator(
 def test_ballot_comparison_manifest_unexpected_cvr_column(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)

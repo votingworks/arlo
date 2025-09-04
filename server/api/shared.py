@@ -5,7 +5,7 @@ from sqlalchemy import and_, func, literal
 from sqlalchemy.orm import joinedload, load_only
 
 
-from ..models import *  # pylint: disable=wildcard-import
+from ..models import *
 from ..audit_math import (
     ballot_polling_types,
     macro,
@@ -355,7 +355,7 @@ def sampled_ballot_interpretations_to_cvrs(
     # In hybrid audits, only count CVR ballots
     if contest.election.audit_type == AuditType.HYBRID:
         ballots_query = ballots_query.filter(
-            Batch.has_cvrs == True  # pylint: disable=singleton-comparison
+            Batch.has_cvrs == True  # noqa: E712
         )
 
     # For targeted contests, count the number of times the ballot was sampled
@@ -748,7 +748,6 @@ def compute_sample_batches_for_contest(
                 selected_batch_keys, num_jurisdiction_ballots
             ):
                 num_jurisdiction_ballots_selected = sum(
-                    # pylint: disable=cell-var-from-loop
                     batch_key_to_num_ballots[batch_key]
                     for batch_key in selected_batch_keys
                 )

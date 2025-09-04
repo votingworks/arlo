@@ -9,7 +9,7 @@ from . import api
 from ..auth.auth_helpers import allow_public_access, allow_any_logged_in_user_access
 from ..audit_math import bravo, sampler_contest, supersimple
 from ..util.jsonschema import validate
-from ..models import *  # pylint: disable=wildcard-import
+from ..models import *
 from ..util.get_json import safe_get_json_dict
 from ..util.file import store_file
 

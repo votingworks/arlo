@@ -1,5 +1,5 @@
 import pytest
-from .helpers import *  # pylint: disable=wildcard-import
+from .helpers import *
 
 
 def test_compare_json():

@@ -34,5 +34,5 @@ class EOR_BRAVO(Audit):
         sub_audit: PairwiseAudit,
         max_sample_size: int = ...,
         *args: Any,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> Any: ...

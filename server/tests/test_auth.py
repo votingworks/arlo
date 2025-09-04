@@ -12,9 +12,9 @@ from flask.testing import FlaskClient
 
 from ..auth import UserType
 from ..auth.auth_routes import auth0_sa, auth0_aa
-from ..models import *  # pylint: disable=wildcard-import
+from ..models import *
 from ..util.jsonschema import JSONDict
-from .helpers import *  # pylint: disable=wildcard-import
+from .helpers import *
 from .. import config
 from ..app import csrf, app
 
@@ -154,7 +154,7 @@ def test_support_start(client: FlaskClient):
 
 def test_support_callback(
     client: FlaskClient,
-    org_id: str,  # pylint: disable=unused-argument
+    org_id: str,
 ):
     with patch.object(auth0_sa, "authorize_access_token", return_value=None):
         mock_response = Mock()
@@ -182,7 +182,7 @@ def test_support_callback(
 
 def test_support_callback_rejected(
     client: FlaskClient,
-    org_id: str,  # pylint: disable=unused-argument
+    org_id: str,
 ):
     bad_user_infos: List[Optional[JSONDict]] = [None, {}, {"email": AA_EMAIL}]
     for bad_user_info in bad_user_infos:
@@ -203,7 +203,7 @@ def test_support_callback_rejected(
 
 def test_support_callback_multiple_allowed_domains(
     client: FlaskClient,
-    org_id: str,  # pylint: disable=unused-argument
+    org_id: str,
 ):
     config.SUPPORT_EMAIL_DOMAINS = ["voting.works", "example.gov"]
     with patch.object(auth0_sa, "authorize_access_token", return_value=None):
@@ -555,7 +555,7 @@ def test_tally_entry_login(
     batch_election_id: str,
     batch_jurisdiction_id: str,
     batch_ja_email: str,
-    batch_round_id: str,  # pylint: disable=unused-argument
+    batch_round_id: str,
 ):
     tally_entry_client = app.test_client()
 
@@ -691,7 +691,7 @@ def test_tally_entry_reject_login_request(
     batch_election_id: str,
     batch_jurisdiction_id: str,
     batch_ja_email: str,
-    batch_round_id: str,  # pylint: disable=unused-argument
+    batch_round_id: str,
 ):
     tally_entry_client = app.test_client()
 
@@ -779,7 +779,7 @@ def test_tally_entry_generate_unique_code(
     batch_election_id: str,
     batch_jurisdiction_id: str,
     batch_ja_email: str,
-    batch_round_id: str,  # pylint: disable=unused-argument
+    batch_round_id: str,
 ):
     # To make sure that the login codes are unique within a jurisdiction, we'll
     # create tally entry users with every possible login code except one (000)
@@ -936,7 +936,7 @@ def test_tally_entry_invalid_code(
     batch_election_id: str,
     batch_jurisdiction_id: str,
     batch_ja_email: str,
-    batch_round_id: str,  # pylint: disable=unused-argument
+    batch_round_id: str,
     election_id: str,
     jurisdiction_id: str,
     ja_email: str,
@@ -1365,8 +1365,8 @@ def test_restrict_access_audit_admin_wrong_org(
 
 def test_restrict_access_audit_admin_not_found(
     client: FlaskClient,
-    election_id: str,  # pylint: disable=unused-argument
-    aa_email: str,  # pylint: disable=unused-argument
+    election_id: str,
+    aa_email: str,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email)
     rv = client.get("/api/election/not-a-real-id/test_auth")
@@ -1375,7 +1375,7 @@ def test_restrict_access_audit_admin_not_found(
 
 def test_restrict_access_audit_admin_with_jurisdiction_admin(
     client: FlaskClient,
-    org_id: str,  # pylint: disable=unused-argument
+    org_id: str,
     election_id: str,
     ja_email: str,
 ):
@@ -1394,7 +1394,7 @@ def test_restrict_access_audit_admin_with_jurisdiction_admin(
 
 def test_restrict_access_audit_admin_audit_board_user(
     client: FlaskClient,
-    org_id: str,  # pylint: disable=unused-argument
+    org_id: str,
     election_id: str,
     audit_board_id: str,
 ):
@@ -1432,7 +1432,7 @@ def test_restrict_access_audit_admin_tally_entry_user(
 
 def test_restrict_access_audit_admin_anonymous_user(
     client: FlaskClient,
-    org_id: str,  # pylint: disable=unused-argument
+    org_id: str,
     election_id: str,
 ):
     clear_logged_in_user(client)
@@ -2086,7 +2086,7 @@ def test_support(client: FlaskClient):
 
 def test_csrf(client: FlaskClient, org_id: str):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    csrf._csrf_disable = False  # pylint: disable=protected-access
+    csrf._csrf_disable = False
 
     body = json.dumps(
         dict(
@@ -2116,4 +2116,4 @@ def test_csrf(client: FlaskClient, org_id: str):
     )
     assert rv.status_code == 200
 
-    csrf._csrf_disable = True  # pylint: disable=protected-access
+    csrf._csrf_disable = True

@@ -12,7 +12,6 @@ from . import activity_log
 from ..sentry import configure_sentry
 
 
-# pylint: disable=too-many-return-statements
 def slack_message(activity: activity_log.Activity):
     base = activity.base
     org_link = urljoin(config.HTTP_ORIGIN, f"/support/orgs/{base.organization_id}")
@@ -217,7 +216,7 @@ def slack_message(activity: activity_log.Activity):
         )
 
     if isinstance(activity, activity_log.CreateAuditBoards):
-        s = "s" if activity.num_audit_boards > 1 else ""  # pylint: disable=invalid-name
+        s = "s" if activity.num_audit_boards > 1 else ""
         return dict(
             text=f"{activity.num_audit_boards} audit board{s} created for {activity.jurisdiction_name}",
             blocks=[
@@ -334,9 +333,7 @@ def send_new_slack_notification(organization_id: Optional[str] = None) -> None:
         .one_or_none()
     )
     if record:
-        ActivityClass = getattr(  # pylint: disable=invalid-name
-            activity_log, record.activity_name
-        )
+        ActivityClass = getattr(activity_log, record.activity_name)
         activity: activity_log.Activity = ActivityClass(
             **dict(
                 record.info,

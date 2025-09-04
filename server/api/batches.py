@@ -11,7 +11,7 @@ from sqlalchemy import func
 from . import api
 from ..auth import get_loggedin_user, get_support_user, restrict_access, UserType
 from ..database import db_session
-from ..models import *  # pylint: disable=wildcard-import
+from ..models import *
 from .shared import get_current_round, group_combined_batches
 from ..util.csv_download import csv_response, jurisdiction_timestamp_name
 from ..util.jsonschema import JSONDict, validate
@@ -134,7 +134,7 @@ def construct_batch_last_edited_by_string(batch: Batch) -> Optional[str]:
     [UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN, UserType.TALLY_ENTRY]
 )
 def list_batches_for_jurisdiction(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
     round: Round,
 ):
@@ -269,7 +269,7 @@ def validate_batch_results(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN, UserType.TALLY_ENTRY])
 def record_batch_results(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
     round: Round,
     batch_id: str,
@@ -320,7 +320,7 @@ def record_batch_results(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def finalize_batch_results(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
     round: Round,
 ):
@@ -370,7 +370,7 @@ def finalize_batch_results(
 )
 @restrict_access([UserType.AUDIT_ADMIN])
 def unfinalize_batch_results(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
     round: Round,
 ):

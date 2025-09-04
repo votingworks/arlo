@@ -7,9 +7,7 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
-snapshots[
-    "test_batch_retrieval_list_round_1 1"
-] = """Batch Name,Container,Tabulator
+snapshots["test_batch_retrieval_list_round_1 1"] = """Batch Name,Container,Tabulator
 Batch 1,,
 Batch 2,,
 Batch 4,,
@@ -17,9 +15,7 @@ Batch 6,,
 Batch 8,,
 """
 
-snapshots[
-    "test_batches_human_sort_order 1"
-] = """Batch Name,Container,Tabulator
+snapshots["test_batches_human_sort_order 1"] = """Batch Name,Container,Tabulator
 Batch 1,,
 Batch 1 - 1,,
 Batch 1 - 2,,
@@ -28,9 +24,7 @@ Batch 2,,
 Batch 10,,
 """
 
-snapshots[
-    "test_batches_human_sort_order 2"
-] = """######## SAMPLED BATCHES ########\r
+snapshots["test_batches_human_sort_order 2"] = """######## SAMPLED BATCHES ########\r
 Jurisdiction Name,Batch Name,Ballots in Batch,Ticket Numbers: Contest 1,Audited?,Audit Results: Contest 1,Reported Results: Contest 1,Change in Results: Contest 1,Change in Margin: Contest 1,Last Edited By\r
 J1,Batch 1,20,Round 1: 0.720194360819624066,No,,,,,\r
 J1,Batch 1 - 1,20,Round 1: 0.9610467367288398089,No,,,,,\r

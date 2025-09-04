@@ -45,7 +45,7 @@ class Minerva(Audit):
         sub_audit: PairwiseAudit,
         max_sample_size: int = ...,
         *args: Any,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> Any: ...
     def compute_risk(
         self, votes_for_winner: int, pair: str, *args: Any, **kwargs: Any

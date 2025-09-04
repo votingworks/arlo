@@ -11,8 +11,8 @@
       "prettier --write"
     ],
     "*.py": [
-      "poetry run black",
-      "poetry run pylint -j 0",
+      "poetry run ruff format",
+      "poetry run ruff check",
       "poetry run basedpyright"
     ],
     "package.json": [

@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 from typing import List, Optional, Tuple, TypeVar, Iterable
 import itertools
 

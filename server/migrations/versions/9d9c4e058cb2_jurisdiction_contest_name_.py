@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """Jurisdiction.contest_name_standardizations
 
 Revision ID: 9d9c4e058cb2
@@ -6,6 +5,7 @@ Revises: f8e901e92f0a
 Create Date: 2021-04-15 21:55:13.793690+00:00
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

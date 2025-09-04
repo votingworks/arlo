@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """Fix delete cascades
 
 Revision ID: 593823da406d
@@ -6,6 +5,7 @@ Revises: f63ba2f2da22
 Create Date: 2022-03-08 01:17:04.936981+00:00
 
 """
+
 from alembic import op
 
 # revision identifiers, used by Alembic.

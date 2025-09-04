@@ -12,7 +12,7 @@ from . import api
 from ..auth import restrict_access, UserType
 from ..database import db_session
 from .shared import get_current_round
-from ..models import *  # pylint: disable=wildcard-import
+from ..models import *
 from ..util.csv_download import csv_response, jurisdiction_timestamp_name
 from ..util.jsonschema import JSONDict, validate
 from ..util.get_json import safe_get_json_dict
@@ -205,7 +205,7 @@ def serialize_ballot(
 )
 @restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def list_ballots_for_jurisdiction(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
     round: Round,
 ):
@@ -263,9 +263,9 @@ def list_ballots_for_jurisdiction(
 )
 @restrict_access([UserType.AUDIT_BOARD])
 def list_ballots_for_audit_board(
-    election: Election,  # pylint: disable=unused-argument
-    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
-    round: Round,  # pylint: disable=unused-argument
+    election: Election,
+    jurisdiction: Jurisdiction,
+    round: Round,
     audit_board: AuditBoard,
 ):
     previously_audited_ballots = (
@@ -399,10 +399,10 @@ def validate_audit_ballot(ballot_audit: JSONDict, jurisdiction: Jurisdiction):
 )
 @restrict_access([UserType.AUDIT_BOARD])
 def audit_ballot(
-    election: Election,  # pylint: disable=unused-argument
-    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
-    round: Round,  # pylint: disable=unused-argument
-    audit_board: AuditBoard,  # pylint: disable=unused-argument
+    election: Election,
+    jurisdiction: Jurisdiction,
+    round: Round,
+    audit_board: AuditBoard,
     ballot_id: str,
 ):
     ballot = SampledBallot.query.filter_by(

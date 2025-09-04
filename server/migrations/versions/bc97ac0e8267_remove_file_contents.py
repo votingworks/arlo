@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """Remove File.contents
 
 Revision ID: bc97ac0e8267
@@ -6,6 +5,7 @@ Revises: df3c0681fad9
 Create Date: 2021-12-13 23:53:01.691311+00:00
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

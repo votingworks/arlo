@@ -3,9 +3,9 @@ from unittest.mock import patch, Mock
 import pytest
 from flask.testing import FlaskClient
 
-from ..models import *  # pylint: disable=wildcard-import
+from ..models import *
 from ..auth import UserType
-from .helpers import *  # pylint: disable=wildcard-import
+from .helpers import *
 from .. import config
 from ..activity_log import slack_worker
 from .. import activity_log

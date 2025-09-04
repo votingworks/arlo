@@ -10,9 +10,7 @@ class SampleSizeOption(TypedDict):
 RoundInfo = NamedTuple("RoundInfo", [("round_id", str), ("round_size", int)])
 
 # { round_id: { choice_id: num_votes }}
-BALLOT_POLLING_SAMPLE_RESULTS = Dict[  # pylint: disable=invalid-name
-    str, Dict[str, int]
-]
+BALLOT_POLLING_SAMPLE_RESULTS = Dict[str, Dict[str, int]]
 
 # { round_num: [ round_id, round_size ]}
-BALLOT_POLLING_ROUND_SIZES = Dict[int, RoundInfo]  # pylint: disable=invalid-name
+BALLOT_POLLING_ROUND_SIZES = Dict[int, RoundInfo]

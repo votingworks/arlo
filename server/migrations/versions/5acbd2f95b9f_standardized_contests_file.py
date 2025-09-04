@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """Standardized contests file
 
 Revision ID: 5acbd2f95b9f
@@ -6,6 +5,7 @@ Revises: 7f86511c05e0
 Create Date: 2020-09-30 22:38:19.350287+00:00
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """Batch tallies file
 
 Revision ID: 11e35dd1c515
@@ -6,6 +5,7 @@ Revises: 9ed660c31c0a
 Create Date: 2020-08-13 19:39:17.333582+00:00
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

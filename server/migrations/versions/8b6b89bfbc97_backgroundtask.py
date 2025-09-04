@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """BackgroundTask
 
 Revision ID: 8b6b89bfbc97
@@ -6,6 +5,7 @@ Revises: c2b90f147183
 Create Date: 2021-01-26 18:51:57.731262+00:00
 
 """
+
 import uuid
 from alembic import op
 import sqlalchemy as sa

@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name,consider-using-f-string
 from typing import List, Dict
 import pytest
 import numpy as np
@@ -119,7 +118,6 @@ def test_make_raire_frontier(contest: Contest, cvrs: CVRS, ballots: BallotList):
 def test_find_assertions_too_good_ancestor(
     contest: Contest, ballots: BallotList, cvrs: CVRS
 ):
-
     nebs = make_neb_matrix(contest, cvrs, asn_func)
     frontier = make_frontier(contest, ballots, nebs, asn_func)
 
@@ -272,9 +270,9 @@ def compare_result(path: str, contests: Dict[str, List[str]]):
 
         casrtns = set(contests[contest])
 
-        assert len(asrtns) == len(
-            casrtns
-        ), "Number of assertions different for {}, contest {}".format(path, contest)
+        assert len(asrtns) == len(casrtns), (
+            "Number of assertions different for {}, contest {}".format(path, contest)
+        )
 
         parsed_asrtns = set()
         for asrtn in asrtns:
@@ -294,9 +292,9 @@ def compare_result(path: str, contests: Dict[str, List[str]]):
 
             parsed_asrtns.add(str(parsed_a))
 
-        assert (
-            set(parsed_asrtns) == casrtns
-        ), "Assertions differ for {}, contest {}".format(path, contest)
+        assert set(parsed_asrtns) == casrtns, (
+            "Assertions differ for {}, contest {}".format(path, contest)
+        )
 
 
 def parse_raire_input(input_file: str):

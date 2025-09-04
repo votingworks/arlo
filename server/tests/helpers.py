@@ -20,7 +20,7 @@ from ..util.file import (
 from ..auth.auth_helpers import UserType
 from ..auth import auth_helpers
 from ..database import db_session
-from ..models import *  # pylint: disable=wildcard-import
+from ..models import *
 
 
 DEFAULT_SUPPORT_EMAIL = "support@example.org"
@@ -52,10 +52,10 @@ def patch_json(client: FlaskClient, url: str, obj) -> Any:
 
 
 def assert_ok(rv: Response):
-    __tracebackhide__ = True  # pylint: disable=unused-variable
-    assert (
-        rv.status_code == 200
-    ), f"Expected status code 200, got {rv.status_code}, body: {rv.data}"
+    __tracebackhide__ = True
+    assert rv.status_code == 200, (
+        f"Expected status code 200, got {rv.status_code}, body: {rv.data}"
+    )
     assert json.loads(rv.data) == {"status": "ok"}
 
 
@@ -86,7 +86,7 @@ def clear_support_user(client: FlaskClient):
 
 def create_user(email=DEFAULT_AA_EMAIL) -> User:
     try:
-        with db_session.begin_nested():  # pylint: disable=no-member
+        with db_session.begin_nested():
             user = User(id=str(uuid.uuid4()), email=email, external_id=email)
             db_session.add(user)
         return user
@@ -317,17 +317,17 @@ def assert_match_report(report_bytes: bytes, snapshot):
 
 
 def assert_is_string(value):
-    __tracebackhide__ = True  # pylint: disable=unused-variable
+    __tracebackhide__ = True
     assert isinstance(value, str)
 
 
 def assert_is_int(value):
-    __tracebackhide__ = True  # pylint: disable=unused-variable
+    __tracebackhide__ = True
     assert isinstance(value, int)
 
 
 def assert_is_id(value):
-    __tracebackhide__ = True  # pylint: disable=unused-variable
+    __tracebackhide__ = True
     assert isinstance(value, str)
     uuid.UUID(value, version=4)  # Will raise exception on non-UUID strings
 
@@ -340,24 +340,24 @@ def assert_is_date(value):
 
     See https://docs.python.org/3.8/library/datetime.html#datetime.date.fromisoformat.
     """
-    __tracebackhide__ = True  # pylint: disable=unused-variable
+    __tracebackhide__ = True
     assert isinstance(value, str)
     datetime.fromisoformat(value)
 
 
 def assert_is_passphrase(value):
-    __tracebackhide__ = True  # pylint: disable=unused-variable
+    __tracebackhide__ = True
     assert isinstance(value, str)
     assert re.match(r"[a-z]+-[a-z]+-[a-z]+-[a-z]+", value)
 
 
 def asserts_startswith(prefix: str):
     def assert_startswith(value: str):
-        __tracebackhide__ = True  # pylint: disable=unused-variable
+        __tracebackhide__ = True
         assert isinstance(value, str)
-        assert value.startswith(
-            prefix
-        ), f"expected:\n\n{value}\n\nto start with: {prefix}"
+        assert value.startswith(prefix), (
+            f"expected:\n\n{value}\n\nto start with: {prefix}"
+        )
 
     return assert_startswith
 
@@ -368,7 +368,7 @@ def compare_json(actual_json, expected_json):
     expected dict. The expected dict can contain assertion functions in place of
     any non-deterministic values.
     """
-    __tracebackhide__ = True  # pylint: disable=unused-variable
+    __tracebackhide__ = True
 
     def serialize_keypath(keypath: List[Union[str, int]]) -> str:
         return f"root{''.join([f'[{serialize_key(key)}]' for key in keypath])}"
@@ -379,25 +379,25 @@ def compare_json(actual_json, expected_json):
     def inner_compare_json(
         actual_json, expected_json, current_keypath: List[Union[str, int]]
     ):
-        __tracebackhide__ = True  # pylint: disable=unused-variable
+        __tracebackhide__ = True
         if isinstance(expected_json, dict):
-            assert isinstance(
-                actual_json, dict
-            ), f"expected dict, got {type(actual_json).__name__} at {serialize_keypath(current_keypath)}"
+            assert isinstance(actual_json, dict), (
+                f"expected dict, got {type(actual_json).__name__} at {serialize_keypath(current_keypath)}"
+            )
             for k, v in expected_json.items():
                 inner_compare_json(actual_json[k], v, current_keypath + [k])
-            assert (
-                actual_json.keys() == expected_json.keys()
-            ), f"dict keys do not match at {serialize_keypath(current_keypath)}"
+            assert actual_json.keys() == expected_json.keys(), (
+                f"dict keys do not match at {serialize_keypath(current_keypath)}"
+            )
         elif isinstance(expected_json, list):
-            assert isinstance(
-                actual_json, list
-            ), f"expected list, got {type(actual_json).__name__} at {serialize_keypath(current_keypath)}"
+            assert isinstance(actual_json, list), (
+                f"expected list, got {type(actual_json).__name__} at {serialize_keypath(current_keypath)}"
+            )
             for i, v in enumerate(expected_json):
                 inner_compare_json(actual_json[i], v, current_keypath + [i])
-            assert len(actual_json) == len(
-                expected_json
-            ), f"list lengths do not match at {serialize_keypath(current_keypath)}"
+            assert len(actual_json) == len(expected_json), (
+                f"list lengths do not match at {serialize_keypath(current_keypath)}"
+            )
         elif callable(expected_json):
             try:
                 expected_json(actual_json)
@@ -406,9 +406,9 @@ def compare_json(actual_json, expected_json):
                     f"custom comparison failed at {serialize_keypath(current_keypath)}"
                 ) from error
         else:
-            assert (
-                actual_json == expected_json
-            ), f"Actual: {actual_json}\nExpected: {expected_json}\nKeypath: {serialize_keypath(current_keypath)}"
+            assert actual_json == expected_json, (
+                f"Actual: {actual_json}\nExpected: {expected_json}\nKeypath: {serialize_keypath(current_keypath)}"
+            )
 
     inner_compare_json(actual_json, expected_json, [])
 

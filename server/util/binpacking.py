@@ -92,7 +92,6 @@ class BucketList:
         # Now assign batches
         # Assign all the too-big batches first
         for i, batch in enumerate(batches):
-
             # Find the least-full bucket and assign this batch
             if batch[1] > self.avg_size:
                 # Find the least-bad bucket
@@ -120,7 +119,6 @@ class BucketList:
             (min_idx, _min_del) = min(
                 enumerate(
                     map(
-                        # pylint: disable=cell-var-from-loop
                         lambda bucket: bucket.size + batch[1] - self.avg_size,
                         new_buckets,
                     )
@@ -178,7 +176,6 @@ class BalancedBucketList:
         # Now assign batches to buckets
         # Assign all the too-big batches first
         for i, batch in enumerate(batches):
-
             # Find the least-full bucket and assign this batch
             if batch[1] > self.avg_size:
                 # Find the least-bad bucket
@@ -206,7 +203,6 @@ class BalancedBucketList:
             (min_idx, _min_del) = min(
                 enumerate(
                     map(
-                        # pylint: disable=cell-var-from-loop
                         lambda bucket: bucket.size + batch[1] - self.avg_size,
                         self.buckets,
                     )

@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """CvrBallot ballot_position and record_id
 
 Revision ID: f44bbbb8b076
@@ -6,6 +5,7 @@ Revises: df1334fc5fe9
 Create Date: 2021-04-06 17:08:30.714912+00:00
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

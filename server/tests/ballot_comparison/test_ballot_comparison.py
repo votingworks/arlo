@@ -4,8 +4,8 @@ import csv
 from flask.testing import FlaskClient
 from sqlalchemy import and_
 
-from ...models import *  # pylint: disable=wildcard-import
-from ..helpers import *  # pylint: disable=wildcard-import
+from ...models import *
+from ..helpers import *
 from .conftest import (
     TEST_CVRS,
     TEST_CVRS_WITH_CHOICE_REMOVED,
@@ -20,9 +20,9 @@ from ..ballot_comparison.test_cvrs import (
 def test_set_contest_metadata_on_contest_creation(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    cvrs,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    manifests,
+    cvrs,
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -209,7 +209,7 @@ def test_cvr_choice_name_validation(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    manifests,  # pylint: disable=unused-argument
+    manifests,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     contest_id = str(uuid.uuid4())
@@ -336,9 +336,9 @@ def test_cvr_choice_name_validation(
 def test_set_contest_metadata_on_jurisdiction_change(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    cvrs,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    manifests,
+    cvrs,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     contest_id = str(uuid.uuid4())
@@ -394,9 +394,9 @@ def test_set_contest_metadata_on_jurisdiction_change(
 def test_require_cvr_uploads(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    manifests,
+    election_settings,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
 
@@ -438,8 +438,8 @@ def test_require_cvr_uploads(
 def test_require_manifest_uploads(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    election_settings,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
 
@@ -481,10 +481,10 @@ def test_require_manifest_uploads(
 def test_contest_names_dont_match_cvr_contests(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    cvrs,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    election_settings,
+    manifests,
+    cvrs,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     contests = [
@@ -666,10 +666,10 @@ def check_discrepancies(report: str, audit_results):
 def test_ballot_comparison_two_rounds(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    cvrs,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    election_settings,
+    manifests,
+    cvrs,
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -1048,10 +1048,10 @@ def generate_audit_results(round_id: str):  # pragma: no cover
 def test_ballot_comparison_cvr_metadata(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    cvrs,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    election_settings,
+    manifests,
+    cvrs,
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -1153,9 +1153,9 @@ def test_ballot_comparison_cvr_metadata(
 def test_ballot_comparison_sample_size_validation(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    cvrs,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    manifests,
+    cvrs,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     contest_id = str(uuid.uuid4())
@@ -1212,10 +1212,10 @@ def test_ballot_comparison_sample_size_validation(
 def test_ballot_comparison_multiple_targeted_contests_sample_size(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    cvrs,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    election_settings,
+    manifests,
+    cvrs,
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -1316,9 +1316,9 @@ def test_ballot_comparison_multiple_targeted_contests_sample_size(
 def test_ballot_comparison_ess(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    ess_manifests,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    election_settings,
+    ess_manifests,
     snapshot,
 ):
     set_logged_in_user(
@@ -1529,9 +1529,9 @@ def test_ballot_comparison_sample_preview(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    manifests,  # pylint: disable=unused-argument
-    cvrs,  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
+    manifests,
+    cvrs,
+    election_settings,
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)

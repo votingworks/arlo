@@ -9,8 +9,8 @@ from server.tests.ballot_comparison.test_ballot_comparison import (
     check_discrepancies,
 )
 
-from ...models import *  # pylint: disable=wildcard-import
-from ..helpers import *  # pylint: disable=wildcard-import
+from ...models import *
+from ..helpers import *
 from .conftest import (
     TEST_CVRS,
 )
@@ -24,9 +24,9 @@ from .conftest import (
 def test_ballot_comparison_cardstyledata_two_rounds(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    election_settings,
+    manifests,
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)

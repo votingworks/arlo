@@ -37,7 +37,7 @@ def alembic_engine():
 # directory where pytest is run (or at least, that's the only way I could get
 # it to work). We work around this by importing the test cases directly, which
 # seems to work fine.
-# pylint: disable=wrong-import-position,unused-import,wrong-import-order
-from pytest_alembic.tests import test_single_head_revision
-from pytest_alembic.tests import test_upgrade
-from pytest_alembic.tests import test_model_definitions_match_ddl
+
+from pytest_alembic.tests import test_single_head_revision  # noqa: E402, F401, F402
+from pytest_alembic.tests import test_upgrade  # noqa: E402, F401, F402
+from pytest_alembic.tests import test_model_definitions_match_ddl  # noqa: E402, F401, F402
