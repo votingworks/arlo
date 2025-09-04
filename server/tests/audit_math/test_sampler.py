@@ -1,4 +1,3 @@
-# pylint: disable=consider-using-f-string
 import random
 import pytest
 from ...audit_math import sampler

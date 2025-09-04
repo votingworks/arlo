@@ -7,8 +7,8 @@ from datetime import datetime
 from collections import defaultdict
 from flask.testing import FlaskClient
 
-from ..helpers import *  # pylint: disable=wildcard-import
-from ...models import *  # pylint: disable=wildcard-import
+from ..helpers import *
+from ...models import *
 from ...auth import UserType
 from ...api.rounds import count_audited_votes
 from ...util.jsonschema import JSONDict
@@ -33,9 +33,9 @@ def assert_ballots_got_assigned_correctly(
         for ballot in audit_board.sampled_ballots:
             audit_boards_by_batch[ballot.batch_id].add(audit_board.id)
     for audit_board_ids in audit_boards_by_batch.values():
-        assert (
-            len(audit_board_ids) == 1
-        ), "Different audit boards assigned ballots from the same batch"
+        assert len(audit_board_ids) == 1, (
+            "Different audit boards assigned ballots from the same batch"
+        )
 
 
 def test_audit_boards_list_empty(
@@ -458,7 +458,7 @@ def test_audit_boards_wrong_round(
     election_id: str,
     jurisdiction_ids: List[str],
     round_1_id: str,
-    round_2_id: str,  # pylint: disable=unused-argument
+    round_2_id: str,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -483,7 +483,7 @@ def test_audit_boards_bad_round_id(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    round_1_id: str,  # pylint: disable=unused-argument
+    round_1_id: str,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)

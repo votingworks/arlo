@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """
 This library allows the performing of a stratified audit. For now, it works with
 ballot polling and ballot comparison, plurality winner contests. The method
@@ -8,6 +7,7 @@ https://arxiv.org/abs/1809.04235
 This code borrows heavily from code already written by Stark and Ottoboni here:
 https://github.com/pbstark/CORLA18
 """
+
 from itertools import product
 import math
 from typing import Tuple, Dict, TypedDict, NamedTuple, List

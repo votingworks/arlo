@@ -4,7 +4,7 @@ from werkzeug.exceptions import Conflict
 from . import api
 from ..auth import restrict_access, UserType
 from ..database import db_session
-from ..models import *  # pylint: disable=wildcard-import
+from ..models import *
 from ..util.jsonschema import validate, JSONDict
 from ..util.get_json import safe_get_json_dict
 
@@ -65,7 +65,7 @@ def get_election_settings(election: Election):
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def get_jurisdiction_election_settings(
     election: Election,
-    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
     return jsonify(serialize_election_settings(election))
 

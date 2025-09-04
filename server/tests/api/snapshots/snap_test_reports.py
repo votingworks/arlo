@@ -7,9 +7,7 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
-snapshots[
-    "test_audit_admin_report 1"
-] = """######## ELECTION INFO ########\r
+snapshots["test_audit_admin_report 1"] = """######## ELECTION INFO ########\r
 Organization,Election Name,State\r
 Test Org test_audit_admin_report,Test Election,CA\r
 \r
@@ -148,9 +146,7 @@ J2,4,34,Round 1: 0.060816634473886193,NOT_AUDITED,,\r
 J2,4,37,Round 1: 0.092786549356518562,NOT_AUDITED,,\r
 """
 
-snapshots[
-    "test_audit_admin_report_round_2 1"
-] = """######## ELECTION INFO ########\r
+snapshots["test_audit_admin_report_round_2 1"] = """######## ELECTION INFO ########\r
 Organization,Election Name,State\r
 Test Org test_audit_admin_report_round_2,Test Election,CA\r
 \r
@@ -550,9 +546,7 @@ J2,4,27,Round 2: 0.321721875368898717,NOT_AUDITED,,\r
 J2,4,38,Round 2: 0.305074829583690803,NOT_AUDITED,,\r
 """
 
-snapshots[
-    "test_jurisdiction_admin_report 1"
-] = """######## SAMPLED BALLOTS ########\r
+snapshots["test_jurisdiction_admin_report 1"] = """######## SAMPLED BALLOTS ########\r
 Jurisdiction Name,Batch Name,Ballot Position,Ticket Numbers: Contest 1,Audited?,Audit Result: Contest 1,Audit Result: Contest 2\r
 J1,1,3,Round 1: 0.088404500051420169,AUDITED,candidate 1,\r
 J1,1,4,Round 1: 0.056455363529765325,AUDITED,candidate 1,\r

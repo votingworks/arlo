@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """SampledBatchDraw.contest_id
 
 Revision ID: c012fa6b13a9
@@ -6,6 +5,7 @@ Revises: 83bc53b14021
 Create Date: 2024-02-09 15:38:22.522331+00:00
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

@@ -35,7 +35,7 @@ from sqlalchemy.orm import Session
 
 from . import api
 from ..database import db_session, engine as db_engine
-from ..models import *  # pylint: disable=wildcard-import
+from ..models import *
 from . import contests
 from ..auth import restrict_access, UserType, get_loggedin_user, get_support_user
 from ..worker.tasks import (
@@ -72,7 +72,7 @@ from ..util.string import comma_join_until_limit
 from ..audit_math.suite import HybridPair
 from ..activity_log.activity_log import UploadFile, activity_base, record_activity
 
-T = TypeVar("T")  # pylint: disable=invalid-name
+T = TypeVar("T")
 
 
 CVRS_FILE_NAME_PREFIX = "cvrs"
@@ -96,7 +96,7 @@ class CvrContestMetadata(TypedDict):
 
 
 # { contest_id: CvrContestMetadata }
-CVR_CONTESTS_METADATA = Dict[str, CvrContestMetadata]  # pylint: disable=invalid-name
+CVR_CONTESTS_METADATA = Dict[str, CvrContestMetadata]
 
 
 def validate_uploaded_cvrs(contest: Contest):
@@ -546,7 +546,6 @@ def separate_ess_cvr_and_ballots_files(
 
     text_files = {
         file_name: decode_file(
-            # pylint: disable=consider-using-with
             open(os.path.join(working_directory, file_name), "rb"),
             file_name,
         )
@@ -737,7 +736,7 @@ def parse_ess_cvrs(
                     try:
                         record_id = floor(int(tabulator_cvr, 16) / 10**10)
                     except ValueError:
-                        raise UserError(  # pylint: disable=raise-missing-from
+                        raise UserError(
                             "Tabulator CVR should be a ten-digit number or a sixteen-character hexadecimal string."
                             f" Got {tabulator_cvr} for Cast Vote Record {cvr_number}."
                             " If you opened this file in Excel, it may have changed the format of this field."
@@ -861,7 +860,6 @@ def parse_ess_cvrs(
     def parse_interpretations(
         cvr_csv: CSVIterator, contests_metadata: CVR_CONTESTS_METADATA
     ) -> Iterator[Tuple[str, str]]:  # (CVR number, interpretations)
-        # pylint: disable=stop-iteration-return
         headers = next(cvr_csv)
         header_indices = get_header_indices(headers)
 
@@ -907,7 +905,7 @@ def parse_ess_cvrs(
             cvr_file.close()
 
     def parse_and_concat_ballots_files(
-        ballots_files: Dict[str, TextIO]
+        ballots_files: Dict[str, TextIO],
     ) -> Iterator[Tuple[str, CvrBallot]]:
         # We need to concatenate the ballot files in order of CVR number (which
         # is ordered within each file). So we parse each file into a stream of
@@ -925,7 +923,8 @@ def parse_ess_cvrs(
                 raise UserError(f"{file_name}: {error}") from error
 
         for _, ballots, file_name, ballots_file in sorted(
-            ballot_streams, key=lambda stream_tuple: stream_tuple[0]  # first_cvr_number
+            ballot_streams,
+            key=lambda stream_tuple: stream_tuple[0],  # first_cvr_number
         ):
             try:
                 yield from ballots
@@ -1070,13 +1069,11 @@ def parse_hart_cvrs(
     non_csv_zip_files = []
     for file_name in file_names:
         if file_name.lower().endswith(".zip"):
-            # pylint: disable=consider-using-with
             cvr_zip_files[file_name] = open(
                 os.path.join(working_directory, file_name), "rb"
             )
         elif file_name.lower().endswith(".csv"):
             scanned_ballot_information_files.append(
-                # pylint: disable=consider-using-with
                 open(os.path.join(working_directory, file_name), "rb")
             )
         else:
@@ -1116,9 +1113,9 @@ def parse_hart_cvrs(
                 )
             scanned_ballot_information_by_cvr_id[cvr_id] = row
 
-    cvr_file_paths: Dict[Tuple[str, str], str] = (
-        {}
-    )  # { (zip_file_name, file_name): file_path }
+    cvr_file_paths: Dict[
+        Tuple[str, str], str
+    ] = {}  # { (zip_file_name, file_name): file_path }
     for cvr_zip_file_name, cvr_zip_file in cvr_zip_files.items():
         sub_working_directory = tempfile.mkdtemp(dir=working_directory)
         cvr_file_names = unzip_files(cvr_zip_file, sub_working_directory)
@@ -1368,9 +1365,9 @@ def process_cvr_file(
 
                     # Dominions CVR files sometimes contain interpretation values that can't be
                     # parsed as integers
-                    parsed_contest_interpretations: Dict[str, int] = (
-                        {}
-                    )  # { choice_name: parsed_interpretation }
+                    parsed_contest_interpretations: Dict[
+                        str, int
+                    ] = {}  # { choice_name: parsed_interpretation }
                     for choice_name, interpretation in contest_interpretations.items():
                         try:
                             parsed_interpretation = int(interpretation)
@@ -1392,9 +1389,9 @@ def process_cvr_file(
                         choice_name,
                         parsed_interpretation,
                     ) in parsed_contest_interpretations.items():
-                        contest_metadata["choices"][choice_name][
-                            "num_votes"
-                        ] += parsed_interpretation
+                        contest_metadata["choices"][choice_name]["num_votes"] += (
+                            parsed_interpretation
+                        )
 
                 for contest_name in contests_on_ballot:
                     contests_metadata[contest_name]["total_ballots_cast"] += 1
@@ -1445,7 +1442,7 @@ def process_cvr_file(
             .subquery()
         )
         db_session.execute(
-            CvrBallot.__table__.update()  # pylint: disable=no-member
+            CvrBallot.__table__.update()
             .values(ballot_position=ballot_position.c.ballot_position)
             .where(
                 and_(
@@ -1535,9 +1532,7 @@ def finalize_cvr_upload(
 
 
 @background_task
-def clear_cvr_ballots(
-    election_id: str, jurisdiction_id: str  # pylint: disable=unused-argument
-):
+def clear_cvr_ballots(election_id: str, jurisdiction_id: str):
     # Note that this query can be slow due to the query planner sometimes
     # choosing to not use the relevant index on CvrBallot.batch_id. So it should
     # only be run in background tasks.
@@ -1555,9 +1550,7 @@ def clear_cvr_ballots(
     methods=["GET"],
 )
 @restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
-def get_cvrs(
-    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
-):
+def get_cvrs(election: Election, jurisdiction: Jurisdiction):
     file = serialize_file(jurisdiction.cvr_file)
     return jsonify(
         file=file and dict(file, cvrFileType=jurisdiction.cvr_file_type),
@@ -1595,9 +1588,7 @@ def start_upload_for_cvrs(election: Election, jurisdiction: Jurisdiction):
     methods=["POST"],
 )
 @restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
-def complete_upload_for_cvrs(
-    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
-):
+def complete_upload_for_cvrs(election: Election, jurisdiction: Jurisdiction):
     validate_cvr_upload(request, election, jurisdiction)
     data = request.get_json()
     cvr_file_type = data.get("cvrFileType") if data else None
@@ -1628,7 +1619,7 @@ def complete_upload_for_cvrs(
 )
 @restrict_access([UserType.AUDIT_ADMIN])
 def download_cvr_file(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
 ):
     if not jurisdiction.cvr_file:

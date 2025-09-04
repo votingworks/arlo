@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name,consider-using-dict-items,consider-using-f-string
 import pytest
 
 from ...audit_math.sampler_contest import Contest
@@ -39,10 +38,10 @@ def test_compute_margins(contests):
                 computed = round(
                     computed_margins_for_contest["winners"][winner]["swl"][cand], 5
                 )
-                assert (
-                    expected == computed
-                ), "{} swl failed: got {}, expected {}".format(
-                    contest.name, computed, expected
+                assert expected == computed, (
+                    "{} swl failed: got {}, expected {}".format(
+                        contest.name, computed, expected
+                    )
                 )
 
         for loser in true_margins_for_contest["losers"]:
@@ -61,10 +60,10 @@ def test_compute_margins(contests):
 
 def test_diluted_margin(contests):
     for contest in contests:
-        assert (
-            contest.diluted_margin == true_dms[contest.name]
-        ), "Diluted margin calculation failed! Got {}, expected {} for contest {}".format(
-            contest.diluted_margin, true_dms[contest.name], contest.name
+        assert contest.diluted_margin == true_dms[contest.name], (
+            "Diluted margin calculation failed! Got {}, expected {} for contest {}".format(
+                contest.diluted_margin, true_dms[contest.name], contest.name
+            )
         )
 
 

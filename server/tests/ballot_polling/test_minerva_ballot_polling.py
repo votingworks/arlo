@@ -1,7 +1,7 @@
 import pytest
 from flask.testing import FlaskClient
 
-from ..helpers import *  # pylint: disable=wildcard-import
+from ..helpers import *
 
 
 @pytest.fixture
@@ -32,10 +32,10 @@ def election_settings(client: FlaskClient, election_id: str):
 def test_minerva_sample_size(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
     contest_ids: List[str],
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
+    election_settings,
+    manifests,
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -51,10 +51,10 @@ def test_minerva_sample_size(
 def test_minerva_ballot_polling_one_round(
     client: FlaskClient,
     election_id: str,
-    contest_ids: List[str],  # pylint: disable=unused-argument
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
+    contest_ids: List[str],
+    jurisdiction_ids: List[str],
+    election_settings,
+    manifests,
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -173,10 +173,10 @@ def test_minerva_ballot_polling_one_round(
 def test_minerva_ballot_polling_two_rounds(
     client: FlaskClient,
     election_id: str,
-    contest_ids: List[str],  # pylint: disable=unused-argument
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
+    contest_ids: List[str],
+    jurisdiction_ids: List[str],
+    election_settings,
+    manifests,
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)

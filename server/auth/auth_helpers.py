@@ -6,7 +6,7 @@ from flask import session
 from werkzeug.exceptions import Forbidden, Unauthorized
 from sqlalchemy.orm import Query
 
-from ..models import *  # pylint: disable=wildcard-import
+from ..models import *
 from .. import config
 
 

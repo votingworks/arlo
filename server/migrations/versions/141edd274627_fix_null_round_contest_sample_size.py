@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """Fix null round_contest.sample_size
 
 Revision ID: 141edd274627
@@ -6,6 +5,7 @@ Revises: 9d9c4e058cb2
 Create Date: 2021-05-04 18:27:47.826265+00:00
 
 """
+
 from alembic import op
 
 

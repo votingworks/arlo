@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 import sys
 from server.api.rounds import (
     cvrs_for_contest,
@@ -8,7 +7,7 @@ from server.api.rounds import (
     round_sizes,
 )
 from server.audit_math import sampler_contest, suite
-from server.models import *  # pylint: disable=wildcard-import
+from server.models import *
 
 
 def ballot_comparison_stratum(contest):

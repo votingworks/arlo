@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """BallotInterpretation.has_invalid_write_in
 
 Revision ID: 34939a0c9f5c
@@ -6,6 +5,7 @@ Revises: 5004a93f75d8
 Create Date: 2022-09-02 15:57:58.017885+00:00
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

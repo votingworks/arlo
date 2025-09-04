@@ -2,8 +2,8 @@ import json
 import io
 from flask.testing import FlaskClient
 
-from ...models import *  # pylint: disable=wildcard-import
-from ..helpers import *  # pylint: disable=wildcard-import
+from ...models import *
+from ..helpers import *
 
 
 def test_missing_file(client: FlaskClient, election_id: str):
@@ -127,9 +127,7 @@ def test_replace_jurisdictions_file(client, election_id):
     # Create the initial file.
     rv = upload_jurisdictions_file(
         client,
-        io.BytesIO(
-            b"Jurisdiction,Admin Email\n" b"J1,ja@example.com\n" b"J2,ja2@example.com"
-        ),
+        io.BytesIO(b"Jurisdiction,Admin Email\nJ1,ja@example.com\nJ2,ja2@example.com"),
         election_id,
     )
     assert_ok(rv)
@@ -148,9 +146,7 @@ def test_replace_jurisdictions_file(client, election_id):
     # Replace it with another file.
     rv = upload_jurisdictions_file(
         client,
-        io.BytesIO(
-            b"Jurisdiction,Admin Email\n" b"J2,ja2@example.com\n" b"J3,ja3@example.com"
-        ),
+        io.BytesIO(b"Jurisdiction,Admin Email\nJ2,ja2@example.com\nJ3,ja3@example.com"),
         election_id,
     )
     assert_ok(rv)
@@ -265,11 +261,11 @@ def test_convert_emails_to_lowercase(client, election_id):
 def test_upload_jurisdictions_file_after_audit_starts(
     client: FlaskClient,
     election_id: str,
-    round_1_id: str,  # pylint: disable=unused-argument
+    round_1_id: str,
 ):
     rv = upload_jurisdictions_file(
         client,
-        io.BytesIO(b"Jurisdiction,Admin Email\n" b"J1,j1@example.com\n"),
+        io.BytesIO(b"Jurisdiction,Admin Email\nJ1,j1@example.com\n"),
         election_id,
     )
     assert rv.status_code == 409
@@ -289,9 +285,7 @@ def test_upload_jurisdictions_file_duplicate_row(
 ):
     rv = upload_jurisdictions_file(
         client,
-        io.BytesIO(
-            b"Jurisdiction,Admin Email\n" b"J1,j1@example.com\n" b"J1,j1@example.com"
-        ),
+        io.BytesIO(b"Jurisdiction,Admin Email\nJ1,j1@example.com\nJ1,j1@example.com"),
         election_id,
     )
     assert_ok(rv)
@@ -328,7 +322,7 @@ def test_jurisdictions_file_dont_clobber_other_elections(
     # Add jurisdictions.
     rv = upload_jurisdictions_file(
         client,
-        io.BytesIO(b"Jurisdiction,Admin Email\n" b"J1,j1@example.com\n"),
+        io.BytesIO(b"Jurisdiction,Admin Email\nJ1,j1@example.com\n"),
         election_id,
     )
     assert_ok(rv)
@@ -336,7 +330,7 @@ def test_jurisdictions_file_dont_clobber_other_elections(
     # Add jurisdictions for other election
     rv = upload_jurisdictions_file(
         client,
-        io.BytesIO(b"Jurisdiction,Admin Email\n" b"J2,j2@example.com\n"),
+        io.BytesIO(b"Jurisdiction,Admin Email\nJ2,j2@example.com\n"),
         other_election_id,
     )
     assert_ok(rv)
@@ -344,7 +338,7 @@ def test_jurisdictions_file_dont_clobber_other_elections(
     # Now change them
     rv = upload_jurisdictions_file(
         client,
-        io.BytesIO(b"Jurisdiction,Admin Email\n" b"J3,j3@example.com\n"),
+        io.BytesIO(b"Jurisdiction,Admin Email\nJ3,j3@example.com\n"),
         other_election_id,
     )
     assert_ok(rv)

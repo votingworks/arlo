@@ -3,8 +3,8 @@ import json
 from typing import List
 from flask.testing import FlaskClient
 
-from ...models import *  # pylint: disable=wildcard-import
-from ..helpers import *  # pylint: disable=wildcard-import
+from ...models import *
+from ..helpers import *
 
 
 def test_ballot_manifest_upload(
@@ -15,7 +15,7 @@ def test_ballot_manifest_upload(
     )
     rv = upload_ballot_manifest(
         client,
-        io.BytesIO(b"Batch Name,Number of Ballots\n" b"1,23\n" b"12,100\n" b"6,0\n"),
+        io.BytesIO(b"Batch Name,Number of Ballots\n1,23\n12,100\n6,0\n"),
         election_id,
         jurisdiction_ids[0],
     )
@@ -60,7 +60,7 @@ def test_ballot_manifest_clear(
     )
     rv = upload_ballot_manifest(
         client,
-        io.BytesIO(b"Batch Name,Number of Ballots\n" b"1,23\n"),
+        io.BytesIO(b"Batch Name,Number of Ballots\n1,23\n"),
         election_id,
         jurisdiction_ids[0],
     )
@@ -93,7 +93,7 @@ def test_ballot_manifest_replace_as_audit_admin(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = upload_ballot_manifest(
         client,
-        io.BytesIO(b"Batch Name,Number of Ballots\n" b"1,23\n" b"12,100\n" b"6,0,,\n"),
+        io.BytesIO(b"Batch Name,Number of Ballots\n1,23\n12,100\n6,0,,\n"),
         election_id,
         jurisdiction_ids[0],
     )
@@ -103,7 +103,7 @@ def test_ballot_manifest_replace_as_audit_admin(
 
     rv = upload_ballot_manifest(
         client,
-        io.BytesIO(b"Batch Name,Number of Ballots\n" b"1,23\n" b"12,6\n"),
+        io.BytesIO(b"Batch Name,Number of Ballots\n1,23\n12,6\n"),
         election_id,
         jurisdiction_ids[0],
     )
@@ -291,7 +291,7 @@ def test_ballot_manifest_upload_invalid_num_ballots(
 
     rv = upload_ballot_manifest(
         client,
-        io.BytesIO(b"Batch Name,Number of Ballots\n" b"1,not a number\n"),
+        io.BytesIO(b"Batch Name,Number of Ballots\n1,not a number\n"),
         election_id,
         jurisdiction_ids[0],
     )
@@ -325,7 +325,7 @@ def test_ballot_manifest_upload_duplicate_batch_name(
     )
     rv = upload_ballot_manifest(
         client,
-        io.BytesIO(b"Batch Name,Number of Ballots\n" b"12,23\n" b"12,100\n" b"6,0\n"),
+        io.BytesIO(b"Batch Name,Number of Ballots\n12,23\n12,100\n6,0\n"),
         election_id,
         jurisdiction_ids[0],
     )

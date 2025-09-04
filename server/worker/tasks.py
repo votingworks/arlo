@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 import sentry_sdk
 
 from ..database import db_session, engine
-from ..models import *  # pylint: disable=wildcard-import
+from ..models import *
 from ..util.isoformat import isoformat
 from ..util.jsonschema import JSONDict
 from .. import config
@@ -31,9 +31,9 @@ task_dispatch: Dict[str, Callable] = {}
 # name as the key.
 def background_task(task_handler: Callable):
     task_dispatch[task_handler.__name__] = task_handler
-    assert (
-        "election_id" in signature(task_handler).parameters
-    ), f"Payload for task {task_handler.__name__} must include 'election_id' to easily identify all task logs for a single audit."
+    assert "election_id" in signature(task_handler).parameters, (
+        f"Payload for task {task_handler.__name__} must include 'election_id' to easily identify all task logs for a single audit."
+    )
     return task_handler
 
 

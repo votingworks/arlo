@@ -4,7 +4,7 @@ from flask import jsonify, request, session
 from werkzeug.exceptions import Conflict, Forbidden
 
 from . import api
-from ..models import *  # pylint: disable=wildcard-import
+from ..models import *
 from ..database import db_session
 from ..auth import (
     check_access,

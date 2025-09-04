@@ -34,7 +34,7 @@ from .cvrs import (
     read_ess_ballots_file,
     separate_ess_cvr_and_ballots_files,
 )
-from ..models import *  # pylint: disable=wildcard-import
+from ..models import *
 from ..util.csv_parse import (
     column_value,
     get_header_indices,
@@ -148,7 +148,7 @@ def validate_choice_name_and_get_choice_id(
 
 @background_task
 def process_batch_inventory_cvr_file(
-    election_id: str,  # pylint: disable=unused-argument
+    election_id: str,
     jurisdiction_id: str,
     user: Tuple[UserType, str],
     support_user_email: Optional[str],
@@ -518,7 +518,6 @@ def process_batch_inventory_cvr_file(
         cvr_file_readers = [
             csv_reader_for_cvr(
                 # TODO: Revisit file cleanup holistically
-                # pylint: disable=consider-using-with
                 open(join(working_directory, file_name), "rb")
             )
             for file_name in file_names
@@ -697,7 +696,7 @@ TABULATOR_STATUS_PARSE_ERROR = (
 
 @background_task
 def process_batch_inventory_tabulator_status_file(
-    election_id: str,  # pylint: disable=unused-argument
+    election_id: str,
     jurisdiction_id: str,
     user: Tuple[UserType, str],
     support_user_email: Optional[str],
@@ -834,7 +833,7 @@ def process_batch_inventory_tabulator_status_file(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def set_batch_inventory_system_type(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
 ):
     system_type = safe_get_json_dict(request)["systemType"]
@@ -873,7 +872,7 @@ def set_batch_inventory_system_type(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def get_batch_inventory_system_type(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
@@ -892,7 +891,7 @@ def get_batch_inventory_system_type(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def start_upload_for_batch_inventory_cvr(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
 ):
     file_type = request.args.get("fileType")
@@ -920,7 +919,7 @@ def start_upload_for_batch_inventory_cvr(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def complete_upload_for_batch_inventory_cvr(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
 ):
     if len(list(jurisdiction.contests)) == 0:
@@ -976,7 +975,7 @@ def complete_upload_for_batch_inventory_cvr(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def get_batch_inventory_cvr(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
@@ -994,7 +993,7 @@ def get_batch_inventory_cvr(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def clear_batch_inventory_cvr(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
@@ -1022,7 +1021,7 @@ def clear_batch_inventory_cvr(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def download_batch_inventory_cvr(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
@@ -1064,7 +1063,7 @@ def start_upload_for_batch_inventory_tabulator_status(
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def complete_upload_for_batch_inventory_tabulator_status(
     election: Election,
-    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
     if not batch_inventory_data or not batch_inventory_data.cvr_file_id:
@@ -1105,7 +1104,7 @@ def complete_upload_for_batch_inventory_tabulator_status(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def get_batch_inventory_tabulator_status(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
@@ -1125,7 +1124,7 @@ def get_batch_inventory_tabulator_status(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def clear_batch_inventory_tabulator_status(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
@@ -1150,7 +1149,7 @@ def clear_batch_inventory_tabulator_status(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def download_batch_inventory_tabulator_status(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
@@ -1232,7 +1231,7 @@ def download_batch_inventory_worksheet(election: Election, jurisdiction: Jurisdi
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def batch_inventory_sign_off_status(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
@@ -1255,7 +1254,7 @@ def clear_sign_off(batch_inventory_data: BatchInventoryData):
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def sign_off_batch_inventory(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
 ):
     batch_inventory_data = get_or_404(BatchInventoryData, jurisdiction.id)
@@ -1273,7 +1272,7 @@ def sign_off_batch_inventory(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def undo_sign_off_batch_inventory(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
 ):
     batch_inventory_data = get_or_404(BatchInventoryData, jurisdiction.id)
@@ -1316,9 +1315,9 @@ def download_batch_inventory_ballot_manifest(
         )
         if should_include_container_column:
             counting_group = batch_to_counting_group.get(batch_key)
-            assert (
-                counting_group is not None and counting_group != ""
-            ), f"counting_group for batch_key={batch_key} is blank!"
+            assert counting_group is not None and counting_group != "", (
+                f"counting_group for batch_key={batch_key} is blank!"
+            )
             ballot_manifest.writerow([counting_group, batch_name, ballot_count])
         else:
             ballot_manifest.writerow([batch_name, ballot_count])

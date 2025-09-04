@@ -7,11 +7,11 @@ from werkzeug.exceptions import BadRequest, Conflict
 from . import api
 from ..auth import restrict_access, UserType, get_loggedin_user, get_support_user
 from ..database import db_session
-from ..models import *  # pylint: disable=wildcard-import
+from ..models import *
 from ..util.jsonschema import validate, JSONDict
-from . import cvrs  # pylint: disable=cyclic-import
-from . import ballot_manifest  # pylint: disable=cyclic-import
-from . import batch_tallies  # pylint: disable=cyclic-import
+from . import cvrs
+from . import ballot_manifest
+from . import batch_tallies
 from ..util.get_json import safe_get_json_dict, safe_get_json_list
 
 
@@ -394,7 +394,7 @@ def list_contests(election: Election):
     [UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN, UserType.TALLY_ENTRY]
 )
 def list_jurisdictions_contests(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
 ):
     json_contests = [serialize_contest(c) for c in jurisdiction.contests]
@@ -407,10 +407,10 @@ def list_jurisdictions_contests(
 )
 @restrict_access([UserType.AUDIT_BOARD])
 def list_audit_board_contests(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
-    round: Round,  # pylint: disable=unused-argument
-    audit_board: AuditBoard,  # pylint: disable=unused-argument
+    round: Round,
+    audit_board: AuditBoard,
 ):
     json_contests = [serialize_contest(c) for c in jurisdiction.contests]
     return jsonify({"contests": json_contests})

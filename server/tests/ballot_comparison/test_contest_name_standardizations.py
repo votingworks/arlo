@@ -2,18 +2,18 @@ import json
 import io
 from flask.testing import FlaskClient
 
-from ...models import *  # pylint: disable=wildcard-import
-from ..helpers import *  # pylint: disable=wildcard-import
+from ...models import *
+from ..helpers import *
 from .conftest import TEST_CVRS
 
 
 def test_standardize_contest_names(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    cvrs,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    election_settings,
+    manifests,
+    cvrs,
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -156,9 +156,9 @@ def test_standardize_contest_names(
 def test_standardize_contest_names_before_cvrs(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    election_settings,
+    manifests,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     contests = [
@@ -181,10 +181,10 @@ def test_standardize_contest_names_before_cvrs(
 def test_standardize_contest_names_before_contests(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    cvrs,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    election_settings,
+    manifests,
+    cvrs,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/contest/standardizations")
@@ -195,10 +195,10 @@ def test_standardize_contest_names_before_contests(
 def test_standardize_contest_names_cvr_change(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    cvrs,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    election_settings,
+    manifests,
+    cvrs,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     contests = [
@@ -277,10 +277,10 @@ def test_standardize_contest_names_cvr_change(
 def test_standardize_contest_names_contest_change(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    cvrs,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    election_settings,
+    manifests,
+    cvrs,
 ):
     contest_id = str(uuid.uuid4())
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -359,9 +359,9 @@ def test_standardize_contest_names_contest_change(
 def test_standardize_contest_names_wrong_audit_type(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    election_settings,
+    manifests,
 ):
     election = Election.query.get(election_id)
     election.audit_type = AuditType.BALLOT_POLLING
@@ -383,10 +383,10 @@ def test_standardize_contest_names_wrong_audit_type(
 def test_standardize_contest_names_after_audit_starts(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    cvrs,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    election_settings,
+    manifests,
+    cvrs,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     contest_id = str(uuid.uuid4())

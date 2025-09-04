@@ -15,7 +15,7 @@ from ..api.rounds import (
 )
 from ..auth.auth_helpers import UserType, restrict_access
 from ..database import db_session
-from ..models import *  # pylint: disable=wildcard-import
+from ..models import *
 from ..worker.tasks import (
     background_task,
     create_background_task,

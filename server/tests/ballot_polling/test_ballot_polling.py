@@ -1,7 +1,7 @@
 from flask.testing import FlaskClient
 
-from ...models import *  # pylint: disable=wildcard-import
-from ..helpers import *  # pylint: disable=wildcard-import
+from ...models import *
+from ..helpers import *
 
 
 def test_not_found_ballots(
@@ -9,7 +9,7 @@ def test_not_found_ballots(
     election_id: str,
     contest_ids: List[str],
     round_1_id: str,
-    audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
+    audit_board_round_1_ids: List[str],
     snapshot,
 ):
     def finish_round():

@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 # Handles generating sample sizes and taking samples
 from typing import cast, Any, Dict, List, Tuple
 from numpy.random import default_rng

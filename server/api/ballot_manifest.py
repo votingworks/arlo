@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from . import api
 from ..database import db_session, engine
-from ..models import *  # pylint: disable=wildcard-import
+from ..models import *
 from ..auth import restrict_access, UserType, get_loggedin_user, get_support_user
 from ..worker.tasks import (
     UserError,
@@ -173,7 +173,7 @@ def process_ballot_manifest_file(
                 counting_group = row.get(CONTAINER)
                 if counting_group not in counting_group_allowset:
                     raise CSVParseError(
-                        f"Invalid value for column \"Container\", row {row_index+2}: \"{counting_group}\". Use the Batch Audit File Preparation Tool to create your ballot manifest, or correct this value to one of the following: {', '.join(counting_group_allowlist)}."
+                        f'Invalid value for column "Container", row {row_index + 2}: "{counting_group}". Use the Batch Audit File Preparation Tool to create your ballot manifest, or correct this value to one of the following: {", ".join(counting_group_allowlist)}.'
                     )
 
             batch = Batch(
@@ -294,7 +294,7 @@ BALLOT_MANIFEST_FILE_NAME_PREFIX = "manifest"
 )
 @restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def start_upload_for_ballot_manifest(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
 ):
     file_type = request.args.get("fileType")
@@ -318,7 +318,7 @@ def start_upload_for_ballot_manifest(
 )
 @restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def complete_upload_for_ballot_manifest(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
 ):
     (storage_path, filename, _) = validate_and_get_standard_file_upload_request_params(
@@ -344,9 +344,7 @@ def complete_upload_for_ballot_manifest(
     methods=["GET"],
 )
 @restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
-def get_ballot_manifest(
-    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
-):
+def get_ballot_manifest(election: Election, jurisdiction: Jurisdiction):
     return jsonify(
         file=serialize_file(jurisdiction.manifest_file),
         processing=serialize_file_processing(jurisdiction.manifest_file),
@@ -359,7 +357,7 @@ def get_ballot_manifest(
 )
 @restrict_access([UserType.AUDIT_ADMIN])
 def download_ballot_manifest_file(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
 ):
     if not jurisdiction.manifest_file:
@@ -377,7 +375,7 @@ def download_ballot_manifest_file(
 )
 @restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def clear_ballot_manifest(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
 ):
     if any_jurisdiction_file_is_processing(jurisdiction):

@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """Add a sessions table as we move sessions to the backend.
 
 Revision ID: 6a4dc1ef268c
@@ -6,6 +5,7 @@ Revises: 74c579ae8555
 Create Date: 2023-01-27 17:38:29.934674+00:00
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

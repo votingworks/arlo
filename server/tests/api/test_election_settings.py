@@ -1,8 +1,8 @@
 import json
 from flask.testing import FlaskClient
 
-from ...models import *  # pylint: disable=wildcard-import
-from ..helpers import *  # pylint: disable=wildcard-import
+from ...models import *
+from ..helpers import *
 
 
 def test_settings_get_empty(client: FlaskClient, election_id: str):
@@ -85,7 +85,7 @@ def test_update_election(
 def test_update_election_settings_after_audit_starts(
     client: FlaskClient,
     election_id: str,
-    round_1_id: str,  # pylint: disable=unused-argument
+    round_1_id: str,
 ):
     rv = put_json(
         client,

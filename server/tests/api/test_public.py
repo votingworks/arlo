@@ -4,7 +4,7 @@ import tempfile
 from typing import Any, Dict, List, TypedDict
 
 from flask.testing import FlaskClient
-from ..helpers import *  # pylint: disable=wildcard-import
+from ..helpers import *
 from ... import config
 
 

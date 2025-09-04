@@ -1,4 +1,3 @@
-# pylint: disable=stop-iteration-return
 from collections import defaultdict
 from enum import Enum
 from typing import (
@@ -186,7 +185,7 @@ def skip_empty_trailing_columns(csv: CSVIterator) -> CSVIterator:
         yield from csv
     else:
         yield headers[0:-empty_trailing_header_count]
-        for r, row in enumerate(csv):  # pylint: disable=invalid-name
+        for r, row in enumerate(csv):
             for empty_trailing_column_index, cell in enumerate(
                 row[-empty_trailing_header_count:]
             ):
@@ -248,13 +247,13 @@ def reject_empty_cells(
 ) -> CSVDictIterator:
     columns_by_header = {column.name: column for column in columns}
 
-    for r, row in enumerate(csv):  # pylint: disable=invalid-name
+    for r, row in enumerate(csv):
         # Skip empty rows, we filter them out later
         if is_empty_row(row):
             yield row
             continue
 
-        for header, value in row.items():  # pylint: disable=invalid-name
+        for header, value in row.items():
             if value == "" and not columns_by_header[header].allow_empty_rows:
                 raise CSVParseError(
                     f"A value is required for the cell at column {header}, row {r + 2}."
@@ -267,7 +266,7 @@ def validate_and_parse_values(
 ) -> CSVDictIterator:
     columns_by_header = {column.name: column for column in columns}
 
-    def parse_and_validate_value(header, value, r):  # pylint: disable=invalid-name
+    def parse_and_validate_value(header, value, r):
         where = f"column {header}, row {r + 2}"
         column = columns_by_header[header]
 
@@ -278,7 +277,6 @@ def validate_and_parse_values(
             try:
                 return locale.atoi(value)
             except ValueError:
-                # pylint: disable=raise-missing-from
                 raise CSVParseError(f"Expected a number in {where}. Got: {value}.")
 
         if column.value_type is CSVValueType.EMAIL:
@@ -296,7 +294,7 @@ def validate_and_parse_values(
 
         return value
 
-    for r, row in enumerate(csv):  # pylint: disable=invalid-name
+    for r, row in enumerate(csv):
         # Skip empty rows, we filter them out later
         if is_empty_row(row):
             yield row
@@ -345,7 +343,7 @@ TOTAL_REGEX = re.compile(r"(^|[^a-zA-Z])(sub)?totals?($|[^a-zA-Z])", re.IGNORECA
 
 
 def reject_total_rows(csv: CSVDictIterator) -> CSVDictIterator:
-    for r, row in enumerate(csv):  # pylint: disable=invalid-name
+    for r, row in enumerate(csv):
         for value in row.values():
             if TOTAL_REGEX.search(value):
                 raise CSVParseError(
@@ -384,7 +382,7 @@ def reject_final_total_row(csv: CSVDictIterator, columns: List[CSVColumnType]):
 def convert_rows_to_dicts(csv: CSVIterator) -> CSVDictIterator:
     headers = next(csv)
 
-    for r, row in enumerate(csv):  # pylint: disable=invalid-name
+    for r, row in enumerate(csv):
         # Normalize empty rows to make sure we can turn them into dicts.
         # We'll filter them out later.
         if len(row) == 0:
@@ -408,7 +406,7 @@ def get_header_indices(headers_row: List[str]) -> Dict[str, int]:
 
 
 # Allow a 2-string tuple for Dominion's two-row CSV headers
-# pylint: disable=invalid-name
+
 HeaderType = TypeVar("HeaderType", str, Tuple[str, str])
 
 
