@@ -844,7 +844,10 @@ describe('Progress screen', () => {
       )
 
       downloadFileMock.mockRestore()
-      delete HTMLElement.prototype.innerText
+      Object.defineProperty(HTMLElement.prototype, 'innerText', {
+        value: '',
+        configurable: true,
+      })
     })
   })
 

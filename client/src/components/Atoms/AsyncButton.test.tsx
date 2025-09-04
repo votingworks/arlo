@@ -14,7 +14,7 @@ const asyncMock = (): [
   let rejectPromise = () => {
     // do nothing
   }
-  const promise = new Promise((resolve, reject) => {
+  const promise = new Promise<void>((resolve, reject) => {
     resolvePromise = resolve
     rejectPromise = reject
   })
