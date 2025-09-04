@@ -10,8 +10,8 @@ from ..database import db_session
 
 def test_websession_create():
     app = Mock()
-    app.session_cookie_name = "COOKIE_MONSTER"
     app.config = {
+        "SESSION_COOKIE_NAME": "COOKIE_MONSTER",
         "SESSION_COOKIE_DOMAIN": "cookie_domain",
         "SESSION_COOKIE_PATH": "/",
         "SESSION_COOKIE_HTTPONLY": True,
