@@ -160,7 +160,6 @@ def test_support_callback(
         mock_response = Mock()
         mock_response.json = MagicMock(return_value={"email": SA_EMAIL})
         with patch.object(auth0_sa, "get", return_value=mock_response):
-
             rv = client.get("/auth/support/callback?code=foobar")
             assert rv.status_code == 302
             assert urlparse(rv.location).path == "/support"
@@ -191,7 +190,6 @@ def test_support_callback_rejected(
             mock_response = Mock()
             mock_response.json = MagicMock(return_value=bad_user_info)
             with patch.object(auth0_sa, "get", return_value=mock_response):
-
                 rv = client.get("/auth/support/callback?code=foobar")
                 assert rv.status_code == 302
                 assert urlparse(rv.location).path == "/"
@@ -228,11 +226,9 @@ def test_auditadmin_start(client: FlaskClient):
 
 def test_auditadmin_callback(client: FlaskClient, aa_email: str):
     with patch.object(auth0_aa, "authorize_access_token", return_value=None):
-
         mock_response = Mock()
         mock_response.json = MagicMock(return_value={"email": aa_email})
         with patch.object(auth0_aa, "get", return_value=mock_response):
-
             rv = client.get("/auth/auditadmin/callback?code=foobar")
             assert rv.status_code == 302
 
@@ -2112,11 +2108,7 @@ def test_csrf(client: FlaskClient, org_id: str):
     }
 
     rv = client.get("/")
-    csrf_token = next(
-        cookie
-        for cookie in client.cookie_jar  # type: ignore
-        if cookie.name == "_csrf_token"
-    ).value
+    csrf_token = client.get_cookie("_csrf_token").value
     rv = client.post(
         "/api/election",
         headers={"Content-Type": "application/json", "X-CSRFToken": csrf_token},

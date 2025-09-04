@@ -5,6 +5,7 @@
 import secrets
 from datetime import datetime, timezone
 
+from flask import Flask, Request
 from flask.sessions import SessionInterface, SessionMixin
 from werkzeug.datastructures import CallbackDict
 from .models import WebSession
@@ -27,8 +28,8 @@ class ArloSessionInterface(SessionInterface):
     def _generate_sid(self):
         return secrets.token_urlsafe(50)
 
-    def open_session(self, app, request):
-        sid = request.cookies.get(app.session_cookie_name)
+    def open_session(self, app: Flask, request: Request):
+        sid = request.cookies.get(app.config["SESSION_COOKIE_NAME"])
         if not sid:
             return ArloSession(sid=self._generate_sid())
 
@@ -77,7 +78,7 @@ class ArloSessionInterface(SessionInterface):
         secure = self.get_cookie_secure(app)
 
         response.set_cookie(
-            app.session_cookie_name,
+            app.config["SESSION_COOKIE_NAME"],
             session.sid,
             max_age=max_age,
             httponly=httponly,
