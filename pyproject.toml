@@ -50,6 +50,9 @@ pytest-xdist = "^2.3.0"
 sqlalchemy-stubs = "^0.3"
 noauth = { git = "https://github.com/votingworks/nOAuth.git", rev = "main" }
 
+[tool.basedpyright]
+stubPath = "stubs"
+
 [build-system]
 requires = ["poetry-core>=1.8.0"]
 build-backend = "poetry.core.masonry.api"
