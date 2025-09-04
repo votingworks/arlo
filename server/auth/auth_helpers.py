@@ -111,8 +111,8 @@ def find_or_404(query: Query):
 def check_access(
     user_types: List[UserType],
     election: Election,
-    jurisdiction: Jurisdiction = None,
-    audit_board: AuditBoard = None,
+    jurisdiction: Optional[Jurisdiction] = None,
+    audit_board: Optional[AuditBoard] = None,
 ):
     # Check user type is allowed
     user_type, user_key = get_loggedin_user(session)

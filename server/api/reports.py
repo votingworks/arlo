@@ -563,7 +563,9 @@ def round_rows(election: Election):
     return rows
 
 
-def full_hand_tally_result_rows(election: Election, jurisdiction: Jurisdiction = None):
+def full_hand_tally_result_rows(
+    election: Election, jurisdiction: Optional[Jurisdiction] = None
+):
     rows = [heading("FULL HAND TALLY BATCH RESULTS")]
 
     results_query = (
@@ -603,7 +605,7 @@ def full_hand_tally_result_rows(election: Election, jurisdiction: Jurisdiction =
     return rows
 
 
-def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
+def sampled_ballot_rows(election: Election, jurisdiction: Optional[Jurisdiction] = None):
     # Special case: if we sampled all ballots, don't show this section
     rounds = list(election.rounds)
     if len(rounds) > 0 and is_full_hand_tally(rounds[0], election):
@@ -843,7 +845,7 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
     return rows
 
 
-def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
+def sampled_batch_rows(election: Election, jurisdiction: Optional[Jurisdiction] = None):
     rows = [heading("SAMPLED BATCHES")]
 
     batches_query = (

@@ -10,10 +10,10 @@ from typing import (
     Dict,
     Any,
     NamedTuple,
+    Optional,
     TextIO,
     Tuple,
     TypeVar,
-    Union,
 )
 import csv as py_csv
 import io, re, locale, chardet
@@ -190,7 +190,7 @@ def skip_empty_trailing_columns(csv: CSVIterator) -> CSVIterator:
                 if len(cell) > 0:
                     raise CSVParseError(
                         f"Empty trailing column {len(headers) - empty_trailing_header_count + empty_trailing_column_index + 1}"
-                        f" expected to have no values, but row {r+2} has a value: {cell}."
+                        f" expected to have no values, but row {r + 2} has a value: {cell}."
                     )
 
             # Pass only cells for non-empty columns.
@@ -254,7 +254,7 @@ def reject_empty_cells(
         for header, value in row.items():  # pylint: disable=invalid-name
             if value == "" and not columns_by_header[header].allow_empty_rows:
                 raise CSVParseError(
-                    f"A value is required for the cell at column {header}, row {r+2}."
+                    f"A value is required for the cell at column {header}, row {r + 2}."
                 )
         yield row
 
@@ -265,7 +265,7 @@ def validate_and_parse_values(
     columns_by_header = {column.name: column for column in columns}
 
     def parse_and_validate_value(header, value, r):  # pylint: disable=invalid-name
-        where = f"column {header}, row {r+2}"
+        where = f"column {header}, row {r + 2}"
         column = columns_by_header[header]
 
         if column.allow_empty_rows and value == "":
@@ -346,7 +346,7 @@ def reject_total_rows(csv: CSVDictIterator) -> CSVDictIterator:
         for value in row.values():
             if TOTAL_REGEX.search(value):
                 raise CSVParseError(
-                    f"It looks like you might have a total row (row {r+2})."
+                    f"It looks like you might have a total row (row {r + 2})."
                     " Please remove this row from the CSV."
                 )
         yield row
@@ -388,7 +388,7 @@ def convert_rows_to_dicts(csv: CSVIterator) -> CSVDictIterator:
             row = ["" for _ in headers]
         if len(row) != len(headers):
             raise CSVParseError(
-                f"Wrong number of cells in row {r+2}."
+                f"Wrong number of cells in row {r + 2}."
                 f" Expected {len(headers)} {pluralize('cell', len(headers))},"
                 f" got {len(row)} {pluralize('cell', len(row))}."
             )
@@ -415,9 +415,9 @@ def column_value(
     row_number: int,
     header_indices: Dict[HeaderType, int],
     required: bool = True,
-    file_name: str = None,
+    file_name: Optional[str] = None,
     remove_leading_equal_sign: bool = False,
-    header_readable_string_override: Union[str, None] = None,
+    header_readable_string_override: Optional[str] = None,
 ):
     header_readable_string: str = header_readable_string_override or str(header)
     index = header_indices.get(header)
