@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 from decimal import Decimal, ROUND_CEILING
 from typing import Dict, Tuple, Optional, List
 import math
@@ -7,7 +6,7 @@ from .sampler_contest import Contest
 from .supersimple import Discrepancy
 from .raire_utils import RaireAssertion, CVR, CVRS, SAMPLECVRS
 
-l: Decimal = Decimal(0.5)
+l: Decimal = Decimal(0.5)  # noqa: E741
 gamma: Decimal = Decimal(1.03905)  # This gamma is used in Stark's tool, AGI, and CORLA
 
 # This sets the expected number of one-vote misstatements at 1 in 1000

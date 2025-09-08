@@ -7,9 +7,7 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
-snapshots[
-    "test_batch_inventory_ess_cvr_upload 1"
-] = """Batch Name,Number of Ballots\r
+snapshots["test_batch_inventory_ess_cvr_upload 1"] = """Batch Name,Number of Ballots\r
 BATCH1,6\r
 BATCH2,8\r
 """
@@ -21,9 +19,7 @@ BATCH1,2,2,0\r
 BATCH2,4,4,0\r
 """
 
-snapshots[
-    "test_batch_inventory_ess_cvr_upload 3"
-] = """Batch Name,Number of Ballots\r
+snapshots["test_batch_inventory_ess_cvr_upload 3"] = """Batch Name,Number of Ballots\r
 BATCH1,6\r
 BATCH2,8\r
 """
@@ -35,9 +31,7 @@ BATCH1,2,2,0\r
 BATCH2,4,4,0\r
 """
 
-snapshots[
-    "test_batch_inventory_ess_cvr_upload 5"
-] = """Batch Name,Number of Ballots\r
+snapshots["test_batch_inventory_ess_cvr_upload 5"] = """Batch Name,Number of Ballots\r
 BATCH1,6\r
 BATCH2,8\r
 """
@@ -49,9 +43,7 @@ BATCH1,2,2,0\r
 BATCH2,4,4,0\r
 """
 
-snapshots[
-    "test_batch_inventory_ess_cvr_upload 7"
-] = """Batch Name,Number of Ballots\r
+snapshots["test_batch_inventory_ess_cvr_upload 7"] = """Batch Name,Number of Ballots\r
 BATCH1,6\r
 BATCH2,8\r
 """
@@ -133,9 +125,7 @@ Tabulator 2 - BATCH1,3,\r
 Tabulator 2 - BATCH2,6,\r
 """
 
-snapshots[
-    "test_batch_inventory_happy_path 1"
-] = """Batch Inventory Worksheet\r
+snapshots["test_batch_inventory_happy_path 1"] = """Batch Inventory Worksheet\r
 \r
 Section 1: Check Ballot Groups\r
 1. Compare the CVR Ballot Count for each ballot group to your voter check-in data.\r
@@ -301,9 +291,7 @@ Tabulator 2 - BATCH1,2,1,0,3,2,1,0\r
 Tabulator 2 - BATCH2,2,0,0,6,2,4,0\r
 """
 
-snapshots[
-    "test_batch_inventory_hart_cvr_upload 1"
-] = """Batch Name,Number of Ballots\r
+snapshots["test_batch_inventory_hart_cvr_upload 1"] = """Batch Name,Number of Ballots\r
 BATCH1,4\r
 BATCH2,3\r
 BATCH3,2\r

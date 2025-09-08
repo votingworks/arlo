@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """
 Library for performing a BRAVO-style ballot polling risk-limiting audit,
 as described by Lindeman and Stark here: https://www.usenix.org/system/files/conference/evtwote12/evtwote12-final27.pdf
@@ -6,6 +5,7 @@ as described by Lindeman and Stark here: https://www.usenix.org/system/files/con
 Note that this library works for one contest at a time, as if each contest being
 targeted is being audited completely independently.
 """
+
 import math
 from decimal import Decimal
 from collections import defaultdict
@@ -525,7 +525,7 @@ def compute_risk(
         return measurements, True
 
     finished = True
-    # pylint: disable=consider-using-dict-items
+
     for pair in T:
         raw = 1 / T[pair] if T[pair] > 0 else Decimal(1)
         measurements[pair] = min(float(raw), 1.0)

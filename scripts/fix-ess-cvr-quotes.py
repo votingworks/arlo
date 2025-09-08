@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 import sys
 import re
 
@@ -20,9 +19,10 @@ if __name__ == "__main__":
     # TODO it seems like the rows still aren't ending up all the same length,
     # probably because the REP ballots are not padded with empty cells like the
     # DEM ballots (and headers) are
-    with open(sys.argv[2], "r", encoding="utf8") as in_file, open(
-        sys.argv[3], "w", encoding="utf8"
-    ) as out_file:
+    with (
+        open(sys.argv[2], "r", encoding="utf8") as in_file,
+        open(sys.argv[3], "w", encoding="utf8") as out_file,
+    ):
         file_type = sys.argv[1]
         if file_type == "ballots":
             # In ballots files, we've seen misquoting in the Original Ballot Exception column.

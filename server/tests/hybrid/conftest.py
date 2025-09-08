@@ -2,8 +2,8 @@ import io
 from typing import List
 import pytest
 
-from ...models import *  # pylint: disable=wildcard-import
-from ..helpers import *  # pylint: disable=wildcard-import
+from ...models import *
+from ..helpers import *
 from ..ballot_comparison.conftest import TEST_CVRS
 
 
@@ -99,7 +99,7 @@ def cvrs(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    manifests,  # pylint: disable=unused-argument
+    manifests,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)

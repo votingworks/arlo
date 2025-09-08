@@ -1,6 +1,6 @@
 from flask.testing import FlaskClient
 
-from ..helpers import *  # pylint: disable=wildcard-import
+from ..helpers import *
 
 
 def test_support_get_jurisdiction_batch_comparison(
@@ -8,7 +8,7 @@ def test_support_get_jurisdiction_batch_comparison(
     org_id: str,
     election_id: str,
     jurisdiction_ids: List[str],
-    round_1_id: str,  # pylint: disable=unused-argument
+    round_1_id: str,
 ):
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)
     rv = client.get(f"/api/support/jurisdictions/{jurisdiction_ids[0]}")
@@ -37,9 +37,9 @@ def test_support_get_jurisdiction_batch_comparison(
 
 def test_support_combined_batches(
     client: FlaskClient,
-    election_id: str,  # pylint: disable=unused-argument
+    election_id: str,
     jurisdiction_ids: List[str],
-    round_1_id: str,  # pylint: disable=unused-argument
+    round_1_id: str,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -173,9 +173,9 @@ def test_support_combined_batches(
 
 def test_support_invalid_combined_batches(
     client: FlaskClient,
-    election_id: str,  # pylint: disable=unused-argument
+    election_id: str,
     jurisdiction_ids: List[str],
-    round_1_id: str,  # pylint: disable=unused-argument
+    round_1_id: str,
 ):
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)
 

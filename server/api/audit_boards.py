@@ -8,7 +8,7 @@ from sqlalchemy import func
 
 from . import api
 from ..database import db_session
-from ..models import *  # pylint: disable=wildcard-import
+from ..models import *
 from ..auth import restrict_access, UserType
 from .shared import get_current_round
 from ..util.jsonschema import validate, JSONDict
@@ -109,7 +109,6 @@ def assign_sampled_ballots(
     # Set the audit board in the database for each bucket of ballots.
     for bucket in balanced_buckets.buckets:
         for batch_key in bucket.batches:
-
             if use_container:
                 batch_filter = dict(container=batch_key)
             else:
@@ -117,7 +116,7 @@ def assign_sampled_ballots(
                 batch_filter = dict(tabulator=tabulator, name=batch_name)
 
             db_session.execute(
-                SampledBallot.__table__.update()  # pylint: disable=no-member
+                SampledBallot.__table__.update()
                 .values(audit_board_id=bucket.name)
                 .where(
                     SampledBallot.batch_id.in_(
@@ -265,7 +264,7 @@ def serialize_members(audit_board):
 )
 @restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def list_audit_boards(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
     round: Round,
 ):
@@ -326,9 +325,9 @@ def validate_members(members: List[JSONDict]):
 )
 @restrict_access([UserType.AUDIT_BOARD])
 def set_audit_board_members(
-    election: Election,  # pylint: disable=unused-argument
-    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
-    round: Round,  # pylint: disable=unused-argument
+    election: Election,
+    jurisdiction: Jurisdiction,
+    round: Round,
     audit_board: AuditBoard,
 ):
     members = safe_get_json_list(request)
@@ -384,8 +383,8 @@ def validate_sign_off(sign_off_request: JSONDict, audit_board: AuditBoard):
 @restrict_access([UserType.AUDIT_BOARD])
 def sign_off_audit_board(
     election: Election,
-    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
-    round: Round,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
+    round: Round,
     audit_board: AuditBoard,
 ):
     validate_sign_off(safe_get_json_dict(request), audit_board)
@@ -415,7 +414,7 @@ def sign_off_audit_board(
 @restrict_access([UserType.AUDIT_ADMIN])
 def reopen_audit_board(
     election: Election,
-    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
     round: Round,
     audit_board: AuditBoard,
 ):

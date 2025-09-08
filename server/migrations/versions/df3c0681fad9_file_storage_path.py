@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """File.storage_path
 
 Revision ID: df3c0681fad9
@@ -6,6 +5,7 @@ Revises: 266fba5a5c8a
 Create Date: 2021-11-29 23:39:40.181378+00:00
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

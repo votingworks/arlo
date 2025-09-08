@@ -4,8 +4,8 @@ from typing import List
 import pytest
 from flask.testing import FlaskClient
 
-from .helpers import *  # pylint: disable=wildcard-import
-from ..models import *  # pylint: disable=wildcard-import
+from .helpers import *
+from ..models import *
 
 
 @pytest.fixture
@@ -90,8 +90,8 @@ def contest_ids(
 def test_sample_size_round_1(
     client: FlaskClient,
     election_id: str,
-    contest_ids: List[str],  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
+    contest_ids: List[str],
+    election_settings,
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -108,8 +108,8 @@ def test_multiple_targeted_contests_two_rounds(
     election_id: str,
     jurisdiction_ids: List[str],
     contest_ids: List[str],
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
+    election_settings,
+    manifests,
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -159,7 +159,7 @@ def test_multiple_targeted_contests_two_rounds(
         .filter_by(election_id=election_id)
         .values(Jurisdiction.id.distinct())
     )
-    assert set(j_id for j_id, in sampled_jurisdictions) == set(jurisdiction_ids[:2])
+    assert set(j_id for (j_id,) in sampled_jurisdictions) == set(jurisdiction_ids[:2])
 
     round_contests = {
         round_contest.contest_id: round_contest
@@ -244,10 +244,10 @@ def test_multiple_targeted_contests_two_rounds(
 def test_multiple_targeted_contests_full_hand_tally_error(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
     contest_ids: List[str],
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
+    election_settings,
+    manifests,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = post_json(

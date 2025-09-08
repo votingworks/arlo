@@ -12,7 +12,7 @@ import pytest
 
 
 from .. import config
-from ..models import *  # pylint: disable=wildcard-import
+from ..models import *
 from ..database import init_db
 from .helpers import (
     compare_json,
@@ -186,8 +186,8 @@ def test_task_user_error(caplog, db_session):
 @patch("sentry_sdk.capture_exception", auto_spec=True)
 def test_task_python_error(capture_exception, caplog, db_session):
     @background_task
-    def python_error(election_id):  # pylint: disable=unused-argument
-        return [][1]  # pylint: disable=potential-index-error
+    def python_error(election_id):
+        return [][1]
 
     task = create_background_task(
         python_error, dict(election_id="test-election-id"), db_session
@@ -235,7 +235,7 @@ def test_task_python_error(capture_exception, caplog, db_session):
 @patch("sentry_sdk.capture_exception", auto_spec=True)
 def test_task_python_error_format(capture_exception, caplog, db_session):
     @background_task
-    def error_format(election_id: str):  # pylint: disable=unused-argument
+    def error_format(election_id: str):
         return next(iter([]))
 
     task = create_background_task(
@@ -284,7 +284,7 @@ def test_task_python_error_format(capture_exception, caplog, db_session):
 @patch("sentry_sdk.capture_exception", auto_spec=True)
 def test_task_db_error(capture_exception, caplog, db_session):
     @background_task
-    def db_error(election_id):  # pylint: disable=unused-argument
+    def db_error(election_id):
         db_session.add(Election(id=1))
 
     task = create_background_task(
@@ -336,7 +336,7 @@ def test_task_multiple_run_in_order(db_session):
     results = []
 
     @background_task
-    def multiple(election_id, num):  # pylint: disable=unused-argument
+    def multiple(election_id, num):
         nonlocal results
         results.append(num)
 
@@ -369,7 +369,7 @@ def test_task_interrupted(caplog, db_session):
     db_session.execute("TRUNCATE TABLE task_to_interrupt_results")
 
     @background_task
-    def task_to_interrupt(election_id, num):  # pylint: disable=unused-argument
+    def task_to_interrupt(election_id, num):
         db_session.execute(
             "INSERT INTO task_to_interrupt_results (num) VALUES (:num)", dict(num=num)
         )
@@ -405,7 +405,7 @@ def test_task_interrupted(caplog, db_session):
 
     results = [
         num
-        for num, in db_session.execute(
+        for (num,) in db_session.execute(
             "SELECT num FROM task_to_interrupt_results ORDER BY inserted_at"
         ).fetchall()
     ]
@@ -454,7 +454,7 @@ def test_multiple_workers(db_session):
     db_session.commit()
 
     @background_task
-    def count(election_id, db_session, num: int):  # pylint: disable=unused-argument
+    def count(election_id, db_session, num: int):
         time.sleep(random.randint(0, 2) / 10)
         db_session.execute(
             "INSERT INTO count_results (num) VALUES (:num)", dict(num=num)
@@ -507,7 +507,7 @@ def test_multiple_workers(db_session):
 
     expected_sorted_results = list(range(num_tasks))
     results = [
-        num for num, in db_session.execute("SELECT num FROM count_results").fetchall()
+        num for (num,) in db_session.execute("SELECT num FROM count_results").fetchall()
     ]
     # Each task should have run exactly once
     assert sorted(results) == expected_sorted_results
@@ -637,9 +637,9 @@ def test_multiple_workers_lock_on_election(db_session):
     for election_id, count in db_session.execute(
         "SELECT election_id, count FROM election_count"
     ):
-        assert (
-            count == num_tasks_per_election
-        ), f"Expected count {count} for {election_id} to equal {num_tasks_per_election}"
+        assert count == num_tasks_per_election, (
+            f"Expected count {count} for {election_id} to equal {num_tasks_per_election}"
+        )
 
 
 def test_task_missing_election_id():
@@ -655,7 +655,7 @@ def test_task_missing_election_id():
 
 def test_task_missing_parameter(db_session):
     @background_task
-    def missing_parameters(election_id, arg2, arg3):  # pylint: disable=unused-argument
+    def missing_parameters(election_id, arg2, arg3):
         pass
 
     with pytest.raises(
@@ -677,7 +677,7 @@ def test_file_is_processing(db_session):
     assert file.is_processing() is False
 
     @background_task
-    def process_file(election_id):  # pylint: disable=unused-argument
+    def process_file(election_id):
         pass
 
     # queue the task

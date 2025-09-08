@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """Add providence to auditmathtype
 
 Revision ID: 754cca3f4448
@@ -6,6 +5,7 @@ Revises: 6a4dc1ef268c
 Create Date: 2023-02-02 15:54:54.693933+00:00
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

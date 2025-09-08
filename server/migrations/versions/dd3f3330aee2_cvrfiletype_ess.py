@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """CvrFileType.ESS
 
 Revision ID: dd3f3330aee2
@@ -6,6 +5,7 @@ Revises: bc97ac0e8267
 Create Date: 2021-11-17 00:00:45.284416+00:00
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

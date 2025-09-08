@@ -41,16 +41,22 @@ filelock = "^3.0.12"
 pytest = "^6.2.4"
 pytest-cov = "^2.12.1"
 pytest-testmon = "^1.1.1"
-pylint = "^2.12.0"
-black = "^24.0"
 snapshottest = "^0.6.0"
 pytest-alembic = "^0.2.5"
 pytest-xdist = "^2.3.0"
 sqlalchemy-stubs = "^0.3"
 noauth = { git = "https://github.com/votingworks/nOAuth.git", rev = "main" }
+ruff = "^0.12.12"
 
 [tool.basedpyright]
 stubPath = "stubs"
+
+[tool.ruff.lint]
+ignore = [
+  # TODO: stop using * imports, then re-enable these
+  "F405",
+  "F403",
+]
 
 [build-system]
 requires = ["poetry-core>=1.8.0"]

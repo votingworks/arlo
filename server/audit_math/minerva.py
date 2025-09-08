@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """
 Library for performing a Minerva-style ballot polling risk-limiting audit,
 as described by Zagórski et al https://arxiv.org/abs/2008.02315
@@ -10,12 +9,13 @@ TODO: ensure the no-losers case is handled
 TODO: if necessary pull out risks for individual contests
 
 """
+
 import logging
 from typing import List, Dict, Tuple, Optional
 
 from athena.audit import Audit as AthenaAudit  # type: ignore
 from .sampler_contest import Contest
-from .ballot_polling_types import (  # pylint: disable=unused-import
+from .ballot_polling_types import (
     SampleSizeOption,
     BALLOT_POLLING_ROUND_SIZES,
     BALLOT_POLLING_SAMPLE_RESULTS,
@@ -241,9 +241,9 @@ def compute_risk(
     """
 
     alpha = risk_limit / 100
-    assert (
-        0.0 < alpha < 1.0
-    ), "The risk-limit must be greater than zero and less than one!"
+    assert 0.0 < alpha < 1.0, (
+        "The risk-limit must be greater than zero and less than one!"
+    )
 
     prev_round_schedule = [
         round_info.round_size for _, round_info in sorted(round_sizes.items())

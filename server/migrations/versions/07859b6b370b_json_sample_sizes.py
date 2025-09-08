@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """JSON sample sizes
 
 Revision ID: 07859b6b370b
@@ -6,6 +5,7 @@ Revises: 342f43b1c9d9
 Create Date: 2021-02-18 23:06:28.697346+00:00
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

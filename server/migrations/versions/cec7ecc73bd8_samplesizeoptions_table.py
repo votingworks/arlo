@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """SampleSizeOptions table
 
 Revision ID: cec7ecc73bd8
@@ -6,6 +5,7 @@ Revises: 496ee3db6da8
 Create Date: 2022-04-25 22:57:54.528446+00:00
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

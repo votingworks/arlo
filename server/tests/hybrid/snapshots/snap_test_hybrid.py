@@ -34,9 +34,7 @@ TABULATOR3,BATCH1,9,,,0.293674693309260219,N,Audit Board #1
 TABULATOR3,BATCH1,10,,,0.199742518299743122,N,Audit Board #1
 """
 
-snapshots[
-    "test_hybrid_two_rounds 2"
-] = """######## ELECTION INFO ########\r
+snapshots["test_hybrid_two_rounds 2"] = """######## ELECTION INFO ########\r
 Organization,Election Name,State\r
 Test Org test_hybrid_two_rounds,Test Election,CA\r
 \r

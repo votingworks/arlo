@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """JurisdictionResult
 
 Revision ID: 22c615fe67ab
@@ -6,6 +5,7 @@ Revises: 5b7164faeda5
 Create Date: 2020-07-28 23:32:34.385481+00:00
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

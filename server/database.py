@@ -24,7 +24,6 @@ meta = MetaData(
 class Base:
     query: Query = db_session.query_property()
 
-    # pylint: disable=no-self-argument,no-member
     @declared_attr
     def __tablename__(cls):
         # Convert CamelCase model name to snake_case table name
@@ -33,23 +32,20 @@ class Base:
 
 
 def init_db(engine=engine):
-    # pylint: disable=wildcard-import,import-outside-toplevel,unused-import
-    import server.models
+    import server.models  # noqa: F401
 
     Base.metadata.create_all(bind=engine)
 
 
 def reset_db():
-    # pylint: disable=wildcard-import,import-outside-toplevel,unused-import
-    import server.models
+    import server.models  # noqa: F401
 
     Base.metadata.drop_all(bind=engine)
     init_db()
 
 
 def clear_db():  # pragma: no cover
-    # pylint: disable=wildcard-import,import-outside-toplevel,unused-import
-    import server.models
+    import server.models  # noqa: F401
 
     for table in reversed(Base.metadata.sorted_tables):
         engine.execute(table.delete())

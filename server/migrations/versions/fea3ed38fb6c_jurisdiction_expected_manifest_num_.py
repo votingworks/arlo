@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """Jurisdiction.expected_manifest_num_ballots
 
 Revision ID: fea3ed38fb6c
@@ -6,6 +5,7 @@ Revises: 848ffc831a04
 Create Date: 2023-09-28 22:23:03.041933+00:00
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

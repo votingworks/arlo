@@ -14,7 +14,7 @@ from server.websession import cleanup_sessions
 
 # We have to import all of the api so that the modules load and all of the task
 # handlers get registered as background_tasks.
-from server import api  # pylint: disable=unused-import
+from server import api  # noqa
 
 
 def run_worker(worker_id: str, db_session, pause_between_tasks_seconds):

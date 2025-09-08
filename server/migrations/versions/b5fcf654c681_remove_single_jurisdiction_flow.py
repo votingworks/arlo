@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """Remove single-jurisdiction flow
 
 Revision ID: b5fcf654c681
@@ -6,6 +5,7 @@ Revises: e372310f31c1
 Create Date: 2020-10-27 00:05:01.862834+00:00
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

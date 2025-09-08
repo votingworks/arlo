@@ -12,7 +12,7 @@ from werkzeug.exceptions import BadRequest, Conflict
 from xkcdpass import xkcd_password as xp
 
 from . import auth
-from ..models import *  # pylint: disable=wildcard-import
+from ..models import *
 from ..database import db_session
 from .auth_helpers import (
     allow_public_access,
@@ -452,7 +452,7 @@ def tally_entry_jurisdiction_generate_passphrase(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def tally_entry_jurisdiction_status(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
 ):
     tally_entry_users = (
@@ -482,7 +482,7 @@ def tally_entry_jurisdiction_status(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def tally_entry_jurisdiction_confirm_login_code(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
 ):
     body = safe_get_json_dict(request)
@@ -506,7 +506,7 @@ def tally_entry_jurisdiction_confirm_login_code(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def tally_entry_jurisdiction_reject_request(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,
 ):
     body = safe_get_json_dict(request)

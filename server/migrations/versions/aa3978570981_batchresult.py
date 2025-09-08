@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """BatchResult
 
 Revision ID: aa3978570981
@@ -6,6 +5,7 @@ Revises: a3004ca81e25
 Create Date: 2020-09-02 00:09:27.390165+00:00
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

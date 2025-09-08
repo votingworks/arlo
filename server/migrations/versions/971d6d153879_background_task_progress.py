@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """Background task progress
 
 Revision ID: 971d6d153879
@@ -6,6 +5,7 @@ Revises: f400f19f7a35
 Create Date: 2021-09-08 18:10:07.594503+00:00
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

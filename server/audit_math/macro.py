@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """
 An implemenation of per-contest batch comparison audits, loosely based on
 MACRO. Since MACRO applies to all contests being audited (hence
@@ -10,6 +9,7 @@ MACRO was developed by Philip Stark (see
 https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1443314 for the
 publication).
 """
+
 from decimal import Decimal, ROUND_CEILING
 import math
 from typing import Dict, Set, Tuple, TypeVar, TypedDict, Optional, List
@@ -339,7 +339,8 @@ def compute_risk(
     unauditable_ballots = compute_unauditable_ballots(reported_results, contest)
 
     for _, batch in sorted(
-        sample_ticket_numbers.items(), key=lambda entry: entry[0]  # ticket_number
+        sample_ticket_numbers.items(),
+        key=lambda entry: entry[0],  # ticket_number
     ):
         if contest.name not in sample_results[batch]:
             continue

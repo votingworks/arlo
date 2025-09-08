@@ -6,7 +6,7 @@ from werkzeug.exceptions import BadRequest
 
 
 from . import api
-from ..models import *  # pylint: disable=wildcard-import
+from ..models import *
 from ..database import db_session
 from .shared import BatchTallies, combined_batch_keys, samples_not_found_by_round
 from ..auth import restrict_access, UserType
@@ -18,7 +18,7 @@ from ..audit_math import (
     suite,
 )
 from ..audit_math.ballot_polling import SampleSizeOption
-from . import rounds  # pylint: disable=cyclic-import
+from . import rounds
 from .cvrs import validate_uploaded_cvrs, hybrid_contest_choice_vote_counts
 from .ballot_manifest import hybrid_contest_total_ballots, all_manifests_uploaded
 from ..worker.tasks import (

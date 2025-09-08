@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 import re
 import csv
 import sys

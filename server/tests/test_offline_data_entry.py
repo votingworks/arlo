@@ -1,7 +1,7 @@
 import pytest
 from flask.testing import FlaskClient
 
-from .helpers import *  # pylint: disable=wildcard-import
+from .helpers import *
 
 
 @pytest.fixture
@@ -44,9 +44,9 @@ def test_run_offline_audit(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_ids: List[str],  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
+    contest_ids: List[str],
+    election_settings,
+    manifests,
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -190,7 +190,7 @@ def test_offline_results_invalid(
     jurisdiction_ids: List[str],
     contest_ids: List[str],
     round_1_id: str,
-    audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
+    audit_board_round_1_ids: List[str],
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)

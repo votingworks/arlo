@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """CvrBallot unique constraint
 
 Revision ID: b91b345bf0a9
@@ -6,6 +5,7 @@ Revises: f44bbbb8b076
 Create Date: 2021-04-06 21:39:10.364600+00:00
 
 """
+
 from alembic import op
 
 

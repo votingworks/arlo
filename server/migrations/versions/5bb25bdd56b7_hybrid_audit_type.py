@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """Hybrid audit type
 
 Revision ID: 5bb25bdd56b7
@@ -6,6 +5,7 @@ Revises: 8b6b89bfbc97
 Create Date: 2021-02-17 20:00:17.417808+00:00
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

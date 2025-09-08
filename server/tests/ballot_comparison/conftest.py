@@ -2,8 +2,8 @@ import io
 import pytest
 from flask.testing import FlaskClient
 
-from ...models import *  # pylint: disable=wildcard-import
-from ..helpers import *  # pylint: disable=wildcard-import
+from ...models import *
+from ..helpers import *
 
 # Note that we intentionally leave out one row from the CVR to simulate what
 # happens when a row is missing. This would be the ballot: TABULATOR2,BATCH2,3,2-2-3
@@ -164,7 +164,7 @@ def cvrs(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    manifests,  # pylint: disable=unused-argument
+    manifests,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
