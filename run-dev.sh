@@ -5,5 +5,5 @@ trap 'kill 0' SIGINT SIGHUP
 cd "$(dirname "${BASH_SOURCE[0]}")"
 PORT=8080 poetry run python -m noauth &
 poetry run python -m server.main &
-poetry run python -m server.worker.worker &
+poetry run python scripts/run-dev-worker.py &
 yarn --cwd client start
