@@ -47,6 +47,7 @@ pytest-xdist = "^2.3.0"
 sqlalchemy-stubs = "^0.3"
 noauth = { git = "https://github.com/votingworks/nOAuth.git", rev = "main" }
 ruff = "^0.12.12"
+watchdog = "^6.0.0"
 
 [tool.basedpyright]
 stubPath = "stubs"
