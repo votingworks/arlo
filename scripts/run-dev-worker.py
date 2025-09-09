@@ -28,7 +28,9 @@ class RunDevWorkerEventHandler(FileSystemEventHandler):
         if not event.is_directory:
             for pattern in self.patterns:
                 if not isinstance(event.src_path, str):
-                    raise TypeError(f"event.src_path is not a string: {event.src_path!r}")
+                    raise TypeError(
+                        f"event.src_path is not a string: {event.src_path!r}"
+                    )
                 if fnmatch.fnmatch(event.src_path, pattern):
                     print(f"File changed: {event.src_path}. Restarting process...")
                     self.start_process()
