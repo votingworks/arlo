@@ -7,6 +7,7 @@ from flask.testing import FlaskClient
 from flask import jsonify, abort
 import pytest
 from filelock import FileLock
+from unittest.mock import Mock, patch
 
 # Before we set up the Flask app, set the env. That way it will use the test
 # config and we can still run tests without setting the env var manually.
@@ -25,6 +26,43 @@ from ..database import reset_db
 from ..models import *
 from ..auth import UserType, restrict_access
 from .helpers import *
+
+
+# Mock OpenID Connect Discovery endpoints for OAuth
+def mock_openid_configuration_response(method: str, url: str, **kwargs) -> Mock:
+    """Mock response for OpenID Connect Discovery document requests"""
+    if url.endswith("/.well-known/openid-configuration"):
+        base_url = url.replace("/.well-known/openid-configuration", "")
+        # Mock OpenID Connect Discovery document
+        discovery_doc = {
+            "issuer": base_url,
+            "authorization_endpoint": f"{base_url}/authorize",
+            "token_endpoint": f"{base_url}/oauth/token",
+            "userinfo_endpoint": f"{base_url}/userinfo",
+            "jwks_uri": f"{base_url}/.well-known/jwks.json",
+            "scopes_supported": ["openid", "profile", "email"],
+            "response_types_supported": ["code"],
+            "grant_types_supported": ["authorization_code"],
+            "subject_types_supported": ["public"],
+            "id_token_signing_alg_values_supported": ["RS256"],
+        }
+        response = Mock()
+        response.json.return_value = discovery_doc
+        response.status_code = 200
+        response.headers = {"Content-Type": "application/json"}
+        return response
+
+    # For any other URL, raise an exception to catch unexpected requests
+    raise Exception(f"Unexpected request to {url}")
+
+
+# Apply the mock to requests.Session.request for all tests
+@pytest.fixture(scope="session", autouse=True)
+def mock_oauth_requests():
+    with patch(
+        "requests.Session.request", side_effect=mock_openid_configuration_response
+    ):
+        yield
 
 
 # The fixtures in this module are available in any test via dependency
