@@ -59,6 +59,7 @@ auth0_sa = oauth.register(
     authorize_url=f"{SUPPORT_AUTH0_BASE_URL}/authorize",
     authorize_params={"max_age": "0"},
     client_kwargs={"scope": "openid profile email"},
+    server_metadata_url=f"{SUPPORT_AUTH0_BASE_URL}/.well-known/openid-configuration",
 )
 
 auth0_aa = oauth.register(
@@ -70,6 +71,7 @@ auth0_aa = oauth.register(
     authorize_url=f"{AUDITADMIN_AUTH0_BASE_URL}/authorize",
     authorize_params={"max_age": "0"},
     client_kwargs={"scope": "openid profile email"},
+    server_metadata_url=f"{AUDITADMIN_AUTH0_BASE_URL}/.well-known/openid-configuration",
 )
 
 
