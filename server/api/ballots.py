@@ -175,7 +175,10 @@ def serialize_interpretation(interpretation: BallotInterpretation) -> JSONDict:
 
 
 def serialize_ballot(
-    ballot: SampledBallot, audit_type: AuditType, imprinted_id: Optional[str]
+    ballot: SampledBallot,
+    audit_type: AuditType,
+    imprinted_id: Optional[str],
+    record_id: Optional[str],
 ) -> JSONDict:
     batch = ballot.batch
     audit_board = ballot.audit_board
@@ -196,6 +199,7 @@ def serialize_ballot(
     }
     if audit_type in [AuditType.BALLOT_COMPARISON, AuditType.HYBRID]:
         json_ballot["imprintedId"] = imprinted_id
+        json_ballot["recordId"] = record_id
     return json_ballot
 
 
@@ -240,7 +244,7 @@ def list_ballots_for_jurisdiction(
             func.human_sort(Batch.name),
             SampledBallot.ballot_position,
         )
-        .with_entities(SampledBallot, CvrBallot.imprinted_id)
+        .with_entities(SampledBallot, CvrBallot.imprinted_id, CvrBallot.record_id)
         .options(
             contains_eager(SampledBallot.batch),
             contains_eager(SampledBallot.audit_board),
@@ -251,8 +255,10 @@ def list_ballots_for_jurisdiction(
         .all()
     )
     json_ballots = [
-        serialize_ballot(ballot, AuditType(election.audit_type), imprinted_id)
-        for ballot, imprinted_id in ballots
+        serialize_ballot(
+            ballot, AuditType(election.audit_type), imprinted_id, record_id
+        )
+        for ballot, imprinted_id, record_id in ballots
     ]
     return jsonify({"ballots": json_ballots})
 
@@ -292,7 +298,7 @@ def list_ballots_for_audit_board(
             func.human_sort(Batch.name),
             SampledBallot.ballot_position,
         )
-        .with_entities(SampledBallot, CvrBallot.imprinted_id)
+        .with_entities(SampledBallot, CvrBallot.imprinted_id, CvrBallot.record_id)
         .options(
             contains_eager(SampledBallot.batch),
             joinedload(SampledBallot.interpretations)
@@ -302,8 +308,10 @@ def list_ballots_for_audit_board(
         .all()
     )
     json_ballots = [
-        serialize_ballot(ballot, AuditType(election.audit_type), imprinted_id)
-        for ballot, imprinted_id in ballots
+        serialize_ballot(
+            ballot, AuditType(election.audit_type), imprinted_id, record_id
+        )
+        for ballot, imprinted_id, record_id in ballots
     ]
     return jsonify({"ballots": json_ballots})
 

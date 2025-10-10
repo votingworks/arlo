@@ -124,7 +124,8 @@ describe('generateSheets', () => {
           response: {
             ballots: dummyBallots.ballots.map(b => ({
               ...b,
-              imprintedId: `${b.batch.name}-${b.position}`,
+              imprintedId: `i-${b.position}`,
+              recordId: `r-${b.position}`,
             })),
           },
         },
@@ -154,7 +155,8 @@ describe('generateSheets', () => {
           response: {
             ballots: dummyBallots.ballots.map(b => ({
               ...b,
-              imprintedId: `${b.batch.name}-${b.position}`,
+              imprintedId: `i-${b.position}`,
+              recordId: `r-${b.position}`,
               batch: {
                 ...b.batch,
                 container: '5',
@@ -235,7 +237,8 @@ describe('generateSheets', () => {
             ballots: dummyBallots.ballots
               .map(b => ({
                 ...b,
-                imprintedId: `${b.batch.name}-${b.position}`,
+                imprintedId: `i-${b.position}`,
+                recordId: `r-${b.position}`,
               }))
               .slice(0, 5),
           },

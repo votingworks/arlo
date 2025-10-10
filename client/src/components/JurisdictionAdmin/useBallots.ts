@@ -19,6 +19,7 @@ export interface IBallot {
   }
   auditBoard: Pick<IAuditBoard, 'id' | 'name'> | null
   imprintedId?: string
+  recordId?: string
 }
 
 // TODO add pagination to this endpoint and yield a continuous stream of ballots
