@@ -97,6 +97,7 @@ const generateLabelPages = (labels: jsPDF, ballots: IBallot[]): string[][][] =>
         ballot.imprintedId !== undefined
           ? `Imprinted ID: ${ballot.imprintedId}`
           : null,
+        ballot.recordId !== undefined ? `Record ID: ${ballot.recordId}` : null,
       ].filter(line => line) as string[] // ts is not seeing us filtering out the nulls
       const finalLines: string[] = []
       lines.forEach(line => {
@@ -195,6 +196,7 @@ export const downloadPlaceholders = async (
         ballot.imprintedId !== undefined
           ? `Imprinted ID: ${ballot.imprintedId}`
           : null,
+        ballot.recordId !== undefined ? `Record ID: ${ballot.recordId}` : null,
       ]
         .filter(line => line)
         .map(line => placeholders.splitTextToSize(line!, PLACEHOLDERS_WIDTH))
