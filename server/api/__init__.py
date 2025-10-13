@@ -13,6 +13,7 @@ from . import sample_preview  # noqa: E402, F401
 from . import sample_sizes  # noqa: E402, F401
 from . import ballot_manifest  # noqa: E402, F401
 from . import batch_tallies  # noqa: E402, F401
+from . import batch_files  # noqa: E402, F401
 from . import cvrs  # noqa: E402, F401
 from . import audit_boards  # noqa: E402, F401
 from . import ballots  # noqa: E402, F401
