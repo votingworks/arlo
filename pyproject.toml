@@ -48,6 +48,8 @@ sqlalchemy-stubs = "^0.3"
 noauth = { git = "https://github.com/votingworks/nOAuth.git", rev = "main" }
 ruff = "^0.12.12"
 watchdog = "^6.0.0"
+types-chardet = "^5.0.4.6"
+types-boto3 = "^1.40.51"
 
 [tool.basedpyright]
 stubPath = "stubs"
