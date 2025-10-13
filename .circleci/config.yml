@@ -54,8 +54,7 @@ jobs:
       - run:
           name: typecheck server
           command: |
-            # suppress CI errors for now due to local/CI disagreement about basedpyright's baseline file
-            make typecheck || true
+            make typecheck
       - run:
           name: format server
           command: |
