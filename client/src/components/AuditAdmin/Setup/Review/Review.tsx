@@ -11,7 +11,6 @@ import {
   Intent,
   Button,
   Colors,
-  AnchorButton,
 } from '@blueprintjs/core'
 import { Formik, FormikProps, getIn, Field } from 'formik'
 import styled from 'styled-components'
@@ -62,6 +61,8 @@ import {
   StandardizeContestChoiceNamesCallout,
   StandardizeContestChoiceNamesDialog,
 } from './StandardizeContestChoiceNamesDialog'
+import { useBatchFilesBundle } from '../../../useBatchFilesBundle'
+import AsyncButton from '../../../Atoms/AsyncButton'
 
 const percentFormatter = new Intl.NumberFormat(undefined, {
   style: 'percent',
@@ -124,6 +125,13 @@ const Review: React.FC<IProps> = ({
     isContestNameStandardizationDialogOpen,
     setIsContestNameStandardizationDialogOpen,
   ] = useState(false)
+
+  // Hooks for batch file bundle downloads
+  const manifestsBundle = useBatchFilesBundle(electionId, 'manifests')
+  const candidateTotalsBundle = useBatchFilesBundle(
+    electionId,
+    'candidate-totals'
+  )
 
   const contestChoiceNameStandardizationsQuery = useContestChoiceNameStandardizations(
     electionId
@@ -684,23 +692,73 @@ const Review: React.FC<IProps> = ({
                           Download the ZIP bundles containing jurisdiction files
                           and their SHA-256 hashes. You may choose to share the
                           hashes with the public before launching the audit so
-                          that the files can be verified after the audit is complete. 
+                          that the files can be verified after the audit is
+                          complete.
                         </p>
+                        {(manifestsBundle.hasError ||
+                          candidateTotalsBundle.hasError) && (
+                          <Callout
+                            intent="danger"
+                            style={{ marginBottom: '10px' }}
+                          >
+                            Error generating bundle. Please try again.
+                          </Callout>
+                        )}
                         <div style={{ display: 'flex', gap: '10px' }}>
-                          <AnchorButton
-                            href={`/api/election/${electionId}/batch-files/manifests-bundle`}
-                            download
+                          <AsyncButton
                             icon="download"
+                            loading={manifestsBundle.isGenerating}
+                            disabled={
+                              manifestsBundle.isGenerating ||
+                              candidateTotalsBundle.isGenerating
+                            }
+                            onClick={() => {
+                              if (
+                                manifestsBundle.isComplete &&
+                                manifestsBundle.downloadUrl
+                              ) {
+                                // Trigger download
+                                window.location.href =
+                                  manifestsBundle.downloadUrl
+                                manifestsBundle.reset()
+                              } else {
+                                manifestsBundle.startDownload()
+                              }
+                            }}
                           >
-                            Download Ballot Manifests Bundle
-                          </AnchorButton>
-                          <AnchorButton
-                            href={`/api/election/${electionId}/batch-files/candidate-totals-bundle`}
-                            download
+                            {manifestsBundle.isGenerating
+                              ? 'Generating...'
+                              : manifestsBundle.isComplete
+                              ? 'Download Ready - Click Again'
+                              : 'Download Ballot Manifests Bundle'}
+                          </AsyncButton>
+                          <AsyncButton
                             icon="download"
+                            loading={candidateTotalsBundle.isGenerating}
+                            disabled={
+                              manifestsBundle.isGenerating ||
+                              candidateTotalsBundle.isGenerating
+                            }
+                            onClick={() => {
+                              if (
+                                candidateTotalsBundle.isComplete &&
+                                candidateTotalsBundle.downloadUrl
+                              ) {
+                                // Trigger download
+                                window.location.href =
+                                  candidateTotalsBundle.downloadUrl
+                                candidateTotalsBundle.reset()
+                              } else {
+                                candidateTotalsBundle.startDownload()
+                              }
+                            }}
                           >
-                            Download Candidate Totals Bundle
-                          </AnchorButton>
+                            {candidateTotalsBundle.isGenerating
+                              ? 'Generating...'
+                              : candidateTotalsBundle.isComplete
+                              ? 'Download Ready - Click Again'
+                              : 'Download Candidate Totals Bundle'}
+                          </AsyncButton>
                         </div>
                       </Callout>
                     )}
