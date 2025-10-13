@@ -8,7 +8,7 @@ from ..helpers import *  # pylint: disable=wildcard-import, unused-wildcard-impo
 
 
 def test_download_manifests_bundle(
-    client: FlaskClient[Any],
+    client: FlaskClient,
     org_id: str,
 ):
     # Create a batch comparison election
@@ -92,7 +92,7 @@ def test_download_manifests_bundle(
 
 
 def test_download_candidate_totals_bundle_with_multiple_jurisdictions(
-    client: FlaskClient[Any],
+    client: FlaskClient,
     org_id: str,
 ):
     # Create a batch comparison election
@@ -214,7 +214,7 @@ def test_download_candidate_totals_bundle_with_multiple_jurisdictions(
 
 
 def test_batch_files_endpoints_require_audit_admin(
-    client: FlaskClient[Any],
+    client: FlaskClient,
     election_id: str,
 ):
     # Test that jurisdiction admins cannot download bundles
@@ -231,7 +231,7 @@ def test_batch_files_endpoints_require_audit_admin(
 
 
 def test_empty_bundle_when_no_files_uploaded(
-    client: FlaskClient[Any],
+    client: FlaskClient,
     org_id: str,
 ):
     # Create a batch comparison election with no files uploaded

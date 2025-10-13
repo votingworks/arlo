@@ -11,6 +11,7 @@ import {
   Intent,
   Button,
   Colors,
+  AnchorButton,
 } from '@blueprintjs/core'
 import { Formik, FormikProps, getIn, Field } from 'formik'
 import styled from 'styled-components'
@@ -672,6 +673,37 @@ const Review: React.FC<IProps> = ({
                           : undefined
                       }
                     />
+                    {auditType === 'BATCH_COMPARISON' && setupComplete && (
+                      <Callout
+                        intent="primary"
+                        icon="download"
+                        style={{ marginTop: '30px' }}
+                      >
+                        <H5>Download Jurisdiction Files for Sharing</H5>
+                        <p>
+                          Download the ZIP bundles containing jurisdiction files
+                          and their SHA-256 hashes. You may choose to share the
+                          hashes with the public before launching the audit so
+                          that the files can be verified after the audit is complete. 
+                        </p>
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                          <AnchorButton
+                            href={`/api/election/${electionId}/batch-files/manifests-bundle`}
+                            download
+                            icon="download"
+                          >
+                            Download Ballot Manifests Bundle
+                          </AnchorButton>
+                          <AnchorButton
+                            href={`/api/election/${electionId}/batch-files/candidate-totals-bundle`}
+                            download
+                            icon="download"
+                          >
+                            Download Candidate Totals Bundle
+                          </AnchorButton>
+                        </div>
+                      </Callout>
+                    )}
                     <FormButtonBar style={{ marginTop: '15px' }}>
                       <Button
                         disabled={locked}

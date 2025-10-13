@@ -494,37 +494,6 @@ const Progress: React.FC<IProgressProps> = ({
           auditType={auditType}
         />
       )}
-      {auditType === 'BATCH_COMPARISON' && !round && (
-        <div
-          style={{
-            display: 'flex',
-            gap: '10px',
-            marginBottom: '20px',
-            padding: '15px',
-            backgroundColor: '#f5f8fa',
-            borderRadius: '3px',
-          }}
-        >
-          <p style={{ margin: 0, flexGrow: 1 }}>
-            <strong>Pre-Audit File Downloads:</strong> Download jurisdiction
-            files with SHA256 hashes for sharing before launching the audit.
-          </p>
-          <AnchorButton
-            icon="download"
-            href={`/api/election/${electionId}/batch-files/candidate-totals-bundle`}
-            intent="primary"
-          >
-            Download Candidate Totals Bundle
-          </AnchorButton>
-          <AnchorButton
-            icon="download"
-            href={`/api/election/${electionId}/batch-files/manifests-bundle`}
-            intent="primary"
-          >
-            Download Ballot Manifests Bundle
-          </AnchorButton>
-        </div>
-      )}
       <TableControls
         style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}
       >
