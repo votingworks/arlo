@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   H4,
   Callout,
@@ -62,7 +62,6 @@ import {
   StandardizeContestChoiceNamesDialog,
 } from './StandardizeContestChoiceNamesDialog'
 import { useBatchFilesBundle } from '../../../useBatchFilesBundle'
-import AsyncButton from '../../../Atoms/AsyncButton'
 
 const percentFormatter = new Intl.NumberFormat(undefined, {
   style: 'percent',
@@ -132,6 +131,22 @@ const Review: React.FC<IProps> = ({
     electionId,
     'candidate-totals'
   )
+
+  // Auto-trigger download when manifests bundle is ready
+  useEffect(() => {
+    if (manifestsBundle.isComplete && manifestsBundle.downloadUrl) {
+      window.location.href = manifestsBundle.downloadUrl
+      manifestsBundle.reset()
+    }
+  }, [manifestsBundle.isComplete, manifestsBundle.downloadUrl])
+
+  // Auto-trigger download when candidate totals bundle is ready
+  useEffect(() => {
+    if (candidateTotalsBundle.isComplete && candidateTotalsBundle.downloadUrl) {
+      window.location.href = candidateTotalsBundle.downloadUrl
+      candidateTotalsBundle.reset()
+    }
+  }, [candidateTotalsBundle.isComplete, candidateTotalsBundle.downloadUrl])
 
   const contestChoiceNameStandardizationsQuery = useContestChoiceNameStandardizations(
     electionId
@@ -705,60 +720,30 @@ const Review: React.FC<IProps> = ({
                           </Callout>
                         )}
                         <div style={{ display: 'flex', gap: '10px' }}>
-                          <AsyncButton
+                          <Button
                             icon="download"
                             loading={manifestsBundle.isGenerating}
                             disabled={
                               manifestsBundle.isGenerating ||
                               candidateTotalsBundle.isGenerating
                             }
-                            onClick={() => {
-                              if (
-                                manifestsBundle.isComplete &&
-                                manifestsBundle.downloadUrl
-                              ) {
-                                // Trigger download
-                                window.location.href =
-                                  manifestsBundle.downloadUrl
-                                manifestsBundle.reset()
-                              } else {
-                                manifestsBundle.startDownload()
-                              }
-                            }}
+                            onClick={() => manifestsBundle.startDownload()}
                           >
-                            {manifestsBundle.isGenerating
-                              ? 'Generating...'
-                              : manifestsBundle.isComplete
-                              ? 'Download Ready - Click Again'
-                              : 'Download Ballot Manifests Bundle'}
-                          </AsyncButton>
-                          <AsyncButton
+                            Download Ballot Manifests Bundle
+                          </Button>
+                          <Button
                             icon="download"
                             loading={candidateTotalsBundle.isGenerating}
                             disabled={
                               manifestsBundle.isGenerating ||
                               candidateTotalsBundle.isGenerating
                             }
-                            onClick={() => {
-                              if (
-                                candidateTotalsBundle.isComplete &&
-                                candidateTotalsBundle.downloadUrl
-                              ) {
-                                // Trigger download
-                                window.location.href =
-                                  candidateTotalsBundle.downloadUrl
-                                candidateTotalsBundle.reset()
-                              } else {
-                                candidateTotalsBundle.startDownload()
-                              }
-                            }}
+                            onClick={() =>
+                              candidateTotalsBundle.startDownload()
+                            }
                           >
-                            {candidateTotalsBundle.isGenerating
-                              ? 'Generating...'
-                              : candidateTotalsBundle.isComplete
-                              ? 'Download Ready - Click Again'
-                              : 'Download Candidate Totals Bundle'}
-                          </AsyncButton>
+                            Download Candidate Totals Bundle
+                          </Button>
                         </div>
                       </Callout>
                     )}
