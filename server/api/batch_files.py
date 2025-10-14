@@ -7,7 +7,6 @@ from datetime import datetime, timezone, timedelta
 from typing import Dict, IO
 from urllib.parse import urlparse
 from flask import jsonify
-import boto3
 
 from . import api
 from ..auth import restrict_access, UserType
