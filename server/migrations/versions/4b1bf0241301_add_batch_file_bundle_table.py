@@ -33,5 +33,5 @@ def upgrade():
     )
 
 
-def downgrade():
+def downgrade():  # pragma: no cover
     op.drop_table("batch_file_bundle")

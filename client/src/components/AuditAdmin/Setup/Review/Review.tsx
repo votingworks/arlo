@@ -727,6 +727,7 @@ const Review: React.FC<IProps> = ({
                               manifestsBundle.isGenerating ||
                               candidateTotalsBundle.isGenerating
                             }
+                            aria-label="Download Ballot Manifests Bundle"
                             onClick={() => manifestsBundle.startDownload()}
                           >
                             Download Ballot Manifests Bundle
@@ -738,6 +739,7 @@ const Review: React.FC<IProps> = ({
                               manifestsBundle.isGenerating ||
                               candidateTotalsBundle.isGenerating
                             }
+                            aria-label="Download Candidate Totals Bundle"
                             onClick={() =>
                               candidateTotalsBundle.startDownload()
                             }

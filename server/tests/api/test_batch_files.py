@@ -2,6 +2,7 @@ import io
 import json
 from flask.testing import FlaskClient
 from zipfile import ZipFile
+from unittest.mock import patch, MagicMock
 
 from ...models import *  # pylint: disable=wildcard-import, unused-wildcard-import
 from ...util.file import retrieve_file
@@ -267,3 +268,264 @@ def test_empty_bundle_when_no_files_uploaded(
     # In test environment, background tasks run immediately,
     # so the status should already be PROCESSED
     assert response_data["status"]["status"] == "PROCESSED"
+
+
+def test_bundle_status_with_error(
+    client: FlaskClient,
+    org_id: str,
+):
+    # Create a batch comparison election
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    election_id = create_election(
+        client,
+        audit_name="Test Bundle Error",
+        audit_type=AuditType.BATCH_COMPARISON,
+        audit_math_type=AuditMathType.MACRO,
+        organization_id=org_id,
+    )
+
+    # Create a jurisdiction and upload manifest
+    rv = upload_jurisdictions_file(
+        client,
+        io.BytesIO(b"Jurisdiction,Admin Email\nTest County,ja@example.com\n"),
+        election_id,
+    )
+    assert_ok(rv)
+
+    jurisdiction = Jurisdiction.query.filter_by(election_id=election_id).one()
+    manifest_csv = b"Batch Name,Number of Ballots\nBatch 1,100\n"
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, "ja@example.com")
+    rv = upload_ballot_manifest(
+        client, io.BytesIO(manifest_csv), election_id, jurisdiction.id
+    )
+    assert_ok(rv)
+
+    # Start manifests bundle generation
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.post(f"/api/election/{election_id}/batch-files/manifests-bundle")
+    assert rv.status_code == 200
+
+    response_data = json.loads(rv.data)
+    bundle_id = response_data["bundleId"]
+
+    # Manually set an error on the task to test error path
+    bundle = BatchFileBundle.query.get(bundle_id)
+    bundle.file.task.error = "Test error message"
+    db_session.commit()
+
+    # Fetch the bundle status
+    rv = client.get(f"/api/election/{election_id}/batch-files/bundle/{bundle_id}")
+    assert rv.status_code == 200
+
+    response_data = json.loads(rv.data)
+    assert response_data["error"] == "Test error message"
+
+
+def test_direct_download_endpoint(
+    client: FlaskClient,
+    org_id: str,
+):
+    # Create a batch comparison election
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    election_id = create_election(
+        client,
+        audit_name="Test Direct Download",
+        audit_type=AuditType.BATCH_COMPARISON,
+        audit_math_type=AuditMathType.MACRO,
+        organization_id=org_id,
+    )
+
+    # Create a jurisdiction and upload manifest
+    rv = upload_jurisdictions_file(
+        client,
+        io.BytesIO(b"Jurisdiction,Admin Email\nTest County,ja@example.com\n"),
+        election_id,
+    )
+    assert_ok(rv)
+
+    jurisdiction = Jurisdiction.query.filter_by(election_id=election_id).one()
+    manifest_csv = b"Batch Name,Number of Ballots\nBatch 1,100\n"
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, "ja@example.com")
+    rv = upload_ballot_manifest(
+        client, io.BytesIO(manifest_csv), election_id, jurisdiction.id
+    )
+    assert_ok(rv)
+
+    # Start manifests bundle generation
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.post(f"/api/election/{election_id}/batch-files/manifests-bundle")
+    assert rv.status_code == 200
+
+    response_data = json.loads(rv.data)
+    bundle_id = response_data["bundleId"]
+
+    # Test direct download endpoint
+    rv = client.get(
+        f"/api/election/{election_id}/batch-files/bundle/{bundle_id}/download"
+    )
+    assert rv.status_code == 200
+    # For local storage, should serve the file directly
+    assert rv.mimetype == "application/zip"
+
+
+def test_download_endpoint_bundle_not_found(
+    client: FlaskClient,
+    election_id: str,
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    fake_bundle_id = str(uuid.uuid4())
+
+    rv = client.get(
+        f"/api/election/{election_id}/batch-files/bundle/{fake_bundle_id}/download"
+    )
+    assert rv.status_code == 404
+    assert json.loads(rv.data)["error"] == "Bundle not found"
+
+
+def test_s3_presigned_url_generation(
+    client: FlaskClient,
+    org_id: str,
+):
+    """Test S3 presigned URL generation for existing bundles"""
+    # Create a batch comparison election (using local storage first)
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    election_id = create_election(
+        client,
+        audit_name="Test S3 URLs",
+        audit_type=AuditType.BATCH_COMPARISON,
+        audit_math_type=AuditMathType.MACRO,
+        organization_id=org_id,
+    )
+
+    # Create a jurisdiction and upload manifest
+    rv = upload_jurisdictions_file(
+        client,
+        io.BytesIO(b"Jurisdiction,Admin Email\nTest County,ja@example.com\n"),
+        election_id,
+    )
+    assert_ok(rv)
+
+    jurisdiction = Jurisdiction.query.filter_by(election_id=election_id).one()
+    manifest_csv = b"Batch Name,Number of Ballots\nBatch 1,100\n"
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, "ja@example.com")
+    rv = upload_ballot_manifest(
+        client, io.BytesIO(manifest_csv), election_id, jurisdiction.id
+    )
+    assert_ok(rv)
+
+    # Start manifests bundle generation (will use local storage)
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.post(f"/api/election/{election_id}/batch-files/manifests-bundle")
+    assert rv.status_code == 200
+
+    response_data = json.loads(rv.data)
+    bundle_id = response_data["bundleId"]
+
+    # Now manually update the bundle's storage path to simulate S3 storage
+    # This allows us to test the presigned URL generation without actually using S3
+    bundle = BatchFileBundle.query.get(bundle_id)
+    bundle.file.storage_path = "s3://test-bucket/audits/test/manifests_bundle.zip"
+    from ...database import db_session
+
+    db_session.commit()
+
+    # Mock S3 client for presigned URL generation
+    with (
+        patch(
+            "server.api.batch_files.config.FILE_UPLOAD_STORAGE_PATH", "s3://test-bucket"
+        ),
+        patch("server.api.batch_files.s3") as mock_s3,
+    ):
+        mock_s3_instance = MagicMock()
+        mock_s3.return_value = mock_s3_instance
+        mock_s3_instance.generate_presigned_url.return_value = (
+            "https://s3.example.com/presigned-url"
+        )
+
+        # Fetch the bundle status - should generate presigned URL
+        rv = client.get(f"/api/election/{election_id}/batch-files/bundle/{bundle_id}")
+        assert rv.status_code == 200
+
+        response_data = json.loads(rv.data)
+        assert "downloadUrl" in response_data
+        assert response_data["downloadUrl"] == "https://s3.example.com/presigned-url"
+
+        # Verify generate_presigned_url was called with correct params
+        mock_s3_instance.generate_presigned_url.assert_called_once()
+        presigned_call_args = mock_s3_instance.generate_presigned_url.call_args
+        assert presigned_call_args[0][0] == "get_object"
+        assert presigned_call_args[1]["Params"]["Bucket"] == "test-bucket"
+        assert (
+            presigned_call_args[1]["Params"]["Key"]
+            == "audits/test/manifests_bundle.zip"
+        )
+        assert presigned_call_args[1]["ExpiresIn"] == 3600
+
+        # Test download endpoint with S3 - should return presigned URL
+        mock_s3_instance.generate_presigned_url.reset_mock()
+        mock_s3_instance.generate_presigned_url.return_value = (
+            "https://s3.example.com/presigned-url-2"
+        )
+
+        rv = client.get(
+            f"/api/election/{election_id}/batch-files/bundle/{bundle_id}/download"
+        )
+        assert rv.status_code == 200
+        response_data = json.loads(rv.data)
+        assert response_data["downloadUrl"] == "https://s3.example.com/presigned-url-2"
+
+
+def test_s3_upload_function():
+    """Test the S3 upload path in _upload_bundle_file"""
+    import tempfile
+    import os
+    from ...api.batch_files import _upload_bundle_file
+
+    # Create a temporary file to upload
+    with tempfile.NamedTemporaryFile(mode="wb", delete=False, suffix=".zip") as f:
+        f.write(b"test bundle content")
+        temp_file_path = f.name
+
+    try:
+        with (
+            patch(
+                "server.api.batch_files.config.FILE_UPLOAD_STORAGE_PATH",
+                "s3://test-bucket",
+            ),
+            patch("server.api.batch_files.s3") as mock_s3,
+            patch("server.api.batch_files.get_full_storage_path") as mock_get_full,
+        ):
+            mock_s3_instance = MagicMock()
+            mock_s3.return_value = mock_s3_instance
+            mock_get_full.return_value = (
+                "s3://test-bucket/audits/test-election/batch-files/test.zip"
+            )
+
+            # Call the function
+            result_path = _upload_bundle_file(
+                temp_file_path, "test-bundle.zip", "test-election-id"
+            )
+
+            # Verify S3 put_object was called
+            mock_s3_instance.put_object.assert_called_once()
+            call_args = mock_s3_instance.put_object.call_args
+
+            assert call_args[1]["Bucket"] == "test-bucket"
+            assert call_args[1]["ContentType"] == "application/zip"
+            assert "Expires" in call_args[1]
+            assert "Body" in call_args[1]
+
+            # Verify the key structure
+            key = call_args[1]["Key"]
+            assert "batch-files" in key
+            assert "test-bundle.zip" in key
+
+            # Verify return value
+            assert (
+                result_path
+                == "s3://test-bucket/audits/test-election/batch-files/test.zip"
+            )
+    finally:
+        # Clean up temp file
+        if os.path.exists(temp_file_path):
+            os.unlink(temp_file_path)

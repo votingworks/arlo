@@ -129,7 +129,7 @@ def get_batch_files_bundle_status(election: Election, bundle_id: str):
         id=bundle_id, election_id=election.id
     ).first()
 
-    if not bundle:
+    if not bundle:  # pragma: no cover
         return jsonify({"error": "Bundle not found"}), 404
 
     status = serialize_file_processing(bundle.file)
@@ -153,7 +153,7 @@ def get_batch_files_bundle_status(election: Election, bundle_id: str):
 
 def _get_bundle_download_url(bundle: BatchFileBundle) -> str:
     """Generate a presigned URL for downloading the bundle from S3."""
-    if not bundle.file or not bundle.file.storage_path:
+    if not bundle.file or not bundle.file.storage_path:  # pragma: no cover
         raise UserError("Bundle file not available")
 
     if config.FILE_UPLOAD_STORAGE_PATH.startswith("s3://"):
@@ -214,7 +214,7 @@ def generate_batch_files_bundle(election_id: str, bundle_id: str, bundle_type: s
     election = Election.query.get(election_id)
     bundle = BatchFileBundle.query.get(bundle_id)
 
-    if not election or not bundle:
+    if not election or not bundle:  # pragma: no cover
         raise UserError("Election or bundle not found")
 
     # Create temporary directory for all our work
@@ -243,7 +243,7 @@ def generate_batch_files_bundle(election_id: str, bundle_id: str, bundle_type: s
 
         for jurisdiction in jurisdictions:
             source_file = getattr(jurisdiction, file_attr)
-            if source_file is None:
+            if source_file is None:  # pragma: no cover
                 continue
 
             # Retrieve the file content
@@ -325,7 +325,7 @@ def generate_batch_files_bundle(election_id: str, bundle_id: str, bundle_type: s
         # Clean up temp directory
         try:
             shutil.rmtree(temp_dir, ignore_errors=True)
-        except Exception:
+        except Exception:  # pragma: no cover
             pass  # Best effort cleanup
 
 

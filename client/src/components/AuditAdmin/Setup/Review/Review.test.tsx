@@ -1348,4 +1348,348 @@ describe('Audit Setup > Review & Launch', () => {
       ).toBeDisabled()
     })
   })
+
+  describe('bundle download feature', () => {
+    it('shows download buttons for manifests and candidate totals bundles in batch comparison audit', async () => {
+      const expectedCalls = [
+        apiCalls.getSettings(settingsMock.batch),
+        apiCalls.getJurisdictions({
+          jurisdictions: jurisdictionMocks.allManifestsAllTallies,
+        }),
+        apiCalls.getJurisdictionFile,
+        apiCalls.getStandardizedContests(),
+        apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+        apiCalls.getContestChoiceNameStandardizations(),
+        apiCalls.getSampleSizeOptions(sampleSizeMock.batchComparison),
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        renderView()
+        await screen.findByRole('heading', { name: 'Review & Launch' })
+
+        // Find the callout section
+        const downloadSection = screen.getByText(
+          'Download Jurisdiction Files for Sharing'
+        ).parentElement!
+
+        // Check that the description is present
+        within(downloadSection).getByText(
+          /Download the ZIP bundles containing jurisdiction files/
+        )
+
+        // Check that both download buttons are present
+        expect(
+          within(downloadSection).getByRole('button', {
+            name: 'Download Ballot Manifests Bundle',
+          })
+        ).toBeInTheDocument()
+        expect(
+          within(downloadSection).getByRole('button', {
+            name: 'Download Candidate Totals Bundle',
+          })
+        ).toBeInTheDocument()
+      })
+    })
+
+    it('does not show download buttons for non-batch comparison audits', async () => {
+      const expectedCalls = [
+        apiCalls.getSettings(settingsMock.full),
+        apiCalls.getJurisdictions({
+          jurisdictions: jurisdictionMocks.allManifests,
+        }),
+        apiCalls.getJurisdictionFile,
+        apiCalls.getStandardizedContests(),
+        apiCalls.getContests(contestMocks.filledTargetedAndOpportunistic),
+        apiCalls.getContestChoiceNameStandardizations(),
+        apiCalls.getSampleSizeOptions(sampleSizeMock.ballotPolling),
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        renderView()
+        await screen.findByRole('heading', { name: 'Review & Launch' })
+
+        // Download buttons should not be present for ballot polling audit
+        expect(
+          screen.queryByText('Download Jurisdiction Files for Sharing')
+        ).not.toBeInTheDocument()
+        expect(
+          screen.queryByRole('button', {
+            name: 'Download Ballot Manifests Bundle',
+          })
+        ).not.toBeInTheDocument()
+      })
+    })
+
+    it('initiates manifests bundle download when button is clicked', async () => {
+      const expectedCalls = [
+        apiCalls.getSettings(settingsMock.batch),
+        apiCalls.getJurisdictions({
+          jurisdictions: jurisdictionMocks.allManifestsAllTallies,
+        }),
+        apiCalls.getJurisdictionFile,
+        apiCalls.getStandardizedContests(),
+        apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+        apiCalls.getContestChoiceNameStandardizations(),
+        apiCalls.getSampleSizeOptions(sampleSizeMock.batchComparison),
+        {
+          url: '/api/election/1/batch-files/manifests-bundle',
+          options: { method: 'POST' },
+          response: {
+            bundleId: 'bundle-id-1',
+            bundleType: 'manifests',
+            status: {
+              status: FileProcessingStatus.PROCESSING,
+              startedAt: '2024-01-01T00:00:00Z',
+              completedAt: null,
+              error: null,
+            },
+          },
+        },
+        {
+          url: '/api/election/1/batch-files/bundle/bundle-id-1',
+          response: {
+            bundleId: 'bundle-id-1',
+            bundleType: 'manifests',
+            status: {
+              status: FileProcessingStatus.PROCESSED,
+              startedAt: '2024-01-01T00:00:00Z',
+              completedAt: '2024-01-01T00:00:05Z',
+              error: null,
+            },
+            downloadUrl: '/api/election/1/batch-files/bundle/bundle-id-1/zip',
+          },
+        },
+      ]
+
+      // Mock window.location.href
+      const originalLocation = window.location
+      delete (window as any).location
+      window.location = { ...originalLocation, href: '' } as any
+
+      await withMockFetch(expectedCalls, async () => {
+        renderView()
+        await screen.findByRole('heading', { name: 'Review & Launch' })
+
+        const manifestButton = screen.getByRole('button', {
+          name: 'Download Ballot Manifests Bundle',
+        })
+
+        // Click the download button
+        userEvent.click(manifestButton)
+
+        // Wait for the button to show loading state
+        await waitFor(() => {
+          expect(manifestButton).toHaveClass('bp3-loading')
+        })
+
+        // Wait for the download URL to be set
+        await waitFor(
+          () => {
+            expect(window.location.href).toBe(
+              '/api/election/1/batch-files/bundle/bundle-id-1/zip'
+            )
+          },
+          { timeout: 5000 }
+        )
+      })
+
+      // Restore window.location
+      ;(window as any).location = originalLocation
+    })
+
+    it('initiates candidate totals bundle download when button is clicked', async () => {
+      const expectedCalls = [
+        apiCalls.getSettings(settingsMock.batch),
+        apiCalls.getJurisdictions({
+          jurisdictions: jurisdictionMocks.allManifestsAllTallies,
+        }),
+        apiCalls.getJurisdictionFile,
+        apiCalls.getStandardizedContests(),
+        apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+        apiCalls.getContestChoiceNameStandardizations(),
+        apiCalls.getSampleSizeOptions(sampleSizeMock.batchComparison),
+        {
+          url: '/api/election/1/batch-files/candidate-totals-bundle',
+          options: { method: 'POST' },
+          response: {
+            bundleId: 'bundle-id-2',
+            bundleType: 'candidate-totals',
+            status: {
+              status: FileProcessingStatus.PROCESSING,
+              startedAt: '2024-01-01T00:00:00Z',
+              completedAt: null,
+              error: null,
+            },
+          },
+        },
+        {
+          url: '/api/election/1/batch-files/bundle/bundle-id-2',
+          response: {
+            bundleId: 'bundle-id-2',
+            bundleType: 'candidate-totals',
+            status: {
+              status: FileProcessingStatus.PROCESSED,
+              startedAt: '2024-01-01T00:00:00Z',
+              completedAt: '2024-01-01T00:00:05Z',
+              error: null,
+            },
+            downloadUrl: '/api/election/1/batch-files/bundle/bundle-id-2/zip',
+          },
+        },
+      ]
+
+      // Mock window.location.href
+      const originalLocation = window.location
+      delete (window as any).location
+      window.location = { ...originalLocation, href: '' } as any
+
+      await withMockFetch(expectedCalls, async () => {
+        renderView()
+        await screen.findByRole('heading', { name: 'Review & Launch' })
+
+        const candidateTotalsButton = screen.getByRole('button', {
+          name: 'Download Candidate Totals Bundle',
+        })
+
+        // Click the download button
+        userEvent.click(candidateTotalsButton)
+
+        // Wait for the button to show loading state
+        await waitFor(() => {
+          expect(candidateTotalsButton).toHaveClass('bp3-loading')
+        })
+
+        // Wait for the download URL to be set
+        await waitFor(
+          () => {
+            expect(window.location.href).toBe(
+              '/api/election/1/batch-files/bundle/bundle-id-2/zip'
+            )
+          },
+          { timeout: 5000 }
+        )
+      })
+
+      // Restore window.location
+      ;(window as any).location = originalLocation
+    })
+
+    it('shows error message when bundle generation fails', async () => {
+      const expectedCalls = [
+        apiCalls.getSettings(settingsMock.batch),
+        apiCalls.getJurisdictions({
+          jurisdictions: jurisdictionMocks.allManifestsAllTallies,
+        }),
+        apiCalls.getJurisdictionFile,
+        apiCalls.getStandardizedContests(),
+        apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+        apiCalls.getContestChoiceNameStandardizations(),
+        apiCalls.getSampleSizeOptions(sampleSizeMock.batchComparison),
+        {
+          url: '/api/election/1/batch-files/manifests-bundle',
+          options: { method: 'POST' },
+          response: {
+            bundleId: 'bundle-id-error',
+            bundleType: 'manifests',
+            status: {
+              status: FileProcessingStatus.PROCESSING,
+              startedAt: '2024-01-01T00:00:00Z',
+              completedAt: null,
+              error: null,
+            },
+          },
+        },
+        {
+          url: '/api/election/1/batch-files/bundle/bundle-id-error',
+          response: {
+            bundleId: 'bundle-id-error',
+            bundleType: 'manifests',
+            status: {
+              status: FileProcessingStatus.ERRORED,
+              startedAt: '2024-01-01T00:00:00Z',
+              completedAt: '2024-01-01T00:00:05Z',
+              error: 'Failed to generate bundle',
+            },
+          },
+        },
+      ]
+
+      await withMockFetch(expectedCalls, async () => {
+        renderView()
+        await screen.findByRole('heading', { name: 'Review & Launch' })
+
+        const manifestButton = screen.getByRole('button', {
+          name: 'Download Ballot Manifests Bundle',
+        })
+
+        // Click the download button
+        userEvent.click(manifestButton)
+
+        // Wait for the error message to appear
+        await screen.findByText('Error generating bundle. Please try again.')
+      })
+    })
+
+    it('disables both buttons when one bundle is being generated', async () => {
+      const expectedCalls = [
+        apiCalls.getSettings(settingsMock.batch),
+        apiCalls.getJurisdictions({
+          jurisdictions: jurisdictionMocks.allManifestsAllTallies,
+        }),
+        apiCalls.getJurisdictionFile,
+        apiCalls.getStandardizedContests(),
+        apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+        apiCalls.getContestChoiceNameStandardizations(),
+        apiCalls.getSampleSizeOptions(sampleSizeMock.batchComparison),
+        {
+          url: '/api/election/1/batch-files/manifests-bundle',
+          options: { method: 'POST' },
+          response: {
+            bundleId: 'bundle-id-1',
+            bundleType: 'manifests',
+            status: {
+              status: FileProcessingStatus.PROCESSING,
+              startedAt: '2024-01-01T00:00:00Z',
+              completedAt: null,
+              error: null,
+            },
+          },
+        },
+        {
+          url: '/api/election/1/batch-files/bundle/bundle-id-1',
+          response: {
+            bundleId: 'bundle-id-1',
+            bundleType: 'manifests',
+            status: {
+              status: FileProcessingStatus.PROCESSING,
+              startedAt: '2024-01-01T00:00:00Z',
+              completedAt: null,
+              error: null,
+            },
+          },
+        },
+      ]
+
+      await withMockFetch(expectedCalls, async () => {
+        renderView()
+        await screen.findByRole('heading', { name: 'Review & Launch' })
+
+        const manifestButton = screen.getByRole('button', {
+          name: 'Download Ballot Manifests Bundle',
+        })
+        const candidateTotalsButton = screen.getByRole('button', {
+          name: 'Download Candidate Totals Bundle',
+        })
+
+        // Click the manifests download button
+        userEvent.click(manifestButton)
+
+        // Wait for the loading state
+        await waitFor(() => {
+          expect(manifestButton).toHaveClass('bp3-loading')
+        })
+
+        // Check that the candidate totals button is also disabled
+        expect(candidateTotalsButton).toBeDisabled()
+      })
+    })
+  })
 })
