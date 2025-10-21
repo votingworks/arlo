@@ -1053,6 +1053,30 @@ class BackgroundTask(BaseModel):
     work_progress = Column(Integer)
 
 
+class BatchFileBundle(BaseModel):
+    """
+    Tracks generated batch file bundles (manifests or candidate totals) for batch comparison audits.
+    Each bundle is generated on-demand and uploaded to S3 with a time-limited expiration.
+    """
+
+    id = Column(String(200), primary_key=True)
+    election_id = Column(
+        String(200), ForeignKey("election.id", ondelete="cascade"), nullable=False
+    )
+    election = relationship("Election")
+
+    # Type of bundle: 'manifests' or 'candidate-totals'
+    bundle_type = Column(String(50), nullable=False)
+
+    # The generated file stored in S3
+    file_id = Column(String(200), ForeignKey("file.id", ondelete="set null"))
+    file = relationship(
+        "File", single_parent=True, cascade="all, delete-orphan", foreign_keys=[file_id]
+    )
+
+    __table_args__ = (UniqueConstraint("election_id", "bundle_type", "created_at"),)
+
+
 class ActivityLogRecord(Base):
     id = Column(String(200), primary_key=True)
     timestamp = Column(UTCDateTime, nullable=False)

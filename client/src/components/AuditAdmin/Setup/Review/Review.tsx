@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   H4,
   Callout,
@@ -61,6 +61,7 @@ import {
   StandardizeContestChoiceNamesCallout,
   StandardizeContestChoiceNamesDialog,
 } from './StandardizeContestChoiceNamesDialog'
+import { useBatchFilesBundle } from '../../../useBatchFilesBundle'
 
 const percentFormatter = new Intl.NumberFormat(undefined, {
   style: 'percent',
@@ -123,6 +124,29 @@ const Review: React.FC<IProps> = ({
     isContestNameStandardizationDialogOpen,
     setIsContestNameStandardizationDialogOpen,
   ] = useState(false)
+
+  // Hooks for batch file bundle downloads
+  const manifestsBundle = useBatchFilesBundle(electionId, 'manifests')
+  const candidateTotalsBundle = useBatchFilesBundle(
+    electionId,
+    'candidate-totals'
+  )
+
+  // Auto-trigger download when manifests bundle is ready
+  useEffect(() => {
+    if (manifestsBundle.isComplete && manifestsBundle.downloadUrl) {
+      window.location.href = manifestsBundle.downloadUrl
+      manifestsBundle.reset()
+    }
+  }, [manifestsBundle.isComplete, manifestsBundle.downloadUrl])
+
+  // Auto-trigger download when candidate totals bundle is ready
+  useEffect(() => {
+    if (candidateTotalsBundle.isComplete && candidateTotalsBundle.downloadUrl) {
+      window.location.href = candidateTotalsBundle.downloadUrl
+      candidateTotalsBundle.reset()
+    }
+  }, [candidateTotalsBundle.isComplete, candidateTotalsBundle.downloadUrl])
 
   const contestChoiceNameStandardizationsQuery = useContestChoiceNameStandardizations(
     electionId
@@ -672,6 +696,59 @@ const Review: React.FC<IProps> = ({
                           : undefined
                       }
                     />
+                    {auditType === 'BATCH_COMPARISON' && setupComplete && (
+                      <Callout
+                        intent="primary"
+                        icon="download"
+                        style={{ marginTop: '30px' }}
+                      >
+                        <H5>Download Jurisdiction Files for Sharing</H5>
+                        <p>
+                          Download the ZIP bundles containing jurisdiction files
+                          and their SHA-256 hashes. You may choose to share the
+                          hashes with the public before launching the audit so
+                          that the files can be verified after the audit is
+                          complete.
+                        </p>
+                        {(manifestsBundle.hasError ||
+                          candidateTotalsBundle.hasError) && (
+                          <Callout
+                            intent="danger"
+                            style={{ marginBottom: '10px' }}
+                          >
+                            Error generating bundle. Please try again.
+                          </Callout>
+                        )}
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                          <Button
+                            icon="download"
+                            loading={manifestsBundle.isGenerating}
+                            disabled={
+                              manifestsBundle.isGenerating ||
+                              candidateTotalsBundle.isGenerating
+                            }
+                            aria-label="Download Ballot Manifests Bundle"
+                            onClick={() => manifestsBundle.startDownload()}
+                          >
+                            Download Ballot Manifests Bundle
+                          </Button>
+                          <Button
+                            icon="download"
+                            loading={candidateTotalsBundle.isGenerating}
+                            disabled={
+                              manifestsBundle.isGenerating ||
+                              candidateTotalsBundle.isGenerating
+                            }
+                            aria-label="Download Candidate Totals Bundle"
+                            onClick={() =>
+                              candidateTotalsBundle.startDownload()
+                            }
+                          >
+                            Download Candidate Totals Bundle
+                          </Button>
+                        </div>
+                      </Callout>
+                    )}
                     <FormButtonBar style={{ marginTop: '15px' }}>
                       <Button
                         disabled={locked}
