@@ -2,9 +2,9 @@ import io
 import json
 from flask.testing import FlaskClient
 from zipfile import ZipFile
-import hashlib
 
 from ...models import *  # pylint: disable=wildcard-import, unused-wildcard-import
+from ...util.file import retrieve_file
 from ..helpers import *  # pylint: disable=wildcard-import, unused-wildcard-import
 
 
@@ -25,9 +25,7 @@ def test_start_manifests_bundle_generation(
     # Create a single jurisdiction
     rv = upload_jurisdictions_file(
         client,
-        io.BytesIO(
-            b"Jurisdiction,Admin Email\n" b"Test County,ja@example.com\n"
-        ),
+        io.BytesIO(b"Jurisdiction,Admin Email\nTest County,ja@example.com\n"),
         election_id,
     )
     assert_ok(rv)
@@ -47,30 +45,52 @@ def test_start_manifests_bundle_generation(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.post(f"/api/election/{election_id}/batch-files/manifests-bundle")
     assert rv.status_code == 200
-    
+
     response_data = json.loads(rv.data)
     assert "bundleId" in response_data
     assert "status" in response_data
     bundle_id = response_data["bundleId"]
-    
+
     # In test environment, background tasks run immediately,
     # so the status should already be PROCESSED
     assert response_data["status"]["status"] == "PROCESSED"
-    
+
     # Fetch the download URL via GET endpoint
     rv = client.get(f"/api/election/{election_id}/batch-files/bundle/{bundle_id}")
     assert rv.status_code == 200
-    
+
     response_data = json.loads(rv.data)
     assert response_data["status"]["status"] == "PROCESSED"
     assert "downloadUrl" in response_data
-    
+
     # Verify the bundle was created
     bundle = BatchFileBundle.query.get(bundle_id)
     assert bundle is not None
     assert bundle.bundle_type == "manifests"
     assert bundle.file is not None
     assert bundle.file.storage_path != ""
+
+    # Verify the inner ZIP has the correct directory structure
+    # Download and inspect the generated ZIP file
+    with retrieve_file(bundle.file) as outer_zip_io:
+        with ZipFile(outer_zip_io, "r") as outer_zip:
+            # Get the inner ZIP file (not the hash file)
+            inner_zip_name = [
+                name for name in outer_zip.namelist() if name.endswith(".zip")
+            ][0]
+
+            # Extract and open the inner ZIP
+            inner_zip_data = outer_zip.read(inner_zip_name)
+            inner_zip_io = io.BytesIO(inner_zip_data)
+
+            with ZipFile(inner_zip_io, "r") as inner_zip:
+                # Verify files are in jurisdiction directories
+                file_list = inner_zip.namelist()
+                assert len(file_list) == 1  # One manifest file
+
+                # Should be in format: {cleaned-jurisdiction-name}/{original-filename}
+                assert file_list[0].startswith("Test-County/")
+                assert file_list[0].endswith(".csv")
 
 
 def test_start_candidate_totals_bundle_generation(
@@ -140,10 +160,7 @@ def test_start_candidate_totals_bundle_generation(
         assert_ok(rv)
 
         # Upload batch tallies
-        batch_tallies_csv = (
-            b"Batch Name,candidate 1,candidate 2\n"
-            b"Batch 1,60,40\n"
-        )
+        batch_tallies_csv = b"Batch Name,candidate 1,candidate 2\nBatch 1,60,40\n"
         rv = upload_batch_tallies(
             client, io.BytesIO(batch_tallies_csv), election_id, jurisdiction.id
         )
@@ -151,30 +168,55 @@ def test_start_candidate_totals_bundle_generation(
 
     # Start candidate totals bundle generation
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.post(
-        f"/api/election/{election_id}/batch-files/candidate-totals-bundle"
-    )
+    rv = client.post(f"/api/election/{election_id}/batch-files/candidate-totals-bundle")
     assert rv.status_code == 200
-    
+
     response_data = json.loads(rv.data)
     bundle_id = response_data["bundleId"]
-    
+
     # In test environment, background tasks run immediately,
     # so the status should already be PROCESSED
     assert response_data["status"]["status"] == "PROCESSED"
-    
+
     # Fetch the download URL via GET endpoint
     rv = client.get(f"/api/election/{election_id}/batch-files/bundle/{bundle_id}")
     assert rv.status_code == 200
-    
+
     response_data = json.loads(rv.data)
     assert response_data["status"]["status"] == "PROCESSED"
     assert "downloadUrl" in response_data
-    
+
     # Verify the bundle
     bundle = BatchFileBundle.query.get(bundle_id)
     assert bundle is not None
     assert bundle.bundle_type == "candidate-totals"
+
+    # Verify the inner ZIP has the correct directory structure
+    with retrieve_file(bundle.file) as outer_zip_io:
+        with ZipFile(outer_zip_io, "r") as outer_zip:
+            # Get the inner ZIP file
+            inner_zip_name = [
+                name for name in outer_zip.namelist() if name.endswith(".zip")
+            ][0]
+
+            # Extract and open the inner ZIP
+            inner_zip_data = outer_zip.read(inner_zip_name)
+            inner_zip_io = io.BytesIO(inner_zip_data)
+
+            with ZipFile(inner_zip_io, "r") as inner_zip:
+                # Verify files are in jurisdiction directories
+                file_list = inner_zip.namelist()
+                assert len(file_list) == 2  # Two jurisdictions with batch tallies
+
+                # Files should be in format: {cleaned-jurisdiction-name}/{original-filename}
+                # Jurisdictions are "County A" and "County B" -> "County-A", "County-B"
+                county_a_files = [f for f in file_list if f.startswith("County-A/")]
+                county_b_files = [f for f in file_list if f.startswith("County-B/")]
+
+                assert len(county_a_files) == 1
+                assert len(county_b_files) == 1
+                assert county_a_files[0].endswith(".csv")
+                assert county_b_files[0].endswith(".csv")
 
 
 def test_batch_files_endpoints_require_audit_admin(
@@ -185,9 +227,7 @@ def test_batch_files_endpoints_require_audit_admin(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.post(
-        f"/api/election/{election_id}/batch-files/candidate-totals-bundle"
-    )
+    rv = client.post(f"/api/election/{election_id}/batch-files/candidate-totals-bundle")
     assert rv.status_code == 403
 
     rv = client.post(f"/api/election/{election_id}/batch-files/manifests-bundle")
@@ -211,9 +251,7 @@ def test_empty_bundle_when_no_files_uploaded(
     # Create jurisdictions but don't upload files
     rv = upload_jurisdictions_file(
         client,
-        io.BytesIO(
-            b"Jurisdiction,Admin Email\n" b"County A,ja1@example.com\n"
-        ),
+        io.BytesIO(b"Jurisdiction,Admin Email\nCounty A,ja1@example.com\n"),
         election_id,
     )
     assert_ok(rv)
@@ -221,10 +259,11 @@ def test_empty_bundle_when_no_files_uploaded(
     # Start manifests bundle generation (should work even with no files)
     rv = client.post(f"/api/election/{election_id}/batch-files/manifests-bundle")
     assert rv.status_code == 200
-    
+
     response_data = json.loads(rv.data)
     bundle_id = response_data["bundleId"]
-    
+    assert bundle_id is not None
+
     # In test environment, background tasks run immediately,
     # so the status should already be PROCESSED
     assert response_data["status"]["status"] == "PROCESSED"

@@ -3,6 +3,7 @@ import shutil
 import hashlib
 import os
 import uuid
+import re
 from datetime import datetime, timezone, timedelta
 from typing import Dict, IO
 from urllib.parse import urlparse
@@ -20,7 +21,7 @@ from ..util.file import (
     get_audit_folder_path,
     serialize_file_processing,
 )
-from ..util.csv_download import election_timestamp_name
+from ..util.csv_download import election_timestamp_name, clean_name_re
 from ..util.isoformat import isoformat
 from ..worker.tasks import background_task, create_background_task, UserError
 from .. import config
@@ -205,9 +206,7 @@ def download_batch_files_bundle(election: Election, bundle_id: str):
 
 
 @background_task
-def generate_batch_files_bundle(
-    election_id: str, bundle_id: str, bundle_type: str
-):
+def generate_batch_files_bundle(election_id: str, bundle_id: str, bundle_type: str):
     """
     Background task to generate a batch files bundle (manifests or candidate totals).
     Creates a nested ZIP structure with hash file and uploads to S3 with expiration.
@@ -250,9 +249,15 @@ def generate_batch_files_bundle(
             # Retrieve the file content
             file_handle = retrieve_file_to_buffer(source_file, temp_dir)
 
-            # Use the original filename from the database
+            # Clean jurisdiction name for use as directory name (replace special chars with dashes)
+            cleaned_jurisdiction_name = re.sub(
+                clean_name_re, "-", str(jurisdiction.name)
+            )
+
+            # Use the original filename from the database, but place it in jurisdiction directory
             filename = source_file.name
-            jurisdiction_files[filename] = file_handle
+            jurisdiction_path = f"{cleaned_jurisdiction_name}/{filename}"
+            jurisdiction_files[jurisdiction_path] = file_handle
             temp_file_handles.append(file_handle)
 
         # Step 2: Create inner ZIP
@@ -295,9 +300,7 @@ def generate_batch_files_bundle(
         outer_filename = f"{base_name}-{bundle_type}_bundle.zip"
         outer_zip_path = os.path.join(temp_dir, outer_filename)
 
-        with open(inner_zip_path, "rb") as inner_f, open(
-            hash_path, "rb"
-        ) as hash_f:
+        with open(inner_zip_path, "rb") as inner_f, open(hash_path, "rb") as hash_f:
             outer_zip_io = zip_files(
                 {
                     inner_zip_filename: inner_f,
@@ -312,9 +315,7 @@ def generate_batch_files_bundle(
         outer_zip_io.close()
 
         # Step 7: Upload to S3 or local storage
-        storage_path = _upload_bundle_file(
-            outer_zip_path, outer_filename, election_id
-        )
+        storage_path = _upload_bundle_file(outer_zip_path, outer_filename, election_id)
 
         # Step 8: Update the File record with the storage path
         bundle.file.storage_path = storage_path
@@ -328,9 +329,7 @@ def generate_batch_files_bundle(
             pass  # Best effort cleanup
 
 
-def _upload_bundle_file(
-    file_path: str, filename: str, election_id: str
-) -> str:
+def _upload_bundle_file(file_path: str, filename: str, election_id: str) -> str:
     """
     Uploads the bundle file to S3 with expiration or local storage.
     Returns the storage path.
