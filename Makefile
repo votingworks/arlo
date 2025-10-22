@@ -3,12 +3,12 @@
 prepare:
 	sudo apt update
 	# Install python with virtual env and dev extensions, graphicsmagick, and gcc
-	sudo apt install -y python3.9 python3.9-venv libpython3.9-dev python-dev libpq-dev graphicsmagick gcc postgresql
+	sudo apt install -y python3.11 python3.11-venv libpython3.11-dev python-dev libpq-dev graphicsmagick gcc postgresql
 	# Install node: https://github.com/nodesource/distributions/blob/master/README.md#deb		
 	curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
 	sudo apt-get install -y nodejs
 	# Install poetry: https://python-poetry.org/docs/#installing-with-the-official-installer
-	curl -sSL https://install.python-poetry.org | python3.9 -
+	curl -sSL https://install.python-poetry.org | python3.11 -
 	# Install yarn
 	sudo npm install -g yarn
 	yarn install
