@@ -8,7 +8,7 @@ from sqlalchemy import func
 from . import api
 from ..database import db_session
 from ..models import *
-from ..auth import restrict_access, UserType
+from ..auth.auth_helpers import restrict_access, UserType
 from .shared import get_current_round
 from ..util.jsonschema import validate, JSONDict
 from ..util.binpacking import BalancedBucketList, Bucket
