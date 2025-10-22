@@ -169,7 +169,7 @@ def test_validate_and_get_standard_file_upload_request_params(mock_request):
         [FileType.XML, "text/xml", [FileType.ZIP, FileType.CSV, FileType.XML]],
     ]
     for test_file_type, test_mime_type, allowed_types in happy_path_tests:
-        expected_filename = timestamp_filename("test_file", test_file_type)
+        expected_filename = timestamp_filename("test_file", test_file_type.value)
         mock_request.get_json.return_value = {
             "storagePathKey": f"test_dir/{expected_filename}",
             "fileName": expected_filename,

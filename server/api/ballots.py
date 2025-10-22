@@ -357,7 +357,7 @@ def validate_interpretation(interpretation: JSONDict):
     if interpretation["interpretation"] == Interpretation.VOTE:
         if len(interpretation["choiceIds"]) == 0:
             raise BadRequest(
-                f"Must include choiceIds with interpretation {Interpretation.VOTE} for contest {interpretation['contestId']}"
+                f"Must include choiceIds with interpretation {Interpretation.VOTE.value} for contest {interpretation['contestId']}"
             )
         choices = ContestChoice.query.filter(
             ContestChoice.id.in_(interpretation["choiceIds"])
@@ -381,7 +381,7 @@ def validate_interpretation(interpretation: JSONDict):
         and interpretation["hasInvalidWriteIn"]
     ):
         raise BadRequest(
-            f"Cannot specify hasInvalidWriteIn=True with interpretation {Interpretation.CONTEST_NOT_ON_BALLOT} for contest {interpretation['contestId']}"
+            f"Cannot specify hasInvalidWriteIn=True with interpretation {Interpretation.CONTEST_NOT_ON_BALLOT.value} for contest {interpretation['contestId']}"
         )
 
 
