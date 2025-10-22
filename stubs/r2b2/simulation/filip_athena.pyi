@@ -1,10 +1,10 @@
 from r2b2.simulator import Simulation as Simulation, histogram as histogram
-from typing import Any, List, Tuple
+from typing import Any
 
 class FZMinervaOneRoundRisk(Simulation):
     sample_size: int
     total_relevant_ballots: int
-    vote_dist: List[Tuple[str, int]]
+    vote_dist: list[tuple[str, int]]
     election_file: str
     reported_name: str
     def __init__(

@@ -10,13 +10,9 @@ from xml.etree import ElementTree as ET
 from typing import (
     IO,
     BinaryIO,
-    Dict,
     Iterable,
     Iterator,
-    List,
-    Optional,
     TextIO,
-    Tuple,
     TypeVar,
     TypedDict,
     cast as typing_cast,
@@ -78,7 +74,7 @@ T = TypeVar("T")
 CVRS_FILE_NAME_PREFIX = "cvrs"
 
 
-def peek(iterator: Iterator[T]) -> Tuple[T, Iterator[T]]:
+def peek(iterator: Iterator[T]) -> tuple[T, Iterator[T]]:
     first = next(iterator)
     return first, itertools.chain([first], iterator)
 
@@ -92,11 +88,11 @@ class CvrContestMetadata(TypedDict):
     votes_allowed: int
     total_ballots_cast: int
     # { choice_name: CvrChoiceMetadata }
-    choices: Dict[str, CvrChoiceMetadata]
+    choices: dict[str, CvrChoiceMetadata]
 
 
 # { contest_id: CvrContestMetadata }
-CVR_CONTESTS_METADATA = Dict[str, CvrContestMetadata]
+CVR_CONTESTS_METADATA = dict[str, CvrContestMetadata]
 
 
 def validate_uploaded_cvrs(contest: Contest):
@@ -137,16 +133,16 @@ def are_uploaded_cvrs_valid(contest: Contest):
 # provided by the AA.
 def cvr_contests_metadata(
     jurisdiction: Jurisdiction, should_standardize_contest_choice_names=True
-) -> Optional[CVR_CONTESTS_METADATA]:
+) -> CVR_CONTESTS_METADATA | None:
     metadata = typing_cast(
-        Optional[CVR_CONTESTS_METADATA], jurisdiction.cvr_contests_metadata
+        CVR_CONTESTS_METADATA | None, jurisdiction.cvr_contests_metadata
     )
     if metadata is None:
         return None
 
     contest_name_standardizations = (
         typing_cast(
-            Optional[Dict[str, Optional[str]]],
+            dict[str, str | None] | None,
             jurisdiction.contest_name_standardizations,
         )
         or {}
@@ -159,7 +155,7 @@ def cvr_contests_metadata(
 
     contest_choice_name_standardizations = (
         typing_cast(
-            Optional[Dict[str, Dict[str, Optional[str]]]],
+            dict[str, dict[str, str | None]] | None,
             jurisdiction.contest_choice_name_standardizations,
         )
         or {}
@@ -232,7 +228,7 @@ def set_contest_metadata_from_cvrs(contest: Contest):
     # choices in all jurisdictions, whether the choices were voted for or not.
     # That said, we have seen casing inconsistencies with choice names across
     # jurisdictions in Dominion CVRs. Separate safeguards exist for that case.
-    choices: Dict[str, int] = defaultdict(lambda: 0)
+    choices: dict[str, int] = defaultdict(lambda: 0)
     for jurisdiction in contest.jurisdictions:
         metadata = cvr_contests_metadata(jurisdiction)
         assert metadata is not None
@@ -255,7 +251,7 @@ def set_contest_metadata_from_cvrs(contest: Contest):
 # vote count for the non-CVR ballots.
 def hybrid_contest_choice_vote_counts(
     contest: Contest,
-) -> Optional[Dict[str, HybridPair]]:
+) -> dict[str, HybridPair] | None:
     if not are_uploaded_cvrs_valid(contest):
         return None
 
@@ -287,7 +283,7 @@ def csv_reader_for_cvr(cvr_file: BinaryIO) -> CSVIterator:
 def parse_clearballot_cvrs(
     jurisdiction: Jurisdiction,
     working_directory: str,
-) -> Tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
+) -> tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
     cvr_file = retrieve_file_to_buffer(jurisdiction.cvr_file, working_directory)
     cvrs = csv_reader_for_cvr(cvr_file)
     headers = next(cvrs)
@@ -386,7 +382,7 @@ def parse_clearballot_cvrs(
 def parse_dominion_cvrs(
     jurisdiction: Jurisdiction,
     working_directory: str,
-) -> Tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
+) -> tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
     cvr_file = retrieve_file_to_buffer(jurisdiction.cvr_file, working_directory)
     cvrs = csv_reader_for_cvr(cvr_file)
 
@@ -531,11 +527,11 @@ def parse_dominion_cvrs(
 class EssCvrFiles(TypedDict):
     cvr_file_name: str
     cvr_file: TextIO
-    ballots_files: Dict[str, TextIO]
+    ballots_files: dict[str, TextIO]
 
 
 def separate_ess_cvr_and_ballots_files(
-    working_directory: str, file_names: List[str]
+    working_directory: str, file_names: list[str]
 ) -> EssCvrFiles:
     def decode_file(file: IO[bytes], file_name: str) -> TextIO:
         try:
@@ -603,7 +599,7 @@ def separate_ess_cvr_and_ballots_files(
 
 def read_ess_ballots_file(
     ballots_file: TextIO,
-) -> Tuple[List[str], Generator[List[str], None, None]]:
+) -> tuple[list[str], Generator[list[str], None, None]]:
     validate_comma_delimited(ballots_file)
     ballots_csv = csv.reader(ballots_file, delimiter=",")
 
@@ -630,7 +626,7 @@ def read_ess_ballots_file(
 def parse_ess_cvrs(
     jurisdiction: Jurisdiction,
     working_directory: str,
-) -> Tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
+) -> tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
     # Parsing ES&S CVRs is more complicated than, say, Dominion.
     # There are two main data sources:
     #  - a list of ballots with their batch/tabulator metadata
@@ -669,7 +665,7 @@ def parse_ess_cvrs(
 
     def parse_ballots_file(
         ballots_file: TextIO,
-    ) -> Iterator[Tuple[str, CvrBallot]]:  # (CVR number, ballot)
+    ) -> Iterator[tuple[str, CvrBallot]]:  # (CVR number, ballot)
         headers, rows = read_ess_ballots_file(ballots_file)
 
         header_indices = get_header_indices(headers)
@@ -859,7 +855,7 @@ def parse_ess_cvrs(
 
     def parse_interpretations(
         cvr_csv: CSVIterator, contests_metadata: CVR_CONTESTS_METADATA
-    ) -> Iterator[Tuple[str, str]]:  # (CVR number, interpretations)
+    ) -> Iterator[tuple[str, str]]:  # (CVR number, interpretations)
         headers = next(cvr_csv)
         header_indices = get_header_indices(headers)
 
@@ -870,7 +866,7 @@ def parse_ess_cvrs(
         )
 
         def parse_row_interpretations(
-            row: List[str],
+            row: list[str],
             cvr_number: int,
         ) -> str:
             interpretations = ["" for _ in range(max_interpretation_column + 1)]
@@ -905,8 +901,8 @@ def parse_ess_cvrs(
             cvr_file.close()
 
     def parse_and_concat_ballots_files(
-        ballots_files: Dict[str, TextIO],
-    ) -> Iterator[Tuple[str, CvrBallot]]:
+        ballots_files: dict[str, TextIO],
+    ) -> Iterator[tuple[str, CvrBallot]]:
         # We need to concatenate the ballot files in order of CVR number (which
         # is ordered within each file). So we parse each file into a stream of
         # ballots, peek at the first ballot's CVR number, and then concatenate
@@ -934,8 +930,8 @@ def parse_ess_cvrs(
                 ballots_file.close()
 
     def join_ballots_to_interpretations(
-        all_ballots: Iterator[Tuple[str, CvrBallot]],
-        all_interpretations: Iterator[Tuple[str, str]],
+        all_ballots: Iterator[tuple[str, CvrBallot]],
+        all_interpretations: Iterator[tuple[str, str]],
     ) -> Iterator[CvrBallot]:
         for cvr_ballot, cvr_interpretations in itertools.zip_longest(
             all_ballots, all_interpretations
@@ -971,7 +967,7 @@ def parse_ess_cvrs(
 
 def parse_scanned_ballot_information_file(
     scanned_ballot_information_file: BinaryIO,
-) -> List[Dict[str, str]]:
+) -> list[dict[str, str]]:
     validate_not_empty(scanned_ballot_information_file)
     text_file = decode_csv(scanned_ballot_information_file)
 
@@ -993,7 +989,7 @@ def parse_scanned_ballot_information_file(
         headers_row[0] = headers_row[0].lstrip("#")
     header_indices = get_header_indices(headers_row)
 
-    scanned_ballot_information_rows: List[Dict[str, str]] = []
+    scanned_ballot_information_rows: list[dict[str, str]] = []
     for i, row in enumerate(scanned_ballot_information_csv):
         row_number = (
             i + 3
@@ -1033,7 +1029,7 @@ def parse_scanned_ballot_information_file(
 def parse_hart_cvrs(
     jurisdiction: Jurisdiction,
     working_directory: str,
-) -> Tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
+) -> tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
     """
     A Hart CVR export is a ZIP file containing an individual XML file for each ballot's CVR.
 
@@ -1064,8 +1060,8 @@ def parse_hart_cvrs(
     wrapper_zip_file = retrieve_file_to_buffer(jurisdiction.cvr_file, working_directory)
     file_names = unzip_files(wrapper_zip_file, working_directory)
 
-    cvr_zip_files: Dict[str, BinaryIO] = {}  # { file_name: file }
-    scanned_ballot_information_files: List[BinaryIO] = []
+    cvr_zip_files: dict[str, BinaryIO] = {}  # { file_name: file }
+    scanned_ballot_information_files: list[BinaryIO] = []
     non_csv_zip_files = []
     for file_name in file_names:
         if file_name.lower().endswith(".zip"):
@@ -1091,7 +1087,7 @@ def parse_hart_cvrs(
                 f"Unsupported file type. Expected either a ZIP file or a CSV file, but found {comma_join_until_limit(non_csv_zip_files, 3)}."
             )
 
-    scanned_ballot_information_by_cvr_id: Dict[str, Dict[str, str]] = {}
+    scanned_ballot_information_by_cvr_id: dict[str, dict[str, str]] = {}
     for scanned_ballot_information_file in scanned_ballot_information_files:
         scanned_ballot_information_rows = parse_scanned_ballot_information_file(
             scanned_ballot_information_file
@@ -1113,8 +1109,8 @@ def parse_hart_cvrs(
                 )
             scanned_ballot_information_by_cvr_id[cvr_id] = row
 
-    cvr_file_paths: Dict[
-        Tuple[str, str], str
+    cvr_file_paths: dict[
+        tuple[str, str], str
     ] = {}  # { (zip_file_name, file_name): file_path }
     for cvr_zip_file_name, cvr_zip_file in cvr_zip_files.items():
         sub_working_directory = tempfile.mkdtemp(dir=working_directory)
@@ -1270,7 +1266,7 @@ def process_cvr_file(
     election_id: str,
     jurisdiction_id: str,
     jurisdiction_admin_email: str,
-    support_user_email: Optional[str],
+    support_user_email: str | None,
     emit_progress,
 ):
     jurisdiction = Jurisdiction.query.get(jurisdiction_id)
@@ -1365,7 +1361,7 @@ def process_cvr_file(
 
                     # Dominions CVR files sometimes contain interpretation values that can't be
                     # parsed as integers
-                    parsed_contest_interpretations: Dict[
+                    parsed_contest_interpretations: dict[
                         str, int
                     ] = {}  # { choice_name: parsed_interpretation }
                     for choice_name, interpretation in contest_interpretations.items():

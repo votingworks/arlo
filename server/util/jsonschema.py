@@ -1,12 +1,12 @@
 import re
-from typing import Any, Dict, List, Union
+from typing import Any
 import jsonschema
 import jsonschema.validators
 
 
 # An approximation of a JSON object type, since mypy doesn't support
 # recursive types.
-JSONDict = Dict[str, Any]
+JSONDict = dict[str, Any]
 JSONSchema = JSONDict
 
 # https://emailregex.com/
@@ -30,7 +30,7 @@ def validate(instance: Any, schema: JSONSchema):
 
 
 def validate_schema(schema: JSONSchema):
-    def validate_schema_node(node: JSONSchema, current_keypath: List[Union[str, int]]):
+    def validate_schema_node(node: JSONSchema, current_keypath: list[str | int]):
         assert isinstance(node, dict)
         if node.get("type", None) == "object":
             properties = node.get("properties", None)
@@ -81,12 +81,12 @@ def validate_schema(schema: JSONSchema):
     validate_schema_node(schema, [])
 
 
-def _serialize_key(key: Union[str, int]):
+def _serialize_key(key: str | int):
     if isinstance(key, str):
         return f'"{key}"'
     else:
         return f"{key}"
 
 
-def _serialize_keypath(keypath: List[Union[str, int]]):
+def _serialize_keypath(keypath: list[str | int]):
     return f"schema{''.join(f'[{_serialize_key(key)}]' for key in keypath)}"

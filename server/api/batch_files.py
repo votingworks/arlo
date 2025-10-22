@@ -5,7 +5,7 @@ import os
 import uuid
 import re
 from datetime import datetime, timezone, timedelta
-from typing import Dict, IO
+from typing import IO
 from urllib.parse import urlparse
 from flask import jsonify
 
@@ -238,7 +238,7 @@ def generate_batch_files_bundle(election_id: str, bundle_id: str, bundle_type: s
         )
 
         # Step 1: Retrieve all jurisdiction files
-        jurisdiction_files: Dict[str, IO[bytes]] = {}
+        jurisdiction_files: dict[str, IO[bytes]] = {}
         temp_file_handles = []
 
         for jurisdiction in jurisdictions:

@@ -7,7 +7,7 @@ from ..helpers import *
 
 
 def test_hybrid_manifest(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
@@ -66,7 +66,7 @@ def test_hybrid_manifest(
 
 
 def test_hybrid_manifest_missing_cvr_column(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)

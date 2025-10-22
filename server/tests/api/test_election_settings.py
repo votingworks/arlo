@@ -21,7 +21,7 @@ def test_settings_get_empty(client: FlaskClient, election_id: str):
 
 
 def test_jurisdiction_settings_get_empty(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -43,7 +43,7 @@ def test_jurisdiction_settings_get_empty(
 
 
 def test_update_election(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
 ):
     rv = client.get(f"/api/election/{election_id}/settings")
 

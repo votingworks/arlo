@@ -1,4 +1,4 @@
-from typing import BinaryIO, Union, List
+from typing import Any, BinaryIO
 import os
 import io
 import pytest
@@ -27,7 +27,7 @@ BALLOT_MANIFEST_COLUMNS_COMPOSITE_KEY = [
 
 
 # Quick wrapper function so we can write the tests with regular strings, not byte strings
-def parse_csv(csv_string: str, columns: List[CSVColumnType]):
+def parse_csv(csv_string: str, columns: list[CSVColumnType]):
     return parse_csv_binary(io.BytesIO(csv_string.encode("utf-8")), columns)
 
 
@@ -987,7 +987,9 @@ City of Petersburg #1,203,,
 
 
 def test_parse_csv_real_world_examples():
-    def do_parse(csv: Union[str, BinaryIO], columns: List[CSVColumnType]) -> list:
+    def do_parse(
+        csv: str | BinaryIO, columns: list[CSVColumnType]
+    ) -> list[dict[str, Any]]:
         if isinstance(csv, str):
             return list(parse_csv(csv, columns))
         return list(parse_csv_binary(csv, columns))

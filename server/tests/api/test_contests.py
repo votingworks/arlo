@@ -1,6 +1,5 @@
 import json
 import uuid
-from typing import List
 import pytest
 from flask.testing import FlaskClient
 
@@ -12,7 +11,7 @@ from ...auth import UserType
 
 
 @pytest.fixture
-def json_contests(jurisdiction_ids: List[str]) -> List[JSONDict]:
+def json_contests(jurisdiction_ids: list[str]) -> list[JSONDict]:
     return [
         {
             "id": str(uuid.uuid4()),
@@ -121,8 +120,8 @@ def test_contests_create_get_update_one(client, election_id, json_contests):
 def test_contests_create_get_update_multiple(
     client: FlaskClient,
     election_id: str,
-    json_contests: List[JSONDict],
-    jurisdiction_ids: List[str],
+    json_contests: list[JSONDict],
+    jurisdiction_ids: list[str],
 ):
     rv = put_json(client, f"/api/election/{election_id}/contest", json_contests)
     assert_ok(rv)
@@ -146,7 +145,7 @@ def test_contests_create_get_update_multiple(
 def test_contests_order(
     client: FlaskClient,
     election_id: str,
-    json_contests: List[JSONDict],
+    json_contests: list[JSONDict],
 ):
     json_contests[0]["name"] = "ZZZ Contest"
     json_contests[1]["name"] = "AAA Contest"
@@ -183,7 +182,7 @@ def test_update_contests_after_audit_starts(
 
 
 def test_update_contests_no_targeted(
-    client: FlaskClient, election_id: str, json_contests: List[JSONDict]
+    client: FlaskClient, election_id: str, json_contests: list[JSONDict]
 ):
     rv = put_json(client, f"/api/election/{election_id}/contest", [json_contests[1]])
     assert rv.status_code == 400
@@ -198,7 +197,7 @@ def test_update_contests_no_targeted(
 
 
 def test_update_contests_missing_field(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
 ):
     contest: JSONDict = {
         "id": str(uuid.uuid4()),
@@ -284,7 +283,7 @@ def test_update_contests_invalid_jurisdictions(
 
 
 def test_contest_too_many_votes(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
 ):
     contest = {
         "id": str(uuid.uuid4()),
@@ -356,7 +355,7 @@ def test_contest_too_many_votes(
 def test_jurisdictions_contests_list_empty(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, user_key=default_ja_email(election_id)
@@ -370,7 +369,7 @@ def test_jurisdictions_contests_list_empty(
 def test_jurisdictions_contests_list(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     json_contests,
 ):
     rv = put_json(client, f"/api/election/{election_id}/contest", json_contests)
@@ -389,9 +388,9 @@ def test_jurisdictions_contests_list(
 def test_audit_board_contests_list_empty(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
-    audit_board_round_1_ids: List[str],
+    audit_board_round_1_ids: list[str],
 ):
     contests = Contest.query.filter_by(election_id=election_id).all()
     for contest in contests:
@@ -410,9 +409,9 @@ def test_audit_board_contests_list_empty(
 def test_audit_board_contests_list(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
-    audit_board_round_1_ids: List[str],
+    audit_board_round_1_ids: list[str],
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/contest")
@@ -431,9 +430,9 @@ def test_audit_board_contests_list(
 def test_audit_board_contests_list_order(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
-    audit_board_round_1_ids: List[str],
+    audit_board_round_1_ids: list[str],
 ):
     db_contests = (
         Contest.query.filter_by(election_id=election_id)

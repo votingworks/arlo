@@ -1,16 +1,16 @@
-from typing import Dict, Literal, NamedTuple, Optional, TypedDict
+from typing import Literal, NamedTuple, TypedDict
 
 
 class SampleSizeOption(TypedDict):
-    type: Optional[Literal["ASN", "all-ballots"]]
+    type: Literal["ASN"] | Literal["all-ballots"] | None
     size: int
-    prob: Optional[float]
+    prob: float | None
 
 
 RoundInfo = NamedTuple("RoundInfo", [("round_id", str), ("round_size", int)])
 
 # { round_id: { choice_id: num_votes }}
-BALLOT_POLLING_SAMPLE_RESULTS = Dict[str, Dict[str, int]]
+BALLOT_POLLING_SAMPLE_RESULTS = dict[str, dict[str, int]]
 
 # { round_num: [ round_id, round_size ]}
-BALLOT_POLLING_ROUND_SIZES = Dict[int, RoundInfo]
+BALLOT_POLLING_ROUND_SIZES = dict[int, RoundInfo]

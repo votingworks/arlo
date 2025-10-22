@@ -1,9 +1,9 @@
 import math
 from itertools import product
 from decimal import Decimal, ROUND_CEILING, ROUND_HALF_UP
-from typing import Dict, Tuple, TypedDict, Optional
+from typing import TypedDict
 
-from .sampler_contest import Contest, CVRS, SAMPLECVRS, CVR
+from .sampler_contest import Contest, CVRS, SAMPLECVRS, CVR as CVR
 
 l: Decimal = Decimal(0.5)  # noqa: E741
 gamma: Decimal = Decimal(1.03905)  # This gamma is used in Stark's tool, AGI, and CORLA
@@ -47,7 +47,7 @@ def nMin(
 
 def compute_discrepancies(
     contest: Contest, cvrs: CVRS, sample_cvr: SAMPLECVRS
-) -> Dict[str, Discrepancy]:
+) -> dict[str, Discrepancy]:
     """
     Iterates through a given sample and returns the discrepancies found.
 
@@ -89,7 +89,7 @@ def compute_discrepancies(
                         }
                     }
     """
-    discrepancies: Dict[str, Discrepancy] = {}
+    discrepancies: dict[str, Discrepancy] = {}
     for ballot, ballot_sample_cvr in sample_cvr.items():
         ballot_discrepancies = []
         for winner, loser in product(contest.winners, contest.losers):
@@ -115,9 +115,9 @@ def discrepancy(
     contest: Contest,
     winner: str,
     loser: str,
-    reported: Optional[CVR],
-    audited: Optional[CVR],
-) -> Optional[Discrepancy]:
+    reported: CVR | None,
+    audited: CVR | None,
+) -> Discrepancy | None:
     def compute_error():
         # Special cases: if ballot wasn't in CVR or ballot can't be found by
         # audit board, count it as a two-vote overstatement
@@ -168,7 +168,7 @@ def discrepancy(
 
 
 def get_sample_sizes(
-    risk_limit: int, contest: Contest, sample_results: Optional[Dict[str, int]]
+    risk_limit: int, contest: Contest, sample_results: dict[str, int] | None
 ) -> int:
     """
     Computes initial sample sizes parameterized by likelihood that the
@@ -243,7 +243,7 @@ def get_sample_sizes(
 
 def compute_risk(
     risk_limit: int, contest: Contest, cvrs: CVRS, sample_cvr: SAMPLECVRS
-) -> Tuple[float, bool]:
+) -> tuple[float, bool]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
 

@@ -12,8 +12,8 @@ from .conftest import TEST_CVRS
 def test_contest_vote_counts_before_cvrs(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     manifests,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -75,8 +75,8 @@ def test_contest_vote_counts_before_cvrs(
 def test_contest_vote_counts(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     manifests,
     cvrs,
 ):
@@ -138,8 +138,8 @@ def test_contest_vote_counts(
 def test_hybrid_sample_size(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     election_settings,
     manifests,
     cvrs,
@@ -172,8 +172,8 @@ def test_hybrid_sample_size(
 def test_sample_size_before_manifest(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     election_settings,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -197,8 +197,8 @@ def test_sample_size_before_manifest(
 def test_sample_size_before_cvrs(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     election_settings,
     manifests,
 ):
@@ -223,8 +223,8 @@ def test_sample_size_before_cvrs(
 def test_contest_names_dont_match_cvrs(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     election_settings,
     manifests,
     cvrs,
@@ -267,8 +267,8 @@ def test_contest_names_dont_match_cvrs(
 def test_contest_choices_dont_match_cvrs(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     election_settings,
     manifests,
     cvrs,
@@ -324,8 +324,8 @@ def test_contest_choices_dont_match_cvrs(
 def test_hybrid_two_rounds(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     election_settings,
     manifests,
     cvrs,
@@ -523,7 +523,7 @@ def test_hybrid_two_rounds(
 def test_hybrid_manifest_validation_too_many_votes(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     election_settings,
 ):
     set_logged_in_user(
@@ -593,7 +593,7 @@ def test_hybrid_manifest_validation_too_many_votes(
 def test_hybrid_manifest_validation_too_few_cvr_ballots(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     election_settings,
 ):
     contests = [
@@ -663,7 +663,7 @@ def test_hybrid_manifest_validation_too_few_cvr_ballots(
 def test_hybrid_manifest_validation_few_non_cvr_ballots(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     election_settings,
 ):
     contests = [
@@ -733,7 +733,7 @@ def test_hybrid_manifest_validation_few_non_cvr_ballots(
 def test_hybrid_manifest_validation_too_many_cvr_votes(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     election_settings,
     manifests,
     cvrs,
@@ -776,8 +776,8 @@ def test_hybrid_manifest_validation_too_many_cvr_votes(
 def test_hybrid_filter_cvrs(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     election_settings,
     manifests,
     cvrs,
@@ -829,8 +829,8 @@ def test_hybrid_filter_cvrs(
 def test_hybrid_custom_sample_size(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     election_settings,
     manifests,
     cvrs,
@@ -873,8 +873,8 @@ def test_hybrid_custom_sample_size(
 def test_hybrid_invalid_sample_size(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     election_settings,
     manifests,
     cvrs,
@@ -952,8 +952,8 @@ def test_hybrid_invalid_sample_size(
 def test_hybrid_sample_preview(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     manifests,
     cvrs,
     election_settings,

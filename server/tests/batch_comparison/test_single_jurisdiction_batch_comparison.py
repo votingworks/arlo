@@ -1,4 +1,3 @@
-from typing import List
 import io
 import pytest
 from flask.testing import FlaskClient
@@ -9,7 +8,7 @@ from .test_batch_comparison import check_discrepancies
 
 
 @pytest.fixture
-def jurisdiction_ids(client: FlaskClient, election_id: str) -> List[str]:
+def jurisdiction_ids(client: FlaskClient, election_id: str) -> list[str]:
     rv = upload_jurisdictions_file(
         client,
         io.BytesIO(
@@ -30,7 +29,7 @@ def jurisdiction_ids(client: FlaskClient, election_id: str) -> List[str]:
 
 
 @pytest.fixture
-def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]):
+def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: list[str]):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
@@ -58,8 +57,8 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 def batch_tallies(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     manifests,
 ):
     set_logged_in_user(
@@ -89,7 +88,7 @@ def batch_tallies(
 def test_batch_comparison_single_jurisdiction_discrepancies(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_id: str,
     round_1_id: str,
 ):

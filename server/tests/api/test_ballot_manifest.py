@@ -1,6 +1,5 @@
 import io
 import json
-from typing import List
 from flask.testing import FlaskClient
 
 from ...models import *
@@ -8,7 +7,7 @@ from ..helpers import *
 
 
 def test_ballot_manifest_upload(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -53,7 +52,7 @@ def test_ballot_manifest_upload(
 
 
 def test_ballot_manifest_clear(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -87,7 +86,7 @@ def test_ballot_manifest_clear(
 
 
 def test_ballot_manifest_replace_as_audit_admin(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
 ):
     # Check that AA can also get/put/clear manifest
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -136,7 +135,7 @@ def test_ballot_manifest_replace_as_audit_admin(
 
 
 def test_ballot_manifest_upload_missing_file_path(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -157,7 +156,7 @@ def test_ballot_manifest_upload_missing_file_path(
 
 
 def test_ballot_manifest_upload_batch_inventory_worksheet(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -192,7 +191,7 @@ def test_ballot_manifest_upload_batch_inventory_worksheet(
 
 
 def test_ballot_manifest_upload_bad_csv(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -245,7 +244,7 @@ def test_ballot_manifest_upload_bad_csv(
 
 
 def test_ballot_manifest_upload_missing_field(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
 ):
     for missing_field in ["Batch Name", "Number of Ballots"]:
         headers = ["Batch Name", "Number of Ballots", "Container", "Tabulator"]
@@ -283,7 +282,7 @@ def test_ballot_manifest_upload_missing_field(
 
 
 def test_ballot_manifest_upload_invalid_num_ballots(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -318,7 +317,7 @@ def test_ballot_manifest_upload_invalid_num_ballots(
 
 
 def test_ballot_manifest_upload_duplicate_batch_name(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -352,7 +351,7 @@ def test_ballot_manifest_upload_duplicate_batch_name(
 
 
 def test_ballot_manifest_get_upload_url_missing_file_type(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -372,7 +371,7 @@ def test_ballot_manifest_get_upload_url_missing_file_type(
 
 
 def test_ballot_manifest_get_upload_url(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
 ):
     allowed_users = [
         (UserType.JURISDICTION_ADMIN, default_ja_email(election_id)),

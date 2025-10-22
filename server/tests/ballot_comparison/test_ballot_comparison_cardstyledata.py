@@ -24,7 +24,7 @@ from .conftest import (
 def test_ballot_comparison_cardstyledata_two_rounds(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     election_settings,
     manifests,
     snapshot,

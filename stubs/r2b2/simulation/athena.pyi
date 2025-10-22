@@ -1,12 +1,12 @@
 from r2b2.athena import Athena as Athena
 from r2b2.simulator import Simulation as Simulation, histogram as histogram
-from typing import Any, List, Tuple
+from typing import Any
 
 class AthenaOneRoundRisk(Simulation):
     delta: float
     sample_size: int
     total_relevant_ballots: int
-    vote_dist: List[Tuple[str, int]]
+    vote_dist: list[tuple[str, int]]
     audit: Athena
     contest_ballots: Any = ...
     def __init__(
@@ -31,7 +31,7 @@ class AthenaOneRoundStoppingProb(Simulation):
     delta: float
     sample_size: int
     total_relevant_ballots: int
-    vote_dist: List[Tuple[str, int]]
+    vote_dist: list[tuple[str, int]]
     audit: Athena
     contest_ballots: Any = ...
     def __init__(

@@ -1,5 +1,4 @@
 import enum
-from typing import List
 from datetime import datetime, timezone
 from collections import defaultdict
 from flask import jsonify, request
@@ -106,8 +105,8 @@ def validate_full_hand_tally_batch_result(
 
 
 def serialize_full_hand_tally_batch_results(
-    results: List[FullHandTallyBatchResult], contest: Contest
-) -> List[JSONDict]:
+    results: list[FullHandTallyBatchResult], contest: Contest
+) -> list[JSONDict]:
     # We want to display batches in the order the user created them. Dict keys
     # are ordered, so we use a dict to dedupe the batch names while preserving
     # order. (Assumes results is already ordered by created_at)

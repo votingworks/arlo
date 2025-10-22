@@ -3,8 +3,6 @@ This is a wrapper class to accomodate using more than one test statistics for
 ballot polling audits.
 """
 
-from typing import Dict, Tuple, Optional
-
 from ..models import AuditMathType
 from .sampler_contest import Contest
 from . import bravo, minerva, providence
@@ -18,11 +16,11 @@ from .ballot_polling_types import (
 def get_sample_size(
     risk_limit: int,
     contest: Contest,
-    sample_results: Optional[BALLOT_POLLING_SAMPLE_RESULTS],
-    samples_not_found: Dict[str, int],
+    sample_results: BALLOT_POLLING_SAMPLE_RESULTS | None,
+    samples_not_found: dict[str, int],
     math_type: AuditMathType,
-    round_sizes: Optional[BALLOT_POLLING_ROUND_SIZES],
-) -> Dict[str, SampleSizeOption]:
+    round_sizes: BALLOT_POLLING_ROUND_SIZES | None,
+) -> dict[str, SampleSizeOption]:
     """
     Compute sample size using the specified math.
 
@@ -56,10 +54,10 @@ def compute_risk(
     risk_limit: int,
     contest: Contest,
     sample_results: BALLOT_POLLING_SAMPLE_RESULTS,
-    samples_not_found: Dict[str, int],
+    samples_not_found: dict[str, int],
     math_type: AuditMathType,
     round_sizes: BALLOT_POLLING_ROUND_SIZES,
-) -> Tuple[Dict[Tuple[str, str], float], bool]:
+) -> tuple[dict[tuple[str, str], float], bool]:
     sample_results = {  # Make a copy so we don't mutate the original results
         round_id: dict(round_results)
         for round_id, round_results in sample_results.items()

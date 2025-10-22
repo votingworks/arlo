@@ -1,4 +1,3 @@
-from typing import List
 from flask.testing import FlaskClient
 from .test_audit_boards import set_up_audit_board
 from ...models import *
@@ -9,10 +8,10 @@ from ...auth import UserType
 def test_audit_admin_report(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
-    contest_ids: List[str],
-    audit_board_round_1_ids: List[str],
+    contest_ids: list[str],
+    audit_board_round_1_ids: list[str],
     snapshot,
 ):
     for audit_board_id in audit_board_round_1_ids:
@@ -51,10 +50,10 @@ def test_audit_admin_report_round_2(
 def test_jurisdiction_admin_report(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id,
-    contest_ids: List[str],
-    audit_board_round_1_ids: List[str],
+    contest_ids: list[str],
+    audit_board_round_1_ids: list[str],
     snapshot,
 ):
     for audit_board_id in audit_board_round_1_ids:
@@ -82,7 +81,7 @@ def test_jurisdiction_admin_report(
 def test_report_before_audit_starts(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/report")

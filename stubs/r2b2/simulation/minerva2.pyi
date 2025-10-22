@@ -1,11 +1,11 @@
 from r2b2.minerva2 import Minerva2 as Minerva2
 from r2b2.simulator import Simulation as Simulation, histogram as histogram
-from typing import Any, List, Optional, Tuple
+from typing import Any
 
 class Minerva2OneRoundRisk(Simulation):
     sample_size: int
     total_relevant_ballots: int
-    vote_dist: List[Tuple[str, int]]
+    vote_dist: list[tuple[str, int]]
     audit: Minerva2
     contest_ballots: Any = ...
     def __init__(
@@ -28,7 +28,7 @@ class Minerva2OneRoundRisk(Simulation):
 class Minerva2OneRoundStoppingProb(Simulation):
     sample_size: int
     total_relevant_ballots: int
-    vote_dist: List[Tuple[str, int]]
+    vote_dist: list[tuple[str, int]]
     audit: Minerva2
     contest_ballots: Any = ...
     def __init__(
@@ -52,7 +52,7 @@ class Minerva2OneRoundAlteredMargin(Simulation):
     underlying_margin: float
     sample_size: int
     total_relevant_ballots: int
-    vote_dist: List[Tuple[str, int]]
+    vote_dist: list[tuple[str, int]]
     audit: Minerva2
     contest_ballots: Any = ...
     def __init__(
@@ -80,7 +80,7 @@ class Minerva2MultiRoundStoppingProb(Simulation):
     sample_mult: float
     max_rounds: int
     total_relevant_ballots: int
-    vote_dist: List[Tuple[str, int]]
+    vote_dist: list[tuple[str, int]]
     audit: Minerva2
     contest_ballots: Any = ...
     def __init__(
@@ -88,9 +88,9 @@ class Minerva2MultiRoundStoppingProb(Simulation):
         alpha: Any,
         reported: Any,
         max_rounds: Any,
-        sample_size: Optional[Any] = ...,
-        sample_mult: Optional[Any] = ...,
-        sample_sprob: Optional[Any] = ...,
+        sample_size: Any | None = ...,
+        sample_mult: Any | None = ...,
+        sample_sprob: Any | None = ...,
         db_mode: bool = ...,
         db_host: str = ...,
         db_name: str = ...,
@@ -109,7 +109,7 @@ class Minerva2MultiRoundRisk(Simulation):
     sample_mult: float
     max_rounds: int
     total_relevant_ballots: int
-    vote_dist: List[Tuple[str, int]]
+    vote_dist: list[tuple[str, int]]
     audit: Minerva2
     contest_ballots: Any = ...
     def __init__(
@@ -117,9 +117,9 @@ class Minerva2MultiRoundRisk(Simulation):
         alpha: Any,
         reported: Any,
         max_rounds: Any,
-        sample_size: Optional[Any] = ...,
-        sample_mult: Optional[Any] = ...,
-        sample_sprob: Optional[Any] = ...,
+        sample_size: Any | None = ...,
+        sample_mult: Any | None = ...,
+        sample_sprob: Any | None = ...,
         db_mode: bool = ...,
         db_host: str = ...,
         db_name: str = ...,
@@ -136,7 +136,7 @@ class Minerva2RandomMultiRoundRisk(Simulation):
     sample_size: int
     max_rounds: int
     total_relevant_ballots: int
-    vote_dist: List[Tuple[str, int]]
+    vote_dist: list[tuple[str, int]]
     audit: Minerva2
     contest_ballots: Any = ...
     def __init__(
@@ -161,7 +161,7 @@ class Minerva2RandomMultiRoundStoppingProb(Simulation):
     sample_size: int
     max_rounds: int
     total_relevant_ballots: int
-    vote_dist: List[Tuple[str, int]]
+    vote_dist: list[tuple[str, int]]
     audit: Minerva2
     contest_ballots: Any = ...
     def __init__(
@@ -187,7 +187,7 @@ class Minerva2MultiRoundAlteredMargin(Simulation):
     sample_size: int
     max_rounds: int
     total_relevant_ballots: int
-    vote_dist: List[Tuple[str, int]]
+    vote_dist: list[tuple[str, int]]
     audit: Minerva2
     contest_ballots: Any = ...
     def __init__(

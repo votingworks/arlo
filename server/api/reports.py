@@ -1,6 +1,6 @@
 import io
 import csv
-from typing import Dict, List, Optional, Tuple, Union, cast as typing_cast
+from typing import cast as typing_cast
 from collections import defaultdict, Counter
 from sqlalchemy import func, and_
 from sqlalchemy.dialects.postgresql import aggregate_order_by
@@ -38,8 +38,8 @@ from .discrepancies import (
 )
 
 
-def pretty_affiliation(affiliation: Optional[str]) -> str:
-    mapping: Dict[str, str] = {
+def pretty_affiliation(affiliation: str | None) -> str:
+    mapping: dict[str, str] = {
         Affiliation.DEMOCRAT: "Democrat",
         Affiliation.REPUBLICAN: "Republican",
         Affiliation.LIBERTARIAN: "Libertarian",
@@ -73,13 +73,13 @@ def pretty_pvalue(value: float) -> str:
 
 
 # (round_num, contest_id, ticket_number)
-TicketNumberTuple = Tuple[str, str, str]
+TicketNumberTuple = tuple[str, str, str]
 
 
 def pretty_ballot_ticket_numbers(
-    ticket_number_tuples: List[TicketNumberTuple],
-    targeted_contests: List[Contest],
-) -> List[str]:
+    ticket_number_tuples: list[TicketNumberTuple],
+    targeted_contests: list[Contest],
+) -> list[str]:
     columns = []
     for contest in targeted_contests:
         contest_tuples = [
@@ -101,7 +101,7 @@ def pretty_ballot_ticket_numbers(
 
 
 def pretty_batch_ticket_numbers_for_contest(
-    batch: Batch, round_id_to_num: Dict[str, int], contest_id: str
+    batch: Batch, round_id_to_num: dict[str, int], contest_id: str
 ) -> str:
     ticket_numbers = []
     for round_num, draws in group_by(
@@ -117,8 +117,8 @@ def pretty_batch_ticket_numbers_for_contest(
 
 
 def pretty_batch_ticket_numbers(
-    batch: Batch, round_id_to_num: Dict[str, int], contests: List[Contest]
-) -> List[str]:
+    batch: Batch, round_id_to_num: dict[str, int], contests: list[Contest]
+) -> list[str]:
     return [
         pretty_batch_ticket_numbers_for_contest(batch, round_id_to_num, contest.id)
         for contest in contests
@@ -126,11 +126,11 @@ def pretty_batch_ticket_numbers(
 
 
 # (contest_id, interpretation, selected_choice_names, comment, is_overvote, has_invalid_write_in)
-InterpretationTuple = Tuple[str, str, List[str], str, bool, bool]
+InterpretationTuple = tuple[str, str, list[str], str, bool, bool]
 
 
 def pretty_ballot_interpretation(
-    interpretations: List[InterpretationTuple],
+    interpretations: list[InterpretationTuple],
     contest: Contest,
 ) -> str:
     interpretation = next((i for i in interpretations if i[0] == contest.id), None)
@@ -192,8 +192,7 @@ def add_sign(value: int) -> str:
 
 
 def pretty_vote_deltas(
-    contest: Contest,
-    vote_deltas: Optional[Union[str, ContestVoteDeltas]],
+    contest: Contest, vote_deltas: str | ContestVoteDeltas | None
 ) -> str:
     if vote_deltas is None:
         return ""
@@ -211,7 +210,7 @@ def pretty_vote_deltas(
 
 def pretty_discrepancy(
     ballot: SampledBallot,
-    contest_discrepancies: Dict[str, supersimple.Discrepancy],
+    contest_discrepancies: dict[str, supersimple.Discrepancy],
 ) -> str:
     if ballot.id in contest_discrepancies:
         return str(contest_discrepancies[ballot.id]["counted_as"])
@@ -220,7 +219,7 @@ def pretty_discrepancy(
 
 
 def pretty_choice_votes(
-    choice_votes: Dict[str, Union[int, str]], not_found: Optional[int] = None
+    choice_votes: dict[str, int | str], not_found: int | None = None
 ) -> str:
     return "; ".join(
         [f"{name}: {votes}" for name, votes in choice_votes.items()]
@@ -335,7 +334,7 @@ def contest_name_standardization_rows(election: Election):
         for jurisdiction in election.jurisdictions
         if jurisdiction.contest_name_standardizations
         for contest_name, cvr_contest_name in typing_cast(
-            Dict, jurisdiction.contest_name_standardizations
+            dict, jurisdiction.contest_name_standardizations
         ).items()
     ]
     if len(standardization_rows) == 0:
@@ -566,7 +565,7 @@ def round_rows(election: Election):
 
 
 def full_hand_tally_result_rows(
-    election: Election, jurisdiction: Optional[Jurisdiction] = None
+    election: Election, jurisdiction: Jurisdiction | None = None
 ):
     rows = [heading("FULL HAND TALLY BATCH RESULTS")]
 
@@ -607,9 +606,7 @@ def full_hand_tally_result_rows(
     return rows
 
 
-def sampled_ballot_rows(
-    election: Election, jurisdiction: Optional[Jurisdiction] = None
-):
+def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction | None = None):
     # Special case: if we sampled all ballots, don't show this section
     rounds = list(election.rounds)
     if len(rounds) > 0 and is_full_hand_tally(rounds[0], election):
@@ -849,7 +846,7 @@ def sampled_ballot_rows(
     return rows
 
 
-def sampled_batch_rows(election: Election, jurisdiction: Optional[Jurisdiction] = None):
+def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = None):
     rows = [heading("SAMPLED BATCHES")]
 
     batches_query = (

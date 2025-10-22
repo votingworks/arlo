@@ -1,4 +1,4 @@
-from typing import Callable, Dict, Optional, List
+from typing import Callable
 
 import numpy as np
 
@@ -14,7 +14,7 @@ from .raire_utils import (
 )
 
 
-NEBMatrix = Dict[str, Dict[str, Optional[NEBAssertion]]]
+NEBMatrix = dict[str, dict[str, NEBAssertion | None]]
 
 
 def make_neb_matrix(contest: Contest, cvrs: CVRS, asn_func) -> NEBMatrix:
@@ -57,7 +57,7 @@ def make_neb_matrix(contest: Contest, cvrs: CVRS, asn_func) -> NEBMatrix:
 
 def make_frontier(
     contest: Contest,
-    ballots: List[Dict[str, int]],
+    ballots: list[dict[str, int]],
     nebs: NEBMatrix,
     asn_func,
 ) -> RaireFrontier:
@@ -89,7 +89,7 @@ def make_frontier(
 
 def find_assertions(
     contest: Contest,
-    ballots: List[Dict[str, int]],
+    ballots: list[dict[str, int]],
     nebs: NEBMatrix,
     asn_func: Callable,
     frontier: RaireFrontier,
@@ -195,7 +195,7 @@ def compute_raire_assertions(
     cvrs: CVRS,
     asn_func: Callable,
     agap: float = 0.0,
-) -> List[RaireAssertion]:
+) -> list[RaireAssertion]:
     """
 
     Inputs:
@@ -240,7 +240,7 @@ def compute_raire_assertions(
     # First look at all of the NEB assertions that could be formed for
     # this contest. We will refer to this matrix when examining the best
     # way to prune branches of the "alternate outcome space".
-    nebs: Dict[str, Dict[str, Optional[NEBAssertion]]] = make_neb_matrix(
+    nebs: dict[str, dict[str, NEBAssertion | None]] = make_neb_matrix(
         contest, cvrs, asn_func
     )
 
@@ -272,7 +272,7 @@ def compute_raire_assertions(
     # Some assertions will be used to rule out multiple branches of our
     # alternate outcome tree. Form a list of all these assertions, without
     # duplicates.
-    assertions: List[RaireAssertion] = list(
+    assertions: list[RaireAssertion] = list(
         set(
             node.best_assertion
             for node in frontier.nodes

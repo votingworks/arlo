@@ -5,7 +5,6 @@ as described by Broadrick et al https://arxiv.org/abs/2210.08717
 
 from collections import defaultdict
 import logging
-from typing import Dict, Optional, Tuple
 
 from r2b2.minerva2 import Minerva2 as Providence
 from r2b2.contest import Contest as R2B2_Contest, ContestType
@@ -50,8 +49,8 @@ def make_providence_audit(arlo_contest: Contest, alpha: float):
 
 def _run_providence_audit(
     audit: Providence,
-    sample_results: Optional[BALLOT_POLLING_SAMPLE_RESULTS],
-    round_sizes: Optional[BALLOT_POLLING_ROUND_SIZES],
+    sample_results: BALLOT_POLLING_SAMPLE_RESULTS | None,
+    round_sizes: BALLOT_POLLING_ROUND_SIZES | None,
 ):
     """Take a Providence audit and run the sample results on it.
     The audit object passed in is modified, this function doesn't return anything.
@@ -69,7 +68,7 @@ def _run_providence_audit(
         logger.debug(f"round_sizes: {round_sizes}")
         logger.debug(audit)
         # r2b2's audit object expects the votes each candidate receives to be cumulative
-        mapping: Dict[str, int] = defaultdict(int)
+        mapping: dict[str, int] = defaultdict(int)
         size = 0
         for _, round_info in sorted(round_sizes.items()):
             round_id = round_info.round_id
@@ -84,9 +83,9 @@ def _run_providence_audit(
 def get_sample_size(
     risk_limit: int,
     contest: Contest,
-    sample_results: Optional[BALLOT_POLLING_SAMPLE_RESULTS],
-    round_sizes: Optional[BALLOT_POLLING_ROUND_SIZES],
-) -> Dict[str, SampleSizeOption]:
+    sample_results: BALLOT_POLLING_SAMPLE_RESULTS | None,
+    round_sizes: BALLOT_POLLING_ROUND_SIZES | None,
+) -> dict[str, SampleSizeOption]:
     """
     Computes sample size for the next round, parameterized by likelihood that the
     sample will confirm the election result, assuming accurate results.
@@ -121,7 +120,7 @@ def compute_risk(
     contest: Contest,
     sample_results: BALLOT_POLLING_SAMPLE_RESULTS,
     round_sizes: BALLOT_POLLING_ROUND_SIZES,
-) -> Tuple[Dict[Tuple[str, str], float], bool]:
+) -> tuple[dict[tuple[str, str], float], bool]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
 

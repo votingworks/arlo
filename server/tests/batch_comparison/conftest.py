@@ -33,7 +33,7 @@ def election_settings(client: FlaskClient, election_id: str):
 
 
 @pytest.fixture
-def contest_ids(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]):
+def contest_ids(client: FlaskClient, election_id: str, jurisdiction_ids: list[str]):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     contests = [
         {
@@ -57,12 +57,12 @@ def contest_ids(client: FlaskClient, election_id: str, jurisdiction_ids: List[st
 
 # A convenience fixture for when there's only one contest
 @pytest.fixture
-def contest_id(contest_ids: List[str]) -> str:
+def contest_id(contest_ids: list[str]) -> str:
     return contest_ids[0]
 
 
 @pytest.fixture
-def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]):
+def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: list[str]):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
@@ -105,8 +105,8 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 def batch_tallies(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     manifests,
 ):
     set_logged_in_user(
@@ -153,7 +153,7 @@ def batch_tallies(
 def round_1_id(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_ids,
     election_settings,
     manifests,
@@ -186,7 +186,7 @@ def round_1_id(
 def tally_entry_user_id(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
 ):
     # Use the second jurisdiction

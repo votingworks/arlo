@@ -20,8 +20,8 @@ def election_settings(client: FlaskClient, election_id: str):
 def test_offline_results_empty(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     round_1_id: str,
 ):
     set_logged_in_user(
@@ -43,8 +43,8 @@ def test_offline_results_empty(
 def test_run_offline_audit(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     election_settings,
     manifests,
     snapshot,
@@ -162,7 +162,7 @@ def test_run_offline_audit(
 def test_offline_results_without_audit_boards(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
 ):
     set_logged_in_user(
@@ -187,10 +187,10 @@ def test_offline_results_without_audit_boards(
 def test_offline_results_invalid(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     round_1_id: str,
-    audit_board_round_1_ids: List[str],
+    audit_board_round_1_ids: list[str],
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -257,7 +257,7 @@ def test_offline_results_bad_round(
     client: FlaskClient,
     org_id: str,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -354,7 +354,7 @@ def test_offline_results_bad_round(
 def test_offline_results_in_online_election(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
 ):
     election = Election.query.get(election_id)
@@ -383,7 +383,7 @@ def test_offline_results_in_online_election(
 def test_offline_results_jurisdiction_with_no_ballots(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
 ):
     # Try submitting results for all the contests, even though J3 isn't assigned to every contest

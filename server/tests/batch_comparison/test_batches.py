@@ -1,4 +1,3 @@
-from typing import List
 import io
 from flask.testing import FlaskClient
 
@@ -12,7 +11,7 @@ J2_BATCHES_ROUND_1 = 1
 def test_list_batches_bad_round_id(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -26,7 +25,7 @@ def test_list_batches_bad_round_id(
 def test_list_batches(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
 ):
     set_logged_in_user(
@@ -69,7 +68,7 @@ def test_list_batches(
 def test_batch_retrieval_list_bad_round_id(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -84,7 +83,7 @@ def test_batch_retrieval_list_bad_round_id(
 def test_batch_retrieval_list_round_1(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
     snapshot,
 ):
@@ -107,7 +106,7 @@ def test_batch_retrieval_list_round_1(
 def test_record_batch_results(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
     tally_entry_user_id: str,
     snapshot,
@@ -332,7 +331,7 @@ def test_record_batch_results(
 def test_record_batch_results_as_support_user(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
 ):
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)
@@ -377,7 +376,7 @@ def test_record_batch_results_as_support_user(
 def test_batch_tally_sheet_order(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
 ):
     set_logged_in_user(
@@ -451,7 +450,7 @@ def test_batch_tally_sheet_order(
 def test_record_batch_results_invalid(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
 ):
     set_logged_in_user(
@@ -591,7 +590,7 @@ def test_record_batch_results_invalid(
 def test_unfinalize_batch_results(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
 ):
     set_logged_in_user(
@@ -749,7 +748,7 @@ def test_record_batch_results_bad_round(
     client: FlaskClient,
     org_id: str,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -877,7 +876,7 @@ def test_record_batch_results_bad_round(
 def test_batches_human_sort_order(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     election_settings,
     snapshot,
 ):
@@ -1008,7 +1007,7 @@ def test_batches_human_sort_order(
 def test_finalize_batch_results_incomplete(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
 ):
     set_logged_in_user(

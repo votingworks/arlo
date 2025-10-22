@@ -10,7 +10,7 @@ import math
 from decimal import Decimal
 from collections import defaultdict
 import logging
-from typing import Dict, Tuple, Optional, TypedDict
+from typing import TypedDict
 from scipy import stats
 
 from .sampler_contest import Contest
@@ -22,7 +22,7 @@ from .ballot_polling_types import (
 
 
 def get_expected_sample_size(
-    alpha: Decimal, contest: Contest, cumulative_sample_results: Dict[str, int]
+    alpha: Decimal, contest: Contest, cumulative_sample_results: dict[str, int]
 ) -> SampleSizeOption:
     """
     Returns the expected sample size (also known as the ASN or average sample number) for a BRAVO
@@ -60,7 +60,7 @@ def get_expected_sample_size(
         sample_l: int
 
     sample_size = 0
-    sample_size_winner_loser_stats: Optional[SampleSizeWinnerLoserStats] = None
+    sample_size_winner_loser_stats: SampleSizeWinnerLoserStats | None = None
     for winner_name, winner_stats in winners.items():
         for loser_name, loser_stats in losers.items():
             weighted_alpha = (Decimal(1) / alpha) / T[(winner_name, loser_name)]
@@ -113,8 +113,8 @@ def get_expected_sample_size(
 
 
 def get_test_statistics(
-    margins: Dict[str, Dict], sample_results: Dict[str, int]
-) -> Dict[Tuple[str, str], Decimal]:
+    margins: dict[str, dict], sample_results: dict[str, int]
+) -> dict[tuple[str, str], Decimal]:
     """
     Computes T*, the test statistic from an existing sample.
 
@@ -341,9 +341,9 @@ def compute_cumulative_sample(sample_results):
 def get_sample_size(
     risk_limit: int,
     contest: Contest,
-    sample_results: Optional[BALLOT_POLLING_SAMPLE_RESULTS],
-    round_sizes: Optional[BALLOT_POLLING_ROUND_SIZES],
-) -> Dict[str, SampleSizeOption]:
+    sample_results: BALLOT_POLLING_SAMPLE_RESULTS | None,
+    round_sizes: BALLOT_POLLING_ROUND_SIZES | None,
+) -> dict[str, SampleSizeOption]:
     """
     Computes initial sample size parameterized by likelihood that the
     initial sample will confirm the election result, assuming no
@@ -425,7 +425,7 @@ def get_sample_size(
         for candidate in contest.candidates:
             cumulative_sample[candidate] = 0
 
-    samples: Dict[str, SampleSizeOption] = {}
+    samples: dict[str, SampleSizeOption] = {}
 
     samples["asn"] = get_expected_sample_size(alpha, contest, cumulative_sample)
 
@@ -481,8 +481,8 @@ def get_sample_size(
 
 
 def compute_risk(
-    risk_limit: int, contest: Contest, sample_results: Dict[str, Dict[str, int]]
-) -> Tuple[Dict[Tuple[str, str], float], bool]:
+    risk_limit: int, contest: Contest, sample_results: dict[str, dict[str, int]]
+) -> tuple[dict[tuple[str, str], float], bool]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
 

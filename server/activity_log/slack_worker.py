@@ -1,6 +1,5 @@
 import time
 from datetime import datetime, timezone
-from typing import Optional
 from urllib.parse import urljoin
 import requests
 
@@ -320,7 +319,7 @@ def slack_message(activity: activity_log.Activity):
 # The optional organization_id parameter makes this function thread-safe for
 # testing. Each test has its own org, and we don't want tests running in
 # parallel to influence each other.
-def send_new_slack_notification(organization_id: Optional[str] = None) -> None:
+def send_new_slack_notification(organization_id: str | None = None) -> None:
     if config.SLACK_WEBHOOK_URL is None:
         raise Exception("Missing SLACK_WEBHOOK_URL")
 

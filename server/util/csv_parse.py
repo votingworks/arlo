@@ -4,14 +4,10 @@ from typing import (
     IO,
     BinaryIO,
     Iterable,
-    List,
     Iterator,
-    Dict,
     Any,
     NamedTuple,
-    Optional,
     TextIO,
-    Tuple,
     TypeVar,
 )
 import csv as py_csv
@@ -48,9 +44,9 @@ class CSVColumnType(NamedTuple):
     unique: bool = False
 
 
-CSVRow = List[str]
+CSVRow = list[str]
 CSVIterator = Iterator[CSVRow]
-CSVDictIterator = Iterator[Dict[str, Any]]
+CSVDictIterator = Iterator[dict[str, Any]]
 
 INVALID_CSV_ERROR = (
     "Please submit a valid CSV."
@@ -62,7 +58,7 @@ INVALID_CSV_ERROR = (
 # Robust CSV parsing
 # "Be conservative in what you do, be liberal in what you accept from others"
 # https://en.wikipedia.org/wiki/Robustness_principle
-def parse_csv(file: BinaryIO, columns: List[CSVColumnType]) -> CSVDictIterator:
+def parse_csv(file: BinaryIO, columns: list[CSVColumnType]) -> CSVDictIterator:
     validate_not_empty(file)
     text_file = decode_csv(file)
     validate_comma_delimited(text_file)
@@ -200,7 +196,7 @@ def skip_empty_trailing_columns(csv: CSVIterator) -> CSVIterator:
 
 
 def validate_and_normalize_headers(
-    csv: CSVIterator, columns: List[CSVColumnType]
+    csv: CSVIterator, columns: list[CSVColumnType]
 ) -> CSVIterator:
     headers = next(csv)
 
@@ -232,7 +228,7 @@ def validate_and_normalize_headers(
     yield from csv
 
 
-def is_empty_row(row: Dict[str, Any]) -> bool:
+def is_empty_row(row: dict[str, Any]) -> bool:
     return all(value == "" for value in row.values())
 
 
@@ -243,7 +239,7 @@ def skip_empty_rows(csv: CSVDictIterator) -> CSVDictIterator:
 
 
 def reject_empty_cells(
-    csv: CSVDictIterator, columns: List[CSVColumnType]
+    csv: CSVDictIterator, columns: list[CSVColumnType]
 ) -> CSVDictIterator:
     columns_by_header = {column.name: column for column in columns}
 
@@ -262,7 +258,7 @@ def reject_empty_cells(
 
 
 def validate_and_parse_values(
-    csv: CSVDictIterator, columns: List[CSVColumnType]
+    csv: CSVDictIterator, columns: list[CSVColumnType]
 ) -> CSVDictIterator:
     columns_by_header = {column.name: column for column in columns}
 
@@ -306,12 +302,12 @@ def validate_and_parse_values(
         }
 
 
-def format_tuple(tup: Tuple) -> str:
+def format_tuple(tup: tuple) -> str:
     return str(tup[0]) if len(tup) == 1 else str(tup)
 
 
 def reject_duplicate_values(
-    csv: CSVDictIterator, columns: List[CSVColumnType]
+    csv: CSVDictIterator, columns: list[CSVColumnType]
 ) -> CSVDictIterator:
     # For our purposes, we want all the columns with unique=True to be used as
     # one composite unique key for the rows.
@@ -353,7 +349,7 @@ def reject_total_rows(csv: CSVDictIterator) -> CSVDictIterator:
         yield row
 
 
-def reject_final_total_row(csv: CSVDictIterator, columns: List[CSVColumnType]):
+def reject_final_total_row(csv: CSVDictIterator, columns: list[CSVColumnType]):
     numeric_column_values = defaultdict(list)
 
     num_rows = 0
@@ -401,24 +397,24 @@ def pluralize(word: str, num: int) -> str:
     return word if num == 1 else f"{word}s"
 
 
-def get_header_indices(headers_row: List[str]) -> Dict[str, int]:
+def get_header_indices(headers_row: list[str]) -> dict[str, int]:
     return {header: i for i, header in enumerate(headers_row)}
 
 
 # Allow a 2-string tuple for Dominion's two-row CSV headers
 
-HeaderType = TypeVar("HeaderType", str, Tuple[str, str])
+HeaderType = TypeVar("HeaderType", str, tuple[str, str])
 
 
 def column_value(
-    row: List[str],
+    row: list[str],
     header: HeaderType,
     row_number: int,
-    header_indices: Dict[HeaderType, int],
+    header_indices: dict[HeaderType, int],
     required: bool = True,
-    file_name: Optional[str] = None,
+    file_name: str | None = None,
     remove_leading_equal_sign: bool = False,
-    header_readable_string_override: Optional[str] = None,
+    header_readable_string_override: str | None = None,
 ):
     header_readable_string: str = header_readable_string_override or str(header)
     index = header_indices.get(header)

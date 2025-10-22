@@ -4,7 +4,7 @@ import uuid
 import json
 import re
 from datetime import datetime
-from typing import Any, List, Union, Tuple, Optional, Dict, BinaryIO
+from typing import Any, BinaryIO
 import logging
 from flask.testing import FlaskClient
 from werkzeug.wrappers import Response
@@ -96,8 +96,8 @@ def create_user(email=DEFAULT_AA_EMAIL) -> User:
 
 
 def create_org_and_admin(
-    org_name: Optional[str] = None, user_email: str = DEFAULT_AA_EMAIL
-) -> Tuple[str, str]:
+    org_name: str | None = None, user_email: str = DEFAULT_AA_EMAIL
+) -> tuple[str, str]:
     org = Organization(
         id=str(uuid.uuid4()), name=org_name or f"Test Org {datetime.now(timezone.utc)}"
     )
@@ -143,7 +143,7 @@ def create_jurisdiction_and_admin(
     election_id: str,
     jurisdiction_name: str,
     user_email: str,
-) -> Tuple[str, str]:
+) -> tuple[str, str]:
     jurisdiction = create_jurisdiction(election_id, jurisdiction_name)
     ja_id = create_jurisdiction_admin(jurisdiction.id, user_email)
     return jurisdiction.id, ja_id
@@ -151,10 +151,10 @@ def create_jurisdiction_and_admin(
 
 def create_election(
     client: FlaskClient,
-    audit_name: Optional[str] = None,
+    audit_name: str | None = None,
     audit_type: str = AuditType.BALLOT_POLLING,
     audit_math_type: str = AuditMathType.BRAVO,
-    organization_id: Optional[str] = None,
+    organization_id: str | None = None,
 ) -> str:
     rv = post_json(
         client,
@@ -176,7 +176,7 @@ def audit_ballot(
     ballot: SampledBallot,
     contest_id: str,
     interpretation: Interpretation,
-    choices: Optional[List[ContestChoice]] = None,
+    choices: list[ContestChoice] | None = None,
     is_overvote: bool = False,
     has_invalid_write_in: bool = False,
 ):
@@ -198,7 +198,7 @@ def audit_ballot(
 def run_audit_round(
     round_id: str,
     target_contest_id: str,
-    contest_ids: List[str],
+    contest_ids: list[str],
     vote_ratio: float,
     invalid_write_in_ratio: float = 0,
 ):
@@ -256,7 +256,7 @@ def run_audit_round(
 def run_audit_round_all_blanks(
     round_id: str,
     target_contest_id: str,
-    contest_ids: List[str],
+    contest_ids: list[str],
     invalid_write_in_ratio: float = 0,
 ):
     contest = Contest.query.get(target_contest_id)
@@ -370,14 +370,14 @@ def compare_json(actual_json, expected_json):
     """
     __tracebackhide__ = True
 
-    def serialize_keypath(keypath: List[Union[str, int]]) -> str:
+    def serialize_keypath(keypath: list[str | int]) -> str:
         return f"root{''.join([f'[{serialize_key(key)}]' for key in keypath])}"
 
-    def serialize_key(key: Union[str, int]) -> str:
+    def serialize_key(key: str | int) -> str:
         return f'"{key}"' if isinstance(key, str) else f"{key}"
 
     def inner_compare_json(
-        actual_json, expected_json, current_keypath: List[Union[str, int]]
+        actual_json, expected_json, current_keypath: list[str | int]
     ):
         __tracebackhide__ = True
         if isinstance(expected_json, dict):
@@ -413,7 +413,7 @@ def compare_json(actual_json, expected_json):
     inner_compare_json(actual_json, expected_json, [])
 
 
-def find_log(caplog, level: int, message: str) -> Optional[logging.LogRecord]:
+def find_log(caplog, level: int, message: str) -> logging.LogRecord | None:
     return next(
         (
             record
@@ -437,7 +437,7 @@ def upload_file_helper(
     file_path: str,
     file_type: str,
     file_content: io.BytesIO,
-    cvr_file_type: Optional[str] = None,
+    cvr_file_type: str | None = None,
 ):
     rv = client.post(
         "/api/file-upload",
@@ -502,7 +502,7 @@ def upload_cvrs(
     election_id: str,
     jurisdiction_id: str,
     cvr_file_type: str,
-    file_type: Optional[str] = None,
+    file_type: str | None = None,
 ):
     if file_type in ["application/zip", "application/x-zip-compressed"]:
         filename = timestamp_filename("cvrs", "zip")
@@ -593,17 +593,17 @@ def upload_batch_inventory_tabulator_status(
     )
 
 
-def zip_cvrs(cvrs: List[Tuple[io.BytesIO, str]]) -> io.BytesIO:
+def zip_cvrs(cvrs: list[tuple[io.BytesIO, str]]) -> io.BytesIO:
     if len(cvrs) == 1 and cvrs[0][1].endswith(".zip"):
         return cvrs[0][0]
-    files: Dict[str, BinaryIO] = {}
+    files: dict[str, BinaryIO] = {}
     for file_contents, file_name in cvrs:
         files[file_name] = file_contents
     return io.BytesIO(zip_files(files).read())
 
 
-def zip_hart_cvrs(cvrs: List[str]):
-    files: Dict[str, BinaryIO] = {
+def zip_hart_cvrs(cvrs: list[str]):
+    files: dict[str, BinaryIO] = {
         f"cvr-{i}.xml": io.BytesIO(cvr.encode()) for i, cvr in enumerate(cvrs)
     }
     # There's usually a WriteIns directory in the zip file - simulate that to

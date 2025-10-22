@@ -351,9 +351,9 @@ def test_create_election_two_orgs_same_name(client: FlaskClient):
 def test_delete_election(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
-    audit_board_round_1_ids: List[str],
+    audit_board_round_1_ids: list[str],
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.delete(f"/api/election/{election_id}")
@@ -436,7 +436,7 @@ def test_list_organizations(client: FlaskClient):
 def test_list_organizations_not_authorized(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
 ):
     aa_user = User.query.filter_by(email=DEFAULT_AA_EMAIL).one()
     db_session.expunge(aa_user)

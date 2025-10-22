@@ -10,7 +10,7 @@ from .conftest import TEST_CVRS
 def test_standardize_contest_names(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     election_settings,
     manifests,
     cvrs,
@@ -156,7 +156,7 @@ def test_standardize_contest_names(
 def test_standardize_contest_names_before_cvrs(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     election_settings,
     manifests,
 ):
@@ -181,7 +181,7 @@ def test_standardize_contest_names_before_cvrs(
 def test_standardize_contest_names_before_contests(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     election_settings,
     manifests,
     cvrs,
@@ -195,7 +195,7 @@ def test_standardize_contest_names_before_contests(
 def test_standardize_contest_names_cvr_change(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     election_settings,
     manifests,
     cvrs,
@@ -277,7 +277,7 @@ def test_standardize_contest_names_cvr_change(
 def test_standardize_contest_names_contest_change(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     election_settings,
     manifests,
     cvrs,
@@ -359,7 +359,7 @@ def test_standardize_contest_names_contest_change(
 def test_standardize_contest_names_wrong_audit_type(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     election_settings,
     manifests,
 ):
@@ -383,7 +383,7 @@ def test_standardize_contest_names_wrong_audit_type(
 def test_standardize_contest_names_after_audit_starts(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     election_settings,
     manifests,
     cvrs,

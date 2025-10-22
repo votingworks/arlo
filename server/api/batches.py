@@ -1,7 +1,6 @@
 from datetime import datetime
 import io
 import csv
-from typing import List, Optional
 import uuid
 from flask import jsonify, request, session
 from werkzeug.exceptions import BadRequest, Conflict
@@ -26,8 +25,8 @@ from ..util.get_json import safe_get_json_list
 
 
 def replace_combined_batches_with_representative_batches(
-    batches: List[Batch],
-) -> List[Batch]:
+    batches: list[Batch],
+) -> list[Batch]:
     regular_batches = []
     all_sub_batches = []
     for batch in batches:
@@ -109,7 +108,7 @@ def serialize_batch(batch: Batch) -> JSONDict:
     }
 
 
-def construct_batch_last_edited_by_string(batch: Batch) -> Optional[str]:
+def construct_batch_last_edited_by_string(batch: Batch) -> str | None:
     if batch.last_edited_by_support_user_email:
         return batch.last_edited_by_support_user_email
     if batch.last_edited_by_user:
@@ -194,7 +193,7 @@ def validate_batch_results(
     jurisdiction: Jurisdiction,
     round: Round,
     batch: Batch,
-    batch_results: List[JSONDict],
+    batch_results: list[JSONDict],
 ):
     current_round = get_current_round(election)
     if not current_round or round.id != current_round.id:

@@ -12,14 +12,14 @@ publication).
 
 from decimal import Decimal, ROUND_CEILING
 import math
-from typing import Dict, Set, Tuple, TypeVar, TypedDict, Optional, List
+from typing import TypeVar, TypedDict
 from .sampler_contest import Contest
 
 BatchKey = TypeVar("BatchKey")
 # { choice_id: num_votes }
-ChoiceVotes = Dict[str, int]
+ChoiceVotes = dict[str, int]
 # { contest_id: ChoiceVotes }
-BatchResults = Dict[str, ChoiceVotes]
+BatchResults = dict[str, ChoiceVotes]
 
 
 class BatchError(TypedDict):
@@ -28,7 +28,7 @@ class BatchError(TypedDict):
 
 
 def compute_unauditable_ballots(
-    batch_results: Dict[BatchKey, BatchResults],
+    batch_results: dict[BatchKey, BatchResults],
     contest: Contest,
 ) -> int:
     """
@@ -56,7 +56,7 @@ def compute_error(
     sampled_results: BatchResults,
     contest: Contest,
     unauditable_ballots: int,
-) -> Optional[BatchError]:
+) -> BatchError | None:
     """
     Computes the error in this batch
 
@@ -79,7 +79,7 @@ def compute_error(
         the maximum across-contest relative overstatement for batch p
     """
 
-    def error_for_candidate_pair(winner, loser) -> Optional[BatchError]:
+    def error_for_candidate_pair(winner, loser) -> BatchError | None:
         v_wp = batch_results[contest.name][winner]
         v_lp = batch_results[contest.name][loser]
 
@@ -108,7 +108,7 @@ def compute_error(
         for winner in contest.margins["winners"]
         for loser in contest.margins["losers"]
     ]
-    errors: List[BatchError] = [error for error in maybe_errors if error is not None]
+    errors: list[BatchError] = [error for error in maybe_errors if error is not None]
     if len(errors) == 0:
         return None
     return max(errors, key=lambda error: error["weighted_error"])
@@ -173,7 +173,7 @@ def compute_max_error(
 
 
 def compute_U(
-    reported_results: Dict[BatchKey, BatchResults],
+    reported_results: dict[BatchKey, BatchResults],
     contest: Contest,
 ) -> Decimal:
     """
@@ -209,10 +209,10 @@ def compute_U(
 def get_sample_sizes(
     risk_limit: int,
     contest: Contest,
-    reported_results: Dict[BatchKey, BatchResults],
-    sample_results: Dict[BatchKey, BatchResults],
-    ticket_numbers: Dict[str, BatchKey],
-    combined_batches: List[Set[BatchKey]],
+    reported_results: dict[BatchKey, BatchResults],
+    sample_results: dict[BatchKey, BatchResults],
+    ticket_numbers: dict[str, BatchKey],
+    combined_batches: list[set[BatchKey]],
 ) -> int:
     """
     Computes a sample size expected to confirm the election result
@@ -287,11 +287,11 @@ def get_sample_sizes(
 def compute_risk(
     risk_limit: int,
     contest: Contest,
-    reported_results: Dict[BatchKey, BatchResults],
-    sample_results: Dict[BatchKey, BatchResults],
-    sample_ticket_numbers: Dict[str, BatchKey],
-    combined_batches: List[Set[BatchKey]],
-) -> Tuple[float, bool]:
+    reported_results: dict[BatchKey, BatchResults],
+    sample_results: dict[BatchKey, BatchResults],
+    sample_ticket_numbers: dict[str, BatchKey],
+    combined_batches: list[set[BatchKey]],
+) -> tuple[float, bool]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
 

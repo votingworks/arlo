@@ -1,6 +1,5 @@
 from collections import defaultdict
 from datetime import datetime
-from typing import Dict, Optional, Tuple
 import csv
 import io
 import uuid
@@ -44,14 +43,14 @@ from ..activity_log.activity_log import UploadFile, activity_base, record_activi
 BATCH_TALLIES_FILE_PREFIX = "batch_tallies"
 
 # { (contest_id, choice_id): csv_header }
-ContestChoiceCsvHeaders = Dict[Tuple[str, str], str]
+ContestChoiceCsvHeaders = dict[tuple[str, str], str]
 
 BATCH_NAME = "Batch Name"
 
 
 def construct_contest_choice_csv_headers(
     election: Election,
-    jurisdiction: Optional[Jurisdiction] = None,
+    jurisdiction: Jurisdiction | None = None,
 ) -> ContestChoiceCsvHeaders:
     audit_contests = list(election.contests)
     contests = audit_contests if jurisdiction is None else list(jurisdiction.contests)
@@ -72,15 +71,15 @@ def construct_contest_choice_csv_headers(
 def process_batch_tallies_file(
     election_id: str,
     jurisdiction_id: str,
-    user: Tuple[UserType, str],
-    support_user_email: Optional[str],
+    user: tuple[UserType, str],
+    support_user_email: str | None,
 ):
     jurisdiction: Jurisdiction = Jurisdiction.query.get(jurisdiction_id)
 
     def process_batch_tallies_for_contest(
         contest: Contest,
         # { (contest_id, choice_id): csv_header }
-        contest_choice_csv_headers: Dict[Tuple[str, str], str],
+        contest_choice_csv_headers: dict[tuple[str, str], str],
     ):
         columns = [CSVColumnType(BATCH_NAME, CSVValueType.TEXT, unique=True)] + [
             CSVColumnType(contest_choice_csv_header, CSVValueType.NUMBER)
@@ -156,7 +155,7 @@ def process_batch_tallies_file(
 
         # Save the tallies as a JSON blob in the format needed by the audit_math.macro module
         # { batch_name: { contest_id: { choice_id: vote_count } } }
-        batch_tallies: Dict[str, Dict[str, Dict[str, int]]] = defaultdict(dict)
+        batch_tallies: dict[str, dict[str, dict[str, int]]] = defaultdict(dict)
         for contest in contests:
             batch_tallies_for_contest = process_batch_tallies_for_contest(
                 contest, contest_choice_csv_headers
@@ -218,8 +217,8 @@ def clear_batch_tallies_data(jurisdiction: Jurisdiction):
 
 def reprocess_batch_tallies_file_if_uploaded(
     jurisdiction: Jurisdiction,
-    user: Tuple[UserType, str],
-    support_user_email: Optional[str],
+    user: tuple[UserType, str],
+    support_user_email: str | None,
 ):
     if jurisdiction.batch_tallies_file:
         clear_batch_tallies_data(jurisdiction)
@@ -396,7 +395,7 @@ def download_batch_tallies_summed_by_jurisdiction_csv(election: Election):
     for jurisdiction in election.jurisdictions:
         # Sum vote counts across batches
         # { (contest_id, choice_id): vote_count }
-        vote_counts: Dict[Tuple[str, str], int] = defaultdict(int)
+        vote_counts: dict[tuple[str, str], int] = defaultdict(int)
         if jurisdiction.batch_tallies is not None:
             assert not isinstance(jurisdiction.batch_tallies, list)
             for batch_tallies in jurisdiction.batch_tallies.values():

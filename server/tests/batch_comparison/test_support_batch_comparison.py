@@ -7,7 +7,7 @@ def test_support_get_jurisdiction_batch_comparison(
     client: FlaskClient,
     org_id: str,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
 ):
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)
@@ -38,7 +38,7 @@ def test_support_get_jurisdiction_batch_comparison(
 def test_support_combined_batches(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
 ):
     set_logged_in_user(
@@ -174,7 +174,7 @@ def test_support_combined_batches(
 def test_support_invalid_combined_batches(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
 ):
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)

@@ -1,6 +1,5 @@
 import json
 from datetime import datetime, timezone, timedelta
-from typing import List
 from flask.testing import FlaskClient
 
 from ...models import *
@@ -29,7 +28,7 @@ def test_sample_sizes_without_contests(client: FlaskClient, election_id: str):
 def test_sample_sizes_without_risk_limit(
     client: FlaskClient,
     election_id: str,
-    contest_ids: List[str],
+    contest_ids: list[str],
 ):
     rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     assert rv.status_code == 200
@@ -51,7 +50,7 @@ def test_sample_sizes_without_risk_limit(
 def test_sample_sizes_round_1(
     client: FlaskClient,
     election_id: str,
-    contest_ids: List[str],
+    contest_ids: list[str],
     election_settings,
     snapshot,
 ):
@@ -67,7 +66,7 @@ def test_sample_sizes_round_1(
 def test_sample_sizes_round_2(
     client: FlaskClient,
     election_id: str,
-    contest_ids: List[str],
+    contest_ids: list[str],
     round_1_id: str,
     snapshot,
 ):
@@ -108,7 +107,7 @@ def test_sample_sizes_round_2(
 def test_samples_sizes_invalid_round_num(
     client: FlaskClient,
     election_id: str,
-    contest_ids: List[str],
+    contest_ids: list[str],
     election_settings,
 ):
     for invalid_round_num in [0, 2]:
@@ -122,7 +121,7 @@ def test_samples_sizes_invalid_round_num(
 def test_sample_sizes_background(
     client: FlaskClient,
     election_id: str,
-    contest_ids: List[str],
+    contest_ids: list[str],
     election_settings,
 ):
     orig_run_background_tasks_immediately = config.RUN_BACKGROUND_TASKS_IMMEDIATELY

@@ -1,5 +1,4 @@
 import uuid
-from typing import Optional
 from datetime import datetime
 from dataclasses import dataclass
 from flask import session
@@ -14,12 +13,12 @@ from ..auth.auth_helpers import get_loggedin_user, get_support_user
 class ActivityBase:
     organization_id: str
     organization_name: str
-    election_id: Optional[str] = None
-    audit_name: Optional[str] = None
-    audit_type: Optional[str] = None
-    user_type: Optional[str] = None
-    user_key: Optional[str] = None
-    support_user_email: Optional[str] = None
+    election_id: str | None = None
+    audit_name: str | None = None
+    audit_type: str | None = None
+    user_type: str | None = None
+    user_key: str | None = None
+    support_user_email: str | None = None
 
 
 @dataclass
@@ -63,7 +62,7 @@ class JurisdictionActivity(Activity):
 @dataclass
 class UploadFile(JurisdictionActivity):
     file_type: str
-    error: Optional[str]
+    error: str | None
 
 
 @dataclass
@@ -88,7 +87,7 @@ class AuditBoardSignOff(JurisdictionActivity):
 
 @dataclass
 class JurisdictionAdminLogin(Activity):
-    error: Optional[str]
+    error: str | None
 
 
 def activity_base(election: Election) -> ActivityBase:

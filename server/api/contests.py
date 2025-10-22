@@ -1,5 +1,4 @@
 import typing
-from typing import Dict, List, Optional
 from collections import defaultdict
 from flask import request, jsonify, session
 from werkzeug.exceptions import BadRequest, Conflict
@@ -142,8 +141,8 @@ def serialize_contest(contest: Contest) -> JSONDict:
     # Validate CVR choice names across jurisdictions in ballot comparison audits. Load error
     # details, if any, onto the contest object.
     if contest.election.audit_type == AuditType.BALLOT_COMPARISON:
-        cvr_choice_names_by_jurisdiction: Dict[str, List[str]] = {}
-        jurisdiction_id_with_most_cvr_choices: Optional[str] = None
+        cvr_choice_names_by_jurisdiction: dict[str, list[str]] = {}
+        jurisdiction_id_with_most_cvr_choices: str | None = None
 
         for jurisdiction in contest.jurisdictions:
             metadata = cvrs.cvr_contests_metadata(jurisdiction)
@@ -235,7 +234,7 @@ def deserialize_contest(contest: JSONDict, election_id: str) -> Contest:
 
 
 # Raises if invalid
-def validate_contests(contests: List[JSONDict], election: Election):
+def validate_contests(contests: list[JSONDict], election: Election):
     if len(list(election.rounds)) > 0:
         raise Conflict("Cannot update contests after audit has started.")
 
@@ -300,7 +299,7 @@ def set_contest_metadata(election: Election):
 # reprocessing when we don't need to, because it's a bit disruptive since it
 # affects every jurisdiction.
 def should_reprocess_batch_tallies(
-    previous_contests: List[JSONDict], new_contests: List[JSONDict]
+    previous_contests: list[JSONDict], new_contests: list[JSONDict]
 ) -> bool:
     if len(previous_contests) != len(new_contests):
         return True
@@ -569,7 +568,10 @@ def get_contest_choice_name_standardizations(election: Election):  # pragma: no 
         )
 
         standardized_contests = (
-            typing.cast(Optional[List[Dict]], election.standardized_contests) or []
+            typing.cast(
+                list[dict[str, typing.Any]] | None, election.standardized_contests
+            )
+            or []
         )
         standardized_contest_choice_names = next(
             (
@@ -582,7 +584,7 @@ def get_contest_choice_name_standardizations(election: Election):  # pragma: no 
 
         raw_standardizations = (
             typing.cast(
-                Optional[Dict[str, Dict[str, Optional[str]]]],
+                dict[str, dict[str, str | None]] | None,
                 jurisdiction.contest_choice_name_standardizations,
             )
             or {}
@@ -599,7 +601,7 @@ def get_contest_choice_name_standardizations(election: Election):  # pragma: no 
         }
         return standardizations
 
-    all_standardizations: Dict[str, Dict[str, Dict[str, Optional[str]]]] = defaultdict(
+    all_standardizations: dict[str, dict[str, dict[str, str | None]]] = defaultdict(
         dict
     )
     for jurisdiction in election.jurisdictions:

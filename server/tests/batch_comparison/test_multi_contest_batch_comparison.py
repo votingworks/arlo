@@ -1,4 +1,3 @@
-from typing import Dict, List
 import pytest
 from flask.testing import FlaskClient
 
@@ -7,7 +6,7 @@ from ..helpers import *
 
 
 @pytest.fixture
-def contest_ids(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]):
+def contest_ids(client: FlaskClient, election_id: str, jurisdiction_ids: list[str]):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     contests = [
         {
@@ -41,7 +40,7 @@ def contest_ids(client: FlaskClient, election_id: str, jurisdiction_ids: List[st
 
 
 @pytest.fixture
-def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]):
+def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: list[str]):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     manifests_by_jurisdiction = {
         jurisdiction_ids[0]: io.BytesIO(
@@ -109,7 +108,7 @@ VALID_BATCH_TALLIES = [
 def batch_tallies(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_ids,
     manifests,
 ):
@@ -138,7 +137,7 @@ def put_batch_results(
     jurisdiction_id: str,
     round_id: str,
     batch_id: str,
-    results: List[Dict[str, int]],
+    results: list[dict[str, int]],
 ):
     return put_json(
         client,
@@ -153,7 +152,7 @@ def put_batch_results(
 def test_multi_contest_batch_comparison_jurisdiction_upload_validation(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_ids,
     election_settings,
     manifests,
@@ -271,7 +270,7 @@ def test_multi_contest_batch_comparison_jurisdiction_upload_validation(
 def test_multi_contest_batch_comparison_batch_results_validation(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_ids,
     election_settings,
     manifests,
@@ -436,8 +435,8 @@ def test_multi_contest_batch_comparison_batch_results_validation(
 def test_multi_contest_batch_comparison_end_to_end(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     election_settings,
     manifests,
     batch_tallies,
@@ -727,7 +726,7 @@ def test_multi_contest_batch_comparison_end_to_end(
 def test_multi_contest_batch_comparison_round_2(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_ids,
     election_settings,
     manifests,
@@ -1066,7 +1065,7 @@ def test_multi_contest_batch_comparison_round_2(
 def test_multi_contest_batch_comparison_batch_tallies_template_csv_generation(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_ids,
 ):
     for user_type, user_email in [
@@ -1257,7 +1256,7 @@ def test_updating_contests_while_batch_tallies_file_is_being_processed(
 def test_batch_tallies_dont_reprocess_when_contest_jurisdictions_change(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_ids,
     manifests,
     batch_tallies,

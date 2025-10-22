@@ -2,7 +2,6 @@ import uuid
 import re
 import typing
 from datetime import datetime
-from typing import Dict, Optional
 from collections import defaultdict
 from flask import request, jsonify
 from werkzeug.exceptions import BadRequest, Conflict
@@ -132,14 +131,14 @@ def process_standardized_contests_file(election_id: str):
     for jurisdiction in election.jurisdictions:  # pragma: no cover
         contest_choice_name_standardizations = (
             typing.cast(
-                Optional[Dict[str, Dict[str, Optional[str]]]],
+                dict[str, dict[str, str | None]] | None,
                 jurisdiction.contest_choice_name_standardizations,
             )
             or {}
         )
 
         updated_contest_choice_name_standardizations = typing.cast(
-            Dict[str, Dict[str, Optional[str]]], defaultdict(dict)
+            dict[str, dict[str, str | None]], defaultdict(dict)
         )
         for contest in election.contests:
             if contest.id not in contest_choice_name_standardizations:

@@ -1,6 +1,5 @@
 import uuid
 import json
-from typing import List
 import pytest
 from flask.testing import FlaskClient
 
@@ -10,8 +9,8 @@ from ..models import *
 
 @pytest.fixture
 def contest_ids(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
-) -> List[str]:
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
+) -> list[str]:
     contests = [
         {
             "id": str(uuid.uuid4()),
@@ -48,7 +47,7 @@ def contest_ids(
 def test_multi_winner_sample_size(
     client: FlaskClient,
     election_id: str,
-    contest_ids: List[str],
+    contest_ids: list[str],
     election_settings,
     snapshot,
 ):
@@ -105,8 +104,8 @@ def run_multi_winner_audit_round(
 def test_multi_winner_two_rounds(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     election_settings,
     manifests,
     snapshot,

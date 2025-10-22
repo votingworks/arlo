@@ -10,7 +10,7 @@ https://github.com/pbstark/CORLA18
 
 from itertools import product
 import math
-from typing import Tuple, Dict, TypedDict, NamedTuple, List
+from typing import TypedDict, NamedTuple
 from collections import Counter
 
 from decimal import Decimal
@@ -39,17 +39,17 @@ class BallotPollingStratum:
     audits.
     """
 
-    SAMPLE_RESULTS = Dict[str, Dict[str, int]]  # ballot polling
+    SAMPLE_RESULTS = dict[str, dict[str, int]]  # ballot polling
 
     num_ballots: int
-    vote_totals: Dict[str, int]
+    vote_totals: dict[str, int]
     sample: SAMPLE_RESULTS
     sample_size: int
 
     def __init__(
         self,
         num_ballots: int,
-        vote_totals: Dict[str, int],
+        vote_totals: dict[str, int],
         sample_results: SAMPLE_RESULTS,
         sample_size: int,
     ):
@@ -181,7 +181,7 @@ class MisstatementCounts(TypedDict):
 
 
 # { (winner, loser): MistatementCounts }
-MISSTATEMENTS = Dict[Tuple[str, str], MisstatementCounts]
+MISSTATEMENTS = dict[tuple[str, str], MisstatementCounts]
 
 
 class BallotComparisonStratum:
@@ -193,14 +193,14 @@ class BallotComparisonStratum:
     """
 
     num_ballots: int
-    vote_totals: Dict[str, int]
+    vote_totals: dict[str, int]
     misstatements: MISSTATEMENTS
     sample_size: int
 
     def __init__(
         self,
         num_ballots: int,
-        vote_totals: Dict[str, int],
+        vote_totals: dict[str, int],
         misstatements: MISSTATEMENTS,
         sample_size: int,
     ):
@@ -566,7 +566,7 @@ def get_sample_size_for_wl_pair(
     cvr_stratum: BallotComparisonStratum,
     winner: str,
     loser: str,
-) -> Tuple[int, int]:
+) -> tuple[int, int]:
     n_ratio = cvr_stratum.num_ballots / (
         cvr_stratum.num_ballots + bp_stratum.num_ballots
     )
@@ -670,7 +670,7 @@ def get_sample_size(
             alpha, contest, bp_stratum, cvr_stratum, worst_winner, best_loser
         )
     else:
-        sample_sizes: List[Tuple[int, int]] = []
+        sample_sizes: list[tuple[int, int]] = []
         for winner, loser in product(contest.winners, contest.losers):
             sample_sizes.append(
                 get_sample_size_for_wl_pair(
@@ -691,7 +691,7 @@ def get_sample_size(
 
 def compute_risk(
     risk_limit: int, contest: Contest, bp_stratum, cvr_stratum
-) -> Tuple[float, bool]:
+) -> tuple[float, bool]:
     """
     Computes a risk measurement for a given sample, using fisher's combining
     function to combine pvalue measurements from a ballot polling and ballot

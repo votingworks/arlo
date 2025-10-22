@@ -1,4 +1,4 @@
-from typing import List, Dict, Callable, Set
+from typing import Callable
 import pytest
 import numpy as np
 
@@ -12,7 +12,7 @@ AsnFunc = Callable
 
 def test_ranking_not_on_ballots():
     cand = "not on ballot"
-    ballot: Dict[str, int] = {
+    ballot: dict[str, int] = {
         "A": 1,
         "B": 2,
         "C": 3,
@@ -22,7 +22,7 @@ def test_ranking_not_on_ballots():
 
 
 def test_ranking():
-    ballot: Dict[str, int] = {
+    ballot: dict[str, int] = {
         "A": 1,
         "B": 2,
         "C": 3,
@@ -37,7 +37,7 @@ def test_ranking():
 
 
 def test_vote_for_candidate():
-    ballot: Dict[str, int] = {
+    ballot: dict[str, int] = {
         "A": 1,
         "B": 2,
         "C": 3,
@@ -52,7 +52,7 @@ def test_vote_for_candidate():
 
 def test_vote_for_eliminated_cand():
     cand = "C"
-    ballot: Dict[str, int] = {
+    ballot: dict[str, int] = {
         "A": 1,
         "B": 2,
         "C": 3,
@@ -366,7 +366,7 @@ def make_neb_assertion(
     asn_func: AsnFunc,
     winner: str,
     loser: str,
-    eliminated: Set[str],
+    eliminated: set[str],
 ) -> NEBAssertion:
     assertion = raire_utils.NEBAssertion(contest.name, winner, loser)
     assertion.eliminated = eliminated
@@ -391,7 +391,7 @@ def make_nen_assertion(
     asn_func: AsnFunc,
     winner: str,
     loser: str,
-    eliminated: Set[str],
+    eliminated: set[str],
 ) -> NENAssertion:
     assertion = raire_utils.NENAssertion(contest.name, winner, loser, eliminated)
     votes_for_winner = sum(
@@ -442,7 +442,7 @@ def cvrs() -> CVRS:
 
 
 @pytest.fixture
-def ballots() -> List[Dict[str, int]]:
+def ballots() -> list[dict[str, int]]:
     ballots = []
     for _ in range(25000):
         ballots.append({"winner": 1, "loser": 2, "loser2": 3})
