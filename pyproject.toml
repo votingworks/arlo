@@ -24,7 +24,7 @@ auth0-python = "^3.16.2"
 gunicorn = "^23.0.0"
 sentry-sdk = { version = "^2.36.0", extras = ["flask"] }
 athena = { git = "https://github.com/filipzz/athena.git", rev = "v0.8.3" }
-psycopg2-binary = "~2.8.6"
+psycopg2-binary = "^2.9.9"
 consistent-sampler = { git = "https://github.com/votingworks/consistent_sampler.git", rev = "master" }
 scipy = "~1.11.0"
 Flask-SeaSurf = "^2.0.0"
