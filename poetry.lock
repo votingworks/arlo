@@ -453,7 +453,7 @@ develop = false
 type = "git"
 url = "https://github.com/votingworks/consistent_sampler.git"
 reference = "master"
-resolved_reference = "62d87b3a64160600825b8d818ba89b519288517b"
+resolved_reference = "46f6f0a6761adc7172e2c3e844bee359e6bd11bf"
 
 [[package]]
 name = "contourpy"
