@@ -183,7 +183,7 @@ def test_task_user_error(caplog, db_session):
     )
 
 
-@patch("sentry_sdk.capture_exception", auto_spec=True)
+@patch("sentry_sdk.capture_exception", autospec=True)
 def test_task_python_error(capture_exception, caplog, db_session):
     @background_task
     def python_error(election_id):
@@ -232,7 +232,7 @@ def test_task_python_error(capture_exception, caplog, db_session):
     assert isinstance(capture_exception.call_args[0][0], IndexError)
 
 
-@patch("sentry_sdk.capture_exception", auto_spec=True)
+@patch("sentry_sdk.capture_exception", autospec=True)
 def test_task_python_error_format(capture_exception, caplog, db_session):
     @background_task
     def error_format(election_id: str):
@@ -281,7 +281,7 @@ def test_task_python_error_format(capture_exception, caplog, db_session):
     assert isinstance(capture_exception.call_args[0][0], StopIteration)
 
 
-@patch("sentry_sdk.capture_exception", auto_spec=True)
+@patch("sentry_sdk.capture_exception", autospec=True)
 def test_task_db_error(capture_exception, caplog, db_session):
     @background_task
     def db_error(election_id):
