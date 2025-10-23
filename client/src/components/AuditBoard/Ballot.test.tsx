@@ -1,3 +1,4 @@
+import { describe, expect, it, vi } from 'vitest'
 import React from 'react'
 import {
   render,
@@ -25,9 +26,9 @@ describe('Ballot', () => {
           ballots={dummyBallots.ballots}
           boardName="audit board #1"
           contests={[contest]}
-          previousBallot={jest.fn()}
-          nextBallot={jest.fn()}
-          submitBallot={jest.fn()}
+          previousBallot={vi.fn()}
+          nextBallot={vi.fn()}
+          submitBallot={vi.fn()}
           batchId="batch-id-1"
           ballotPosition={2112}
         />
@@ -44,9 +45,9 @@ describe('Ballot', () => {
           ballots={dummyBallots.ballots}
           boardName="audit board #1"
           contests={[contest]}
-          previousBallot={jest.fn()}
-          nextBallot={jest.fn()}
-          submitBallot={jest.fn()}
+          previousBallot={vi.fn()}
+          nextBallot={vi.fn()}
+          submitBallot={vi.fn()}
           batchId="batch-id-1"
           ballotPosition={313}
         />
@@ -66,9 +67,9 @@ describe('Ballot', () => {
           ballots={dummyBallots.ballots}
           boardName="audit board #1"
           contests={[contest]}
-          previousBallot={jest.fn()}
-          nextBallot={jest.fn()}
-          submitBallot={jest.fn()}
+          previousBallot={vi.fn()}
+          nextBallot={vi.fn()}
+          submitBallot={vi.fn()}
           batchId="batch-id-1"
           ballotPosition={2112}
         />
@@ -112,9 +113,9 @@ describe('Ballot', () => {
             ballots={dummyBallots.ballots}
             boardName="audit board #1"
             contests={[contest]}
-            previousBallot={jest.fn()}
-            nextBallot={jest.fn()}
-            submitBallot={jest.fn()}
+            previousBallot={vi.fn()}
+            nextBallot={vi.fn()}
+            submitBallot={vi.fn()}
             batchId="batch-id-1"
             ballotPosition={2112}
           />
@@ -149,9 +150,9 @@ describe('Ballot', () => {
           ballots={dummyBallots.ballots}
           boardName="audit board #1"
           contests={[contest]}
-          previousBallot={jest.fn()}
-          nextBallot={jest.fn()}
-          submitBallot={jest.fn()}
+          previousBallot={vi.fn()}
+          nextBallot={vi.fn()}
+          submitBallot={vi.fn()}
           batchId="batch-id-1"
           ballotPosition={2112}
         />
@@ -197,8 +198,8 @@ describe('Ballot', () => {
   })
 
   it('submits review and progresses to next ballot', async () => {
-    const submitMock = jest.fn()
-    const nextBallotMock = jest.fn()
+    const submitMock = vi.fn()
+    const nextBallotMock = vi.fn()
     const { getByText } = render(
       <Router history={history}>
         <Ballot
@@ -206,7 +207,7 @@ describe('Ballot', () => {
           ballots={dummyBallots.ballots}
           boardName="audit board #1"
           contests={[contest]}
-          previousBallot={jest.fn()}
+          previousBallot={vi.fn()}
           nextBallot={nextBallotMock}
           submitBallot={submitMock}
           batchId="batch-id-1"
@@ -247,8 +248,8 @@ describe('Ballot', () => {
   })
 
   it('submits review with double click without screwing up', async () => {
-    const submitMock = jest.fn()
-    const nextBallotMock = jest.fn()
+    const submitMock = vi.fn()
+    const nextBallotMock = vi.fn()
     const { getByText } = render(
       <Router history={history}>
         <Ballot
@@ -256,7 +257,7 @@ describe('Ballot', () => {
           ballots={dummyBallots.ballots}
           boardName="audit board #1"
           contests={[contest]}
-          previousBallot={jest.fn()}
+          previousBallot={vi.fn()}
           nextBallot={nextBallotMock}
           submitBallot={submitMock}
           batchId="batch-id-1"
@@ -295,7 +296,7 @@ describe('Ballot', () => {
   })
 
   it('navigates to previous ballot', async () => {
-    const previousBallotMock = jest.fn()
+    const previousBallotMock = vi.fn()
     const { getByText } = render(
       <Router history={history}>
         <Ballot
@@ -304,8 +305,8 @@ describe('Ballot', () => {
           boardName="audit board #1"
           contests={[contest]}
           previousBallot={previousBallotMock}
-          nextBallot={jest.fn()}
-          submitBallot={jest.fn()}
+          nextBallot={vi.fn()}
+          submitBallot={vi.fn()}
           batchId="batch-id-1"
           ballotPosition={2112}
         />
@@ -326,9 +327,9 @@ describe('Ballot', () => {
           ballots={dummyBallots.ballots}
           boardName="audit board #1"
           contests={[contest]}
-          previousBallot={jest.fn()}
-          nextBallot={jest.fn()}
-          submitBallot={jest.fn()}
+          previousBallot={vi.fn()}
+          nextBallot={vi.fn()}
+          submitBallot={vi.fn()}
           batchId="batch-id"
           ballotPosition={6}
         />

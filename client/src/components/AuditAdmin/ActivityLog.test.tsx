@@ -1,9 +1,10 @@
+import { describe, expect, it, vi } from 'vitest'
 import React from 'react'
 import { screen, waitFor, render } from '@testing-library/react'
 import { QueryClientProvider, QueryClient } from 'react-query'
 import userEvent from '@testing-library/user-event'
 import { aaApiCalls, mockOrganizations } from '../_mocks'
-import { withMockFetch } from '../testUtilities'
+import { readBlobAsText, withMockFetch } from '../testUtilities'
 import ActivityLog from './ActivityLog'
 import * as utilities from '../utilities'
 import AuthDataProvider from '../UserContext'
@@ -267,9 +268,9 @@ describe('Activity Log', () => {
       },
       configurable: true,
     })
-    const downloadFileMock = jest
+    const downloadFileMock = vi
       .spyOn(utilities, 'downloadFile')
-      .mockImplementation()
+      .mockResolvedValue(undefined)
 
     const expectedCalls = [
       aaApiCalls.getUser,
@@ -286,22 +287,22 @@ describe('Activity Log', () => {
       )
       const fileBlob = downloadFileMock.mock.calls[0][0] as Blob
       expect(fileBlob.type).toEqual('text/csv')
-      expect(await new Response(fileBlob).text()).toMatchInlineSnapshot(`
-        "\\"Timestamp\\",\\"User\\",\\"Action\\",\\"Audit\\",\\"Jurisdiction\\"
-        \\"8/31/2021, 11:06:49 PM\\",\\"admin@example.gov\\",\\"Deleted audit\\",\\"Test Audit\\",\\"\\"
-        \\"8/31/2021, 11:05:49 PM\\",\\"\\",\\"Ended round 1\\",\\"Test Audit\\",\\"\\"
-        \\"8/31/2021, 11:04:49 PM\\",\\"\\",\\"Audit Board #1 signed off\\",\\"Test Audit\\",\\"Jurisdiction 1\\"
-        \\"8/31/2021, 11:03:49 PM\\",\\"admin@example.gov\\",\\"Finalized results\\",\\"Test Audit\\",\\"Jurisdiction 1\\"
-        \\"8/31/2021, 11:02:49 PM\\",\\"admin@example.gov\\",\\"Recorded results\\",\\"Test Audit\\",\\"Jurisdiction 1\\"
-        \\"8/31/2021, 11:01:49 PM\\",\\"admin@example.gov\\",\\"Created audit boards\\",\\"Test Audit\\",\\"Jurisdiction 1\\"
-        \\"8/31/2021, 11:00:49 PM\\",\\"support@example.gov\\",\\"Started round 1\\",\\"Test Audit\\",\\"\\"
-        \\"8/31/2021, 10:59:49 PM\\",\\"admin@example.gov\\",\\"Calculated sample sizes\\",\\"Test Audit\\",\\"\\"
-        \\"8/31/2021, 10:58:49 PM\\",\\"\\",\\"Successfully uploaded CVRs\\",\\"Test Audit\\",\\"Jurisdiction 1\\"
-        \\"8/31/2021, 10:57:49 PM\\",\\"\\",\\"Successfully uploaded candidate totals by batch\\",\\"Test Audit\\",\\"Jurisdiction 1\\"
-        \\"8/31/2021, 10:56:49 PM\\",\\"\\",\\"Uploaded invalid ballot manifest\\",\\"Test Audit\\",\\"Jurisdiction 1\\"
-        \\"8/31/2021, 10:55:49 PM\\",\\"admin@example.gov\\",\\"Logged in as a Jurisdiction Manager\\",\\"Test Audit\\",\\"\\"
-        \\"8/31/2021, 10:54:49 PM\\",\\"admin@example.gov\\",\\"Failed to log in as a Jurisdiction Manager: Invalid code\\",\\"Test Audit\\",\\"\\"
-        \\"8/31/2021, 10:53:49 PM\\",\\"admin@example.gov\\",\\"Created audit\\",\\"Test Audit\\",\\"\\""
+      expect(await readBlobAsText(fileBlob)).toMatchInlineSnapshot(`
+        ""Timestamp","User","Action","Audit","Jurisdiction"
+        "8/31/2021, 11:06:49 PM","admin@example.gov","Deleted audit","Test Audit",""
+        "8/31/2021, 11:05:49 PM","","Ended round 1","Test Audit",""
+        "8/31/2021, 11:04:49 PM","","Audit Board #1 signed off","Test Audit","Jurisdiction 1"
+        "8/31/2021, 11:03:49 PM","admin@example.gov","Finalized results","Test Audit","Jurisdiction 1"
+        "8/31/2021, 11:02:49 PM","admin@example.gov","Recorded results","Test Audit","Jurisdiction 1"
+        "8/31/2021, 11:01:49 PM","admin@example.gov","Created audit boards","Test Audit","Jurisdiction 1"
+        "8/31/2021, 11:00:49 PM","support@example.gov","Started round 1","Test Audit",""
+        "8/31/2021, 10:59:49 PM","admin@example.gov","Calculated sample sizes","Test Audit",""
+        "8/31/2021, 10:58:49 PM","","Successfully uploaded CVRs","Test Audit","Jurisdiction 1"
+        "8/31/2021, 10:57:49 PM","","Successfully uploaded candidate totals by batch","Test Audit","Jurisdiction 1"
+        "8/31/2021, 10:56:49 PM","","Uploaded invalid ballot manifest","Test Audit","Jurisdiction 1"
+        "8/31/2021, 10:55:49 PM","admin@example.gov","Logged in as a Jurisdiction Manager","Test Audit",""
+        "8/31/2021, 10:54:49 PM","admin@example.gov","Failed to log in as a Jurisdiction Manager: Invalid code","Test Audit",""
+        "8/31/2021, 10:53:49 PM","admin@example.gov","Created audit","Test Audit","""
       `)
 
       downloadFileMock.mockRestore()

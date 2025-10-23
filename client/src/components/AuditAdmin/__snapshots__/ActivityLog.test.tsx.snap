@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Activity Log shows a table of activity for the org 1`] = `
+exports[`Activity Log > shows a table of activity for the org 1`] = `
 <table
   class="sc-ckVGcZ diiVgN"
   id="activityLog"

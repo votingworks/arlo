@@ -1,3 +1,4 @@
+import { beforeAll, describe, expect, it, vi } from 'vitest'
 import React from 'react'
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -280,7 +281,7 @@ const renderRoute = (route: string) =>
 
 beforeAll(() => {
   // eslint-disable-next-line no-console
-  console.error = jest.fn()
+  console.error = vi.fn()
 })
 
 describe('Support Tools', () => {
@@ -1257,8 +1258,10 @@ describe('Support Tools', () => {
         'Combined Batch 1'
       )
       userEvent.click(screen.getByPlaceholderText('Select batches...'))
+      screen.debug(await screen.findByText('Batch 3'))
+      screen.debug()
       const options = (await screen.findByText('Batch 3')).closest(
-        '.bp3-menu'
+        '.bp3-menu-item'
       ) as HTMLElement
       // Select and remove a batch
       userEvent.click(within(options).getByText('Batch 3'))

@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Audit Setup > Contests (Hybrid) Audit Setup > Contests 1`] = `
+exports[`Audit Setup > Contests (Hybrid) > Audit Setup > Contests 1`] = `
 <div>
   <form
     data-testid="form-one"
@@ -53,8 +53,8 @@ exports[`Audit Setup > Contests (Hybrid) Audit Setup > Contests 1`] = `
                     value=""
                   />
                   <option
-                    label="Contest 1.'\\""
-                    value="Contest 1.'\\""
+                    label="Contest 1.'""
+                    value="Contest 1.'""
                   >
                     Contest 1.'"
                   </option>

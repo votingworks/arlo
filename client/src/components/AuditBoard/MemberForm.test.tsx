@@ -1,3 +1,4 @@
+import { describe, expect, it, vi } from 'vitest'
 import React from 'react'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import MemberForm from './MemberForm'
@@ -8,14 +9,14 @@ describe('MemberForm', () => {
       <MemberForm
         boardName="board name"
         jurisdictionName="jurisdiction name"
-        submitMembers={jest.fn()}
+        submitMembers={vi.fn()}
       />
     )
     expect(container).toMatchSnapshot()
   })
 
   it('handles inputs', async () => {
-    const submitMembersMock = jest.fn()
+    const submitMembersMock = vi.fn()
     const { queryAllByLabelText, queryAllByText, getByText } = render(
       <MemberForm
         boardName="board name"

@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Sign Off handles inputs 1`] = `
+exports[`Sign Off > handles inputs 1`] = `
 <div>
   <div
     class="sc-jzJRlG sc-kAzzGY kmYSRA"
@@ -105,7 +105,7 @@ exports[`Sign Off handles inputs 1`] = `
 </div>
 `;
 
-exports[`Sign Off renders correctly 1`] = `
+exports[`Sign Off > renders correctly 1`] = `
 <div>
   <div
     class="sc-jzJRlG sc-kAzzGY kmYSRA"

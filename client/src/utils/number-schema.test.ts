@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest'
 import number, { parse, RoundMethod } from './number-schema'
 
 describe('parse', () => {
@@ -37,8 +38,8 @@ describe('NumberSchema', () => {
     expect(await number().validate(1)).toBe(1)
   })
 
-  it('can be used to enforce that a number is required', () => {
-    expect(
+  it('can be used to enforce that a number is required', async () => {
+    await expect(
       number()
         .required()
         .validate(undefined)
@@ -59,7 +60,7 @@ describe('NumberSchema', () => {
         .lessThan(5)
         .validate(4)
     ).toBe(4)
-    expect(
+    await expect(
       number()
         .lessThan(5, 'too high')
         .validate(6)
@@ -72,7 +73,7 @@ describe('NumberSchema', () => {
         .moreThan(5)
         .validate(6)
     ).toBe(6)
-    expect(
+    await expect(
       number()
         .moreThan(5, 'too low')
         .validate(4)
@@ -85,7 +86,7 @@ describe('NumberSchema', () => {
         .max(5)
         .validate(4)
     ).toBe(4)
-    expect(
+    await expect(
       number()
         .max(3)
         .validate(4)
@@ -98,7 +99,7 @@ describe('NumberSchema', () => {
         .min(4)
         .validate(5)
     ).toBe(5)
-    expect(
+    await expect(
       number()
         .min(4)
         .validate(3)
@@ -111,12 +112,12 @@ describe('NumberSchema', () => {
         .positive()
         .validate(1)
     ).toBe(1)
-    expect(
+    await expect(
       number()
         .positive('must be positive')
         .validate(0)
     ).rejects.toThrowError('must be positive')
-    expect(
+    await expect(
       number()
         .positive('must be positive')
         .validate(-1)
@@ -129,12 +130,12 @@ describe('NumberSchema', () => {
         .negative()
         .validate(-1)
     ).toBe(-1)
-    expect(
+    await expect(
       number()
         .negative('must be negative')
         .validate(0)
     ).rejects.toThrowError('must be negative')
-    expect(
+    await expect(
       number()
         .negative('must be negative')
         .validate(1)
@@ -147,7 +148,7 @@ describe('NumberSchema', () => {
         .integer()
         .validate(1)
     ).toBe(1)
-    expect(
+    await expect(
       number()
         .integer()
         .validate(1.1)

@@ -103,7 +103,7 @@ interface IProps {
     ballotId: string,
     status: BallotStatus,
     interpretations: IBallotInterpretation[]
-  ) => void
+  ) => void | Promise<void>
 }
 
 interface IInterpretationSummaryProps {

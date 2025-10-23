@@ -34,7 +34,7 @@ export const api = async <T>(
       }
 
       const error = await parseApiError(response)
-      console.error(error.responseText) // eslint-disable-line no-console
+      // console.error(error.responseText)
       throw error
     }
     const text = await response.text()
@@ -61,8 +61,7 @@ export const apiDownload = (endpoint: string): Promise<void> =>
         }
       }
     } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error(err)
+      // console.error(err)
       reject(err)
     }
   })

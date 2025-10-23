@@ -1,3 +1,4 @@
+import { describe, expect, it, vi } from 'vitest'
 import React from 'react'
 import { BrowserRouter as Router, useParams } from 'react-router-dom'
 import { render, screen, waitFor } from '@testing-library/react'
@@ -21,12 +22,12 @@ import {
 import { sampleSizeMock } from '../AuditAdmin/Setup/Review/_mocks'
 import { FileProcessingStatus } from '../useCSV'
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'), // use actual for all non-hook parts
-  useRouteMatch: jest.fn(),
-  useParams: jest.fn(),
+vi.mock(import('react-router-dom'), async importActual => ({
+  ...(await importActual()), // use actual for all non-hook parts
+  useRouteMatch: vi.fn(),
+  useParams: vi.fn(),
 }))
-const paramsMock = useParams as jest.Mock
+const paramsMock = vi.mocked(useParams)
 paramsMock.mockReturnValue({
   electionId: '1',
   jurisdictionId: '1',
@@ -45,9 +46,9 @@ describe('StatusBox', () => {
         <Router>
           <AuditAdminStatusBox
             rounds={[]}
-            startNextRound={jest.fn()}
-            finishRound={jest.fn()}
-            undoRoundStart={jest.fn()}
+            startNextRound={vi.fn()}
+            finishRound={vi.fn()}
+            undoRoundStart={vi.fn()}
             jurisdictions={[]}
             contests={[]}
             auditSettings={auditSettingsMocks.blank!}
@@ -68,9 +69,9 @@ describe('StatusBox', () => {
         <Router>
           <AuditAdminStatusBox
             rounds={[]}
-            startNextRound={jest.fn()}
-            finishRound={jest.fn()}
-            undoRoundStart={jest.fn()}
+            startNextRound={vi.fn()}
+            finishRound={vi.fn()}
+            undoRoundStart={vi.fn()}
             jurisdictions={jurisdictionMocks.oneManifest}
             contests={[]}
             auditSettings={auditSettingsMocks.blank!}
@@ -87,9 +88,9 @@ describe('StatusBox', () => {
         <Router>
           <AuditAdminStatusBox
             rounds={[]}
-            startNextRound={jest.fn()}
-            finishRound={jest.fn()}
-            undoRoundStart={jest.fn()}
+            startNextRound={vi.fn()}
+            finishRound={vi.fn()}
+            undoRoundStart={vi.fn()}
             jurisdictions={jurisdictionMocks.allManifests}
             contests={[]}
             auditSettings={auditSettingsMocks.blank!}
@@ -107,9 +108,9 @@ describe('StatusBox', () => {
           <Router>
             <AuditAdminStatusBox
               rounds={[]}
-              startNextRound={jest.fn()}
-              finishRound={jest.fn()}
-              undoRoundStart={jest.fn()}
+              startNextRound={vi.fn()}
+              finishRound={vi.fn()}
+              undoRoundStart={vi.fn()}
               jurisdictions={jurisdictionMocks.allManifestsSomeCVRs}
               contests={[]}
               auditSettings={
@@ -130,9 +131,9 @@ describe('StatusBox', () => {
           <Router>
             <AuditAdminStatusBox
               rounds={[]}
-              startNextRound={jest.fn()}
-              finishRound={jest.fn()}
-              undoRoundStart={jest.fn()}
+              startNextRound={vi.fn()}
+              finishRound={vi.fn()}
+              undoRoundStart={vi.fn()}
               jurisdictions={jurisdictionMocks.allManifestsWithCVRs}
               contests={[]}
               auditSettings={
@@ -154,9 +155,9 @@ describe('StatusBox', () => {
         <Router>
           <AuditAdminStatusBox
             rounds={[]}
-            startNextRound={jest.fn()}
-            finishRound={jest.fn()}
-            undoRoundStart={jest.fn()}
+            startNextRound={vi.fn()}
+            finishRound={vi.fn()}
+            undoRoundStart={vi.fn()}
             jurisdictions={jurisdictionMocks.twoManifestsOneTallies}
             contests={[]}
             auditSettings={auditSettingsMocks.blankBatch}
@@ -173,9 +174,9 @@ describe('StatusBox', () => {
         <Router>
           <AuditAdminStatusBox
             rounds={[]}
-            startNextRound={jest.fn()}
-            finishRound={jest.fn()}
-            undoRoundStart={jest.fn()}
+            startNextRound={vi.fn()}
+            finishRound={vi.fn()}
+            undoRoundStart={vi.fn()}
             jurisdictions={jurisdictionMocks.allManifestsAllTallies}
             contests={[]}
             auditSettings={auditSettingsMocks.blankBatch}
@@ -192,9 +193,9 @@ describe('StatusBox', () => {
         <Router>
           <AuditAdminStatusBox
             rounds={[]}
-            startNextRound={jest.fn()}
-            finishRound={jest.fn()}
-            undoRoundStart={jest.fn()}
+            startNextRound={vi.fn()}
+            finishRound={vi.fn()}
+            undoRoundStart={vi.fn()}
             jurisdictions={jurisdictionMocks.allManifests}
             contests={contestMocks.filledTargeted}
             auditSettings={auditSettingsMocks.all}
@@ -211,9 +212,9 @@ describe('StatusBox', () => {
         <Router>
           <AuditAdminStatusBox
             rounds={roundMocks.singleIncomplete}
-            startNextRound={jest.fn()}
-            finishRound={jest.fn()}
-            undoRoundStart={jest.fn()}
+            startNextRound={vi.fn()}
+            finishRound={vi.fn()}
+            undoRoundStart={vi.fn()}
             jurisdictions={jurisdictionMocks.noneStarted}
             contests={contestMocks.filledTargeted}
             auditSettings={auditSettingsMocks.all}
@@ -230,9 +231,9 @@ describe('StatusBox', () => {
         <Router>
           <AuditAdminStatusBox
             rounds={roundMocks.singleIncomplete}
-            startNextRound={jest.fn()}
-            finishRound={jest.fn()}
-            undoRoundStart={jest.fn()}
+            startNextRound={vi.fn()}
+            finishRound={vi.fn()}
+            undoRoundStart={vi.fn()}
             jurisdictions={jurisdictionMocks.oneComplete}
             contests={contestMocks.filledTargeted}
             auditSettings={auditSettingsMocks.all}
@@ -245,14 +246,14 @@ describe('StatusBox', () => {
     })
 
     it('renders finish round button when all jurisdictions complete', async () => {
-      const finishRoundMock = jest.fn()
+      const finishRoundMock = vi.fn()
       render(
         <Router>
           <AuditAdminStatusBox
             rounds={roundMocks.singleIncomplete}
-            startNextRound={jest.fn()}
+            startNextRound={vi.fn()}
             finishRound={finishRoundMock}
-            undoRoundStart={jest.fn()}
+            undoRoundStart={vi.fn()}
             jurisdictions={jurisdictionMocks.allComplete}
             contests={contestMocks.filledTargeted}
             auditSettings={auditSettingsMocks.all}
@@ -266,7 +267,7 @@ describe('StatusBox', () => {
     })
 
     it('renders round complete, need another round state', async () => {
-      jest.useFakeTimers()
+      vi.useFakeTimers()
       const expectedCalls = [
         {
           ...aaApiCalls.getSampleSizes(sampleSizeMock.calculating),
@@ -278,15 +279,15 @@ describe('StatusBox', () => {
         },
       ]
       await withMockFetch(expectedCalls, async () => {
-        const startNextRoundMock = jest.fn()
+        const startNextRoundMock = vi.fn()
         render(
           <QueryClientProvider client={createQueryClient()}>
             <Router>
               <AuditAdminStatusBox
                 rounds={roundMocks.needAnother}
                 startNextRound={startNextRoundMock}
-                finishRound={jest.fn()}
-                undoRoundStart={jest.fn()}
+                finishRound={vi.fn()}
+                undoRoundStart={vi.fn()}
                 jurisdictions={jurisdictionMocks.allComplete}
                 contests={contestMocks.filledTargeted}
                 auditSettings={auditSettingsMocks.ballotComparisonAll}
@@ -306,7 +307,7 @@ describe('StatusBox', () => {
         userEvent.click(startRound2Button)
         await findAndCloseToast('Sample sizes are still loading')
 
-        jest.advanceTimersByTime(1000)
+        vi.advanceTimersByTime(1000)
 
         await screen.findByText('Round 2 Sample Sizes')
         screen.getByText(/Contest Name: 15 ballots/)
@@ -320,7 +321,7 @@ describe('StatusBox', () => {
           ][0],
         })
       })
-      jest.useRealTimers()
+      vi.useRealTimers()
     })
 
     it('renders round complete, need another round state for batch comparison audits', async () => {
@@ -331,15 +332,15 @@ describe('StatusBox', () => {
         },
       ]
       await withMockFetch(expectedCalls, async () => {
-        const startNextRoundMock = jest.fn()
+        const startNextRoundMock = vi.fn()
         render(
           <QueryClientProvider client={createQueryClient()}>
             <Router>
               <AuditAdminStatusBox
                 rounds={roundMocks.needAnother}
                 startNextRound={startNextRoundMock}
-                finishRound={jest.fn()}
-                undoRoundStart={jest.fn()}
+                finishRound={vi.fn()}
+                undoRoundStart={vi.fn()}
                 jurisdictions={jurisdictionMocks.allComplete}
                 contests={contestMocks.filledTargeted}
                 auditSettings={auditSettingsMocks.batchComparisonAll}
@@ -378,9 +379,9 @@ describe('StatusBox', () => {
             <Router>
               <AuditAdminStatusBox
                 rounds={roundMocks.needAnother}
-                startNextRound={jest.fn()}
-                finishRound={jest.fn()}
-                undoRoundStart={jest.fn()}
+                startNextRound={vi.fn()}
+                finishRound={vi.fn()}
+                undoRoundStart={vi.fn()}
                 jurisdictions={jurisdictionMocks.allComplete}
                 contests={contestMocks.filledTargeted}
                 auditSettings={auditSettingsMocks.ballotComparisonAll}
@@ -399,9 +400,9 @@ describe('StatusBox', () => {
         <Router>
           <AuditAdminStatusBox
             rounds={roundMocks.singleComplete}
-            startNextRound={jest.fn()}
-            finishRound={jest.fn()}
-            undoRoundStart={jest.fn()}
+            startNextRound={vi.fn()}
+            finishRound={vi.fn()}
+            undoRoundStart={vi.fn()}
             jurisdictions={jurisdictionMocks.allComplete}
             contests={contestMocks.filledTargeted}
             auditSettings={auditSettingsMocks.all}
@@ -414,14 +415,14 @@ describe('StatusBox', () => {
 
     it('downloads audit report', async () => {
       const mockDownloadWindow: { onbeforeunload?: () => void } = {}
-      window.open = jest.fn().mockReturnValue(mockDownloadWindow)
+      window.open = vi.fn().mockReturnValue(mockDownloadWindow)
       render(
         <Router>
           <AuditAdminStatusBox
             rounds={roundMocks.singleComplete}
-            startNextRound={jest.fn()}
-            finishRound={jest.fn()}
-            undoRoundStart={jest.fn()}
+            startNextRound={vi.fn()}
+            finishRound={vi.fn()}
+            undoRoundStart={vi.fn()}
             jurisdictions={jurisdictionMocks.allComplete}
             contests={contestMocks.filledTargeted}
             auditSettings={auditSettingsMocks.all}
@@ -450,9 +451,9 @@ describe('StatusBox', () => {
             rounds={[
               { ...roundMocks.singleIncomplete[0], needsFullHandTally: true },
             ]}
-            startNextRound={jest.fn()}
-            finishRound={jest.fn()}
-            undoRoundStart={jest.fn()}
+            startNextRound={vi.fn()}
+            finishRound={vi.fn()}
+            undoRoundStart={vi.fn()}
             jurisdictions={jurisdictionMocks.noneStarted}
             contests={contestMocks.filledTargeted}
             auditSettings={auditSettingsMocks.all}

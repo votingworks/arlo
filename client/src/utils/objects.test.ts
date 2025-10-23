@@ -1,3 +1,4 @@
+import { expect, test } from 'vitest'
 import { isObjectEmpty, mapValues } from './objects'
 
 test('isObjectEmpty', () => {
