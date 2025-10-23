@@ -1,29 +1,31 @@
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { toast } from 'react-toastify'
 import { api, testNumber, downloadFile } from './utilities'
 
-const response = () =>
-  new Response(new Blob([JSON.stringify({ success: true })]))
+const response = () => new Response(JSON.stringify({ success: true }))
 const badResponse = () =>
-  new Response(
-    new Blob([JSON.stringify({ errors: [{ message: 'An error message' }] })]),
-    {
-      status: 404,
-      statusText: 'A test error',
-    }
-  )
+  new Response(JSON.stringify({ errors: [{ message: 'An error message' }] }), {
+    status: 404,
+    statusText: 'A test error',
+  })
 const badResponseNoMessage = () =>
-  new Response(new Blob([JSON.stringify({})]), {
+  new Response(JSON.stringify({}), {
     status: 404,
     statusText: 'A test error',
   })
 const badResponseBadParse = () =>
-  new Response(new Blob(['{']), {
+  new Response('{', {
     status: 404,
     statusText: 'A test error',
   })
 
-const fetchSpy = jest.spyOn(window, 'fetch').mockImplementation()
-const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
+const fetchSpy = vi.spyOn(window, 'fetch').mockImplementation(() => {
+  throw new Error('unmocked window.fetch call')
+})
+const toastSpy = vi.spyOn(toast, 'error').mockImplementation(() => {
+  // just ignore it
+  return 'test-toast-id'
+})
 
 afterEach(() => {
   fetchSpy.mockClear()
@@ -33,7 +35,7 @@ afterEach(() => {
 describe('utilities.ts', () => {
   describe('api', () => {
     it('calls fetch', async () => {
-      fetchSpy.mockImplementationOnce(async () => response())
+      fetchSpy.mockResolvedValueOnce(response())
       const result = await api('/test', { method: 'GET' })
 
       expect(result).toEqual({ success: true })
@@ -44,11 +46,11 @@ describe('utilities.ts', () => {
     })
 
     it('throws an error', async () => {
-      fetchSpy.mockImplementationOnce(async () => badResponse())
+      fetchSpy.mockResolvedValueOnce(badResponse())
       const result = await api('/test', { method: 'GET' })
 
-      await expect(toastSpy).toBeCalledWith('An error message')
-      await expect(result).toBe(null)
+      expect(toastSpy).toBeCalledWith('An error message')
+      expect(result).toBe(null)
       expect(window.fetch).toBeCalledTimes(1)
 
       expect(window.fetch).toBeCalledWith('/api/test', {
@@ -60,8 +62,8 @@ describe('utilities.ts', () => {
       fetchSpy.mockImplementationOnce(async () => badResponseNoMessage())
       const result = await api('/test', { method: 'GET' })
 
-      await expect(toastSpy).toBeCalledWith('A test error')
-      await expect(result).toBe(null)
+      expect(toastSpy).toBeCalledWith('A test error')
+      expect(result).toBe(null)
       expect(window.fetch).toBeCalledTimes(1)
 
       expect(window.fetch).toBeCalledWith('/api/test', {
@@ -73,8 +75,8 @@ describe('utilities.ts', () => {
       fetchSpy.mockImplementationOnce(async () => badResponseBadParse())
       const result = await api('/test', { method: 'GET' })
 
-      await expect(toastSpy).toBeCalledWith('A test error')
-      await expect(result).toBe(null)
+      expect(toastSpy).toBeCalledWith('A test error')
+      expect(result).toBe(null)
       expect(window.fetch).toBeCalledTimes(1)
 
       expect(window.fetch).toBeCalledWith('/api/test', {
@@ -86,16 +88,14 @@ describe('utilities.ts', () => {
       fetchSpy.mockImplementationOnce(
         async () =>
           new Response(
-            new Blob([
-              JSON.stringify({
-                errors: [
-                  {
-                    errorType: 'Internal Server Error',
-                    message: 'internal error',
-                  },
-                ],
-              }),
-            ]),
+            JSON.stringify({
+              errors: [
+                {
+                  errorType: 'Internal Server Error',
+                  message: 'internal error',
+                },
+              ],
+            }),
             {
               status: 500,
               statusText: 'Internal Server Error',
@@ -104,10 +104,10 @@ describe('utilities.ts', () => {
       )
       const result = await api('/test', { method: 'GET' })
 
-      await expect(toastSpy).toBeCalledWith(
+      expect(toastSpy).toBeCalledWith(
         'Something went wrong. Please try again or contact support.'
       )
-      await expect(result).toBe(null)
+      expect(result).toBe(null)
       expect(window.fetch).toBeCalledTimes(1)
       expect(window.fetch).toBeCalledWith('/api/test', {
         method: 'GET',
@@ -116,8 +116,8 @@ describe('utilities.ts', () => {
   })
 
   describe('testNumber', () => {
-    it('uses default message', () => {
-      expect(testNumber(50)(100)).resolves.toBe('Must be smaller than 50')
+    it('uses default message', async () => {
+      await expect(testNumber(50)(100)).resolves.toBe('Must be smaller than 50')
     })
   })
 
@@ -126,12 +126,12 @@ describe('utilities.ts', () => {
       const mockAnchor = {
         href: undefined,
         download: undefined,
-        click: jest.fn(),
+        click: vi.fn(),
       }
-      document.createElement = jest.fn().mockReturnValue(mockAnchor)
-      document.body.appendChild = jest.fn()
-      document.body.removeChild = jest.fn()
-      URL.createObjectURL = jest.fn().mockReturnValue('test object url')
+      document.createElement = vi.fn().mockReturnValue(mockAnchor)
+      document.body.appendChild = vi.fn()
+      document.body.removeChild = vi.fn()
+      URL.createObjectURL = vi.fn().mockReturnValue('test object url')
 
       const fileContents = new Blob(['test file contents'])
       downloadFile(fileContents, 'test filename.txt')

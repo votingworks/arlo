@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
+exports[`AuditBoardView > ballot interaction > renders ballot route 1`] = `
 <div>
   <div
     class="sc-bdVaJa bKocXA"
@@ -474,7 +474,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
 </div>
 `;
 
-exports[`AuditBoardView ballot interaction renders board table with ballots 1`] = `
+exports[`AuditBoardView > ballot interaction > renders board table with ballots 1`] = `
 <div>
   <div
     class="sc-bdVaJa bKocXA"
@@ -2755,7 +2755,7 @@ exports[`AuditBoardView ballot interaction renders board table with ballots 1`] 
 </div>
 `;
 
-exports[`AuditBoardView ballot interaction renders board table with no audited ballots 1`] = `
+exports[`AuditBoardView > ballot interaction > renders board table with no audited ballots 1`] = `
 <div>
   <div
     class="sc-bdVaJa bKocXA"
@@ -4658,7 +4658,7 @@ exports[`AuditBoardView ballot interaction renders board table with no audited b
 </div>
 `;
 
-exports[`AuditBoardView ballot interaction renders board table with no ballots 1`] = `
+exports[`AuditBoardView > ballot interaction > renders board table with no ballots 1`] = `
 <div>
   <div
     class="sc-bdVaJa bKocXA"
@@ -4982,7 +4982,7 @@ exports[`AuditBoardView ballot interaction renders board table with no ballots 1
 </div>
 `;
 
-exports[`AuditBoardView member form submits, goes to ballot table, and header shows member names 1`] = `
+exports[`AuditBoardView > member form > submits, goes to ballot table, and header shows member names 1`] = `
 <div>
   <div
     class="sc-bdVaJa bKocXA"

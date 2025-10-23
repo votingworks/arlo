@@ -1,3 +1,4 @@
+import { describe, expect, it, vi } from 'vitest'
 import React from 'react'
 import { screen, fireEvent, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -22,12 +23,12 @@ import {
 import { IContest } from '../../types'
 import { contestMocks } from '../_mocks'
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'), // use actual for all non-hook parts
-  useRouteMatch: jest.fn(),
-  useParams: jest.fn(),
+vi.mock(import('react-router-dom'), async importActual => ({
+  ...(await importActual()), // use actual for all non-hook parts
+  useRouteMatch: vi.fn(),
+  useParams: vi.fn(),
 }))
-const paramsMock = useParams as jest.Mock
+const paramsMock = vi.mocked(useParams)
 paramsMock.mockReturnValue({
   electionId: '1',
   jurisdictionId: '1',

@@ -1,3 +1,4 @@
+import { describe, expect, it, vi } from 'vitest'
 import React from 'react'
 import { waitFor, screen, render, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -7,8 +8,8 @@ import { withMockFetch, createQueryClient } from '../../../testUtilities'
 import { aaApiCalls, auditSettingsMocks } from '../../../_mocks'
 
 const renderSettings = () => {
-  const goToNextStage = jest.fn()
-  const goToPrevStage = jest.fn()
+  const goToNextStage = vi.fn()
+  const goToPrevStage = vi.fn()
   return {
     goToNextStage,
     goToPrevStage,

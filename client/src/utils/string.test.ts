@@ -1,3 +1,4 @@
+import { expect, test } from 'vitest'
 import { blankLine, pluralize } from './string'
 
 test('blankLine', () => {

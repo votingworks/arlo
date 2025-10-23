@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`FormField renders a Field 1`] = `
+exports[`FormField > renders a Field 1`] = `
 <div>
   <div
     class="sc-htpNat gdpVCF"
@@ -20,7 +20,7 @@ exports[`FormField renders a Field 1`] = `
 </div>
 `;
 
-exports[`FormField renders a Field with errors 1`] = `
+exports[`FormField > renders a Field with errors 1`] = `
 <div>
   <div
     class="sc-htpNat gdpVCF"
@@ -46,7 +46,7 @@ exports[`FormField renders a Field with errors 1`] = `
 </div>
 `;
 
-exports[`FormField renders a numeric Field 1`] = `
+exports[`FormField > renders a numeric Field 1`] = `
 <div>
   <div
     class="sc-htpNat gdpVCF"

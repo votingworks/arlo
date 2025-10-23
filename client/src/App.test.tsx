@@ -1,3 +1,4 @@
+import { describe, expect, it, vi } from 'vitest'
 import React from 'react'
 import { screen } from '@testing-library/react'
 import App from './App'
@@ -14,7 +15,7 @@ import {
   talliesMocks,
 } from './components/_mocks'
 
-jest.unmock('react-toastify')
+vi.unmock('react-toastify')
 
 const apiMocks = {
   failedAuth: {

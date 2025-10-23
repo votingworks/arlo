@@ -1,3 +1,4 @@
+import { describe, expect, it, vi } from 'vitest'
 import React from 'react'
 import { waitFor, fireEvent, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -28,7 +29,7 @@ import {
 } from './Setup/Participants/_mocks'
 import { sampleSizeMock } from './Setup/Review/_mocks'
 
-jest.mock('axios')
+vi.mock('axios')
 
 // AuditAdminView will only be rendered once the user is logged in, so
 // we simulate that.

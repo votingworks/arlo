@@ -1,3 +1,4 @@
+import { describe, expect, it, vi } from 'vitest'
 import React from 'react'
 import { render, fireEvent } from '@testing-library/react'
 import FormField, { IProps } from './FormField'
@@ -5,8 +6,8 @@ import FormField, { IProps } from './FormField'
 function testForm({
   errors = {},
   touched = {},
-  setFieldTouched = jest.fn(),
-  setFieldValue = jest.fn(),
+  setFieldTouched = vi.fn(),
+  setFieldValue = vi.fn(),
 }: Partial<IProps['form']> = {}): IProps['form'] {
   return { errors, touched, setFieldTouched, setFieldValue }
 }
@@ -16,8 +17,8 @@ describe('FormField', () => {
     const field = {
       name: 'field-name',
       value: 'text value',
-      onChange: jest.fn(),
-      onBlur: jest.fn(),
+      onChange: vi.fn(),
+      onBlur: vi.fn(),
     }
     const form = testForm()
     const { container } = render(
@@ -31,8 +32,8 @@ describe('FormField', () => {
     const field = {
       name: 'field-name',
       value: 'text value',
-      onChange: jest.fn(),
-      onBlur: jest.fn(),
+      onChange: vi.fn(),
+      onBlur: vi.fn(),
     }
     const form = testForm()
     const { container, getByTestId } = render(
@@ -54,8 +55,8 @@ describe('FormField', () => {
     const field = {
       name: 'field-name',
       value: '',
-      onChange: jest.fn(),
-      onBlur: jest.fn(),
+      onChange: vi.fn(),
+      onBlur: vi.fn(),
     }
     const form = testForm({
       errors: {
@@ -76,8 +77,8 @@ describe('FormField', () => {
     const field = {
       name: 'field-name',
       value: '',
-      onChange: jest.fn(),
-      onBlur: jest.fn(),
+      onChange: vi.fn(),
+      onBlur: vi.fn(),
     }
     const form = testForm()
     const { getByTestId } = render(

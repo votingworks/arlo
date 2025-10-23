@@ -1,3 +1,4 @@
+import { expect, vi } from 'vitest'
 import axios, { AxiosRequestConfig, AxiosError, AxiosResponse } from 'axios'
 import React from 'react'
 import { createLocation, createMemoryHistory, MemoryHistory } from 'history'
@@ -122,7 +123,7 @@ export const withMockFetch = async (
   testFn: () => Promise<void>
 ): Promise<void> => {
   const requestsLeft = [...requests]
-  const mockFetch = jest.fn(async (url: string, options: RequestInit = {}) => {
+  const mockFetch = vi.fn(async (url: string, options: RequestInit = {}) => {
     const [expectedRequest] = requestsLeft.splice(0, 1)
     if (!expectedRequest) {
       // eslint-disable-next-line no-console
@@ -163,7 +164,7 @@ export const withMockFetch = async (
   window.fetch = mockFetch as typeof window.fetch
 
   // Also mock axios, since we use that in some cases
-  // To enable axios mock, the test file must have jest.mock('axios') at the top
+  // To enable axios mock, the test file must have vi.mock('axios') at the top
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   if ('mockImplementation' in (axios as any).default) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -293,4 +294,16 @@ export function hasTextAcrossElements(text: string): Matcher {
     )
     return nodeHasText && childrenDoNotHaveText
   }
+}
+
+/**
+ * Read text from `blob`.
+ */
+export function readBlobAsText(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result as string)
+    reader.onerror = () => reject(reader.error)
+    reader.readAsText(blob)
+  })
 }

@@ -1,3 +1,4 @@
+import { describe, expect, it, vi } from 'vitest'
 import React from 'react'
 import { screen, within, waitFor } from '@testing-library/react'
 import { QueryClientProvider } from 'react-query'
@@ -16,10 +17,10 @@ import {
   getMockJsonDataForUploadComplete,
 } from '../_mocks'
 
-jest.mock('axios')
-jest.mock('../useFeatureFlag', (): typeof import('../useFeatureFlag') => ({
-  ...jest.requireActual('../useFeatureFlag'),
-  useBatchInventoryFeatureFlag: jest.fn(() => ({ showBallotManifest: true })),
+vi.mock(import('axios'))
+vi.mock(import('../useFeatureFlag'), async importActual => ({
+  ...(await importActual()),
+  useBatchInventoryFeatureFlag: vi.fn(() => ({ showBallotManifest: true })),
 }))
 
 const testCvrFile = new File([''], 'test-cvr.csv', {
@@ -243,7 +244,7 @@ describe('BatchInventory', () => {
 
   it('continues to Inventory Batches step', async () => {
     const mockDownloadWindow: { onbeforeunload?: () => void } = {}
-    window.open = jest.fn().mockReturnValue(mockDownloadWindow)
+    window.open = vi.fn().mockReturnValue(mockDownloadWindow)
 
     const expectedCalls = [
       apiCalls.getSystemType(CvrFileType.DOMINION),
@@ -293,7 +294,7 @@ describe('BatchInventory', () => {
 
   it('ends with Download Audit Files step', async () => {
     const mockDownloadWindow: { onbeforeunload?: () => void } = {}
-    window.open = jest.fn().mockReturnValue(mockDownloadWindow)
+    window.open = vi.fn().mockReturnValue(mockDownloadWindow)
 
     const expectedCalls = [
       apiCalls.getSystemType(CvrFileType.DOMINION),

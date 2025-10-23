@@ -1,10 +1,11 @@
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import React from 'react'
 import { render, screen, within, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Button } from '@blueprintjs/core'
 import { useConfirm, Confirm } from './Confirm'
 
-const onYesClickMock = jest.fn().mockResolvedValue(true)
+const onYesClickMock = vi.fn().mockResolvedValue(true)
 
 const ConfirmConsumer = () => {
   const { confirm, confirmProps } = useConfirm()
@@ -29,7 +30,7 @@ const ConfirmConsumer = () => {
 }
 
 afterEach(() => {
-  jest.clearAllMocks()
+  vi.clearAllMocks()
 })
 
 describe('Confirm component', () => {

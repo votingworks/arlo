@@ -1,7 +1,9 @@
+import { beforeEach, describe, it, vi } from 'vitest'
 import React from 'react'
 import { screen } from '@testing-library/react'
 import { Route } from 'react-router-dom'
 import { QueryClientProvider } from 'react-query'
+import { jsPDFOptions } from 'jspdf'
 import {
   roundMocks,
   batchesMocks,
@@ -28,17 +30,18 @@ import AuthDataProvider from '../UserContext'
 import { dummyBallots } from '../AuditBoard/_mocks'
 import { IContest } from '../../types'
 
-const mockSavePDF = jest.fn()
-jest.mock('jspdf', () => {
-  const { jsPDF } = jest.requireActual('jspdf')
+const mockSavePDF = vi.fn()
+vi.mock('jspdf', async () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return function mockJsPDF(options?: any) {
+  const { jsPDF } = (await vi.importActual('jspdf')) as any
+  function mockJsPDF(options?: jsPDFOptions) {
     return {
       ...new jsPDF(options),
-      addImage: jest.fn(),
+      addImage: vi.fn(),
       save: mockSavePDF,
     }
   }
+  return { default: mockJsPDF, jsPDF: mockJsPDF }
 })
 
 const renderView = (props: IRoundManagementProps) =>
@@ -84,7 +87,7 @@ const apiCalls = {
 describe('RoundManagement', () => {
   beforeEach(() => {
     // Clear mock call counts, etc.
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('renders audit board setup for ballot audit', async () => {
@@ -97,7 +100,7 @@ describe('RoundManagement', () => {
       renderView({
         round: roundMocks.incomplete,
         auditBoards: [],
-        createAuditBoards: jest.fn(),
+        createAuditBoards: vi.fn(),
       })
       await screen.findByText('Set Up Audit Boards')
       screen.getByText('Ballots to audit: 27')
@@ -117,7 +120,7 @@ describe('RoundManagement', () => {
       renderView({
         round: roundMocks.complete,
         auditBoards: auditBoardMocks.signedOff,
-        createAuditBoards: jest.fn(),
+        createAuditBoards: vi.fn(),
       })
       await screen.findByText('Audit Complete')
       screen.getByText(/Jurisdiction One/)
@@ -135,7 +138,7 @@ describe('RoundManagement', () => {
       renderView({
         round: roundMocks.incomplete,
         auditBoards: auditBoardMocks.unfinished,
-        createAuditBoards: jest.fn(),
+        createAuditBoards: vi.fn(),
       })
       await screen.findByRole('heading', { name: 'Prepare Ballots' })
       screen.getByText('Ballots to audit: 27')
@@ -166,7 +169,7 @@ describe('RoundManagement', () => {
       renderView({
         round: roundMocks.incomplete,
         auditBoards: auditBoardMocks.unfinished,
-        createAuditBoards: jest.fn(),
+        createAuditBoards: vi.fn(),
       })
       await screen.findByRole('heading', { name: 'Prepare Ballots' })
       screen.getByText('Ballots to audit: 27')
@@ -195,7 +198,7 @@ describe('RoundManagement', () => {
     await withMockFetch(expectedCalls, async () => {
       renderView({
         auditBoards: [],
-        createAuditBoards: jest.fn(),
+        createAuditBoards: vi.fn(),
         round: roundMocks.incomplete,
       })
 
@@ -217,7 +220,7 @@ describe('RoundManagement', () => {
       renderView({
         round: roundMocks.incomplete,
         auditBoards: auditBoardMocks.unfinished,
-        createAuditBoards: jest.fn(),
+        createAuditBoards: vi.fn(),
       })
       await screen.findByRole('heading', { name: 'No ballots to audit' })
       screen.getByText(
@@ -239,7 +242,7 @@ describe('RoundManagement', () => {
       renderView({
         round: roundMocks.incomplete,
         auditBoards: [],
-        createAuditBoards: jest.fn(),
+        createAuditBoards: vi.fn(),
       })
       await screen.findByRole('heading', { name: 'No ballots to audit' })
       screen.getByText(
@@ -263,7 +266,7 @@ describe('RoundManagement', () => {
       renderView({
         round: roundMocks.fullHandTallyIncomplete,
         auditBoards: auditBoardMocks.unfinished,
-        createAuditBoards: jest.fn(),
+        createAuditBoards: vi.fn(),
       })
       await screen.findByText(
         'Please audit all of the ballots in your jurisdiction (100 ballots)'
