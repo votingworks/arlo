@@ -7,9 +7,9 @@ from ..helpers import *
 def test_not_found_ballots(
     client: FlaskClient,
     election_id: str,
-    contest_ids: List[str],
+    contest_ids: list[str],
     round_1_id: str,
-    audit_board_round_1_ids: List[str],
+    audit_board_round_1_ids: list[str],
     snapshot,
 ):
     def finish_round():

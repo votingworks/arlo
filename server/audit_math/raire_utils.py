@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Type, Callable, Dict, List, Any, Optional, Literal, Set, TypedDict
+from typing import Type, Callable, Any, Literal, TypedDict
 import numpy as np
 
 from .sampler_contest import Contest
@@ -12,19 +12,19 @@ from .sampler_contest import Contest
 
 # CVR: { contest_id: { choice_id: 0 | 1 }}
 # CVRS: { ballot_id: CVR }
-CVR = Dict[str, Dict[str, int]]
-CVRS = Dict[str, Optional[CVR]]
+CVR = dict[str, dict[str, int]]
+CVRS = dict[str, CVR | None]
 
 
 class SampleCVR(TypedDict):
     times_sampled: int
-    cvr: Optional[CVR]
+    cvr: CVR | None
 
 
-SAMPLECVRS = Dict[str, SampleCVR]
+SAMPLECVRS = dict[str, SampleCVR]
 
 
-def ranking(cand: str, ballot: Dict[str, int]) -> int:
+def ranking(cand: str, ballot: dict[str, int]) -> int:
     """
     Input:
         cand : string  -   identifier for candidate
@@ -41,7 +41,7 @@ def ranking(cand: str, ballot: Dict[str, int]) -> int:
 
 
 def vote_for_cand(
-    cand: str, eliminated: Set[str], ballot: Dict[str, int]
+    cand: str, eliminated: set[str], ballot: dict[str, int]
 ) -> Literal[0, 1]:
     """
     Input:
@@ -100,8 +100,8 @@ class RaireAssertion:
 
         self.difficulty = np.inf
 
-        self.rules_out: List[Any] = []
-        self.eliminated: Set = set()
+        self.rules_out: list[Any] = []
+        self.eliminated: set[str] = set()
 
     def is_vote_for_winner(self, cvr: CVR):
         """
@@ -253,7 +253,7 @@ class NENAssertion(RaireAssertion):
     of 'loser'.
     """
 
-    def __init__(self, contest: str, winner: str, loser: str, eliminated: Set[str]):
+    def __init__(self, contest: str, winner: str, loser: str, eliminated: set[str]):
         super().__init__(contest, winner, loser)
 
         self.eliminated = eliminated
@@ -304,7 +304,7 @@ class NENAssertion(RaireAssertion):
 
 
 class RaireNode:
-    def __init__(self, tail: List[str]):
+    def __init__(self, tail: list[str]):
         # Tail of an "imagined" elimination sequence representing the
         # outcome of an IRV election. The last candidate in the tail is
         # the "imagined" winner of the election.
@@ -320,9 +320,9 @@ class RaireNode:
 
         # Lowest cost assertion that, if true, can rule out any election
         # outcome that *ends* with the given tail.
-        self.best_assertion: Optional[RaireAssertion] = None
+        self.best_assertion: RaireAssertion | None = None
 
-        self.best_ancestor: Optional[RaireNode] = None
+        self.best_ancestor: RaireNode | None = None
 
     def is_descendent_of(self, node: RaireNode) -> bool:
         """
@@ -414,7 +414,7 @@ class RaireFrontier:
 
 def find_best_audit(
     contest: Contest,
-    ballots: List[Dict[str, int]],
+    ballots: list[dict[str, int]],
     neb_matrix,
     node: RaireNode,
     asn_func: Callable,
@@ -513,7 +513,7 @@ def find_best_audit(
 def perform_dive(
     node: RaireNode,
     contest: Contest,
-    ballots: List[Dict[str, int]],
+    ballots: list[dict[str, int]],
     neb_matrix,
     asn_func: Callable,
 ):
@@ -524,7 +524,7 @@ def perform_dive(
 
     contest: Contest   -  Contest being audited.
 
-    cvrs: List of CVR  -  Details of reported ballots for this contest.
+    cvrs: list of CVR  -  Details of reported ballots for this contest.
 
     neb_matrix         -  |Candidates| x |Candidates| dictionary where
                           neb_matrix[c1][c2] returns a NEBAssertion stating

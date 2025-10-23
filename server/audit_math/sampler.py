@@ -1,5 +1,5 @@
 # Handles generating sample sizes and taking samples
-from typing import cast, Any, Dict, List, Tuple
+from typing import cast, Any
 from numpy.random import default_rng
 import consistent_sampler
 
@@ -7,16 +7,16 @@ from . import macro
 from .sampler_contest import Contest
 
 
-BatchKey = Tuple[str, str]  # (jurisdiction name, batch name)
+BatchKey = tuple[str, str]  # (jurisdiction name, batch name)
 
 
 def draw_sample(
     seed: str,
-    manifest: Dict[Any, List[int]],
+    manifest: dict[Any, list[int]],
     sample_size: int,
     num_sampled: int = 0,
     with_replacement: bool = True,
-) -> List[Tuple[str, Tuple[Any, int], int]]:
+) -> list[tuple[str, tuple[Any, int], int]]:
     """
     Draws uniform random sample with replacement of size <sample_size> from the
     provided ballot manifest.
@@ -45,7 +45,7 @@ def draw_sample(
     """
 
     # First build a list of ballots
-    ballots: List[Tuple[Any, int]] = [
+    ballots: list[tuple[Any, int]] = [
         (batch, ballot_position)
         for batch, ballot_positions in manifest.items()
         for ballot_position in ballot_positions
@@ -55,7 +55,7 @@ def draw_sample(
         # The signature of `consistent_sampler.sampler` can't be represented by
         # mypy yet, so it is typed as a less specific version of what it really
         # is. This casts it back to the more specific version.
-        List[Tuple[str, Tuple[Any, int], int]],
+        list[tuple[str, tuple[Any, int], int]],
         list(
             consistent_sampler.sampler(
                 ballots,
@@ -73,9 +73,9 @@ def draw_ppeb_sample(
     seed: str,
     contest: Contest,
     sample_size: int,
-    previously_sampled_batch_keys: List[BatchKey],
-    batch_results: Dict[BatchKey, Dict[str, Dict[str, int]]],
-) -> List[Tuple[Any, BatchKey]]:
+    previously_sampled_batch_keys: list[BatchKey],
+    batch_results: dict[BatchKey, dict[str, dict[str, int]]],
+) -> list[tuple[Any, BatchKey]]:
     """
     Draws sample with replacement of size <sample_size> from the
     provided ballot manifest using proportional-with-error-bound (PPEB) sampling.
@@ -136,7 +136,7 @@ def draw_ppeb_sample(
     cumulative_sample_size = num_previously_sampled_batches + sample_size
     is_full_hand_tally_needed = cumulative_sample_size >= len(batch_results)
 
-    sampled_batch_keys_including_previously_sampled: List[BatchKey] = (
+    sampled_batch_keys_including_previously_sampled: list[BatchKey] = (
         (
             previously_sampled_batch_keys
             # When the cumulative sample size indicates that a full hand tally is needed, ensure
@@ -146,7 +146,7 @@ def draw_ppeb_sample(
         if is_full_hand_tally_needed
         # Otherwise, sample as usual
         else cast(
-            List[BatchKey],
+            list[BatchKey],
             (
                 # For some reason, NumPy converts the tuple to a list in sampling, so we convert
                 # back to a tuple
@@ -164,11 +164,11 @@ def draw_ppeb_sample(
     # Now create "ticket numbers" for each item in the sample
 
     # Map seen batches to counts
-    counts: Dict[Any, int] = {}
-    tickets: Dict[Any, List[str]] = {}
+    counts: dict[Any, int] = {}
+    tickets: dict[Any, list[str]] = {}
 
-    sampled_batch_keys_including_previously_sampled_with_ticket_numbers: List[
-        Tuple[Any, BatchKey]
+    sampled_batch_keys_including_previously_sampled_with_ticket_numbers: list[
+        tuple[Any, BatchKey]
     ] = []
 
     for batch_key in sampled_batch_keys_including_previously_sampled:

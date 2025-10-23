@@ -2,7 +2,6 @@ import io
 import uuid
 import json
 import os
-from typing import List
 from flask.testing import FlaskClient
 from flask import jsonify, abort
 import pytest
@@ -111,7 +110,7 @@ def election_id(client: FlaskClient, org_id: str, request) -> str:
 
 
 @pytest.fixture
-def jurisdiction_ids(client: FlaskClient, election_id: str) -> List[str]:
+def jurisdiction_ids(client: FlaskClient, election_id: str) -> list[str]:
     rv = upload_jurisdictions_file(
         client,
         # We expect the API to order the jurisdictions by name, so we
@@ -141,8 +140,8 @@ def jurisdiction_ids(client: FlaskClient, election_id: str) -> List[str]:
 
 @pytest.fixture
 def contest_ids(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
-) -> List[str]:
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
+) -> list[str]:
     contests = [
         {
             "id": str(uuid.uuid4()),
@@ -212,7 +211,7 @@ def election_settings(client: FlaskClient, election_id: str):
 
 
 @pytest.fixture
-def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]):
+def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: list[str]):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
@@ -236,7 +235,7 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 def round_1_id(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_ids: str,
     election_settings,
     manifests,
@@ -264,9 +263,9 @@ def round_1_id(
 def round_2_id(
     client: FlaskClient,
     election_id: str,
-    contest_ids: List[str],
+    contest_ids: list[str],
     round_1_id: str,
-    audit_board_round_1_ids: List[str],
+    audit_board_round_1_ids: list[str],
 ) -> str:
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     run_audit_round(round_1_id, contest_ids[0], contest_ids, 0.55)
@@ -303,7 +302,7 @@ def audit_board_round_1_ids(
     election_id: str,
     jurisdiction_ids: str,
     round_1_id: str,
-) -> List[str]:
+) -> list[str]:
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
@@ -326,7 +325,7 @@ def audit_board_round_2_ids(
     election_id: str,
     jurisdiction_ids: str,
     round_2_id: str,
-) -> List[str]:
+) -> list[str]:
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )

@@ -29,7 +29,7 @@ def test_random_numbers_that_sum_to_total(snapshot, rand):
 
 
 def assert_is_valid_jurisdiction_tallies(
-    tallies: Dict[str, JurisdictionTallies], election_spec: ElectionSpec
+    tallies: dict[str, JurisdictionTallies], election_spec: ElectionSpec
 ):
     assert list(tallies.keys()) == [
         jurisdiction["name"] for jurisdiction in election_spec["jurisdictions"]
@@ -52,7 +52,7 @@ def assert_is_valid_jurisdiction_tallies(
         )
 
 
-def assert_is_valid_cvrs(cvrs: List[Ballot], tallies: JurisdictionTallies):
+def assert_is_valid_cvrs(cvrs: list[Ballot], tallies: JurisdictionTallies):
     for contest_name, tally in tallies.items():
         cvrs_for_contest = [cvr for cvr in cvrs if contest_name in cvr["votes"]]
         # Should have a CVR for each ballot cast
@@ -80,14 +80,14 @@ def assert_is_valid_cvrs(cvrs: List[Ballot], tallies: JurisdictionTallies):
         assert len(invalid_vote_cvrs) == tally["invalid_votes"]
 
 
-def assert_is_valid_manifest(manifest: Manifest, cvrs: List[Ballot]):
+def assert_is_valid_manifest(manifest: Manifest, cvrs: list[Ballot]):
     # Ballot counts should add up
     assert sum(num_ballots for _, num_ballots in manifest) == len(cvrs)
 
 
 def assert_is_valid_batch_tallies(
     batch_tallies: BatchTallies,
-    cvrs: List[Ballot],
+    cvrs: list[Ballot],
     jurisdiction_tally: JurisdictionTally,
 ):
     # Should have all the batches

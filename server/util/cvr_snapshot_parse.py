@@ -1,5 +1,5 @@
 import itertools
-from typing import Iterator, List, Tuple, TypeVar
+from typing import Iterator, TypeVar
 
 import logging
 from server.worker.tasks import UserError
@@ -10,8 +10,8 @@ logger = logging.getLogger("arlo.cvr_snapshot_parsing")
 
 
 def read_cvr_snapshots(
-    file_names: List[str], row_iterators: List[Iterator[T]]
-) -> Iterator[Tuple[str, T]]:
+    file_names: list[str], row_iterators: list[Iterator[T]]
+) -> Iterator[tuple[str, T]]:
     """Reads all rows from CVR snapshots with the expectation that later snapshots
     contain all rows from earlier snapshots. The this function yields tuples
     pairing a row with the name of the file that row first appears in.

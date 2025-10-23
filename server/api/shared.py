@@ -1,6 +1,6 @@
 from collections import defaultdict
 import random
-from typing import Dict, List, Optional, Set, Tuple, TypedDict, Union
+from typing import TypedDict
 from sqlalchemy import and_, func, literal
 from sqlalchemy.orm import joinedload, load_only
 
@@ -20,13 +20,13 @@ from .cvrs import cvr_contests_metadata, hybrid_contest_choice_vote_counts
 from ..feature_flags import is_enabled_sample_extra_batches_by_counting_group
 
 
-def get_current_round(election: Election) -> Optional[Round]:
+def get_current_round(election: Election) -> Round | None:
     if len(list(election.rounds)) == 0:
         return None
     return max(election.rounds, key=lambda r: r.round_num)
 
 
-def get_previous_round(election: Election, round: Round) -> Optional[Round]:
+def get_previous_round(election: Election, round: Round) -> Round | None:
     if round.round_num == 1:
         return None
     return next(r for r in election.rounds if r.round_num == round.round_num - 1)
@@ -34,7 +34,7 @@ def get_previous_round(election: Election, round: Round) -> Optional[Round]:
 
 def contest_results_by_round(
     contest: Contest,
-) -> Optional[ballot_polling_types.BALLOT_POLLING_SAMPLE_RESULTS]:
+) -> ballot_polling_types.BALLOT_POLLING_SAMPLE_RESULTS | None:
     results_by_round: ballot_polling_types.BALLOT_POLLING_SAMPLE_RESULTS = defaultdict(
         lambda: defaultdict(int)
     )
@@ -45,7 +45,7 @@ def contest_results_by_round(
 
 # Returns a list of targeted contests that are still being audited (i.e. haven't
 # yet met the risk limit)
-def active_targeted_contests(election: Election) -> List[Contest]:
+def active_targeted_contests(election: Election) -> list[Contest]:
     targeted_contests = Contest.query.filter_by(
         election_id=election.id, is_targeted=True
     )
@@ -56,7 +56,7 @@ def active_targeted_contests(election: Election) -> List[Contest]:
     )
 
 
-def samples_not_found_by_round(contest: Contest) -> Dict[str, int]:
+def samples_not_found_by_round(contest: Contest) -> dict[str, int]:
     if contest.is_targeted:
         return dict(
             SampledBallotDraw.query.filter_by(contest_id=contest.id)
@@ -79,7 +79,7 @@ def samples_not_found_by_round(contest: Contest) -> Dict[str, int]:
 
 
 # { batch_key: { contest_id: { choice_id: votes }}}
-BatchTallies = Dict[macro.BatchKey, macro.BatchResults]
+BatchTallies = dict[macro.BatchKey, macro.BatchResults]
 
 
 def batch_tallies(contest: Contest) -> BatchTallies:
@@ -95,10 +95,10 @@ def batch_tallies(contest: Contest) -> BatchTallies:
 class CombinedBatch(TypedDict):
     name: str
     representative_batch: Batch
-    sub_batches: List[Batch]
+    sub_batches: list[Batch]
 
 
-def combined_batch_representative(sub_batches: List[Batch]) -> Batch:
+def combined_batch_representative(sub_batches: list[Batch]) -> Batch:
     assert len(sub_batches) > 0
     sampled_sub_batches = [sub_batch for sub_batch in sub_batches if sub_batch.draws]
     # Prioritize RLA sampled sub-batches (if there are any) over extra sampled
@@ -114,7 +114,7 @@ def combined_batch_representative(sub_batches: List[Batch]) -> Batch:
     )[0]
 
 
-def group_combined_batches(all_sub_batches: List[Batch]) -> List[CombinedBatch]:
+def group_combined_batches(all_sub_batches: list[Batch]) -> list[CombinedBatch]:
     return [
         CombinedBatch(
             name=name,
@@ -127,7 +127,7 @@ def group_combined_batches(all_sub_batches: List[Batch]) -> List[CombinedBatch]:
     ]
 
 
-def combined_batch_keys(election_id: str) -> List[Set[sampler.BatchKey]]:
+def combined_batch_keys(election_id: str) -> list[set[sampler.BatchKey]]:
     sub_batches = (
         Batch.query.join(Jurisdiction)
         .filter_by(election_id=election_id)
@@ -227,7 +227,7 @@ def sampled_batch_results(
     return results
 
 
-def sampled_batches_by_ticket_number(contest: Contest) -> Dict[str, sampler.BatchKey]:
+def sampled_batches_by_ticket_number(contest: Contest) -> dict[str, sampler.BatchKey]:
     batches_by_ticket_number = (
         SampledBatchDraw.query.join(Batch)
         .join(Jurisdiction)
@@ -436,7 +436,7 @@ def sampled_ballot_interpretations_to_cvrs(
 
 def hybrid_contest_strata(
     contest: Contest,
-) -> Tuple[suite.BallotPollingStratum, suite.BallotComparisonStratum]:
+) -> tuple[suite.BallotPollingStratum, suite.BallotComparisonStratum]:
     total_ballots = hybrid_contest_total_ballots(contest)
     vote_counts = hybrid_contest_choice_vote_counts(contest)
     assert vote_counts
@@ -503,14 +503,14 @@ def hybrid_contest_strata(
 
 
 # { choice_id: vote delta }
-ContestVoteDeltas = Dict[str, int]
+ContestVoteDeltas = dict[str, int]
 
 
 def ballot_vote_deltas(
     contest: Contest,
-    reported_cvr: Optional[supersimple.CVR],
-    audited_cvr: Optional[supersimple.CVR],
-) -> Optional[Union[str, ContestVoteDeltas]]:
+    reported_cvr: supersimple.CVR | None,
+    audited_cvr: supersimple.CVR | None,
+) -> str | ContestVoteDeltas | None:
     if audited_cvr is None:
         return "Ballot not found"
     if reported_cvr is None:
@@ -544,7 +544,7 @@ def ballot_vote_deltas(
 
 def batch_vote_deltas(
     reported_results: macro.ChoiceVotes, audited_results: macro.ChoiceVotes
-) -> Optional[ContestVoteDeltas]:
+) -> ContestVoteDeltas | None:
     deltas = {
         choice_id: reported_results[choice_id] - audited_results[choice_id]
         for choice_id in reported_results.keys()
@@ -609,7 +609,7 @@ def is_full_hand_tally(round: Round, election: Election):
 class SampleSize(TypedDict):
     size: int
     key: str
-    prob: Optional[float]
+    prob: float | None
     sizeCvr: int  # Only in hybrid audits
     sizeNonCvr: int  # Only in hybrid audits
 
@@ -632,7 +632,7 @@ def compute_sample_batches_for_contest(
     round_num: int,
     contest: Contest,
     contest_sample_size: SampleSize,
-) -> List[BatchDraw]:
+) -> list[BatchDraw]:
     # Create a mapping from batch keys used in the sampling back to batch ids
     batches = (
         Batch.query.join(Jurisdiction)
@@ -644,7 +644,7 @@ def compute_sample_batches_for_contest(
         for jurisdiction_name, batch_name, batch_id in batches
     }
 
-    previously_sampled_batch_keys: List[sampler.BatchKey] = list(
+    previously_sampled_batch_keys: list[sampler.BatchKey] = list(
         Batch.query.join(Jurisdiction)
         .filter(Jurisdiction.election_id == contest.election_id)
         .join(SampledBatchDraw)
@@ -781,8 +781,8 @@ def compute_sample_batches_for_contest(
 def compute_sample_batches(
     election: Election,
     round_num: int,
-    contest_sample_sizes: List[Tuple[Contest, SampleSize]],
-) -> List[BatchDraw]:
+    contest_sample_sizes: list[tuple[Contest, SampleSize]],
+) -> list[BatchDraw]:
     sample_batches = [
         batch
         for contest, sample_size in contest_sample_sizes
@@ -795,14 +795,14 @@ def compute_sample_batches(
 
 def compute_sample_ballots(
     election: Election,
-    contest_sample_sizes: List[Tuple[Contest, SampleSize]],
+    contest_sample_sizes: list[tuple[Contest, SampleSize]],
     # For hybrid audits only, Batch.has_cvrs will be true/false if the batch
     # contains ballots with CVRs or not (based on the manifest).
     # filter_has_cvrs will constrain the ballots to sample based on
     # Batch.has_cvrs. Since Batch.has_cvrs is None for all other audit types,
     # the default filter is None.
-    filter_has_cvrs: Optional[bool] = None,
-) -> List[BallotDraw]:
+    filter_has_cvrs: bool | None = None,
+) -> list[BallotDraw]:
     participating_jurisdictions = {
         jurisdiction
         for (contest, _) in contest_sample_sizes
@@ -825,7 +825,7 @@ def compute_sample_ballots(
 
     def compute_sample_for_contest(
         contest: Contest, sample_size: SampleSize
-    ) -> List[BallotDraw]:
+    ) -> list[BallotDraw]:
         # Compute the total number of ballot samples in all rounds leading up to
         # this one. Note that this corresponds to the number of SampledBallotDraws,
         # not SampledBallots.
@@ -839,7 +839,7 @@ def compute_sample_ballots(
 
         if election.audit_math_type == AuditMathType.CARD_STYLE_DATA:
             # The sampling pool will be all ballots in the audit with the contest
-            manifest: Dict[Tuple[str, Optional[str], str], List[int]] = defaultdict(
+            manifest: dict[tuple[str, str | None, str], list[int]] = defaultdict(
                 list  # { batch_key: [ballot_position] }
             )
             # Filter down to only ballots in jurisdictions with the contest, and then

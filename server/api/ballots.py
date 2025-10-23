@@ -1,6 +1,6 @@
 import io
 import csv
-from typing import Optional, TextIO
+from typing import TextIO
 from sqlalchemy import func, literal_column, and_
 from sqlalchemy.orm import contains_eager, joinedload
 from sqlalchemy.dialects.postgresql import aggregate_order_by
@@ -177,8 +177,8 @@ def serialize_interpretation(interpretation: BallotInterpretation) -> JSONDict:
 def serialize_ballot(
     ballot: SampledBallot,
     audit_type: AuditType,
-    imprinted_id: Optional[str],
-    record_id: Optional[str],
+    imprinted_id: str | None,
+    record_id: str | None,
 ) -> JSONDict:
     batch = ballot.batch
     audit_board = ballot.audit_board
@@ -357,7 +357,7 @@ def validate_interpretation(interpretation: JSONDict):
     if interpretation["interpretation"] == Interpretation.VOTE:
         if len(interpretation["choiceIds"]) == 0:
             raise BadRequest(
-                f"Must include choiceIds with interpretation {Interpretation.VOTE} for contest {interpretation['contestId']}"
+                f"Must include choiceIds with interpretation {Interpretation.VOTE.value} for contest {interpretation['contestId']}"
             )
         choices = ContestChoice.query.filter(
             ContestChoice.id.in_(interpretation["choiceIds"])
@@ -381,7 +381,7 @@ def validate_interpretation(interpretation: JSONDict):
         and interpretation["hasInvalidWriteIn"]
     ):
         raise BadRequest(
-            f"Cannot specify hasInvalidWriteIn=True with interpretation {Interpretation.CONTEST_NOT_ON_BALLOT} for contest {interpretation['contestId']}"
+            f"Cannot specify hasInvalidWriteIn=True with interpretation {Interpretation.CONTEST_NOT_ON_BALLOT.value} for contest {interpretation['contestId']}"
         )
 
 

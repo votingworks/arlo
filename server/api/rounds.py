@@ -1,10 +1,4 @@
 import uuid
-from typing import (
-    List,
-    Optional,
-    Tuple,
-    Dict,
-)
 from datetime import datetime
 from flask import jsonify, request
 from jsonschema import validate
@@ -176,7 +170,7 @@ def is_round_ready_to_finish(election: Election, round: Round) -> bool:
         return num_jurisdictions_without_results == 0
 
 
-def is_audit_complete(round: Optional[Round]):
+def is_audit_complete(round: Round | None):
     if not (round and round.ended_at):
         return None
     if is_enabled_automatically_end_audit_after_one_round(round.election):
@@ -360,7 +354,7 @@ def draw_sample(round_id: str, election_id: str):
 def draw_sample_batches(
     election: Election,
     round: Round,
-    contest_sample_sizes: List[Tuple[Contest, SampleSize]],
+    contest_sample_sizes: list[tuple[Contest, SampleSize]],
 ):
     sample = compute_sample_batches(election, round.round_num, contest_sample_sizes)
     for batch_draw in sample:
@@ -376,18 +370,18 @@ def draw_sample_batches(
 def draw_sample_ballots(
     election: Election,
     round: Round,
-    contest_sample_sizes: List[Tuple[Contest, SampleSize]],
+    contest_sample_sizes: list[tuple[Contest, SampleSize]],
     # For hybrid audits only, Batch.has_cvrs will be true/false if the batch
     # contains ballots with CVRs or not (based on the manifest).
     # filter_has_cvrs will constrain the ballots to sample based on
     # Batch.has_cvrs. Since Batch.has_cvrs is None for all other audit types,
     # the default filter is None.
-    filter_has_cvrs: Optional[bool] = None,
+    filter_has_cvrs: bool | None = None,
 ):
     sample = compute_sample_ballots(election, contest_sample_sizes, filter_has_cvrs)
 
     # Group all sample draws by ballot
-    sample_draws_by_ballot: Dict[Tuple[str, int], List[BallotDraw]] = group_by(
+    sample_draws_by_ballot: dict[tuple[str, int], list[BallotDraw]] = group_by(
         sample,
         key=lambda sample_draw: (
             sample_draw["batch_id"],

@@ -1,9 +1,9 @@
+from dataclasses import dataclass
 from datetime import datetime, timezone
 import os.path
 import shutil
 import tempfile
 import io
-from typing import List, Tuple
 from unittest.mock import patch
 from werkzeug.exceptions import BadRequest
 import pytest
@@ -154,30 +154,44 @@ def test_file_storage_local_file():
         config.FILE_UPLOAD_STORAGE_PATH = original_file_upload_storage_path
 
 
+@dataclass
+class HappyPathTestConfig:
+    type: FileType
+    mimetype: str
+    allowed_types: list[FileType]
+
+
 ## Tests for general file type utils
 @patch("flask.Request", autospec=True)
 def test_validate_and_get_standard_file_upload_request_params(mock_request):
-    happy_path_tests: Tuple[FileType, str, List[FileType]] = [
-        # test file type, test file mimetype, [allowed types]
-        [FileType.CSV, "text/csv", [FileType.CSV]],
-        [FileType.ZIP, "application/zip", [FileType.ZIP]],
-        [FileType.XML, "text/xml", [FileType.XML]],
-        [FileType.XML, "text/xml", [FileType.CSV, FileType.XML]],
-        [FileType.ZIP, "application/x-zip-compressed", [FileType.ZIP, FileType.XML]],
-        [FileType.CSV, "application/vnd.ms-excel", [FileType.ZIP, FileType.CSV]],
-        [FileType.CSV, "text/csv", [FileType.ZIP, FileType.CSV, FileType.XML]],
-        [FileType.XML, "text/xml", [FileType.ZIP, FileType.CSV, FileType.XML]],
+    happy_path_tests = [
+        HappyPathTestConfig(FileType.CSV, "text/csv", [FileType.CSV]),
+        HappyPathTestConfig(FileType.ZIP, "application/zip", [FileType.ZIP]),
+        HappyPathTestConfig(FileType.XML, "text/xml", [FileType.XML]),
+        HappyPathTestConfig(FileType.XML, "text/xml", [FileType.CSV, FileType.XML]),
+        HappyPathTestConfig(
+            FileType.ZIP, "application/x-zip-compressed", [FileType.ZIP, FileType.XML]
+        ),
+        HappyPathTestConfig(
+            FileType.CSV, "application/vnd.ms-excel", [FileType.ZIP, FileType.CSV]
+        ),
+        HappyPathTestConfig(
+            FileType.CSV, "text/csv", [FileType.ZIP, FileType.CSV, FileType.XML]
+        ),
+        HappyPathTestConfig(
+            FileType.XML, "text/xml", [FileType.ZIP, FileType.CSV, FileType.XML]
+        ),
     ]
-    for test_file_type, test_mime_type, allowed_types in happy_path_tests:
-        expected_filename = timestamp_filename("test_file", test_file_type)
+    for test in happy_path_tests:
+        expected_filename = timestamp_filename("test_file", test.type.value)
         mock_request.get_json.return_value = {
             "storagePathKey": f"test_dir/{expected_filename}",
             "fileName": expected_filename,
-            "fileType": test_mime_type,
+            "fileType": test.mimetype,
         }
         (storage_path, filename, file_type) = (
             validate_and_get_standard_file_upload_request_params(
-                mock_request, "test_dir", "test_file", allowed_types
+                mock_request, "test_dir", "test_file", test.allowed_types
             )
         )
         assert (
@@ -185,7 +199,7 @@ def test_validate_and_get_standard_file_upload_request_params(mock_request):
             == f"{config.FILE_UPLOAD_STORAGE_PATH}/test_dir/{expected_filename}"
         )
         assert filename == expected_filename
-        assert file_type == test_mime_type
+        assert file_type == test.mimetype
 
 
 @patch("flask.Request", autospec=True)
@@ -226,7 +240,7 @@ def test_validate_and_get_standard_file_upload_request_params_errors(mock_reques
             mock_request, "test_dir", "test_file", [FileType.CSV]
         )
 
-    file_type_error_tests: Tuple[FileType, str, List[FileType], str] = [
+    file_type_error_tests: tuple[FileType, str, list[FileType], str] = [
         # test file type, test file mimetype, [allowed types], expected error message
         [
             FileType.CSV,

@@ -1,7 +1,6 @@
 import os
 import time
 import subprocess
-from typing import Optional, Union
 from typing_extensions import override
 from watchdog.observers import Observer
 from watchdog.events import DirModifiedEvent, FileModifiedEvent, FileSystemEventHandler
@@ -13,7 +12,7 @@ class RunDevWorkerEventHandler(FileSystemEventHandler):
         super().__init__()
         self.command: list[str] = command
         self.patterns: list[str] = patterns
-        self.process: Optional[subprocess.Popen[bytes]] = None
+        self.process: subprocess.Popen[bytes] | None = None
         self.start_process()
 
     def start_process(self):
@@ -24,7 +23,7 @@ class RunDevWorkerEventHandler(FileSystemEventHandler):
         self.process = subprocess.Popen(self.command)
 
     @override
-    def on_modified(self, event: Union[DirModifiedEvent, FileModifiedEvent]):
+    def on_modified(self, event: DirModifiedEvent | FileModifiedEvent):
         if not event.is_directory:
             for pattern in self.patterns:
                 if not isinstance(event.src_path, str):

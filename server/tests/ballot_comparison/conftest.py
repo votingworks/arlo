@@ -85,7 +85,7 @@ def election_id(client: FlaskClient, org_id: str, request):
 
 
 @pytest.fixture
-def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]):
+def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: list[str]):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
@@ -118,7 +118,7 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 
 
 @pytest.fixture
-def ess_manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]):
+def ess_manifests(client: FlaskClient, election_id: str, jurisdiction_ids: list[str]):
     for jurisdiction_id in jurisdiction_ids[:2]:
         set_logged_in_user(
             client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -139,7 +139,7 @@ def ess_manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[
 
 
 @pytest.fixture
-def hart_manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]):
+def hart_manifests(client: FlaskClient, election_id: str, jurisdiction_ids: list[str]):
     for jurisdiction_id in jurisdiction_ids[:2]:
         set_logged_in_user(
             client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -163,7 +163,7 @@ def hart_manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List
 def cvrs(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     manifests,
 ):
     set_logged_in_user(

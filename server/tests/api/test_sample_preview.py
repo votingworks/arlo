@@ -1,4 +1,3 @@
-from typing import List
 import json
 from flask.testing import FlaskClient
 
@@ -11,10 +10,10 @@ dummy_sample_size = {"key": "custom", "size": 10, "prob": None}
 def test_sample_preview(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     manifests,
     election_settings,
-    contest_ids: List[str],
+    contest_ids: list[str],
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -80,7 +79,7 @@ def test_sample_preview_in_progress(
     election_id: str,
     manifests,
     election_settings,
-    contest_ids: List[str],
+    contest_ids: list[str],
 ):
     orig_run_background_tasks_immediately = config.RUN_BACKGROUND_TASKS_IMMEDIATELY
     config.RUN_BACKGROUND_TASKS_IMMEDIATELY = False
@@ -129,7 +128,7 @@ def test_sample_preview_in_progress(
 def test_preview_after_audit_launch(
     client: FlaskClient,
     election_id: str,
-    contest_ids: List[str],
+    contest_ids: list[str],
     round_1_id: str,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)

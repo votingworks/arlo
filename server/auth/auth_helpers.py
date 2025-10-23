@@ -1,8 +1,9 @@
 import functools
 import enum
 from datetime import datetime, timezone
-from typing import Callable, Tuple, Union, List, Optional
+from typing import Callable
 from flask import session
+from flask.sessions import SessionMixin
 from werkzeug.exceptions import Forbidden, Unauthorized
 from sqlalchemy.orm import Query
 
@@ -48,7 +49,7 @@ def set_loggedin_user(
     session[_LAST_REQUEST_AT] = datetime.now(timezone.utc).isoformat()
 
 
-def get_loggedin_user(session) -> Union[Tuple[UserType, str], Tuple[None, None]]:
+def get_loggedin_user(session) -> tuple[UserType, str] | tuple[None, None]:
     check_session_expiration(session)
     user = session.get(_USER, None)
     return (user["type"], user["key"]) if user else (None, None)
@@ -85,19 +86,19 @@ def check_session_expiration(session):
 # session field so that logging in as another user can be as close as possible
 # to the same user session and so that a support user can become any other user
 # at any other time without having to re-login.
-def set_support_user(session, email: str):
+def set_support_user(session: SessionMixin, email: str):
     session[_SUPPORT_USER] = email
     session[_CREATED_AT] = datetime.now(timezone.utc).isoformat()
     session[_LAST_REQUEST_AT] = datetime.now(timezone.utc).isoformat()
 
 
-def clear_support_user(session):
+def clear_support_user(session: SessionMixin):
     session[_SUPPORT_USER] = None
 
 
-def get_support_user(session) -> Optional[str]:
+def get_support_user(session: SessionMixin) -> str | None:
     check_session_expiration(session)
-    support_user_email: Optional[str] = session.get(_SUPPORT_USER)
+    support_user_email: str | None = session.get(_SUPPORT_USER)
     return support_user_email
 
 
@@ -109,10 +110,10 @@ def find_or_404(query: Query):
 
 
 def check_access(
-    user_types: List[UserType],
+    user_types: list[UserType],
     election: Election,
-    jurisdiction: Optional[Jurisdiction] = None,
-    audit_board: Optional[AuditBoard] = None,
+    jurisdiction: Jurisdiction | None = None,
+    audit_board: AuditBoard | None = None,
 ):
     # Check user type is allowed
     user_type, user_key = get_loggedin_user(session)
@@ -160,7 +161,7 @@ def check_access(
             )
 
 
-def restrict_access(user_types: List[UserType]):
+def restrict_access(user_types: list[UserType]):
     """
     Flask route decorator that restricts access to a route to the given user types.
     """

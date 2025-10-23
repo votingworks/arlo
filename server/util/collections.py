@@ -1,4 +1,5 @@
-from typing import List, Optional, Tuple, TypeVar, Iterable
+from typing import TypeVar
+from collections.abc import Iterable
 import itertools
 
 T = TypeVar("T")
@@ -14,7 +15,7 @@ def group_by(items: Iterable[T], key=None):
 
 
 # find_first_duplicate returns the first item in a collection that is a duplicate.
-def find_first_duplicate(list: Iterable[T]) -> Optional[T]:
+def find_first_duplicate(list: Iterable[T]) -> T | None:
     seen = set()
     for item in list:
         if item in seen:
@@ -24,8 +25,8 @@ def find_first_duplicate(list: Iterable[T]) -> Optional[T]:
 
 
 def diff_file_lists_ignoring_order_and_case(
-    expected_files: List[str], actual_files: List[str]
-) -> Tuple[List[str], List[str], List[str]]:
+    expected_files: list[str], actual_files: list[str]
+) -> tuple[list[str], list[str], list[str]]:
     """Determine which files in `actual_files` are present in `expected_files`,
     which expected files are missing, and which are present in both. Uses a
     case-insensitive comparison of filenames and does not expect `actual_files`
@@ -36,7 +37,7 @@ def diff_file_lists_ignoring_order_and_case(
     2. The list of files in `actual_files` but not `expected_files`.
     3. The list of files in `expected_files` but not `actual_files`.
     """
-    overlapping_files: List[str] = []
+    overlapping_files: list[str] = []
     unexpected_files = actual_files.copy()
     missing_files = expected_files.copy()
 

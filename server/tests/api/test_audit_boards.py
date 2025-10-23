@@ -2,7 +2,6 @@ import json
 import random
 import uuid
 import itertools
-from typing import List, Tuple
 from datetime import datetime
 from collections import defaultdict
 from flask.testing import FlaskClient
@@ -15,8 +14,8 @@ from ...util.jsonschema import JSONDict
 
 
 def assert_ballots_got_assigned_correctly(
-    audit_boards: List[AuditBoard],
-    ballot_draws: List[SampledBallotDraw],
+    audit_boards: list[AuditBoard],
+    ballot_draws: list[SampledBallotDraw],
 ):
     # All the ballots got assigned
     assert sum(len(list(ab.sampled_ballots)) for ab in audit_boards) == len(
@@ -41,7 +40,7 @@ def assert_ballots_got_assigned_correctly(
 def test_audit_boards_list_empty(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
 ):
     set_logged_in_user(
@@ -57,7 +56,7 @@ def test_audit_boards_list_empty(
 def test_audit_boards_create_one(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
     snapshot,
 ):
@@ -91,8 +90,8 @@ def test_audit_boards_create_one(
 def test_audit_boards_list_one(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     round_1_id: str,
     snapshot,
 ):
@@ -169,7 +168,7 @@ def test_audit_boards_list_one(
 def test_audit_boards_create_two(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
     snapshot,
 ):
@@ -203,8 +202,8 @@ def test_audit_boards_create_two(
 def test_audit_boards_list_two(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     round_1_id: str,
     snapshot,
 ):
@@ -289,7 +288,7 @@ def test_audit_boards_list_two(
 def test_audit_boards_create_round_2(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_2_id: str,
     snapshot,
 ):
@@ -327,7 +326,7 @@ def test_audit_boards_create_round_2(
 def test_audit_boards_list_round_2(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
     round_2_id: str,
     snapshot,
@@ -374,7 +373,7 @@ def test_audit_boards_list_round_2(
 def test_audit_boards_missing_field(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
 ):
     set_logged_in_user(
@@ -399,7 +398,7 @@ def test_audit_boards_missing_field(
 def test_audit_boards_duplicate_name(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
 ):
     set_logged_in_user(
@@ -424,7 +423,7 @@ def test_audit_boards_duplicate_name(
 def test_audit_boards_already_created(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
 ):
     set_logged_in_user(
@@ -456,7 +455,7 @@ def test_audit_boards_already_created(
 def test_audit_boards_wrong_round(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
     round_2_id: str,
 ):
@@ -482,7 +481,7 @@ def test_audit_boards_wrong_round(
 def test_audit_boards_bad_round_id(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
 ):
     set_logged_in_user(
@@ -499,9 +498,9 @@ def test_audit_boards_bad_round_id(
 def test_audit_boards_set_members_valid(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
-    audit_board_round_1_ids: List[str],
+    audit_board_round_1_ids: list[str],
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
     member_requests = [
@@ -527,9 +526,9 @@ def test_audit_boards_set_members_valid(
 def test_audit_boards_set_members_invalid(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
-    audit_board_round_1_ids: List[str],
+    audit_board_round_1_ids: list[str],
 ):
     invalid_member_requests = [
         ([{"affiliation": "DEM"}], "'name' is a required property"),
@@ -583,7 +582,7 @@ def set_up_audit_board(
     contest_id: str,
     audit_board_id: str,
     only_one_member=False,
-) -> Tuple[str, str]:
+) -> tuple[str, str]:
     silly_names = [
         " Joe Schmo",
         "Jane Plain",
@@ -595,7 +594,7 @@ def set_up_audit_board(
     member_1 = rand.choice(silly_names)
     member_2 = rand.choice(silly_names)
 
-    member_names: List[JSONDict] = [{"name": member_1, "affiliation": "DEM"}]
+    member_names: list[JSONDict] = [{"name": member_1, "affiliation": "DEM"}]
     if not only_one_member:
         member_names.append({"name": member_2, "affiliation": None})
 
@@ -664,10 +663,10 @@ def set_up_audit_board(
 def test_audit_boards_sign_off_happy_path(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     round_1_id: str,
-    audit_board_round_1_ids: List[str],
+    audit_board_round_1_ids: list[str],
 ):
     def run_audit_board_flow(jurisdiction_id: str, audit_board_id: str):
         set_logged_in_user(
@@ -775,9 +774,9 @@ def test_audit_boards_sign_off_happy_path(
 
 def test_count_audited_votes(
     election_id: str,
-    contest_ids: List[str],
+    contest_ids: list[str],
     round_1_id: str,
-    audit_board_round_1_ids: List[str],
+    audit_board_round_1_ids: list[str],
 ):
     election = Election.query.get(election_id)
     round = Round.query.get(round_1_id)
@@ -923,10 +922,10 @@ def test_count_audited_votes(
 def test_audit_boards_sign_off_missing_name(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     round_1_id: str,
-    audit_board_round_1_ids: List[str],
+    audit_board_round_1_ids: list[str],
 ):
     audit_board_id = audit_board_round_1_ids[0]
     member_1, member_2 = set_up_audit_board(
@@ -963,10 +962,10 @@ def test_audit_boards_sign_off_missing_name(
 def test_audit_boards_sign_off_wrong_name(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     round_1_id: str,
-    audit_board_round_1_ids: List[str],
+    audit_board_round_1_ids: list[str],
 ):
     audit_board_id = audit_board_round_1_ids[0]
     member_1, member_2 = set_up_audit_board(
@@ -1004,10 +1003,10 @@ def test_audit_boards_sign_off_wrong_name(
 def test_audit_boards_sign_off_before_finished(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     round_1_id: str,
-    audit_board_round_1_ids: List[str],
+    audit_board_round_1_ids: list[str],
 ):
     audit_board_id = audit_board_round_1_ids[0]
     member_1, member_2 = set_up_audit_board(
@@ -1045,10 +1044,10 @@ def test_audit_boards_sign_off_before_finished(
 def test_audit_board_only_one_member_sign_off_happy_path(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     round_1_id: str,
-    audit_board_round_1_ids: List[str],
+    audit_board_round_1_ids: list[str],
 ):
     audit_board_id = audit_board_round_1_ids[0]
     member_1, _ = set_up_audit_board(
@@ -1073,10 +1072,10 @@ def test_audit_board_only_one_member_sign_off_happy_path(
 def test_audit_board_only_one_member_sign_off_wrong_name(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     round_1_id: str,
-    audit_board_round_1_ids: List[str],
+    audit_board_round_1_ids: list[str],
 ):
     audit_board_id = audit_board_round_1_ids[0]
     set_up_audit_board(
@@ -1109,10 +1108,10 @@ def test_audit_board_only_one_member_sign_off_wrong_name(
 def test_audit_boards_sign_off_whitespace(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     round_1_id: str,
-    audit_board_round_1_ids: List[str],
+    audit_board_round_1_ids: list[str],
 ):
     member_1, member_2 = set_up_audit_board(
         client,
@@ -1132,7 +1131,7 @@ def test_audit_boards_sign_off_whitespace(
 
 
 def test_audit_board_human_order(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str], round_1_id: str
 ):
     # Create audit boards
     set_logged_in_user(
@@ -1157,10 +1156,10 @@ def test_audit_board_human_order(
 def test_reopen_audit_board(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     round_1_id: str,
-    audit_board_round_1_ids: List[str],
+    audit_board_round_1_ids: list[str],
 ):
     member_1, member_2 = set_up_audit_board(
         client,
@@ -1192,10 +1191,10 @@ def test_reopen_audit_board(
 def test_reopen_audit_board_error_cases(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     round_1_id: str,
-    audit_board_round_1_ids: List[str],
+    audit_board_round_1_ids: list[str],
 ):
     set_up_audit_board(
         client,

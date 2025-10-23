@@ -3,7 +3,6 @@ import secrets
 import smtplib
 import string
 from datetime import datetime, timezone
-from typing import Optional
 from urllib.parse import urljoin, urlencode
 import uuid
 from flask import jsonify, request, session, render_template
@@ -278,7 +277,7 @@ def jurisdiction_admin_generate_code():
     return jsonify(status="ok")
 
 
-def record_login(user: User, error: Optional[str] = None):
+def record_login(user: User, error: str | None = None):
     # JAs can only belong to one organization
     organization = list(user.jurisdictions)[0].election.organization
     record_activity(

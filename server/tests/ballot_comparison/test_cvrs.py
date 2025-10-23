@@ -1,6 +1,6 @@
 import io
 import json
-from typing import List, TypedDict, Tuple
+from typing import TypedDict
 from flask.testing import FlaskClient
 
 from ...models import *
@@ -11,7 +11,7 @@ from .conftest import TEST_CVRS
 def test_dominion_cvr_upload(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     manifests,
     snapshot,
 ):
@@ -150,7 +150,7 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
 def test_cvrs_counting_group(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     manifests,
     snapshot,
 ):
@@ -245,7 +245,7 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,PrecinctPortion,BallotType,U
 def test_dominion_cvr_unique_voting_identifier(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     manifests,
     snapshot,
 ):
@@ -339,7 +339,7 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,PrecinctPortion,BallotType,R
 def test_dominion_cvrs_with_leading_equal_signs(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     manifests,
 ):
     set_logged_in_user(
@@ -389,7 +389,7 @@ def test_dominion_cvrs_with_leading_equal_signs(
 def test_cvrs_clear(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     manifests,
 ):
     set_logged_in_user(
@@ -438,7 +438,7 @@ def test_cvrs_clear(
 def test_cvrs_replace_as_audit_admin(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     manifests,
 ):
     # Check that AA can also get/put/clear batch tallies
@@ -491,7 +491,7 @@ def test_cvrs_replace_as_audit_admin(
 def test_cvrs_upload_missing_file(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     manifests,
 ):
     set_logged_in_user(
@@ -515,7 +515,7 @@ def test_cvrs_upload_missing_file(
 def test_cvrs_upload_bad_csv(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     manifests,
 ):
     set_logged_in_user(
@@ -563,7 +563,7 @@ def test_cvrs_upload_bad_csv(
 def test_cvrs_wrong_audit_type(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     manifests,
 ):
     for audit_type in [AuditType.BALLOT_POLLING, AuditType.BATCH_COMPARISON]:
@@ -597,7 +597,7 @@ def test_cvrs_wrong_audit_type(
 def test_cvrs_before_manifests(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -647,7 +647,7 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
 def test_cvrs_newlines(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     manifests,
     snapshot,
 ):
@@ -720,7 +720,7 @@ def test_cvrs_newlines(
 def test_invalid_cvrs(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     manifests,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -1042,7 +1042,7 @@ BATCH1,1,1-1-1,p,bs,ps,TABULATOR1,s,r,0,1,1,1,0
 def test_cvr_reprocess_after_manifest_reupload(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     manifests,
     cvrs,
 ):
@@ -1186,7 +1186,7 @@ CLEARBALLOT_CVRS_INVALID = """ChoiceID,ContestID,ChoiceName
 def test_clearballot_cvr_upload(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     manifests,
     snapshot,
 ):
@@ -1260,7 +1260,7 @@ def test_clearballot_cvr_upload(
 def test_clearballot_cvr_upload_invalid(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     manifests,
 ):
     # Upload CVRs
@@ -1436,7 +1436,7 @@ x,15,p,bs,0002000175,Choice 1-1,Choice 2-3
 def test_ess_cvr_upload(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     ess_manifests,
     snapshot,
 ):
@@ -1534,7 +1534,7 @@ def test_ess_cvr_upload(
 def test_ess_cvr_upload_invalid(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     ess_manifests,
 ):
     def remove_line(string: str, line: int) -> str:
@@ -1863,7 +1863,7 @@ def test_ess_cvr_upload_invalid(
 def test_ess_cvr_upload_cvr_file_with_tabulator_cvr_column(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     ess_manifests,
     snapshot,
 ):
@@ -2007,7 +2007,7 @@ def build_hart_cvr(
             </Option>
             """
 
-    def build_contest(contest_name: str, choice_names: List[str]):
+    def build_contest(contest_name: str, choice_names: list[str]):
         choices = "\n".join(build_choice(choice_name) for choice_name in choice_names)
         return f"""
             <Contest>
@@ -2169,7 +2169,7 @@ HART_SCANNED_BALLOT_INFORMATION_CONFLICTING_WITH_MINIMAL = """#FormatVersion 1
 def test_hart_cvr_upload(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     hart_manifests,
     snapshot,
 ):
@@ -2241,7 +2241,7 @@ def test_hart_cvr_upload(
 def test_hart_cvr_upload_with_scanned_ballot_information(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     hart_manifests,
     snapshot,
 ):
@@ -2254,11 +2254,11 @@ def test_hart_cvr_upload_with_scanned_ballot_information(
     )
 
     class TestCase(TypedDict):
-        scanned_ballot_information_file_contents: List[str]
+        scanned_ballot_information_file_contents: list[str]
         expected_processing_status: ProcessingStatus
-        expected_processing_error: Optional[str]
+        expected_processing_error: str | None
 
-    test_cases: List[TestCase] = [
+    test_cases: list[TestCase] = [
         {
             "scanned_ballot_information_file_contents": [
                 HART_SCANNED_BALLOT_INFORMATION
@@ -2430,7 +2430,7 @@ def test_hart_cvr_upload_with_scanned_ballot_information(
 def test_hart_cvr_upload_with_duplicate_batch_names(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     # Use the regular manifests which have batches with the same name but different tabulator
     manifests,
     snapshot,
@@ -2444,11 +2444,11 @@ def test_hart_cvr_upload_with_duplicate_batch_names(
     )
 
     class TestCase(TypedDict):
-        files: List[Tuple[io.BytesIO, str]]
+        files: list[tuple[io.BytesIO, str]]
         expected_processing_status: ProcessingStatus
-        expected_processing_error: Optional[str]
+        expected_processing_error: str | None
 
-    test_cases: List[TestCase] = [
+    test_cases: list[TestCase] = [
         {
             # Extracting tabulator info from a scanned ballot information CSV
             "files": [
@@ -2596,7 +2596,7 @@ def test_hart_cvr_upload_with_duplicate_batch_names(
 def test_hart_cvr_upload_no_batch_match(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     hart_manifests,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -2651,7 +2651,7 @@ def test_hart_cvr_upload_no_batch_match(
 def test_hart_cvr_upload_no_tabulator_plus_batch_match(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     # Use the regular manifests which have batches with the same name but different tabulator
     manifests,
 ):
@@ -2735,7 +2735,7 @@ def test_hart_cvr_upload_no_tabulator_plus_batch_match(
 def test_hart_cvr_upload_basic_input_validation(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     hart_manifests,
 ):
     set_logged_in_user(
@@ -2748,7 +2748,7 @@ def test_hart_cvr_upload_basic_input_validation(
         expected_status_code: int
         expected_response: Any
 
-    test_cases: List[TestCase] = [
+    test_cases: list[TestCase] = [
         {
             "cvrs": zip_hart_cvrs(HART_CVRS),
             "file_type": "text/csv",
@@ -2786,7 +2786,7 @@ def test_hart_cvr_upload_basic_input_validation(
 def test_hart_cvr_upload_processing_validation(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     hart_manifests,
 ):
     set_logged_in_user(
@@ -2798,7 +2798,7 @@ def test_hart_cvr_upload_processing_validation(
         expected_status_code: int
         expected_response: Any
 
-    test_cases: List[TestCase] = [
+    test_cases: list[TestCase] = [
         {
             "cvrs": zip_cvrs(
                 [
@@ -2889,7 +2889,7 @@ def test_hart_cvr_upload_processing_validation(
 def test_cvrs_unexpected_error(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     manifests,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -2951,7 +2951,7 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
 def test_cvr_invalid_file_type(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     manifests,
 ):
     set_logged_in_user(
@@ -2976,7 +2976,7 @@ def test_cvr_invalid_file_type(
 
 
 def test_cvrs_get_upload_url_missing_file_type(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -2996,7 +2996,7 @@ def test_cvrs_get_upload_url_missing_file_type(
 
 
 def test_cvrs_get_upload_url(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
 ):
     allowed_users = [
         (UserType.JURISDICTION_ADMIN, default_ja_email(election_id)),
@@ -3038,7 +3038,7 @@ def test_cvrs_get_upload_url(
 def test_upload_cvrs_fails_while_processing_manifest_file(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -3076,7 +3076,7 @@ def test_upload_cvrs_fails_while_processing_manifest_file(
 def test_remove_cvrs_fails_while_processing_manifest_file(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -3109,7 +3109,7 @@ def test_remove_cvrs_fails_while_processing_manifest_file(
 def test_upload_ballot_manifest_fails_while_processing_cvr_file(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     manifests,
 ):
     set_logged_in_user(
@@ -3148,7 +3148,7 @@ def test_upload_ballot_manifest_fails_while_processing_cvr_file(
 def test_remove_ballot_manifest_fails_while_processing_cvr_file(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     manifests,
 ):
     set_logged_in_user(

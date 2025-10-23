@@ -1,4 +1,3 @@
-from typing import Dict
 from collections import Counter
 from jsonschema import validate
 from werkzeug.exceptions import BadRequest, Conflict
@@ -25,7 +24,7 @@ from ..util.get_json import safe_get_json_dict
 
 
 @background_task
-def compute_sample_preview(election_id: str, sample_sizes: Dict[str, SampleSize]):
+def compute_sample_preview(election_id: str, sample_sizes: dict[str, SampleSize]):
     election = Election.query.get(election_id)
     contest_sample_sizes = [
         (Contest.query.get(contest_id), sample_size)

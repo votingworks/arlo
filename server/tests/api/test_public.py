@@ -1,14 +1,14 @@
 import json
 import io
 import tempfile
-from typing import Any, Dict, List, TypedDict
+from typing import Any, TypedDict
 
 from flask.testing import FlaskClient
 from ..helpers import *
 from ... import config
 
 
-def copy_dict_and_remove_key(input: Dict, key: str):
+def copy_dict_and_remove_key(input: dict, key: str):
     return {k: input[k] for k in input if k != key}
 
 
@@ -28,7 +28,7 @@ def test_public_compute_sample_sizes_input_validation(client: FlaskClient):
             "totalBallotsCast": 2000,
         },
     }
-    test_cases: List[TestCase] = [
+    test_cases: list[TestCase] = [
         {
             "body": copy_dict_and_remove_key(valid_input, "electionResults"),
             "expected_status_code": 400,
@@ -264,7 +264,7 @@ def test_public_compute_sample_sizes(client: FlaskClient, snapshot):
         description: str
         body: Any
 
-    test_cases: List[TestCase] = [
+    test_cases: list[TestCase] = [
         {
             "description": "500-vote margin",
             "body": {

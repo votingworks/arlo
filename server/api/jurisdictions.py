@@ -1,5 +1,6 @@
 import logging
-from typing import Dict, List, Optional, Mapping, cast as typing_cast
+from collections.abc import Mapping
+from typing import cast as typing_cast
 import enum
 import uuid
 import datetime
@@ -75,7 +76,7 @@ def process_jurisdictions_file(election_id: str):
             .subquery()
         )
     ).delete(synchronize_session="fetch")
-    new_admins: List[JurisdictionAdministration] = []
+    new_admins: list[JurisdictionAdministration] = []
 
     for row in jurisdictions_csv:
         name = row[JURISDICTION_NAME]
@@ -141,7 +142,7 @@ def process_jurisdictions_file(election_id: str):
 def serialize_jurisdiction(
     election: Election,
     jurisdiction: Jurisdiction,
-    round_status: Optional[JSONDict],
+    round_status: JSONDict | None,
 ) -> JSONDict:
     json_jurisdiction: JSONDict = {
         "id": jurisdiction.id,
@@ -230,8 +231,8 @@ class JurisdictionStatus(str, enum.Enum):
 
 def round_status_by_jurisdiction(
     election: Election,
-    round: Optional[Round],
-) -> Mapping[str, Optional[JSONDict]]:
+    round: Round | None,
+) -> Mapping[str, JSONDict | None]:
     if not round:
         return {j.id: None for j in election.jurisdictions}
     if election.audit_type == AuditType.BATCH_COMPARISON:
@@ -247,8 +248,8 @@ class JurisdictionAuditBoardStatus(str, enum.Enum):
 
 
 def jurisdiction_audit_board_status(
-    jurisdictions: List[Jurisdiction], round: Round
-) -> Dict[str, JurisdictionAuditBoardStatus]:
+    jurisdictions: list[Jurisdiction], round: Round
+) -> dict[str, JurisdictionAuditBoardStatus]:
     audit_boards_set_up = dict(
         AuditBoard.query.filter_by(round_id=round.id)
         .group_by(AuditBoard.jurisdiction_id)
@@ -274,7 +275,7 @@ def jurisdiction_audit_board_status(
     }
 
 
-def ballot_round_status(election: Election, round: Round) -> Dict[str, JSONDict]:
+def ballot_round_status(election: Election, round: Round) -> dict[str, JSONDict]:
     audit_board_status = jurisdiction_audit_board_status(
         list(election.jurisdictions), round
     )
@@ -416,7 +417,7 @@ def ballot_round_status(election: Election, round: Round) -> Dict[str, JSONDict]
                 else 0
             )
 
-    statuses: Dict[str, JSONDict] = {
+    statuses: dict[str, JSONDict] = {
         jurisdiction.id: {
             "status": status(jurisdiction),
             "numSamples": num_samples(jurisdiction),
@@ -447,7 +448,7 @@ def ballot_round_status(election: Election, round: Round) -> Dict[str, JSONDict]
     return statuses
 
 
-def batch_round_status(election: Election, round: Round) -> Dict[str, JSONDict]:
+def batch_round_status(election: Election, round: Round) -> dict[str, JSONDict]:
     sample_count_by_jurisdiction = dict(
         SampledBatchDraw.query.filter_by(round_id=round.id)
         .join(Batch)

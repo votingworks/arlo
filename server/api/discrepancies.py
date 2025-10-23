@@ -1,5 +1,4 @@
 from collections import defaultdict
-from typing import Dict, Union
 from werkzeug.exceptions import Conflict
 from flask import jsonify
 
@@ -21,8 +20,8 @@ from .jurisdictions import (
     jurisdiction_audit_board_status,
 )
 
-DiscrepanciesByJurisdiction = Dict[
-    str, Dict[str, Dict[str, Dict[str, Union[Dict[str, int], Dict[str, str]]]]]
+DiscrepanciesByJurisdiction = dict[
+    str, dict[str, dict[str, dict[str, dict[str, int] | dict[str, str]]]]
 ]
 # DiscrepanciesByJurisdiction = {
 #     jurisdictionID: {
@@ -168,7 +167,7 @@ def get_batch_comparison_discrepancies_by_jurisdiction(
 # In multi-jurisdiction audits, hide discrepancies if the jurisdiction hasn't finalized tallies
 def show_batch_comparison_discrepancies_by_jurisdiction(
     election: Election,
-) -> Dict[str, bool]:
+) -> dict[str, bool]:
     jurisdictions = list(election.jurisdictions)
     is_single_jurisdiction_election = len(jurisdictions) == 1
     if is_single_jurisdiction_election:
@@ -269,7 +268,7 @@ def get_ballot_comparison_discrepancies_by_jurisdiction(
 # In multi-jurisdiction audits, hide discrepancies if the jurisdiction hasn't signed off
 def show_ballot_comparison_discrepancies_by_jurisdiction(
     election: Election, round: Round
-) -> Dict[str, bool]:
+) -> dict[str, bool]:
     jurisdictions = list(election.jurisdictions)
     is_single_jurisdiction_election = len(jurisdictions) == 1
     if is_single_jurisdiction_election:

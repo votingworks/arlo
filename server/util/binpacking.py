@@ -1,4 +1,4 @@
-from typing import Dict, Optional, Tuple, List, cast
+from typing import cast
 import operator
 import numpy
 
@@ -7,8 +7,8 @@ class Bucket:
     def __init__(self, name: str):
         self.name = name
         self.size = 0
-        self.batches: Dict[str, int] = {}
-        self.largest_element: Optional[str] = None
+        self.batches: dict[str, int] = {}
+        self.largest_element: str | None = None
 
     def add_batch(self, batch_name: str, batch_size: int) -> None:
         self.batches[batch_name] = batch_size
@@ -19,7 +19,7 @@ class Bucket:
         elif batch_size > self.batches[self.largest_element]:
             self.largest_element = batch_name
 
-    def remove_batch(self, batch_name: str) -> Dict[str, int]:
+    def remove_batch(self, batch_name: str) -> dict[str, int]:
         taken = self.batches.pop(batch_name)
         self.size -= taken
 
@@ -56,7 +56,7 @@ class BucketList:
     algorithms.
     """
 
-    def __init__(self, buckets: List[Bucket]):
+    def __init__(self, buckets: list[Bucket]):
         self.buckets = buckets
         self.avg_size = self.get_avg_size()
 
@@ -75,7 +75,7 @@ class BucketList:
         """
 
         # first get all the batches in a list
-        batches: List[Tuple[str, int]] = []
+        batches: list[tuple[str, int]] = []
 
         # TODO maybe rework the whole thing so that we don't have to create a
         # new list?
@@ -87,7 +87,7 @@ class BucketList:
 
         # Sort the list of batches
         batches = sorted(batches, key=operator.itemgetter(1), reverse=True)
-        left_overs: List[Tuple[str, int]] = []
+        left_overs: list[tuple[str, int]] = []
 
         # Now assign batches
         # Assign all the too-big batches first
@@ -147,7 +147,7 @@ class BalancedBucketList:
     """
 
     avg_size: float
-    buckets: List[Bucket]
+    buckets: list[Bucket]
 
     def __init__(self, buckets):
         """
@@ -163,7 +163,7 @@ class BalancedBucketList:
         self.buckets = []
 
         # first get all the batches in a list, and initialize our buckets
-        batches: Tuple[str, int] = []
+        batches: tuple[str, int] = []
         for bucket in buckets:
             self.buckets.append(Bucket(bucket.name))
             for batch_name in bucket.batches:
@@ -171,7 +171,7 @@ class BalancedBucketList:
 
         # Sort the list of batches
         batches = sorted(batches, key=operator.itemgetter(1), reverse=True)
-        left_overs: List[Tuple[str, int]] = []
+        left_overs: list[tuple[str, int]] = []
 
         # Now assign batches to buckets
         # Assign all the too-big batches first

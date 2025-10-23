@@ -7,7 +7,7 @@ from ..helpers import *
 
 
 def test_upload_standardized_contests(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
 ):
     standardized_contests_file = (
         'Contest Name,Jurisdictions\nContest 1,all\nContest 2,"J1, J3"\nContest 3,J2 \n'
@@ -61,7 +61,7 @@ def test_download_standardized_contests_file_before_upload(
 
 
 def test_standardized_contests_replace(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
 ):
     rv = upload_standardized_contests(
         client,
@@ -102,7 +102,7 @@ def test_standardized_contests_replace(
 def test_standardized_contests_bad_jurisdiction(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
 ):
     rv = upload_standardized_contests(
         client,
@@ -138,7 +138,7 @@ def test_standardized_contests_bad_jurisdiction(
 def test_standardized_contests_no_jurisdictions(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
 ):
     rv = upload_standardized_contests(
         client,
@@ -171,7 +171,7 @@ def test_standardized_contests_no_jurisdictions(
 def test_standardized_contests_missing_file(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
 ):
     rv = client.post(
         f"/api/election/{election_id}/standardized-contests/file/upload-complete",
@@ -191,7 +191,7 @@ def test_standardized_contests_missing_file(
 def test_standardized_contests_bad_csv(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
 ):
     rv = client.post(
         f"/api/election/{election_id}/standardized-contests/file/upload-complete",
@@ -233,7 +233,7 @@ def test_standardized_contests_bad_csv(
 def test_standardized_contests_wrong_audit_type(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
 ):
     for audit_type in [AuditType.BALLOT_POLLING, AuditType.BATCH_COMPARISON]:
         # Hackily change the audit type
@@ -278,7 +278,7 @@ def test_standardized_contests_before_jurisdictions(
 
 
 def test_standardized_contests_newlines(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
 ):
     rv = upload_standardized_contests(
         client,
@@ -304,7 +304,7 @@ def test_standardized_contests_newlines(
 
 
 def test_standardized_contests_dominion_vote_for(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
 ):
     rv = upload_standardized_contests(
         client,
@@ -330,7 +330,7 @@ def test_standardized_contests_dominion_vote_for(
 
 
 def test_standardized_contests_change_jurisdictions_file(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
 ):
     standardized_contests_file = (
         "Contest Name,Jurisdictions\n"
@@ -425,7 +425,7 @@ def test_standardized_contests_change_jurisdictions_file(
 
 
 def test_standardized_contests_parse_all(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
 ):
     standardized_contests_file = (
         "Contest Name,Jurisdictions\n" + "Contest 1,All\n" + "Contest 2,  aLL \n"
@@ -450,7 +450,7 @@ def test_standardized_contests_parse_all(
 def test_reupload_standardized_contests_after_contests_selected(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     manifests,
     cvrs,
 ):
@@ -606,7 +606,7 @@ def test_standardized_contests_get_upload_url(client: FlaskClient, election_id: 
 def test_replace_standardized_contests_file_while_processing_jurisdictions_file_fails(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
 ):
     with no_automatic_task_execution():
         # upload jurisdictions file, but don't process it

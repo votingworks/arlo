@@ -255,7 +255,7 @@ def test_support_get_election(
     client: FlaskClient,
     org_id: str,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
 ):
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)
@@ -552,8 +552,8 @@ def test_support_get_jurisdiction(
     client: FlaskClient,
     org_id: str,
     election_id: str,
-    jurisdiction_ids: List[str],
-    audit_board_round_1_ids: List[str],
+    jurisdiction_ids: list[str],
+    audit_board_round_1_ids: list[str],
 ):
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)
     rv = client.get(f"/api/support/jurisdictions/{jurisdiction_ids[0]}")
@@ -649,7 +649,7 @@ def test_support_log_in_to_audit_as_audit_admin(client: FlaskClient, election_id
 
 
 def test_support_log_in_to_audit_as_jurisdiction_admin(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
 ):
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)
 
@@ -674,9 +674,9 @@ def test_support_log_in_to_audit_as_jurisdiction_admin(
 
 def test_support_clear_audit_boards(
     client: FlaskClient,
-    contest_ids: List[str],
-    jurisdiction_ids: List[str],
-    audit_board_round_1_ids: List[str],
+    contest_ids: list[str],
+    jurisdiction_ids: list[str],
+    audit_board_round_1_ids: list[str],
 ):
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)
 
@@ -714,8 +714,8 @@ def test_support_clear_audit_boards(
 def test_support_clear_offline_results_ballot_polling(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     election_settings,
     manifests,
 ):
@@ -846,7 +846,7 @@ def test_support_clear_offline_results_ballot_polling(
 def test_support_clear_offline_results_wrong_audit_type(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     election_settings,
 ):
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)
@@ -930,7 +930,7 @@ def test_support_undo_round_start(
 def test_support_reopen_current_round(
     client: FlaskClient,
     election_id: str,
-    contest_ids: List[str],
+    contest_ids: list[str],
     round_1_id: str,
 ):
     def is_round_completed(round_id: str) -> bool:
@@ -1006,8 +1006,8 @@ def test_support_reopen_current_round_when_round_in_progress(
 def test_list_users_by_organization(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     round_1_id: str,
 ):
     run_audit_round(round_1_id, contest_ids[0], contest_ids, 0.9)

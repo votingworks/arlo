@@ -1,4 +1,4 @@
-from typing import BinaryIO, Optional
+from typing import BinaryIO
 import uuid
 import logging
 from datetime import datetime
@@ -108,7 +108,7 @@ def process_ballot_manifest_file(
     election_id: str,
     jurisdiction_id: str,
     jurisdiction_admin_email: str,
-    support_user_email: Optional[str],
+    support_user_email: str | None,
 ):
     jurisdiction = Jurisdiction.query.get(jurisdiction_id)
 

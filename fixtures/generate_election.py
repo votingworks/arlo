@@ -9,11 +9,7 @@ from typing import (
     IO,
     Iterable,
     Literal,
-    Tuple,
     TypedDict,
-    Dict,
-    List,
-    Union,
 )
 
 SEED = 12345
@@ -21,7 +17,7 @@ SEED = 12345
 ## Types for the JSON election spec that is provided as input
 
 # { choice_name: votes }
-ContestTally = Dict[str, int]
+ContestTally = dict[str, int]
 
 
 class ContestSpec(TypedDict):
@@ -30,7 +26,7 @@ class ContestSpec(TypedDict):
     number_of_winners: int
     tally: ContestTally
     total_ballots_cast: int
-    jurisdictions: List[str]
+    jurisdictions: list[str]
 
 
 class JurisdictionSpec(TypedDict):
@@ -39,8 +35,8 @@ class JurisdictionSpec(TypedDict):
 
 class ElectionSpec(TypedDict):
     name: str
-    contests: List[ContestSpec]
-    jurisdictions: List[JurisdictionSpec]
+    contests: list[ContestSpec]
+    jurisdictions: list[JurisdictionSpec]
 
 
 ## Internal types for generation
@@ -53,7 +49,7 @@ class JurisdictionTally(TypedDict):
 
 
 # { contest_name: JurisdictionTally }
-JurisdictionTallies = Dict[str, JurisdictionTally]
+JurisdictionTallies = dict[str, JurisdictionTally]
 
 
 class Batch(TypedDict):
@@ -61,11 +57,11 @@ class Batch(TypedDict):
     tabulator: str
 
 
-Vote = Union[Literal[1], Literal[0]]
+Vote = Literal[1] | Literal[0]
 # { choice: Vote }
-ContestVotes = Dict[str, Vote]
+ContestVotes = dict[str, Vote]
 # { contest_name: ContestVotes }
-BallotVotes = Dict[str, ContestVotes]
+BallotVotes = dict[str, ContestVotes]
 
 
 class Ballot(TypedDict):
@@ -77,10 +73,10 @@ class Ballot(TypedDict):
 Cvrs = Iterable[Ballot]
 
 # (batch, num_ballots)
-Manifest = Iterable[Tuple[Batch, int]]
+Manifest = Iterable[tuple[Batch, int]]
 
 # (batch_name, ContestTally)
-BatchTallies = Iterable[Tuple[str, ContestTally]]
+BatchTallies = Iterable[tuple[str, ContestTally]]
 
 
 def generate_contest_votes(
@@ -125,7 +121,7 @@ def generate_ballot_votes(tallies: JurisdictionTallies) -> Iterable[BallotVotes]
 # color.
 def generate_batches(
     min_size: int, max_size: int, rand: random.Random
-) -> Iterable[Tuple[Batch, int]]:
+) -> Iterable[tuple[Batch, int]]:
     for batch_number in itertools.count(1):
         tabulator = "ABC"[(batch_number - 1) % 3]
         yield (
@@ -139,7 +135,7 @@ def generate_batches(
 
 def generate_cvrs(
     jurisdiction_tallies: JurisdictionTallies,
-    contests: List[ContestSpec],
+    contests: list[ContestSpec],
     rand: random.Random,
 ) -> Cvrs:
     min_batch_size = contests[0]["total_ballots_cast"] // 100
@@ -220,7 +216,7 @@ def write_dominion_cvrs(election_spec: ElectionSpec, cvrs: Cvrs, output_file: IO
 
 
 def cvrs_to_manifest(cvrs: Cvrs) -> Manifest:
-    counter: Dict[Tuple[str, str], int] = Counter()
+    counter: dict[tuple[str, str], int] = Counter()
     for ballot in cvrs:
         batch = ballot["batch"]
         # Can't hash a dict, so convert Batch to a tuple
@@ -276,7 +272,7 @@ def write_batch_tallies(
 
 def random_numbers_that_sum_to_total(
     total: int, num_numbers: int, rand: random.Random
-) -> List[int]:
+) -> list[int]:
     if num_numbers == 0:
         raise ValueError("num_numbers must be > 0")
     numbers = []
@@ -293,8 +289,8 @@ def random_numbers_that_sum_to_total(
 def split_contest_tallies_across_jurisdictions(
     election_spec: ElectionSpec,
     rand: random.Random,
-) -> Dict[str, JurisdictionTallies]:
-    jurisdiction_tallies: Dict[str, JurisdictionTallies] = {
+) -> dict[str, JurisdictionTallies]:
+    jurisdiction_tallies: dict[str, JurisdictionTallies] = {
         jurisdiction["name"]: {} for jurisdiction in election_spec["jurisdictions"]
     }
     for contest in election_spec["contests"]:
@@ -324,8 +320,8 @@ def split_contest_tallies_across_jurisdictions(
 
 
 def generate_jurisdiction_admins(
-    jurisdictions: List[JurisdictionSpec],
-) -> Dict[str, List[str]]:
+    jurisdictions: list[JurisdictionSpec],
+) -> dict[str, list[str]]:
     return {
         jurisdiction["name"]: [
             f"admin-{jurisdiction['name'].replace(' ', '-')}@example.com"
@@ -334,7 +330,7 @@ def generate_jurisdiction_admins(
     }
 
 
-def write_jurisdictions(jurisdiction_admins: Dict[str, List[str]], output_file: IO):
+def write_jurisdictions(jurisdiction_admins: dict[str, list[str]], output_file: IO):
     writer = csv.writer(output_file)
     writer.writerow(["Jurisdiction", "Admin Email"])
     for jurisdiction_name, admins in jurisdiction_admins.items():

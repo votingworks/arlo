@@ -1,7 +1,6 @@
 import json
 import io
 from datetime import datetime, timedelta
-from typing import List
 from flask.testing import FlaskClient
 import pytest
 
@@ -26,7 +25,7 @@ def test_jurisdictions_list_empty(client: FlaskClient, election_id: str):
 
 
 def test_jurisdictions_list_no_manifest(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
 ):
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)
@@ -73,7 +72,7 @@ def test_jurisdictions_list_no_manifest(
 
 
 def test_jurisdictions_list_with_manifest(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -245,7 +244,7 @@ def test_jurisdictions_status_round_1_no_audit_boards(
 def test_jurisdictions_status_round_1_with_audit_boards(
     client: FlaskClient,
     election_id: str,
-    audit_board_round_1_ids: List[str],
+    audit_board_round_1_ids: list[str],
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -290,7 +289,7 @@ def test_jurisdictions_status_round_1_with_audit_boards(
 def test_jurisdictions_status_round_1_with_audit_boards_without_ballots(
     client: FlaskClient,
     election_id: str,
-    audit_board_round_1_ids: List[str],
+    audit_board_round_1_ids: list[str],
 ):
     # Unassign all ballots for one audit board. This audit board shouldn't
     # factor into the jurisdiction's status
@@ -317,8 +316,8 @@ def test_jurisdictions_status_round_1_with_audit_boards_without_ballots(
 def test_jurisdictions_round_status_offline(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     election_settings,
     manifests,
     snapshot,
@@ -405,7 +404,7 @@ def test_jurisdictions_round_status_offline(
 def test_discrepancy_before_audit_launch(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
 ):
     rv = client.get(f"/api/election/{election_id}/discrepancy")
     assert rv.status_code == 409
@@ -422,7 +421,7 @@ def test_discrepancy_before_audit_launch(
 def test_discrepancy_non_batch_comparison_enabled(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
 ):
     rv = client.get(f"/api/election/{election_id}/discrepancy")
@@ -440,7 +439,7 @@ def test_discrepancy_non_batch_comparison_enabled(
 def test_last_login_by_jurisdiction_with_round(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_ids: str,
 ):
     # J3 has a unique JM which makes this test simpler

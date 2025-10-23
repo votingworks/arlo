@@ -1,4 +1,3 @@
-from typing import List, Dict
 import pytest
 import numpy as np
 
@@ -24,7 +23,7 @@ from .test_raire_utils import make_neb_assertion
 RAIRE_INPUT_DIR = "server/tests/audit_math/raire_data/input/"
 RAIRE_OUTPUT_DIR = "server/tests/audit_math/raire_data/output/"
 
-BallotList = List[Dict[str, int]]
+BallotList = list[dict[str, int]]
 
 
 @pytest.fixture
@@ -58,7 +57,7 @@ def cvrs() -> CVRS:
 
 
 @pytest.fixture
-def ballots() -> List[Dict[str, int]]:
+def ballots() -> list[dict[str, int]]:
     ballots = []
     for _ in range(25000):
         ballots.append({"winner": 1, "loser": 2, "loser2": 3})
@@ -237,15 +236,15 @@ def test_find_assertions_many_children(
     assert find_assertions(contest, ballots, nebs, asn_func, frontier, lowerbound, 0)
 
 
-def compare_result(path: str, contests: Dict[str, List[str]]):
-    expected: Dict[str, List[str]] = {}
+def compare_result(path: str, contests: dict[str, list[str]]):
+    expected: dict[str, list[str]] = {}
 
     with open(path, "r", encoding="utf8") as exp:
         lines = exp.readlines()
 
         reading_contest = None
 
-        contest_list: List[str] = []
+        contest_list: list[str] = []
         for line in lines:
             if line.startswith("CONTEST"):
                 if reading_contest:
@@ -327,14 +326,14 @@ def parse_raire_input(input_file: str):
 
             cid = toks[0]
             bid: str = toks[1]
-            prefs: List[str] = toks[2:]
+            prefs: list[str] = toks[2:]
 
             if prefs not in [[], [""]]:
                 contests[cid][prefs[0]] += 1
 
             contests[cid]["ballots"] += 1
 
-            ballot: Dict[str, int] = {}
+            ballot: dict[str, int] = {}
             for cand in contests[cid]:
                 if cand in prefs:
                     idx = prefs.index(cand) + 1
@@ -353,7 +352,7 @@ def parse_raire_input(input_file: str):
 
 
 def run_test(input_file: str, output_file: str, agap: float):
-    result: Dict[str, List[str]] = {}
+    result: dict[str, list[str]] = {}
 
     contests, cvrs, winners = parse_raire_input(input_file)
 
@@ -364,14 +363,14 @@ def run_test(input_file: str, output_file: str, agap: float):
         real_winners[winners[contest]] = con.candidates[winners[contest]]
         con.winners = real_winners
 
-        audit: List[RaireAssertion] = compute_raire_assertions(
+        audit: list[RaireAssertion] = compute_raire_assertions(
             con,
             cvrs,
             lambda m: 1 / m if m > 0 else np.inf,
             agap,
         )
 
-        asrtns: List[str] = [str(assertion) for assertion in audit]
+        asrtns: list[str] = [str(assertion) for assertion in audit]
         sorted_asrtns = sorted(asrtns)
         result[contest] = sorted_asrtns
 

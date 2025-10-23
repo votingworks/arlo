@@ -1,7 +1,6 @@
 import io
 import uuid
 import json
-from typing import List, Tuple
 import urllib.parse
 import pytest
 from flask.testing import FlaskClient
@@ -12,8 +11,8 @@ from ..models import *
 
 @pytest.fixture
 def contest_ids(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
-) -> List[str]:
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
+) -> list[str]:
     contests = [
         {
             "id": str(uuid.uuid4()),
@@ -48,7 +47,7 @@ def contest_ids(
 
 
 @pytest.fixture
-def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]):
+def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: list[str]):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
@@ -85,7 +84,7 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 def test_all_ballots_sample_size(
     client: FlaskClient,
     election_id: str,
-    contest_ids: List[str],
+    contest_ids: list[str],
     election_settings,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -100,8 +99,8 @@ def test_all_ballots_sample_size(
 def test_all_ballots_audit(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     election_settings,
     manifests,
     snapshot,
@@ -453,7 +452,7 @@ def test_all_ballots_audit(
 def test_full_hand_tally_results_validation(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
 ):
     set_logged_in_user(
@@ -471,7 +470,7 @@ def test_full_hand_tally_results_validation(
     contest = json.loads(rv.data)["contests"][0]
 
     # Record invalid results
-    invalid_results: List[Tuple[dict, str]] = [
+    invalid_results: list[tuple[dict, str]] = [
         (
             {
                 "batchName": "",
@@ -742,7 +741,7 @@ def test_full_hand_tally_results_validation(
 def test_full_hand_tally_results_unfinalize(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
 ):
     set_logged_in_user(

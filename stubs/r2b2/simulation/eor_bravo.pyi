@@ -1,6 +1,6 @@
 from r2b2.eor_bravo import EOR_BRAVO as EOR_BRAVO
 from r2b2.simulator import Simulation as Simulation, histogram as histogram
-from typing import Any, List, Optional, Tuple
+from typing import Any
 
 class EOR_BRAVOMultiRoundStoppingProb(Simulation):
     sample_sprob: float
@@ -8,7 +8,7 @@ class EOR_BRAVOMultiRoundStoppingProb(Simulation):
     sample_mult: float
     max_rounds: int
     total_relevant_ballots: int
-    vote_dist: List[Tuple[str, int]]
+    vote_dist: list[tuple[str, int]]
     audit: EOR_BRAVO
     contest_ballots: Any = ...
     def __init__(
@@ -16,9 +16,9 @@ class EOR_BRAVOMultiRoundStoppingProb(Simulation):
         alpha: Any,
         reported: Any,
         max_rounds: Any,
-        sample_size: Optional[Any] = ...,
-        sample_mult: Optional[Any] = ...,
-        sample_sprob: Optional[Any] = ...,
+        sample_size: Any | None = ...,
+        sample_mult: Any | None = ...,
+        sample_sprob: Any | None = ...,
         db_mode: bool = ...,
         db_host: str = ...,
         db_name: str = ...,
@@ -37,7 +37,7 @@ class EOR_BRAVOMultiRoundRisk(Simulation):
     sample_mult: float
     max_rounds: int
     total_relevant_ballots: int
-    vote_dist: List[Tuple[str, int]]
+    vote_dist: list[tuple[str, int]]
     audit: EOR_BRAVO
     contest_ballots: Any = ...
     def __init__(
@@ -45,9 +45,9 @@ class EOR_BRAVOMultiRoundRisk(Simulation):
         alpha: Any,
         reported: Any,
         max_rounds: Any,
-        sample_size: Optional[Any] = ...,
-        sample_mult: Optional[Any] = ...,
-        sample_sprob: Optional[Any] = ...,
+        sample_size: Any | None = ...,
+        sample_mult: Any | None = ...,
+        sample_sprob: Any | None = ...,
         db_mode: bool = ...,
         db_host: str = ...,
         db_name: str = ...,

@@ -1,4 +1,3 @@
-from typing import Optional
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 from flask import Flask, session, request
@@ -19,7 +18,7 @@ def set_sentry_user():
         sentry_sdk.set_tag("organization_name", election and election.organization.name)
 
 
-def configure_sentry(app: Optional[Flask] = None):
+def configure_sentry(app: Flask | None = None):
     sentry_sdk.init(
         SENTRY_DSN,
         environment=FLASK_ENV,

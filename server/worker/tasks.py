@@ -3,7 +3,7 @@ import traceback
 import logging
 from inspect import signature
 from datetime import datetime
-from typing import Optional, Callable, Dict
+from typing import Callable
 from sqlalchemy.orm import Session
 import sentry_sdk
 
@@ -24,7 +24,7 @@ class UserError(Exception):
     pass
 
 
-task_dispatch: Dict[str, Callable] = {}
+task_dispatch: dict[str, Callable] = {}
 
 
 # Decorator to register background task handlers. We use the handler's function
@@ -148,7 +148,7 @@ def run_task(task: BackgroundTask, db_session):
             sentry_sdk.capture_exception(error)
 
 
-def claim_next_task(worker_id: str, db_session) -> Optional[BackgroundTask]:
+def claim_next_task(worker_id: str, db_session) -> BackgroundTask | None:
     # Use SELECT ... FOR UPDATE to lock all queued tasks, ensuring that only a
     # single worker can claim a single task at a time. This ensures that we get
     # an accurate view of which tasks are available to claim. If another worker has
@@ -194,7 +194,7 @@ def claim_next_task(worker_id: str, db_session) -> Optional[BackgroundTask]:
         .with_entities(BackgroundTask.lock_key)
         .subquery()
     )
-    task: Optional[BackgroundTask] = (
+    task: BackgroundTask | None = (
         db_session.query(BackgroundTask)
         .filter_by(started_at=None)
         # Only allow one task per lock key to run at a time.
@@ -230,7 +230,7 @@ def reset_task(task: BackgroundTask, db_session):
     db_session.commit()
 
 
-def serialize_background_task(task: Optional[BackgroundTask]) -> Optional[JSONDict]:
+def serialize_background_task(task: BackgroundTask | None) -> JSONDict | None:
     if task is None:
         return None
 

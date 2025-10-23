@@ -2,9 +2,7 @@ from typing import (
     Any,
     Hashable,
     Iterable,
-    Union,
     TypeVar,
-    Tuple,
     Generic,
 )
 from typing_extensions import Literal
@@ -94,4 +92,4 @@ def sampler(
     take: int = ...,
     output: Literal["id", "tuple", "ticket"] = ...,
     digits: int = ...,
-) -> Union[Iterable[Id], Iterable[Tuple[str, str, int]], Iterable[Ticket]]: ...
+) -> Iterable[Id] | Iterable[tuple[str, str, int]] | Iterable[Ticket[Id]]: ...

@@ -4,7 +4,7 @@ computations.
 """
 
 import operator
-from typing import Dict, Optional, TypedDict
+from typing import TypedDict
 
 
 def from_db_contest(db_contest):
@@ -38,7 +38,7 @@ class Contest:
     ballots, the candidates and vote totals, and the number of winners.
     """
 
-    candidates: Dict[str, int]  # Dict mapping candidates to their vote totals
+    candidates: dict[str, int]  # Dict mapping candidates to their vote totals
     num_winners: int  # How many winners this contest had
     votes_allowed: int  # How many voters are allowed in this contest
     ballots: int  # The total number of ballots cast in this contest
@@ -46,13 +46,13 @@ class Contest:
     pending_ballots: int
     name: str  # The name of the contest
 
-    winners: Dict[str, int]  # List of all the winners
-    losers: Dict[str, int]  # List of all the losers
+    winners: dict[str, int]  # list of all the winners
+    losers: dict[str, int]  # list of all the losers
 
     diluted_margin: float  # The smallest diluted margin in this contest
-    margins: Dict[str, Dict]  # Dict of the margins for this contest
+    margins: dict[str, dict]  # dict of the margins for this contest
 
-    def __init__(self, name: str, contest_info_dict: Dict[str, int]):
+    def __init__(self, name: str, contest_info_dict: dict[str, int]):
         """
         Initializes the contest info from a dict of the form:
             {
@@ -169,13 +169,13 @@ class Contest:
 # CVR: { contest_id: { choice_id: "0" | "1" | "o" | "u" }}
 # Note: "o" and "u" are special cases for ES&S CVR overvotes and undervotes
 # CVRS: { ballot_id: CVR }
-CVR = Dict[str, Dict[str, str]]
-CVRS = Dict[str, Optional[CVR]]
+CVR = dict[str, dict[str, str]]
+CVRS = dict[str, CVR | None]
 
 
 class SampleCVR(TypedDict):
     times_sampled: int
-    cvr: Optional[CVR]
+    cvr: CVR | None
 
 
-SAMPLECVRS = Dict[str, SampleCVR]
+SAMPLECVRS = dict[str, SampleCVR]

@@ -1,4 +1,3 @@
-from typing import List
 import io
 import json
 from flask.testing import FlaskClient
@@ -15,7 +14,7 @@ BALLOT_1_POSITION = 3
 def test_ja_ballots_bad_round_id(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -29,10 +28,10 @@ def test_ja_ballots_bad_round_id(
 def test_ja_ballots_round_1(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_ids: str,
     round_1_id: str,
-    audit_board_round_1_ids: List[str],
+    audit_board_round_1_ids: list[str],
     snapshot,
 ):
     set_logged_in_user(
@@ -143,7 +142,7 @@ def test_ja_ballots_round_1(
 def test_ja_ballots_before_audit_boards_set_up(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
     snapshot,
 ):
@@ -177,9 +176,9 @@ def test_ja_ballots_before_audit_boards_set_up(
 def test_ja_ballots_round_2(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_2_id: str,
-    audit_board_round_2_ids: List[str],
+    audit_board_round_2_ids: list[str],
     snapshot,
 ):
     set_logged_in_user(
@@ -230,10 +229,10 @@ def test_ja_ballots_round_2(
 def test_ab_list_ballot_round_1(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_ids: str,
     round_1_id: str,
-    audit_board_round_1_ids: List[str],
+    audit_board_round_1_ids: list[str],
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
@@ -342,11 +341,11 @@ def test_ab_list_ballot_round_1(
 def test_ab_list_ballots_round_2(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
-    audit_board_round_1_ids: List[str],
+    audit_board_round_1_ids: list[str],
     round_2_id: str,
-    audit_board_round_2_ids: List[str],
+    audit_board_round_2_ids: list[str],
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_2_ids[0])
@@ -415,9 +414,9 @@ def test_ab_list_ballots_round_2(
 def test_ab_audit_ballot_not_found(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
-    audit_board_round_1_ids: List[str],
+    audit_board_round_1_ids: list[str],
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
     rv = put_json(
@@ -431,10 +430,10 @@ def test_ab_audit_ballot_not_found(
 def test_ab_audit_ballot_happy_path(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     round_1_id: str,
-    audit_board_round_1_ids: List[str],
+    audit_board_round_1_ids: list[str],
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
     rv = client.get(
@@ -445,7 +444,7 @@ def test_ab_audit_ballot_happy_path(
 
     choice_id = ContestChoice.query.filter_by(contest_id=contest_ids[0]).first().id
     contest_2_choices = ContestChoice.query.filter_by(contest_id=contest_ids[1]).all()
-    audit_requests: List[JSONDict] = [
+    audit_requests: list[JSONDict] = [
         {
             "status": "AUDITED",
             "interpretations": [
@@ -577,10 +576,10 @@ def test_ab_audit_ballot_happy_path(
 def test_ab_audit_ballot_overvote(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     round_1_id: str,
-    audit_board_round_1_ids: List[str],
+    audit_board_round_1_ids: list[str],
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
     rv = client.get(
@@ -654,10 +653,10 @@ def test_ab_audit_ballot_overvote(
 def test_ab_audit_ballot_has_invalid_write_in(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     round_1_id: str,
-    audit_board_round_1_ids: List[str],
+    audit_board_round_1_ids: list[str],
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
     rv = client.get(
@@ -704,10 +703,10 @@ def test_ab_audit_ballot_has_invalid_write_in(
 def test_ab_audit_ballot_wrong_audit_board(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     round_1_id: str,
-    audit_board_round_1_ids: List[str],
+    audit_board_round_1_ids: list[str],
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
     rv = client.get(
@@ -741,10 +740,10 @@ def test_ab_audit_ballot_wrong_audit_board(
 def test_ab_audit_ballot_invalid(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     round_1_id: str,
-    audit_board_round_1_ids: List[str],
+    audit_board_round_1_ids: list[str],
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
     rv = client.get(
@@ -1122,7 +1121,7 @@ def test_ab_audit_ballot_invalid(
 def test_ja_ballot_retrieval_list_bad_round_id(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -1136,7 +1135,7 @@ def test_ja_ballot_retrieval_list_bad_round_id(
 def test_ja_ballot_retrieval_list_before_audit_boards_set_up(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
 ):
     set_logged_in_user(
@@ -1158,9 +1157,9 @@ def test_ja_ballot_retrieval_list_before_audit_boards_set_up(
 def test_ja_ballot_retrieval_list_round_1(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
-    audit_board_round_1_ids: List[str],
+    audit_board_round_1_ids: list[str],
     snapshot,
 ):
     set_logged_in_user(
@@ -1186,7 +1185,7 @@ def test_ja_ballot_retrieval_list_round_1(
 def test_ja_ballot_retrieval_list_round_2(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_2_id: str,
     audit_board_round_2_ids: str,
     snapshot,
@@ -1214,7 +1213,7 @@ def test_ja_ballot_retrieval_list_round_2(
 def test_ja_ballots_count(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
     snapshot,
 ):
@@ -1231,8 +1230,8 @@ def test_ja_ballots_count(
 def test_ballots_human_sort_order(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     election_settings,
     snapshot,
 ):

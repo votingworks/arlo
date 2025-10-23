@@ -1,6 +1,5 @@
 import uuid
 from datetime import datetime
-from typing import List, Dict
 from flask import jsonify, request, current_app
 from xkcdpass import xkcd_password as xp
 from werkzeug.exceptions import Conflict, BadRequest, InternalServerError
@@ -9,7 +8,7 @@ from sqlalchemy import func
 from . import api
 from ..database import db_session
 from ..models import *
-from ..auth import restrict_access, UserType
+from ..auth.auth_helpers import restrict_access, UserType
 from .shared import get_current_round
 from ..util.jsonschema import validate, JSONDict
 from ..util.binpacking import BalancedBucketList, Bucket
@@ -37,7 +36,7 @@ CREATE_AUDIT_BOARD_REQUEST_SCHEMA = {
 
 # Raises if invalid
 def validate_audit_boards(
-    audit_boards: List[JSONDict],
+    audit_boards: list[JSONDict],
     election: Election,
     jurisdiction: Jurisdiction,
     round: Round,
@@ -63,7 +62,7 @@ def validate_audit_boards(
 def assign_sampled_ballots(
     jurisdiction: Jurisdiction,
     round: Round,
-    audit_boards: List[AuditBoard],
+    audit_boards: list[AuditBoard],
 ):
     # If containers were provided, we want all ballots from the same container
     # assigned to the same audit board. So we key batches by container.
@@ -206,7 +205,7 @@ def create_audit_boards(election: Election, jurisdiction: Jurisdiction, round: R
 
 def round_status_by_audit_board(
     jurisdiction_id: str, round_id: str
-) -> Dict[str, JSONDict]:
+) -> dict[str, JSONDict]:
     audit_boards = AuditBoard.query.filter_by(
         jurisdiction_id=jurisdiction_id, round_id=round_id
     ).all()
@@ -304,7 +303,7 @@ SET_MEMBERS_SCHEMA = {
 }
 
 
-def validate_members(members: List[JSONDict]):
+def validate_members(members: list[JSONDict]):
     # You can do all of these checks using JSON schema, but the resulting error
     # messages aren't very good.
     if len(members) == 0:

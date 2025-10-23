@@ -1,6 +1,5 @@
 import uuid
 import json
-from typing import List
 import pytest
 from flask.testing import FlaskClient
 
@@ -10,8 +9,8 @@ from ..models import *
 
 @pytest.fixture
 def contest_ids(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
-) -> List[str]:
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
+) -> list[str]:
     contests = [
         {
             "id": str(uuid.uuid4()),
@@ -90,7 +89,7 @@ def contest_ids(
 def test_sample_size_round_1(
     client: FlaskClient,
     election_id: str,
-    contest_ids: List[str],
+    contest_ids: list[str],
     election_settings,
     snapshot,
 ):
@@ -106,8 +105,8 @@ def test_sample_size_round_1(
 def test_multiple_targeted_contests_two_rounds(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     election_settings,
     manifests,
     snapshot,
@@ -244,8 +243,8 @@ def test_multiple_targeted_contests_two_rounds(
 def test_multiple_targeted_contests_full_hand_tally_error(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     election_settings,
     manifests,
 ):

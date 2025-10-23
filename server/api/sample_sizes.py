@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Dict, cast as typing_cast
+from typing import cast as typing_cast
 from collections import Counter, defaultdict
 from flask import jsonify
 from werkzeug.exceptions import BadRequest
@@ -37,7 +37,7 @@ def validate_all_manifests_uploaded(contest: Contest):
 
 
 def validate_batch_tallies(contest):
-    total_votes_by_choice: Dict[str, int] = defaultdict(int)
+    total_votes_by_choice: dict[str, int] = defaultdict(int)
     for jurisdiction in contest.jurisdictions:
         batch_tallies = typing_cast(BatchTallies, jurisdiction.batch_tallies)
         if batch_tallies is None:
@@ -119,7 +119,7 @@ def validate_hybrid_manifests_and_cvrs(contest: Contest):
         )
 
 
-def sample_size_options(election: Election) -> Dict[str, Dict[str, SampleSizeOption]]:
+def sample_size_options(election: Election) -> dict[str, dict[str, SampleSizeOption]]:
     if not election.contests:
         raise UserError("Cannot compute sample sizes until contests are set")
     if election.risk_limit is None:
@@ -233,7 +233,7 @@ def next_round_sample_size_options(election_id: str):
 
 # In rounds other than the first round, we want to automatically select a sample
 # size from the generated options instead of letting the user pick.
-def autoselect_sample_size(options: Dict[str, SampleSizeOption], audit_type: AuditType):
+def autoselect_sample_size(options: dict[str, SampleSizeOption], audit_type: AuditType):
     if audit_type == AuditType.BALLOT_POLLING:
         return options.get("0.9", options.get("asn"))
     elif audit_type == AuditType.BATCH_COMPARISON:

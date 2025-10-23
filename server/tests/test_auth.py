@@ -4,7 +4,6 @@ from datetime import timedelta
 import json
 import re
 import uuid
-from typing import List, Optional
 from unittest.mock import Mock, MagicMock, patch
 from urllib.parse import urlparse, parse_qs
 import pytest
@@ -184,7 +183,7 @@ def test_support_callback_rejected(
     client: FlaskClient,
     org_id: str,
 ):
-    bad_user_infos: List[Optional[JSONDict]] = [None, {}, {"email": AA_EMAIL}]
+    bad_user_infos: list[JSONDict | None] = [None, {}, {"email": AA_EMAIL}]
     for bad_user_info in bad_user_infos:
         with patch.object(auth0_sa, "authorize_access_token", return_value=None):
             mock_response = Mock()

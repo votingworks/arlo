@@ -1,5 +1,4 @@
 import io
-from typing import List
 from unittest.mock import MagicMock, patch, Mock
 from flask.testing import FlaskClient
 
@@ -13,7 +12,7 @@ def test_list_activities(
     client: FlaskClient,
     org_id: str,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
 ):
     set_support_user(client, "support@example.gov")
@@ -183,7 +182,7 @@ def test_list_activities_logins(
     client: FlaskClient,
     org_id: str,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
 ):
     # Try to log in a jurisdiction admin
     with patch("smtplib.SMTP", autospec=True) as smtp:
@@ -292,7 +291,7 @@ def test_file_upload_errors(
     client: FlaskClient,
     org_id: str,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
 ):
     rv = put_json(
         client,

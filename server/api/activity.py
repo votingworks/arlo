@@ -1,4 +1,4 @@
-from typing import Any, Dict, cast
+from typing import Any, cast
 from flask import session
 from flask.json import jsonify
 from werkzeug.exceptions import Forbidden
@@ -10,7 +10,7 @@ from ..util.isoformat import isoformat
 
 
 def serialize_activity(activity: ActivityLogRecord):
-    activity_info = cast(Dict[str, Any], activity.info)
+    activity_info = cast(dict[str, Any], activity.info)
     return dict(
         id=activity.id,
         activityName=activity.activity_name,

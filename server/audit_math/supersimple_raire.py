@@ -1,5 +1,4 @@
 from decimal import Decimal, ROUND_CEILING
-from typing import Dict, Tuple, Optional, List
 import math
 
 from .sampler_contest import Contest
@@ -43,7 +42,7 @@ def nMin(
 
 def compute_discrepancies(
     cvrs: CVRS, sample_cvr: SAMPLECVRS, assertion: RaireAssertion
-) -> Dict[str, Discrepancy]:
+) -> dict[str, Discrepancy]:
     """
     Iterates through a given sample and returns the discrepancies found.
 
@@ -86,7 +85,7 @@ def compute_discrepancies(
     """
     V = compute_margin_for_assertion(cvrs, assertion)
 
-    discrepancies: Dict[str, Discrepancy] = {}
+    discrepancies: dict[str, Discrepancy] = {}
     for ballot, ballot_sample_cvr in sample_cvr.items():
         ballot_discrepancy = discrepancy(
             cvrs.get(ballot),
@@ -147,11 +146,11 @@ def normalize_cvr(cvr: CVR) -> CVR:
 
 
 def discrepancy(
-    reported: Optional[CVR],
-    audited: Optional[CVR],
+    reported: CVR | None,
+    audited: CVR | None,
     assertion: RaireAssertion,
     margin: Decimal,
-) -> Optional[Discrepancy]:
+) -> Discrepancy | None:
     # Special cases: if ballot wasn't in CVR or ballot can't be found by
     # audit board, count it as a two-vote overstatement
     if reported is None or audited is None:
@@ -181,8 +180,8 @@ def get_sample_sizes(
     risk_limit: int,
     contest: Contest,
     cvrs: CVRS,
-    sample_results: Optional[Dict[RaireAssertion, Dict[str, int]]],
-    assertions: List[RaireAssertion],
+    sample_results: dict[RaireAssertion, dict[str, int]] | None,
+    assertions: list[RaireAssertion],
 ) -> int:
     """
     Computes initial sample sizes parameterized by likelihood that the
@@ -284,8 +283,8 @@ def compute_risk(
     contest: Contest,
     cvrs: CVRS,
     sample_cvr: SAMPLECVRS,
-    assertions: List[RaireAssertion],
-) -> Tuple[float, bool]:
+    assertions: list[RaireAssertion],
+) -> tuple[float, bool]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
 

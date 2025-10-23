@@ -15,7 +15,7 @@ from ..helpers import *
 
 
 @pytest.fixture
-def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]):
+def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: list[str]):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
@@ -61,7 +61,7 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 def cvrs(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     manifests,
 ):
     j1_cvr_lines = [
@@ -111,7 +111,7 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,PrecinctPortion,BallotType,R
 def test_ballot_comparison_container_manifest(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     election_settings,
     manifests,
     cvrs,
@@ -273,7 +273,7 @@ def test_ballot_comparison_container_manifest(
 def test_ballot_comparison_manifest_missing_tabulator(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -320,7 +320,7 @@ def test_ballot_comparison_manifest_missing_tabulator(
 def test_ballot_comparison_manifest_unexpected_cvr_column(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)

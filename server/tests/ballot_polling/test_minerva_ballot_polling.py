@@ -32,8 +32,8 @@ def election_settings(client: FlaskClient, election_id: str):
 def test_minerva_sample_size(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     election_settings,
     manifests,
     snapshot,
@@ -51,8 +51,8 @@ def test_minerva_sample_size(
 def test_minerva_ballot_polling_one_round(
     client: FlaskClient,
     election_id: str,
-    contest_ids: List[str],
-    jurisdiction_ids: List[str],
+    contest_ids: list[str],
+    jurisdiction_ids: list[str],
     election_settings,
     manifests,
     snapshot,
@@ -173,8 +173,8 @@ def test_minerva_ballot_polling_one_round(
 def test_minerva_ballot_polling_two_rounds(
     client: FlaskClient,
     election_id: str,
-    contest_ids: List[str],
-    jurisdiction_ids: List[str],
+    contest_ids: list[str],
+    jurisdiction_ids: list[str],
     election_settings,
     manifests,
     snapshot,

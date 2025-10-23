@@ -1,5 +1,4 @@
 from datetime import datetime, timezone
-from typing import List, Optional
 from flask import jsonify, request
 from werkzeug.exceptions import BadRequest, Conflict
 from sqlalchemy import func
@@ -131,8 +130,8 @@ def record_offline_results(
     return jsonify(status="ok")
 
 
-def serialize_results(round: Round, results: List[JurisdictionResult]) -> JSONDict:
-    def result_for_choice(contest_id: str, choice_id: str) -> Optional[int]:
+def serialize_results(round: Round, results: list[JurisdictionResult]) -> JSONDict:
+    def result_for_choice(contest_id: str, choice_id: str) -> int | None:
         return next(
             (
                 r.result

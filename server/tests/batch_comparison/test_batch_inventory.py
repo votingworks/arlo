@@ -101,7 +101,7 @@ TEST_TABULATOR_STATUS = """<?xml version="1.0" standalone="yes"?>
 
 
 @pytest.fixture
-def contest_id(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]):
+def contest_id(client: FlaskClient, election_id: str, jurisdiction_ids: list[str]):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     contest = {
         "id": str(uuid.uuid4()),
@@ -123,7 +123,7 @@ def contest_id(client: FlaskClient, election_id: str, jurisdiction_ids: List[str
 
 
 @pytest.fixture
-def contest_ids(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]):
+def contest_ids(client: FlaskClient, election_id: str, jurisdiction_ids: list[str]):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     contest1 = {
         "id": str(uuid.uuid4()),
@@ -163,7 +163,7 @@ def contest_ids(client: FlaskClient, election_id: str, jurisdiction_ids: List[st
 def test_batch_inventory_happy_path(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_id: str,
     snapshot,
 ):
@@ -374,7 +374,7 @@ def test_batch_inventory_happy_path(
 def test_batch_inventory_happy_path_cvrs_with_leading_equal_signs(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_id: str,
     snapshot,
 ):
@@ -585,7 +585,7 @@ def test_batch_inventory_happy_path_cvrs_with_leading_equal_signs(
 def test_batch_inventory_happy_path_cvrs_with_extra_spaces(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_id: str,
     snapshot,
 ):
@@ -796,7 +796,7 @@ def test_batch_inventory_happy_path_cvrs_with_extra_spaces(
 def test_batch_inventory_happy_path_multi_contest_batch_comparison(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_ids,
     snapshot,
 ):
@@ -1007,7 +1007,7 @@ def test_batch_inventory_happy_path_multi_contest_batch_comparison(
 def test_batch_inventory_download_before_upload(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_id: str,
 ):
     set_logged_in_user(
@@ -1030,7 +1030,7 @@ def test_batch_inventory_download_before_upload(
 def test_batch_inventory_invalid_file_uploads(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_id: str,
 ):
     set_logged_in_user(
@@ -1167,7 +1167,7 @@ def test_batch_inventory_invalid_file_uploads(
 def test_batch_inventory_missing_data_multi_contest_batch_comparison(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_ids,
 ):
     set_logged_in_user(
@@ -1222,7 +1222,7 @@ def test_batch_inventory_missing_data_multi_contest_batch_comparison(
 def test_batch_inventory_excel_tabulator_status_file(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_id: str,
     snapshot,
 ):
@@ -1404,7 +1404,7 @@ def test_batch_inventory_excel_tabulator_status_file(
 def test_batch_inventory_wrong_tabulator_status_file(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_id: str,
 ):
     set_logged_in_user(
@@ -1532,7 +1532,7 @@ p { line-height=100%}
 def test_batch_inventory_undo_sign_off(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_id: str,
 ):
     set_logged_in_user(
@@ -1587,7 +1587,7 @@ def test_batch_inventory_undo_sign_off(
 def test_batch_inventory_delete_cvr_after_sign_off(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_id: str,
 ):
     set_logged_in_user(
@@ -1642,7 +1642,7 @@ def test_batch_inventory_delete_cvr_after_sign_off(
 def test_batch_inventory_delete_tabulator_status_after_sign_off(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_id: str,
 ):
     set_logged_in_user(
@@ -1697,7 +1697,7 @@ def test_batch_inventory_delete_tabulator_status_after_sign_off(
 def test_batch_inventory_upload_cvr_before_contests(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -1730,7 +1730,7 @@ def test_batch_inventory_upload_cvr_before_contests(
 def test_batch_inventory_upload_tabulator_status_before_cvr(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_id: str,
 ):
     set_logged_in_user(
@@ -1762,7 +1762,7 @@ def test_batch_inventory_upload_tabulator_status_before_cvr(
 
 
 def test_batch_inventory_cvr_get_upload_url_missing_file_type(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -1782,7 +1782,7 @@ def test_batch_inventory_cvr_get_upload_url_missing_file_type(
 
 
 def test_batch_inventory_cvr_get_upload_url(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -1804,7 +1804,7 @@ def test_batch_inventory_cvr_get_upload_url(
 
 
 def test_batch_inventory_tabulator_status_get_upload_url_missing_file_type(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -1824,7 +1824,7 @@ def test_batch_inventory_tabulator_status_get_upload_url_missing_file_type(
 
 
 def test_batch_inventory_tabulator_status_get_upload_url(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -1848,7 +1848,7 @@ def test_batch_inventory_tabulator_status_get_upload_url(
 def test_upload_tabulator_status_file_while_cvr_file_is_processing_fails(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_id: str,
 ):
     set_logged_in_user(
@@ -1895,7 +1895,7 @@ def test_upload_tabulator_status_file_while_cvr_file_is_processing_fails(
 def test_remove_tabulator_status_file_while_cvr_file_is_processing_fails(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_id: str,
 ):
     set_logged_in_user(
@@ -1938,7 +1938,7 @@ def test_remove_tabulator_status_file_while_cvr_file_is_processing_fails(
 def test_upload_cvr_file_while_tabulator_status_file_is_processing_fails(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_id: str,
 ):
     set_logged_in_user(
@@ -1993,7 +1993,7 @@ def test_upload_cvr_file_while_tabulator_status_file_is_processing_fails(
 def test_remove_cvr_file_while_tabulator_status_file_is_processing_fails(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_id: str,
 ):
     set_logged_in_user(
@@ -2045,7 +2045,7 @@ def test_remove_cvr_file_while_tabulator_status_file_is_processing_fails(
 def test_batch_inventory_hart_cvr_upload(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_id: str,
     snapshot,
 ):
@@ -2184,7 +2184,7 @@ def test_batch_inventory_hart_cvr_upload(
 def test_batch_inventory_hart_cvr_upload_multi_contest(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_ids: str,
     snapshot,
 ):
@@ -2320,7 +2320,7 @@ def test_batch_inventory_hart_cvr_upload_multi_contest(
 def test_batch_inventory_ess_cvr_upload(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_id: str,
     snapshot,
 ):
@@ -2510,7 +2510,7 @@ x,15,p,bs,Batch 3,Choice 1-1,Choice 2-3
 def test_batch_inventory_ess_cvr_upload_no_ballot_file(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_id: str,
     snapshot,
 ):
@@ -2625,7 +2625,7 @@ def test_batch_inventory_ess_cvr_upload_no_ballot_file(
 def test_batch_inventory_ess_cvr_upload_multi_contest(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_ids: str,
     snapshot,
 ):

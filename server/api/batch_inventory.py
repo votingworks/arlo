@@ -9,7 +9,7 @@ from collections import defaultdict
 import csv
 from datetime import datetime, timezone
 import io
-from typing import TypedDict, Dict, Tuple, Optional
+from typing import TypedDict
 import uuid
 from xml.etree import ElementTree
 from flask import request, jsonify, session
@@ -78,11 +78,11 @@ EXPECTED_CVR_FILE_TYPE_MAPPING = {
 }
 
 # (tabulator_id, batch_id)
-BatchKey = Tuple[str, str]
+BatchKey = tuple[str, str]
 
 
 def batch_key_to_name(
-    batch_key: BatchKey, tabulator_id_to_name: Optional[Dict[str, str]]
+    batch_key: BatchKey, tabulator_id_to_name: dict[str, str | None]
 ) -> str:
     tabulator_id, batch_id = batch_key
 
@@ -98,13 +98,13 @@ def batch_key_to_name(
 
 class ElectionResults(TypedDict):
     # { batch_key: count }
-    ballot_count_by_batch: Dict[BatchKey, int]
+    ballot_count_by_batch: dict[BatchKey, int]
     # { choice_id: count }
-    ballot_count_by_group: Optional[Dict[str, int]]
+    ballot_count_by_group: dict[str, int | None]
     # { batch_key: counting_group }
-    batch_to_counting_group: Optional[Dict[BatchKey, str]]
+    batch_to_counting_group: dict[BatchKey, str | None]
     # { batch_key: { choice_id: count } }
-    batch_tallies: Dict[BatchKey, Dict[str, int]]
+    batch_tallies: dict[BatchKey, dict[str, int]]
 
 
 def dict_to_items_list(dictionary):
@@ -122,7 +122,7 @@ def items_list_to_dict(items):
 
 def validate_choice_name_and_get_choice_id(
     contest: Contest, choice_name: str
-) -> Optional[str]:
+) -> str | None:
     choice_id = None
     for choice in contest.choices:
         if choice.name == choice_name:
@@ -150,8 +150,8 @@ def validate_choice_name_and_get_choice_id(
 def process_batch_inventory_cvr_file(
     election_id: str,
     jurisdiction_id: str,
-    user: Tuple[UserType, str],
-    support_user_email: Optional[str],
+    user: tuple[UserType, str],
+    support_user_email: str | None,
 ):
     working_directory = tempfile.mkdtemp()
 
@@ -224,10 +224,10 @@ def process_batch_inventory_cvr_file(
 
         header_indices = get_header_indices(headers_and_affiliations)
 
-        ballot_count_by_group: Dict[str, int] = defaultdict(int)
-        ballot_count_by_batch: Dict[BatchKey, int] = defaultdict(int)
-        batch_to_counting_group: Dict[BatchKey, str] = {}
-        batch_tallies: Dict[BatchKey, Dict[str, int]] = defaultdict(
+        ballot_count_by_group: dict[str, int] = defaultdict(int)
+        ballot_count_by_batch: dict[BatchKey, int] = defaultdict(int)
+        batch_to_counting_group: dict[BatchKey, str] = {}
+        batch_tallies: dict[BatchKey, dict[str, int]] = defaultdict(
             lambda: defaultdict(int)
         )
 
@@ -267,7 +267,7 @@ def process_batch_inventory_cvr_file(
             batch_to_counting_group[batch_key] = counting_group
 
             for contest in contests:
-                contest_choice_votes: Dict[str, int] = {
+                contest_choice_votes: dict[str, int] = {
                     choice.id: parse_vote(
                         column_value(
                             row,
@@ -311,8 +311,8 @@ def process_batch_inventory_cvr_file(
             )
 
     def process_ess():
-        ballot_count_by_batch: Dict[BatchKey, int] = defaultdict(int)
-        batch_tallies: Dict[BatchKey, Dict[str, int]] = defaultdict(
+        ballot_count_by_batch: dict[BatchKey, int] = defaultdict(int)
+        batch_tallies: dict[BatchKey, dict[str, int]] = defaultdict(
             lambda: defaultdict(int)
         )
 
@@ -485,9 +485,9 @@ def process_batch_inventory_cvr_file(
         Each file is expected to contain the same rows as all the files above it in the same
         order, with zero or more rows added compared to the previous file.
         """
-        ballot_count_by_batch: Dict[BatchKey, int] = defaultdict(int)
-        batch_to_counting_group: Dict[BatchKey, str] = {}
-        batch_tallies: Dict[BatchKey, Dict[str, int]] = defaultdict(
+        ballot_count_by_batch: dict[BatchKey, int] = defaultdict(int)
+        batch_to_counting_group: dict[BatchKey, str] = {}
+        batch_tallies: dict[BatchKey, dict[str, int]] = defaultdict(
             lambda: defaultdict(int)
         )
 
@@ -577,8 +577,8 @@ def process_batch_inventory_cvr_file(
         batch_inventory_data.election_results = election_results
 
     def process_hart():
-        ballot_count_by_batch: Dict[BatchKey, int] = defaultdict(int)
-        batch_tallies: Dict[BatchKey, Dict[str, int]] = defaultdict(
+        ballot_count_by_batch: dict[BatchKey, int] = defaultdict(int)
+        batch_tallies: dict[BatchKey, dict[str, int]] = defaultdict(
             lambda: defaultdict(int)
         )
 
@@ -698,8 +698,8 @@ TABULATOR_STATUS_PARSE_ERROR = (
 def process_batch_inventory_tabulator_status_file(
     election_id: str,
     jurisdiction_id: str,
-    user: Tuple[UserType, str],
-    support_user_email: Optional[str],
+    user: tuple[UserType, str],
+    support_user_email: str | None,
 ):
     jurisdiction = Jurisdiction.query.get(jurisdiction_id)
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction_id)
@@ -708,12 +708,12 @@ def process_batch_inventory_tabulator_status_file(
         cvr_xml: ElementTree.ElementTree,
     ):
         namespaces = {"ss": "urn:schemas-microsoft-com:office:spreadsheet"}
-        # List of all rows in the table
+        # list of all rows in the table
         rows = cvr_xml.findall(
             ".//ss:Worksheet[@ss:Name='Tabulator Status']/ss:Table/ss:Row",
             namespaces,
         )
-        # List of all rows and text content of each cell in the row. eg.
+        # list of all rows and text content of each cell in the row. eg.
         # [ ...
         #   ["Tabulator Id", "Name",          "Load Status", "Total Ballots Cast"],
         #   ["TABULATOR1",   "Tabulator One", "1",           "123"],
@@ -763,7 +763,7 @@ def process_batch_inventory_tabulator_status_file(
 
     def get_tabulator_id_to_name_dict_for_plain_xml_file(
         cvr_xml: ElementTree.ElementTree,
-    ) -> Dict[Optional[str], Optional[str]]:
+    ) -> dict[str | None, str | None]:
         tabulators = cvr_xml.findall("tabulators/tb")
         if len(tabulators) == 0:
             raise UserError(TABULATOR_STATUS_PARSE_ERROR)

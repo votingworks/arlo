@@ -1,22 +1,21 @@
-from typing import Union, Optional
 from collections import defaultdict
 from xml.etree import ElementTree as ET
 
 NAMESPACE = "http://tempuri.org/CVRDesign.xsd"
 
 
-def find_text_xml(xml: Optional[Union[ET.ElementTree, ET.Element]], tag: str):
+def find_text_xml(xml: ET.ElementTree | ET.Element | None, tag: str):
     if xml is None:
         return None
     result = find_xml(xml, tag)
     return None if (result is None or result.text == "") else result.text
 
 
-def find_xml(xml: Union[ET.ElementTree, ET.Element], tag: str):
+def find_xml(xml: ET.ElementTree | ET.Element, tag: str):
     return xml.find(f"{{{NAMESPACE}}}{tag}")
 
 
-def findall_xml(xml: Union[ET.ElementTree, ET.Element], tag: str):
+def findall_xml(xml: ET.ElementTree | ET.Element, tag: str):
     return xml.findall(f"{{{NAMESPACE}}}{tag}")
 
 

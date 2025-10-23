@@ -1,6 +1,6 @@
 import csv
 import io
-from typing import Dict, List
+from typing import Literal
 from flask.testing import FlaskClient
 
 from ...models import *
@@ -8,8 +8,8 @@ from ..helpers import *
 
 
 def parse_vote_deltas(
-    vote_deltas: str, choices: List[dict]
-) -> Optional[Dict[str, int]]:
+    vote_deltas: str, choices: list[dict[Literal["name"], str]]
+) -> dict[str, int] | None:
     if vote_deltas == "":
         return None
     deltas = {
@@ -23,8 +23,8 @@ def parse_vote_deltas(
 
 def check_discrepancies(
     report: str,
-    expected_discrepancies: dict,
-    choices: List[dict],
+    expected_discrepancies: dict[str, dict[str, Any]],
+    choices: list[dict[Literal["name"], str]],
 ):
     report_batches = list(csv.DictReader(io.StringIO(report)))
     for jurisdiction_name, jurisdiction_discrepancies in expected_discrepancies.items():
@@ -44,7 +44,7 @@ def check_discrepancies(
 def test_batch_comparison_sample_size(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_id: str,
     election_settings,
     manifests,
@@ -62,7 +62,7 @@ def test_batch_comparison_sample_size(
 def test_batch_comparison_without_all_batch_tallies(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_id: str,
     election_settings,
     manifests,
@@ -88,7 +88,7 @@ def test_batch_comparison_without_all_batch_tallies(
 def test_batch_comparison_too_many_votes(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_id: str,
     election_settings,
     manifests,
@@ -129,7 +129,7 @@ def test_batch_comparison_too_many_votes(
 def test_batch_comparison_round_1(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_id: str,
     election_settings,
     manifests,
@@ -206,7 +206,7 @@ def test_batch_comparison_round_1(
 def test_batch_comparison_round_2(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
     snapshot,
 ):
@@ -541,7 +541,7 @@ def test_batch_comparison_custom_sample_size_validation(
 def test_batch_comparison_batches_sampled_multiple_times(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     election_settings,
     manifests,
     batch_tallies,
@@ -743,7 +743,7 @@ def test_batch_comparison_batches_sampled_multiple_times(
 def test_batch_comparison_sample_all_batches(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_id: str,
     election_settings,
     manifests,
@@ -806,7 +806,7 @@ def test_batch_comparison_undo_start_round_1(
 
 
 def test_batch_comparison_cant_create_audit_boards(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str], round_1_id: str
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -830,11 +830,11 @@ def test_batch_comparison_cant_create_audit_boards(
 def test_batch_comparison_sample_preview(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     manifests,
     batch_tallies,
     election_settings,
-    contest_ids: List[str],
+    contest_ids: list[str],
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -913,7 +913,7 @@ def test_batch_tallies_summed_by_jurisdiction_csv_generation(
 def test_batch_comparison_combined_batches(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id: str,
     snapshot,
 ):
@@ -1194,7 +1194,7 @@ def test_batch_comparison_combined_batches(
 def test_batch_comparison_pending_ballots(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_id: str,
     election_settings,
     manifests,

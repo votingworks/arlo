@@ -4,7 +4,8 @@ import io
 import os
 import re
 import tempfile
-from typing import BinaryIO, IO, List, Mapping, Optional, Dict, Any, Tuple
+from typing import BinaryIO, IO, Any
+from collections.abc import Mapping
 from urllib.parse import urlparse
 from zipfile import ZipFile
 from werkzeug.exceptions import BadRequest
@@ -25,7 +26,7 @@ class FileType(str, enum.Enum):
     XML = "xml"
 
 
-def serialize_file(file: Optional[File]) -> Optional[JSONDict]:
+def serialize_file(file: File | None) -> JSONDict | None:
     if file is None:
         return None
 
@@ -35,7 +36,7 @@ def serialize_file(file: Optional[File]) -> Optional[JSONDict]:
     }
 
 
-def serialize_file_processing(file: Optional[File]) -> Optional[JSONDict]:
+def serialize_file_processing(file: File | None) -> JSONDict | None:
     if file is None:
         return None
 
@@ -122,7 +123,7 @@ def zip_files(files: Mapping[str, IO[bytes]]) -> IO[bytes]:
     return zip_file
 
 
-def read_zip_filenames(zip_file: BinaryIO) -> List[str]:
+def read_zip_filenames(zip_file: BinaryIO) -> list[str]:
     with ZipFile(zip_file, "r") as zip_archive:
         return [
             entry_name
@@ -134,7 +135,7 @@ def read_zip_filenames(zip_file: BinaryIO) -> List[str]:
 
 # Extracts the contents of the provided zip file to the specified directory and returns the list of
 # extracted file names
-def unzip_files(zip_file: BinaryIO, directory_to_extract_to: str) -> List[str]:
+def unzip_files(zip_file: BinaryIO, directory_to_extract_to: str) -> list[str]:
     with ZipFile(zip_file, "r") as zip_archive:
         zip_archive.extractall(directory_to_extract_to)
         return [
@@ -164,10 +165,10 @@ def get_full_storage_path(file_path: str) -> str:
 
 def get_file_upload_url(
     storage_prefix: str, file_name: str, file_type: str
-) -> Optional[Dict[str, Any]]:
+) -> dict[str, Any]:
     if config.FILE_UPLOAD_STORAGE_PATH.startswith("s3://"):
         bucket_name = urlparse(config.FILE_UPLOAD_STORAGE_PATH).netloc
-        response: Dict[str, Any] = s3().generate_presigned_post(
+        response: dict[str, Any] = s3().generate_presigned_post(
             bucket_name,
             f"{storage_prefix}/{file_name}",
             # More documentation on different options to specify here:
@@ -204,8 +205,8 @@ def validate_and_get_standard_file_upload_request_params(
     request: Request,
     expected_file_directory_path: str,
     expected_file_name_prefix: str,
-    expected_file_types: List[FileType],
-) -> Tuple[str, str, str]:
+    expected_file_types: list[FileType],
+) -> tuple[str, str, str]:
     data = request.get_json()
     if data is None:
         raise BadRequest("Missing JSON request body")
@@ -241,7 +242,7 @@ def is_filetype_xml_mimetype(mime_type: str) -> bool:
     return mime_type in ["text/xml"]
 
 
-def validate_mimetype(mime_type: str, expected_file_types: List[FileType]) -> None:
+def validate_mimetype(mime_type: str, expected_file_types: list[FileType]) -> None:
     for type in expected_file_types:
         if type == FileType.CSV:
             if is_filetype_csv_mimetype(mime_type):

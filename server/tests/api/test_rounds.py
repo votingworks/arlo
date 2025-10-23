@@ -1,4 +1,3 @@
-from typing import List
 import json
 from flask.testing import FlaskClient
 
@@ -8,7 +7,7 @@ from ..helpers import *
 
 
 def test_rounds_list_empty(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
 ):
     rv = client.get(f"/api/election/{election_id}/round")
     rounds = json.loads(rv.data)
@@ -27,8 +26,8 @@ def test_rounds_list_empty(
 def test_rounds_create_one(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     election_settings,
     manifests,
 ):
@@ -101,8 +100,8 @@ def test_rounds_create_one(
 def test_rounds_create_two(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
     round_1_id: str,
     snapshot,
 ):
@@ -188,7 +187,7 @@ def test_rounds_create_two(
 def test_rounds_complete_audit(
     client: FlaskClient,
     election_id: str,
-    contest_ids: List[str],
+    contest_ids: list[str],
     round_1_id: str,
 ):
     run_audit_round(round_1_id, contest_ids[0], contest_ids, 0.7)
@@ -246,7 +245,7 @@ def test_rounds_complete_audit(
 def test_rounds_round_2_required_if_all_blanks(
     client: FlaskClient,
     election_id: str,
-    contest_ids: List[str],
+    contest_ids: list[str],
     round_1_id: str,
 ):
     run_audit_round_all_blanks(round_1_id, contest_ids[0], contest_ids)
@@ -262,7 +261,7 @@ def test_rounds_round_2_required_if_all_blanks(
 def test_rounds_end_logic_unaffected_by_invalid_write_ins_1(
     client: FlaskClient,
     election_id: str,
-    contest_ids: List[str],
+    contest_ids: list[str],
     round_1_id: str,
 ):
     run_audit_round(
@@ -280,7 +279,7 @@ def test_rounds_end_logic_unaffected_by_invalid_write_ins_1(
 def test_rounds_end_logic_unaffected_by_invalid_write_ins_2(
     client: FlaskClient,
     election_id: str,
-    contest_ids: List[str],
+    contest_ids: list[str],
     round_1_id: str,
 ):
     run_audit_round(
@@ -298,7 +297,7 @@ def test_rounds_end_logic_unaffected_by_invalid_write_ins_2(
 def test_rounds_end_logic_unaffected_by_invalid_write_ins_3(
     client: FlaskClient,
     election_id: str,
-    contest_ids: List[str],
+    contest_ids: list[str],
     round_1_id: str,
 ):
     run_audit_round_all_blanks(
@@ -339,7 +338,7 @@ def test_rounds_create_before_previous_round_complete(
 
 
 def test_rounds_wrong_number_too_big(
-    client: FlaskClient, election_id: str, contest_ids: List[str]
+    client: FlaskClient, election_id: str, contest_ids: list[str]
 ):
     rv = post_json(
         client,
@@ -414,7 +413,7 @@ def test_rounds_missing_sample_sizes(client: FlaskClient, election_id: str):
 
 
 def test_rounds_missing_round_num(
-    client: FlaskClient, election_id: str, contest_ids: List[str]
+    client: FlaskClient, election_id: str, contest_ids: list[str]
 ):
     rv = post_json(
         client,
@@ -437,7 +436,7 @@ def test_rounds_missing_round_num(
 
 
 def test_rounds_bad_sample_sizes(
-    client: FlaskClient, election_id: str, contest_ids: List[str]
+    client: FlaskClient, election_id: str, contest_ids: list[str]
 ):
     bad_sample_sizes = [
         ({}, "Sample sizes provided do not match targeted contest ids"),
@@ -479,7 +478,7 @@ def test_rounds_bad_sample_sizes(
 
 
 def test_finish_round_after_round_already_finished(
-    client: FlaskClient, election_id: str, contest_ids: List[str], round_1_id: str
+    client: FlaskClient, election_id: str, contest_ids: list[str], round_1_id: str
 ):
     run_audit_round(round_1_id, contest_ids[0], contest_ids, 0.5)
     rv = client.post(f"/api/election/{election_id}/round/current/finish")
@@ -555,7 +554,7 @@ def test_undo_start_round_1_with_audit_boards(
     client: FlaskClient,
     election_id: str,
     round_1_id: str,
-    audit_board_round_1_ids: List[str],
+    audit_board_round_1_ids: list[str],
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.delete(f"/api/election/{election_id}/round/current")

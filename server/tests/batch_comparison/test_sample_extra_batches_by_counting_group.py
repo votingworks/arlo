@@ -24,7 +24,7 @@ def org_id(client: FlaskClient, request) -> str:
 def manifests(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
 ):
     # Upload manifests with counting group in the Container column
     set_logged_in_user(
@@ -77,7 +77,7 @@ def test_sample_extra_batches_by_counting_group(
     client: FlaskClient,
     org_id: str,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     round_1_id,
     snapshot,
 ):
@@ -256,7 +256,7 @@ def test_sample_extra_batches_by_counting_group(
 def test_sample_extra_batches_with_no_extra_batches_to_sample(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_id: str,
     batch_tallies,
     election_settings,
@@ -359,7 +359,7 @@ def test_sample_extra_batches_with_no_extra_batches_to_sample(
 def test_sample_extra_batches_min_percentage_of_jurisdiction_ballots_selected(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_id: str,
     batch_tallies,
     election_settings,
@@ -434,7 +434,7 @@ def test_sample_extra_batches_min_percentage_of_jurisdiction_ballots_selected(
 def test_sample_extra_batches_hmpb_and_bmd_groups_selected(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_id: str,
     batch_tallies,
     election_settings,
@@ -530,7 +530,7 @@ def test_sample_extra_batches_hmpb_and_bmd_groups_selected(
 def test_sample_extra_batches_with_invalid_counting_group(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_id: str,
     batch_tallies,
     election_settings,
@@ -610,7 +610,7 @@ def test_sample_extra_batches_with_invalid_counting_group(
 def test_sample_extra_batches_with_combined_batches(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: list[str],
     contest_id: str,
     election_settings,
     manifests,
