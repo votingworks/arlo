@@ -1,7 +1,7 @@
 import sys
 import os
 import csv
-from xml.etree import ElementTree
+from defusedxml.ElementTree import parse as parse_xml
 from collections import defaultdict
 
 from server.api.cvrs import parse_scanned_ballot_information_file
@@ -50,7 +50,7 @@ def parse_cvr_file(
     use_directory_name_as_tabulator=False,
     include_votes_cast_per_contest=False,
 ):
-    xml = ElementTree.parse(file_path).getroot()
+    xml = parse_xml(file_path).getroot()
     assert xml.tag == f"{{{ns}}}Cvr"
 
     cvr = {

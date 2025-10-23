@@ -1,25 +1,25 @@
 from collections import defaultdict
-from xml.etree import ElementTree as ET
+from xml.etree.ElementTree import Element, ElementTree
 
 NAMESPACE = "http://tempuri.org/CVRDesign.xsd"
 
 
-def find_text_xml(xml: ET.ElementTree | ET.Element | None, tag: str):
+def find_text_xml(xml: ElementTree | Element | None, tag: str):
     if xml is None:
         return None
     result = find_xml(xml, tag)
     return None if (result is None or result.text == "") else result.text
 
 
-def find_xml(xml: ET.ElementTree | ET.Element, tag: str):
+def find_xml(xml: ElementTree | Element, tag: str):
     return xml.find(f"{{{NAMESPACE}}}{tag}")
 
 
-def findall_xml(xml: ET.ElementTree | ET.Element, tag: str):
+def findall_xml(xml: ElementTree | Element, tag: str):
     return xml.findall(f"{{{NAMESPACE}}}{tag}")
 
 
-def parse_contest_results(cvr_xml: ET.ElementTree):
+def parse_contest_results(cvr_xml: ElementTree):
     # { contest_name: voted_for_choices }
     results = defaultdict(set)
     contests = findall_xml(find_xml(cvr_xml, "Contests"), "Contest")
