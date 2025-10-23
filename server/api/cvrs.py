@@ -2,11 +2,12 @@ from math import floor
 import uuid
 import tempfile
 import csv
+from defusedxml.ElementTree import parse as parse_xml
 import itertools
 import os
 import shutil
+from xml.etree.ElementTree import ElementTree
 import typing
-from xml.etree import ElementTree as ET
 from typing import (
     IO,
     BinaryIO,
@@ -1128,7 +1129,7 @@ def parse_hart_cvrs(
     # { contest_name: choice_names }
     contest_choices = defaultdict(set)
     for cvr_file_path in cvr_file_paths.values():
-        cvr_xml = ET.parse(cvr_file_path)
+        cvr_xml = parse_xml(cvr_file_path)
         for contest, choice_names in parse_contest_results(cvr_xml).items():
             contest_choices[contest].update(choice_names)
 
@@ -1167,7 +1168,7 @@ def parse_hart_cvrs(
         for choice_metadata in contest_metadata["choices"].values()
     )
 
-    def parse_interpretations(cvr_xml: ET.ElementTree):
+    def parse_interpretations(cvr_xml: ElementTree):
         interpretations = ["" for _ in range(max_interpretation_column + 1)]
         contest_results = parse_contest_results(cvr_xml)
         for contest_name, voted_for_choices in contest_results.items():
@@ -1194,7 +1195,7 @@ def parse_hart_cvrs(
     def parse_cvr_ballots() -> Iterable[CvrBallot]:
         for (cvr_zip_file_name, cvr_file_name), cvr_file_path in cvr_file_paths.items():
             cvr_zip_file_name_without_extension = cvr_zip_file_name[:-4]
-            cvr_xml = ET.parse(cvr_file_path)
+            cvr_xml = parse_xml(cvr_file_path)
             cvr_guid = find_xml(cvr_xml, "CvrGuid").text
             batch_number = find_xml(cvr_xml, "BatchNumber").text
             batch_sequence = find_xml(cvr_xml, "BatchSequence").text

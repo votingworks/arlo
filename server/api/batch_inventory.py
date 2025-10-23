@@ -11,7 +11,8 @@ from datetime import datetime, timezone
 import io
 from typing import TypedDict
 import uuid
-from xml.etree import ElementTree
+from defusedxml.ElementTree import parse as parse_xml
+from xml.etree.ElementTree import ElementTree
 from flask import request, jsonify, session
 from werkzeug.exceptions import BadRequest, Conflict
 from sqlalchemy.orm import Session
@@ -592,7 +593,7 @@ def process_batch_inventory_cvr_file(
         cvr_file.close()
 
         for cvr_file_name in cvr_file_names:
-            cvr_xml = ElementTree.parse(os.path.join(working_directory, cvr_file_name))
+            cvr_xml = parse_xml(os.path.join(working_directory, cvr_file_name))
             batch_number = find_text_xml(cvr_xml, "BatchNumber")
             precinct_name = find_text_xml(find_xml(cvr_xml, "PrecinctSplit"), "Name")
             batch_key_value = (
@@ -705,7 +706,7 @@ def process_batch_inventory_tabulator_status_file(
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction_id)
 
     def get_tabulator_id_to_name_dict_for_excel_file(
-        cvr_xml: ElementTree.ElementTree,
+        cvr_xml: ElementTree,
     ):
         namespaces = {"ss": "urn:schemas-microsoft-com:office:spreadsheet"}
         # list of all rows in the table
@@ -762,7 +763,7 @@ def process_batch_inventory_tabulator_status_file(
         }
 
     def get_tabulator_id_to_name_dict_for_plain_xml_file(
-        cvr_xml: ElementTree.ElementTree,
+        cvr_xml: ElementTree,
     ) -> dict[str | None, str | None]:
         tabulators = cvr_xml.findall("tabulators/tb")
         if len(tabulators) == 0:
@@ -773,7 +774,7 @@ def process_batch_inventory_tabulator_status_file(
     def process():
         file = retrieve_file(batch_inventory_data.tabulator_status_file)
         try:
-            cvr_xml = ElementTree.parse(file)
+            cvr_xml = parse_xml(file)
         except Exception as error:
             raise UserError(TABULATOR_STATUS_PARSE_ERROR) from error
 
