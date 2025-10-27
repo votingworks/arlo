@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import React from 'react'
 import { screen, waitFor, within } from '@testing-library/react'
 import { QueryClientProvider } from 'react-query'
@@ -15,6 +15,7 @@ import {
   serverError,
   createQueryClient,
   typeCode,
+  withFetchResponders,
 } from '../../testUtilities'
 import BatchRoundSteps from './BatchRoundSteps'
 import { jaApiCalls, contestMocks } from '../../_mocks'
@@ -67,6 +68,11 @@ const renderComponent = (stepPath = '') => {
 describe('BatchRoundSteps', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+  })
+
+  afterEach(() => {
+    // Ensure timers are reset after each test, in case fake timers were used
+    vi.useRealTimers()
   })
 
   it('navigates between steps using buttons or links', async () => {
@@ -326,46 +332,20 @@ describe('BatchRoundSteps', () => {
 
   it('on Step 2, polls for login requests and can confirm/reject a request', async () => {
     vi.useFakeTimers()
-    const expectedCalls = [
-      jaApiCalls.getBatches(batchesMocks.emptyInitial),
-      jaApiCalls.getTallyEntryAccountStatus(
-        tallyEntryAccountStatusMocks.noLoginRequests
-      ),
-      jaApiCalls.getTallyEntryAccountStatus(
-        tallyEntryAccountStatusMocks.loginRequestsUnconfirmed
-      ),
-      {
-        ...jaApiCalls.postConfirmTallyEntryLoginCode,
-        response: {
-          errors: [
-            {
-              errorType: 'Bad Request',
-              message: 'Invalid code, please try again.',
-            },
-          ],
-        },
-        error: { status: 400, statusText: 'Bad Request' },
-      },
-      jaApiCalls.postConfirmTallyEntryLoginCode,
-      jaApiCalls.getTallyEntryAccountStatus(
-        tallyEntryAccountStatusMocks.loginRequestsOneConfirmed
-      ),
-      jaApiCalls.getTallyEntryAccountStatus(
-        tallyEntryAccountStatusMocks.loginRequestsOneConfirmed
-      ),
-      jaApiCalls.getTallyEntryAccountStatus(
-        tallyEntryAccountStatusMocks.loginRequestsOneConfirmed
-      ),
-      jaApiCalls.postRejectTallyEntryLoginRequest,
-      jaApiCalls.getTallyEntryAccountStatus({
-        ...tallyEntryAccountStatusMocks.loginRequestsOneConfirmed,
-        loginRequests: [
-          tallyEntryAccountStatusMocks.loginRequestsOneConfirmed
-            .loginRequests[0],
-        ],
-      }),
-    ]
-    await withMockFetch(expectedCalls, async () => {
+
+    await withFetchResponders(async rs => {
+      const emptyInitialBatchResponder = rs.add(
+        rs.mock(jaApiCalls.getBatches(batchesMocks.emptyInitial))
+      )
+
+      const noLoginRequestsStatusResponder = rs.add(
+        rs.mock(
+          jaApiCalls.getTallyEntryAccountStatus(
+            tallyEntryAccountStatusMocks.noLoginRequests
+          )
+        )
+      )
+
       renderComponent('/tally-entry-accounts')
       await screen.findByRole('heading', {
         name: 'Set Up Tally Entry Accounts',
@@ -374,6 +354,17 @@ describe('BatchRoundSteps', () => {
 
       // On first poll, no requests
       screen.getByText('No tally entry accounts have logged in yet')
+
+      // Transition from no login requests to multiple unconfirmed requests
+      emptyInitialBatchResponder.remove()
+      noLoginRequestsStatusResponder.remove()
+      const bothLoginRequestsUnconfirmedResponder = rs.add(
+        rs.mock(
+          jaApiCalls.getTallyEntryAccountStatus(
+            tallyEntryAccountStatusMocks.loginRequestsUnconfirmed
+          )
+        )
+      )
 
       // On next poll, two login requests
       vi.advanceTimersByTime(1000)
@@ -402,6 +393,22 @@ describe('BatchRoundSteps', () => {
         name: /Confirm/,
       })
 
+      // Set up invalid login code response
+      rs.addOneshot(
+        rs.mock({
+          ...jaApiCalls.postConfirmTallyEntryLoginCode,
+          response: {
+            errors: [
+              {
+                errorType: 'Bad Request',
+                message: 'Invalid code, please try again.',
+              },
+            ],
+          },
+          error: { status: 400, statusText: 'Bad Request' },
+        })
+      )
+
       // Try to confirm without a code
       userEvent.click(confirmButton)
       await within(dialog).findByText('Enter a 3-digit login code')
@@ -419,6 +426,17 @@ describe('BatchRoundSteps', () => {
       expect(digitInputs[0]).toHaveValue('')
       expect(digitInputs[1]).toHaveValue('')
       expect(digitInputs[2]).toHaveValue('')
+
+      // Transition from both unconfirmed to one confirmed
+      bothLoginRequestsUnconfirmedResponder.remove()
+      rs.addOneshot(rs.mock(jaApiCalls.postConfirmTallyEntryLoginCode))
+      const oneConfirmedStatusResponder = rs.add(
+        rs.mock(
+          jaApiCalls.getTallyEntryAccountStatus(
+            tallyEntryAccountStatusMocks.loginRequestsOneConfirmed
+          )
+        )
+      )
 
       // Confirm successfully
       // (we use the same code, but the request mock is set up to succeed this time)
@@ -453,6 +471,20 @@ describe('BatchRoundSteps', () => {
           screen.queryByText('Confirm Login: Kevin Jones')
         ).not.toBeInTheDocument()
       })
+
+      oneConfirmedStatusResponder.remove()
+      rs.addOneshot(rs.mock(jaApiCalls.postRejectTallyEntryLoginRequest))
+      rs.add(
+        rs.mock(
+          jaApiCalls.getTallyEntryAccountStatus({
+            ...tallyEntryAccountStatusMocks.loginRequestsOneConfirmed,
+            loginRequests: [
+              tallyEntryAccountStatusMocks.loginRequestsOneConfirmed
+                .loginRequests[0],
+            ],
+          })
+        )
+      )
 
       // Reject the request
       const rejectButton = screen.getByRole('button', {

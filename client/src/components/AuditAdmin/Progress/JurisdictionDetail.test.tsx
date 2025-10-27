@@ -30,7 +30,7 @@ import { withMockFetch, createQueryClient } from '../../testUtilities'
 import { dummyBallots } from '../../AuditBoard/_mocks'
 import { batchesMocks } from '../../JurisdictionAdmin/_mocks'
 
-jest.mock('axios')
+vi.mock('axios')
 
 // Borrowed from generateSheets.test.tsx
 const mockSavePDF = vi.fn()

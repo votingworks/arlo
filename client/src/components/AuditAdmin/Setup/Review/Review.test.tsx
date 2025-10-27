@@ -1,3 +1,4 @@
+import { describe, expect, it, vi } from 'vitest'
 import React from 'react'
 import userEvent from '@testing-library/user-event'
 import { screen, fireEvent, waitFor, within } from '@testing-library/react'
@@ -128,8 +129,8 @@ const apiCalls = {
 }
 
 const renderView = (props = {}) => {
-  const goToPrevStage = jest.fn()
-  const startNextRound = jest.fn().mockResolvedValue(true)
+  const goToPrevStage = vi.fn()
+  const startNextRound = vi.fn().mockResolvedValue(true)
 
   return {
     goToPrevStage,
