@@ -24,6 +24,7 @@ import CopyToClipboard from '../../Atoms/CopyToClipboard'
 import { downloadTallyEntryLoginLinkPrintout } from '../generateSheets'
 import { ButtonRow, Column, Row } from '../../Atoms/Layout'
 import CodeInputAtom from '../../Atoms/CodeInput'
+import { useTiming } from '../../TimingContext'
 
 const useTurnOnTallyEntryAccounts = (
   electionId: string,
@@ -62,15 +63,20 @@ export interface ITallyEntryAccountStatus {
 const useTallyEntryAccountStatus = (
   electionId: string,
   jurisdictionId: string
-) =>
-  useQuery<ITallyEntryAccountStatus>(
+) => {
+  const timing = useTiming()
+  return useQuery<ITallyEntryAccountStatus>(
     ['jurisdictions', jurisdictionId, 'tallyEntryAccountStatus'],
     () =>
       fetchApi(
         `/auth/tallyentry/election/${electionId}/jurisdiction/${jurisdictionId}`
       ),
-    { refetchInterval: status => (status?.passphrase ? 1000 : false) }
+    {
+      refetchInterval: status =>
+        status?.passphrase ? timing.defaultRefetchInterval : false,
+    }
   )
+}
 
 const useConfirmTallyEntryLogin = (
   electionId: string,
@@ -205,6 +211,8 @@ const ConfirmTallyEntryLoginModal: React.FC<IConfirmTallyEntryLoginProps> = ({
   }>({ reValidateMode: 'onSubmit' })
   const [isConfirmed, setIsConfirmed] = useState(false)
 
+  const timing = useTiming()
+
   // If there's no login request, the modal is closed. We return a closed Dialog
   // to make the closing animation work (instead of unmounting the Dialog, which
   // would have no animation).
@@ -224,7 +232,7 @@ const ConfirmTallyEntryLoginModal: React.FC<IConfirmTallyEntryLoginProps> = ({
       setTimeout(() => {
         onClose()
         setIsConfirmed(false)
-      }, 1500)
+      }, timing.modalDismissDelay)
     } catch (error) {
       if (error instanceof ApiError) {
         reset()

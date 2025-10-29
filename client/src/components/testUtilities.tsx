@@ -17,6 +17,7 @@ import userEvent from '@testing-library/user-event'
 import { QueryClient, DefaultOptions } from 'react-query'
 import { queryClientDefaultOptions } from '../App'
 import { assert } from './utilities'
+import { TEST_TIMING, TimingContext } from './TimingContext'
 
 type MatchParameter<Params> = { [K in keyof Params]?: string }
 
@@ -71,7 +72,9 @@ export function renderWithRouter(
   }: { route?: string; history?: MemoryHistory } = {}
 ): RenderWithRouterReturn {
   const Wrapper: React.FC = ({ children }: { children?: React.ReactNode }) => (
-    <Router history={history}>{children}</Router>
+    <TimingContext.Provider value={TEST_TIMING}>
+      <Router history={history}>{children}</Router>
+    </TimingContext.Provider>
   )
 
   return {
@@ -124,7 +127,7 @@ function maybeMockAxios() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   if ('mockImplementation' in (axios as any).default) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ;(axios as any).mockImplementation(
+    ; (axios as any).mockImplementation(
       async (
         url: string,
         { onUploadProgress, data, ...options }: AxiosRequestConfig
@@ -178,9 +181,9 @@ export const withMockFetch = async (
     ) {
       return expectedRequest.error
         ? new Response(
-            JSON.stringify(expectedRequest.response),
-            expectedRequest.error
-          )
+          JSON.stringify(expectedRequest.response),
+          expectedRequest.error
+        )
         : new Response(JSON.stringify(expectedRequest.response))
     }
 

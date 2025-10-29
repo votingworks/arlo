@@ -41,7 +41,7 @@ interface ITabsWrapperProps {
 const TabsWrapper = styled.div<ITabsWrapperProps>`
   .${Classes.TAB_INDICATOR_WRAPPER} {
     transition-duration: ${({ isAnimationEnabled = true }) =>
-      !isAnimationEnabled ? '0ms' : undefined};
+    !isAnimationEnabled ? '0ms' : undefined};
   }
 `
 
