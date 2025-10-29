@@ -35,7 +35,7 @@ dev-environment:
 
 	@echo
 	@echo '⚠️  User action required: Make poetry available in your PATH.'
-	@echo '⚠️  If using bash, run `export PATH="$$PATH:$$HOME/.local/bin" >> ~/.bashrc && source ~/.bashrc`'
+	@echo "⚠️  If using bash, run: echo 'export PATH=\"\$$PATH:\$$HOME/.local/bin\"' >> ~/.bashrc && source ~/.bashrc"
 
 install:
 	poetry env use 3.11
