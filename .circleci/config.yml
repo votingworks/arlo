@@ -20,7 +20,7 @@ executors:
         environment:
           DATABASE_URL: postgresql://root@localhost:5432/arlo-test
           FLASK_ENV: test
-      - image: cimg/postgres:12.11
+      - image: cimg/postgres:15.13
         environment:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
