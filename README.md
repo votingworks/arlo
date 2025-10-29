@@ -46,14 +46,6 @@ The statistics used in Arlo include:
 
 Random sampling of ballots is done using [Rivest's Consistent Sampler](https://github.com/ron-rivest/consistent_sampler).
 
-### Future development
-
-Ongoing development is planned to support:
-
-- Additional election types (proportional contests, RCV elections, etc.)
-
-- More efficient statistical methods
-
 ### Using Arlo
 
 To use Arlo, we recommend following our user documentation, which can be found here: https://docs.voting.works/arlo/.
@@ -72,22 +64,16 @@ Like any open-source software, Arlo welcomes suggested changes in the form of pu
 
 Before submitting a pull request, please review our [Contribution Guidelines](./docs/contribution-guidelines.md).
 
-### Installation
+### Quick start guide
 
-#### Installing Arlo
+We recommend running Arlo on Ubuntu 24. Once you have an Ubuntu 24 environment:
 
-We recommend running Arlo on Ubuntu 20.
+- Clone the Arlo repository from https://github.com/votingworks/arlo
+- Run `make dev-environment`
+- Run `make install`
+- Run `make dev-dbs`
 
-- Clone the Arlo repository from https://github.com/votingworks/arlo.
-- `make dev-environment` or, if you prefer, look at individual make tasks like `deps`, `initdevdb`, `install-development`, and `resetdb`
-- Ensure `poetry` is available in your `PATH`. This will vary slightly depending on your shell and where `poetry` was installed. With bash, that should look like: `export PATH="$PATH:$HOME/.local/bin"`, which you can add to your `.bashrc`.
-
-Here are some troubleshooting steps for issues we've run into when installing Arlo before:
-
-- Arlo expects the Postgresql server to use the UTC timezone. You may need to edit `/etc/postgresql/10/main/postgresql.conf` and set `timezone = UTC`.
-- A password may have to be set in the `DATABASE_URL` env var depending on your install of postgres. To do this, change `postgresql://postgres@localhost:5432/arlo` to `postgresql://postgres:{PASSWORD}@localhost:5432/arlo`, replacing `{PASSWORD}` with the password.
-- You may need to create `arlo` and `arlo-test` databases manually [via postgres](https://www.postgresql.org/docs/9.0/sql-createdatabase.html).
-- If you run into the error `fe_sendauth: no password supplied` when running `make dev-environment`, it means there's no password set for the default postgres user. You can change the postgres authentication method to not require a password by editing `/etc/postgresql/10/main/pg_hba.conf` and changing `md5` to `trust` for both the IPv4 and IPv6 local connections settings, and then restart postgres via `sudo systemctl restart postgresql`.
+After completing the above, use `make run` to run a local dev server. This will also run the Arlo background worker and a local nOAuth server.
 
 ### Configuration
 
@@ -113,13 +99,7 @@ However, you can also log in as audit admins/jurisdiction admins via the support
 
 ### Database configuration
 
-To initialize the database schema, run `make resetdb`.
-
 Arlo's database schema is encoded by a series of migrations. When pulling in new changes from the Arlo repo, you may need to run migrations to update to the current schema. More info on this in [server/migrations/README.md](server/migrations/README.md).
-
-### Running Arlo
-
-To run a local dev server: `./run-dev.sh`. This will also run the Arlo background worker and a local nOAuth server.
 
 ### Creating organizations and audit administrators
 
@@ -136,15 +116,6 @@ To start out, you'll need to create at least one organization and audit admin.
 
 ### Testing
 
-To run the tests all the way through, use these commands:
-
-- `make resettestdb` (to initialize the test db schema)
-- `make test-server` or `make test-server-coverage`
-- `make test-client`
-- `./client/run-cypress-tests.sh`
-
-To run tests while developing, you can use these commands to make things more interactive:
-
-- Server tests: `poetry run pytest` (you can add flags - e.g. `-k <pattern>` only runs tests that match the pattern, `-n auto` to run the tests in parallel)
-- Client tests: `yarn --cwd client test` (runs interactive test CLI)
-- End-to-end tests: first run `FLASK_ENV=test ./run-dev.sh` to run the server, then, in a separate shell, run `yarn --cwd client run cypress open` (opens the Cypress test app for interactive test running/debugging)
+- `make test` runs server tests.
+- `make -C client test` runs client tests.
+- `./client/run-cypress-tests.sh` runs integration tests.
