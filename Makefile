@@ -18,7 +18,7 @@ dev-environment:
 	@# Install Python 3.11
 	sudo apt install -y python3.11 python3.11-venv libpython3.11-dev python-dev-is-python3
 
-	@# Install other misc apt packages
+	@# Install other apt packages
 	sudo apt install -y gcc graphicsmagick libpq-dev postgresql
 
 	@# Install Node: https://github.com/nodesource/distributions/blob/master/README.md#deb
