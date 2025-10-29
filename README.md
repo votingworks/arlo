@@ -70,6 +70,7 @@ We recommend running Arlo on Ubuntu 24. Once you have an Ubuntu 24 environment:
 
 - Clone the Arlo repository from https://github.com/votingworks/arlo
 - Run `make dev-environment`
+- Make poetry available in your PATH, e.g., `export PATH="$PATH:$HOME/.local/bin" >> ~/.bashrc && source ~/.bashrc`
 - Run `make install`
 - Run `make dev-dbs`
 
