@@ -20,18 +20,13 @@ import { ToastContainer } from 'react-toastify'
 import { http, HttpResponse } from 'msw'
 import {
   renderWithRouter,
-  withMockFetch,
   findAndCloseToast,
   createQueryClient,
   typeCode,
 } from '../../testUtilities'
 import BatchRoundSteps from './BatchRoundSteps'
 import { jaApiCalls, contestMocks } from '../../_mocks'
-import {
-  roundMocks,
-  batchesMocks,
-  tallyEntryAccountStatusMocks,
-} from '../_mocks'
+import { roundMocks, batchesMocks } from '../_mocks'
 import { server } from '../../../MockServer'
 
 vi.mock(import('copy-to-clipboard'), async importActual => ({
@@ -97,84 +92,97 @@ describe('BatchRoundSteps', () => {
   })
 
   it('navigates between steps using buttons or links', async () => {
-    const expectedCalls = [
-      jaApiCalls.getBatches(batchesMocks.emptyInitial),
-      jaApiCalls.getJurisdictionContests(contestMocks.one),
-      jaApiCalls.getTallyEntryAccountStatus(
-        tallyEntryAccountStatusMocks.turnedOff
-      ),
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      renderComponent()
+    server
+      .addBatch({
+        id: 'batch-1',
+        lastEditedBy: null,
+        name: 'Batch One',
+        numBallots: 100,
+        resultTallySheets: [],
+      })
+      .addContest(contestMocks.one[0])
 
-      // Defaults to Prepare Batches
-      await screen.findByRole('heading', {
-        name: 'Prepare Batches',
-        current: 'step',
-      })
+    renderComponent()
 
-      // Continue buttons
-      userEvent.click(screen.getByRole('button', { name: /Continue/ }))
-      await screen.findByRole('heading', {
-        name: 'Set Up Tally Entry Accounts',
-        current: 'step',
-      })
-      userEvent.click(screen.getByRole('button', { name: /Continue/ }))
-      await screen.findByRole('heading', {
-        name: 'Enter Tallies',
-        current: 'step',
-      })
-      expect(
-        screen.queryByRole('button', { name: /Continue/ })
-      ).not.toBeInTheDocument()
+    // Defaults to Prepare Batches
+    await screen.findByRole('heading', {
+      name: 'Prepare Batches',
+      current: 'step',
+    })
 
-      // Back buttons
-      userEvent.click(screen.getByRole('button', { name: /Back/ }))
-      await screen.findByRole('heading', {
-        name: 'Set Up Tally Entry Accounts',
-        current: 'step',
-      })
-      userEvent.click(screen.getByRole('button', { name: /Back/ }))
-      await screen.findByRole('heading', {
-        name: 'Prepare Batches',
-        current: 'step',
-      })
-      expect(
-        screen.queryByRole('button', { name: /Back/ })
-      ).not.toBeInTheDocument()
+    // Continue buttons
+    userEvent.click(screen.getByRole('button', { name: /Continue/ }))
+    await screen.findByRole('heading', {
+      name: 'Set Up Tally Entry Accounts',
+      current: 'step',
+    })
+    userEvent.click(screen.getByRole('button', { name: /Continue/ }))
+    await screen.findByRole('heading', {
+      name: 'Enter Tallies',
+      current: 'step',
+    })
+    expect(
+      screen.queryByRole('button', { name: /Continue/ })
+    ).not.toBeInTheDocument()
 
-      // Step title links
-      userEvent.click(screen.getByRole('link', { name: 'Enter Tallies' }))
-      await screen.findByRole('heading', {
-        name: 'Enter Tallies',
-        current: 'step',
-      })
-      userEvent.click(
-        screen.getByRole('link', { name: 'Set Up Tally Entry Accounts' })
-      )
-      await screen.findByRole('heading', {
-        name: 'Set Up Tally Entry Accounts',
-        current: 'step',
-      })
-      userEvent.click(screen.getByRole('link', { name: 'Prepare Batches' }))
-      await screen.findByRole('heading', {
-        name: 'Prepare Batches',
-        current: 'step',
-      })
+    // Back buttons
+    userEvent.click(screen.getByRole('button', { name: /Back/ }))
+    await screen.findByRole('heading', {
+      name: 'Set Up Tally Entry Accounts',
+      current: 'step',
+    })
+    userEvent.click(screen.getByRole('button', { name: /Back/ }))
+    await screen.findByRole('heading', {
+      name: 'Prepare Batches',
+      current: 'step',
+    })
+    expect(
+      screen.queryByRole('button', { name: /Back/ })
+    ).not.toBeInTheDocument()
+
+    // Step title links
+    userEvent.click(screen.getByRole('link', { name: 'Enter Tallies' }))
+    await screen.findByRole('heading', {
+      name: 'Enter Tallies',
+      current: 'step',
+    })
+    userEvent.click(
+      screen.getByRole('link', { name: 'Set Up Tally Entry Accounts' })
+    )
+    await screen.findByRole('heading', {
+      name: 'Set Up Tally Entry Accounts',
+      current: 'step',
+    })
+    userEvent.click(screen.getByRole('link', { name: 'Prepare Batches' }))
+    await screen.findByRole('heading', {
+      name: 'Prepare Batches',
+      current: 'step',
     })
   })
 
   it('defaults to Enter Tallies step if any tallies have been entered', async () => {
-    const expectedCalls = [
-      jaApiCalls.getBatches(batchesMocks.complete),
-      jaApiCalls.getJurisdictionContests(contestMocks.one),
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      renderComponent()
-      await screen.findByRole('heading', {
-        name: 'Enter Tallies',
-        current: 'step',
+    server
+      .addBatch({
+        id: 'batch-1',
+        lastEditedBy: null,
+        name: 'Batch One',
+        numBallots: 100,
+        resultTallySheets: [
+          {
+            name: 'Tally Sheet #1',
+            results: {
+              'choice-id-1': 1,
+              'choice-id-2': 2,
+            },
+          },
+        ],
       })
+      .addContest(contestMocks.one[0])
+
+    renderComponent()
+    await screen.findByRole('heading', {
+      name: 'Enter Tallies',
+      current: 'step',
     })
   })
 
@@ -182,65 +190,69 @@ describe('BatchRoundSteps', () => {
     const mockDownloadWindow: { onbeforeunload?: () => void } = {}
     window.open = vi.fn().mockReturnValue(mockDownloadWindow)
 
-    const expectedCalls = [
-      jaApiCalls.getBatches(batchesMocks.emptyInitial),
-      jaApiCalls.getJurisdictionContests(contestMocks.one),
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      renderComponent('/prepare-batches')
-      await screen.findByRole('heading', {
-        name: 'Prepare Batches',
-        current: 'step',
+    server
+      .addBatch({
+        id: 'batch-1',
+        lastEditedBy: null,
+        name: 'Batch One',
+        numBallots: 100,
+        resultTallySheets: [],
       })
+      .addContest(contestMocks.one[0])
 
-      // Download batch retrieval list
-      screen.getByRole('heading', { name: 'Retrieve Batches from Storage' })
-      const batchRetrievalListButton = screen.getByRole('button', {
-        name: /Download Batch Retrieval List/,
-      })
-      userEvent.click(batchRetrievalListButton)
-      expect(batchRetrievalListButton).toBeDisabled()
-      await waitFor(() => expect(window.open).toHaveBeenCalledTimes(1))
-      expect(window.open).toBeCalledWith(
-        '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/batches/retrieval-list'
-      )
-      mockDownloadWindow.onbeforeunload!()
-      await waitFor(() => expect(batchRetrievalListButton).toBeEnabled())
-
-      // Download batch tally sheets
-      screen.getByRole('heading', { name: 'Print Batch Tally Sheets' })
-      const batchTallySheetButton = screen.getByRole('button', {
-        name: /Download Batch Tally Sheets/,
-      })
-      userEvent.click(batchTallySheetButton)
-      expect(batchTallySheetButton).toBeDisabled()
-      await waitFor(() =>
-        expect(mockSavePDF).toHaveBeenCalledWith(
-          'Batch Tally Sheets - Jurisdiction One - audit one.pdf',
-          {
-            returnPromise: true,
-          }
-        )
-      )
-      expect(batchTallySheetButton).toBeEnabled()
-
-      // Download stack labels
-      screen.getByRole('heading', { name: 'Print Stack Labels' })
-      const StackLabelsButton = screen.getByRole('button', {
-        name: /Download Stack Labels/,
-      })
-      userEvent.click(StackLabelsButton)
-      expect(StackLabelsButton).toBeDisabled()
-      await waitFor(() =>
-        expect(mockSavePDF).toHaveBeenCalledWith(
-          'Stack Labels - Jurisdiction One - audit one.pdf',
-          {
-            returnPromise: true,
-          }
-        )
-      )
-      expect(StackLabelsButton).toBeEnabled()
+    renderComponent('/prepare-batches')
+    await screen.findByRole('heading', {
+      name: 'Prepare Batches',
+      current: 'step',
     })
+
+    // Download batch retrieval list
+    screen.getByRole('heading', { name: 'Retrieve Batches from Storage' })
+    const batchRetrievalListButton = screen.getByRole('button', {
+      name: /Download Batch Retrieval List/,
+    })
+    userEvent.click(batchRetrievalListButton)
+    expect(batchRetrievalListButton).toBeDisabled()
+    await waitFor(() => expect(window.open).toHaveBeenCalledTimes(1))
+    expect(window.open).toBeCalledWith(
+      '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/batches/retrieval-list'
+    )
+    mockDownloadWindow.onbeforeunload!()
+    await waitFor(() => expect(batchRetrievalListButton).toBeEnabled())
+
+    // Download batch tally sheets
+    screen.getByRole('heading', { name: 'Print Batch Tally Sheets' })
+    const batchTallySheetButton = screen.getByRole('button', {
+      name: /Download Batch Tally Sheets/,
+    })
+    userEvent.click(batchTallySheetButton)
+    expect(batchTallySheetButton).toBeDisabled()
+    await waitFor(() =>
+      expect(mockSavePDF).toHaveBeenCalledWith(
+        'Batch Tally Sheets - Jurisdiction One - audit one.pdf',
+        {
+          returnPromise: true,
+        }
+      )
+    )
+    expect(batchTallySheetButton).toBeEnabled()
+
+    // Download stack labels
+    screen.getByRole('heading', { name: 'Print Stack Labels' })
+    const StackLabelsButton = screen.getByRole('button', {
+      name: /Download Stack Labels/,
+    })
+    userEvent.click(StackLabelsButton)
+    expect(StackLabelsButton).toBeDisabled()
+    await waitFor(() =>
+      expect(mockSavePDF).toHaveBeenCalledWith(
+        'Stack Labels - Jurisdiction One - audit one.pdf',
+        {
+          returnPromise: true,
+        }
+      )
+    )
+    expect(StackLabelsButton).toBeEnabled()
   })
 
   it('handles failures to generate batch tally sheets PDF', async () => {

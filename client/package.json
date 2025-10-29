@@ -8,9 +8,9 @@
     "lint:fix": "yarn lint --fix",
     "start": "vite",
     "test": "is-ci \"test:ci\" \"test:watch\"",
-    "test:ci": "CI=true tsc && jest --maxWorkers 4 --coverage --testTimeout 30000",
-    "test:coverage": "TZ=UTC jest --coverage",
-    "test:watch": "TZ=UTC jest --watchAll"
+    "test:ci": "CI=true tsc && vitest run --maxWorkers 4 --coverage --testTimeout 30000",
+    "test:coverage": "TZ=UTC vitest run --coverage",
+    "test:watch": "TZ=UTC vitest watch"
   },
   "lint-staged": {
     "*.+(css|graphql|json|less|md|mdx|sass|scss|yaml|yml)": [
