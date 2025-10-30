@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 import pytest
 from sqlalchemy import create_engine
-from sqlalchemy_utils import create_database, drop_database
+from sqlalchemy_utils import create_database, database_exists, drop_database
 from ..database import Base
 from ..config import DATABASE_URL
 
@@ -21,6 +21,8 @@ def alembic_config():
 @pytest.fixture
 def alembic_engine():
     url = f"{DATABASE_URL}-migrations-{datetime.now(timezone.utc)}"
+    if database_exists(url):
+        drop_database(url)
     create_database(url)
 
     engine = create_engine(url)

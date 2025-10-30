@@ -7,7 +7,7 @@ import time
 from unittest.mock import patch
 import sqlalchemy
 from sqlalchemy.orm import scoped_session, sessionmaker
-from sqlalchemy_utils import create_database, drop_database
+from sqlalchemy_utils import create_database, database_exists, drop_database
 import pytest
 
 
@@ -38,6 +38,8 @@ from ..worker.worker import run_worker
 @pytest.fixture
 def db_session(request):
     url = f"{config.DATABASE_URL}-{request.node.name}"
+    if database_exists(url):
+        drop_database(url)
     create_database(url)
     engine = sqlalchemy.create_engine(url)
     db_session = scoped_session(
