@@ -76,7 +76,7 @@ test:
 test-coverage:
 	poetry run pytest -n auto --cov=. --ignore=server/tests/arlo-extra-tests
 
-test-extra: # This runs the tests in the arlo-extra-tests as well (must download first)
+test-extra: # This additionally runs the tests in arlo-extra-tests (must download first)
 	poetry run pytest -n auto
 
 test-extra-coverage:
