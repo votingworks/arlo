@@ -569,6 +569,7 @@ describe('generateSheets', () => {
 
   const names = [
     'Aaron Adams',
+    'Amelia Bedelia (I)', // Incumbent
     'Barry Batts',
     'Crazy Cabbs',
     'Danny Durnham Sr.',
