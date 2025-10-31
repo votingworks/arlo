@@ -74,6 +74,16 @@ interface IDropdownCheckboxListProps {
   contestIndex: number
 }
 
+const DropdownCheckboxListContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  p {
+    margin: 0;
+  }
+`
+
 const DropdownCheckboxList: React.FC<IDropdownCheckboxListProps> = ({
   formikBag: { values, setFieldValue },
   text,
@@ -137,9 +147,19 @@ const DropdownCheckboxList: React.FC<IDropdownCheckboxListProps> = ({
     </Menu>
   )
   return (
-    <Popover position={Position.BOTTOM} content={menu}>
-      <FormButton>{text}</FormButton>
-    </Popover>
+    <DropdownCheckboxListContainer>
+      <Popover position={Position.BOTTOM} content={menu}>
+        <FormButton>{text}</FormButton>
+      </Popover>
+      <p>
+        {optionList.filter(o => o.checked).length} of {optionList.length}{' '}
+        selected
+      </p>
+      <ErrorMessage
+        name={`contests[${contestIndex}].jurisdictionIds`}
+        component={ErrorLabel}
+      />
+    </DropdownCheckboxListContainer>
   )
 }
 
@@ -509,10 +529,6 @@ const ContestForm: React.FC<IProps> = ({
                               optionList={jurisdictionOptions}
                               formikBag={{ values, setFieldValue }}
                               contestIndex={i}
-                            />
-                            <ErrorMessage
-                              name={`contests[${i}].jurisdictionIds`}
-                              component={ErrorLabel}
                             />
                           </FormSection>
                         )}
