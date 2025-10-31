@@ -1144,6 +1144,34 @@ export const contestMocks = mocksOfType<IContest[]>()({
       ],
     },
   ],
+  oneProposition: [
+    {
+      id: 'contest-id-1',
+      name: 'Contest 1',
+      isTargeted: true,
+      totalBallotsCast: 30,
+      numWinners: 1,
+      votesAllowed: 1,
+      jurisdictionIds: [
+        'jurisdiction-id-1',
+        'jurisdiction-id-2',
+        'jurisdiction-id-3',
+      ],
+      // Intentionally order no before yes to test sorting logic
+      choices: [
+        {
+          id: 'choice-id-1',
+          name: 'No',
+          numVotes: 10,
+        },
+        {
+          id: 'choice-id-2',
+          name: 'Yes',
+          numVotes: 20,
+        },
+      ],
+    },
+  ],
   two: [
     {
       id: 'contest-id-1',
