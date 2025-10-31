@@ -269,24 +269,35 @@ exports[`Audit Setup > Contests renders empty opportunistic state correctly 1`] 
           >
             Select the jurisdictions where this contest appeared on the ballot.
           </div>
-          <span
-            class="bp3-popover-wrapper"
+          <div
+            class="sc-kPVwWT gJhrlA"
           >
             <span
-              class="bp3-popover-target"
+              class="bp3-popover-wrapper"
             >
-              <button
-                class="bp3-button sc-iwsKbI drSRDt"
-                type="button"
+              <span
+                class="bp3-popover-target"
               >
-                <span
-                  class="bp3-button-text"
+                <button
+                  class="bp3-button sc-iwsKbI drSRDt"
+                  type="button"
                 >
-                  Select Jurisdictions
-                </span>
-              </button>
+                  <span
+                    class="bp3-button-text"
+                  >
+                    Select Jurisdictions
+                  </span>
+                </button>
+              </span>
             </span>
-          </span>
+            <p>
+              0
+               of 
+              2
+               
+              selected
+            </p>
+          </div>
         </div>
       </div>
       <div
@@ -659,24 +670,35 @@ exports[`Audit Setup > Contests renders empty targeted state correctly 1`] = `
           >
             Select the jurisdictions where this contest appeared on the ballot.
           </div>
-          <span
-            class="bp3-popover-wrapper"
+          <div
+            class="sc-kPVwWT gJhrlA"
           >
             <span
-              class="bp3-popover-target"
+              class="bp3-popover-wrapper"
             >
-              <button
-                class="bp3-button sc-iwsKbI drSRDt"
-                type="button"
+              <span
+                class="bp3-popover-target"
               >
-                <span
-                  class="bp3-button-text"
+                <button
+                  class="bp3-button sc-iwsKbI drSRDt"
+                  type="button"
                 >
-                  Select Jurisdictions
-                </span>
-              </button>
+                  <span
+                    class="bp3-button-text"
+                  >
+                    Select Jurisdictions
+                  </span>
+                </button>
+              </span>
             </span>
-          </span>
+            <p>
+              0
+               of 
+              2
+               
+              selected
+            </p>
+          </div>
         </div>
       </div>
       <div
@@ -1049,24 +1071,35 @@ exports[`Audit Setup > Contests renders filled opportunistic state correctly 1`]
           >
             Select the jurisdictions where this contest appeared on the ballot.
           </div>
-          <span
-            class="bp3-popover-wrapper"
+          <div
+            class="sc-kPVwWT gJhrlA"
           >
             <span
-              class="bp3-popover-target"
+              class="bp3-popover-wrapper"
             >
-              <button
-                class="bp3-button sc-iwsKbI drSRDt"
-                type="button"
+              <span
+                class="bp3-popover-target"
               >
-                <span
-                  class="bp3-button-text"
+                <button
+                  class="bp3-button sc-iwsKbI drSRDt"
+                  type="button"
                 >
-                  Select Jurisdictions
-                </span>
-              </button>
+                  <span
+                    class="bp3-button-text"
+                  >
+                    Select Jurisdictions
+                  </span>
+                </button>
+              </span>
             </span>
-          </span>
+            <p>
+              0
+               of 
+              2
+               
+              selected
+            </p>
+          </div>
         </div>
       </div>
       <div
@@ -1439,24 +1472,35 @@ exports[`Audit Setup > Contests renders filled targeted state correctly 1`] = `
           >
             Select the jurisdictions where this contest appeared on the ballot.
           </div>
-          <span
-            class="bp3-popover-wrapper"
+          <div
+            class="sc-kPVwWT gJhrlA"
           >
             <span
-              class="bp3-popover-target"
+              class="bp3-popover-wrapper"
             >
-              <button
-                class="bp3-button sc-iwsKbI drSRDt"
-                type="button"
+              <span
+                class="bp3-popover-target"
               >
-                <span
-                  class="bp3-button-text"
+                <button
+                  class="bp3-button sc-iwsKbI drSRDt"
+                  type="button"
                 >
-                  Select Jurisdictions
-                </span>
-              </button>
+                  <span
+                    class="bp3-button-text"
+                  >
+                    Select Jurisdictions
+                  </span>
+                </button>
+              </span>
             </span>
-          </span>
+            <p>
+              1
+               of 
+              2
+               
+              selected
+            </p>
+          </div>
         </div>
       </div>
       <div

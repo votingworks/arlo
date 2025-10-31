@@ -13,6 +13,7 @@ import Contests, { IContestsProps } from './Contests'
 import { contestsInputMocks } from './_mocks'
 import { contestMocks, aaApiCalls } from '../../../_mocks'
 import { IContest } from '../../../../types'
+import { AuditType } from '../../../useAuditSettings'
 
 jest.mock('uuidv4')
 
@@ -189,12 +190,14 @@ describe('Audit Setup > Contests', () => {
         userEvent.type(input, inputData.value)
       })
 
+      screen.getByText('0 of 2 selected')
       userEvent.click(
         screen.getByRole('button', { name: 'Select Jurisdictions' })
       )
       userEvent.click(
         screen.getByRole('checkbox', { name: 'Jurisdiction One' })
       )
+      screen.getByText('1 of 2 selected')
 
       userEvent.click(screen.getByText(/Save & Next/))
       await waitFor(() => {
@@ -220,46 +223,57 @@ describe('Audit Setup > Contests', () => {
     })
   })
 
-  it('it should not skip to next stage when targeted contest form is clean and not touched', async () => {
-    const expectedCalls = [
-      aaApiCalls.getContests(contestMocks.empty),
-      aaApiCalls.getJurisdictions,
-      aaApiCalls.getStandardizedContests(null),
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      const { goToNextStage } = renderContests()
+  it.each<AuditType>(['BALLOT_POLLING', 'BATCH_COMPARISON'])(
+    'it should not skip to next stage when targeted contest form is clean and not touched - %s',
+    async auditType => {
+      const expectedCalls = [
+        aaApiCalls.getContests(contestMocks.empty),
+        aaApiCalls.getJurisdictions,
+        aaApiCalls.getStandardizedContests(null),
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        const { goToNextStage } = renderContests({ auditType })
 
-      await screen.findByText('Target Contests')
-      userEvent.click(screen.getByText(/Save & Next/))
-      await waitFor(() => {
-        expect(screen.queryAllByText('Required').length).toBe(6)
+        await screen.findByText('Target Contests')
+        userEvent.click(screen.getByText(/Save & Next/))
+        await waitFor(() => {
+          expect(screen.queryAllByText('Required').length).toBe(5)
+        })
+        screen.getByText('Select at least one jurisdiction')
+        expect(goToNextStage).not.toHaveBeenCalled()
       })
-      expect(goToNextStage).not.toHaveBeenCalled()
-    })
-  })
+    }
+  )
 
-  it('it should not skip to next stage when opportunistic contest form is touched', async () => {
-    const expectedCalls = [
-      aaApiCalls.getContests(contestMocks.empty),
-      aaApiCalls.getJurisdictions,
-      aaApiCalls.getStandardizedContests(null),
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      const { goToNextStage } = renderContests({ isTargeted: false })
-      await screen.findByText('Opportunistic Contests')
-      userEvent.type(
-        await screen.findByLabelText('Votes Allowed', {
-          selector: 'input',
-        }),
-        '2'
-      )
-      userEvent.click(screen.getByText(/Save & Next/))
-      await waitFor(() => {
-        expect(screen.queryAllByText('Required').length).toBe(6)
+  it.each<AuditType>(['BALLOT_POLLING', 'BATCH_COMPARISON'])(
+    'it should not skip to next stage when opportunistic contest form is touched - %s',
+    async auditType => {
+      const expectedCalls = [
+        aaApiCalls.getContests(contestMocks.empty),
+        aaApiCalls.getJurisdictions,
+        aaApiCalls.getStandardizedContests(null),
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        const { goToNextStage } = renderContests({
+          auditType,
+          isTargeted: false,
+        })
+        await screen.findByText('Opportunistic Contests')
+        userEvent.type(
+          await screen.findByLabelText('Votes Allowed', {
+            selector: 'input',
+          }),
+          '2'
+        )
+        userEvent.click(screen.getByText(/Save & Next/))
+        await waitFor(() => {
+          expect(screen.queryAllByText('Required').length).toBe(5)
+        })
+        screen.getByText('Select at least one jurisdiction')
+        expect(goToNextStage).not.toHaveBeenCalled()
       })
-      expect(goToNextStage).not.toHaveBeenCalled()
-    })
-  })
+    }
+  )
 
   it('displays errors', async () => {
     const expectedCalls = [
