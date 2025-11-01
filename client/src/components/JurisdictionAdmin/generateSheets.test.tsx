@@ -577,6 +577,8 @@ describe('generateSheets', () => {
     'Farrih Fallahahahah ii',
     'Farrih Fallahahahahah Jr',
     'Hubert Blaine Wolfeschlegelsteinhausenbergerdorff Sr',
+    'Prince', // Don't crash on a name without a last name
+    '', // Don't crash on an empty string
   ]
 
   describe('downloadStackLabels', () => {
