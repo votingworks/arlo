@@ -1,4 +1,5 @@
 from email.message import EmailMessage
+import logging
 import secrets
 import smtplib
 import string
@@ -46,6 +47,8 @@ from ..api.rounds import get_current_round, is_audit_complete
 
 SUPPORT_OAUTH_CALLBACK_URL = "/auth/support/callback"
 AUDITADMIN_OAUTH_CALLBACK_URL = "/auth/auditadmin/callback"
+
+logger = logging.getLogger("arlo.auth")
 
 oauth = OAuth()
 
@@ -231,12 +234,14 @@ def is_code_expired(timestamp: datetime):
 @allow_public_access
 def jurisdiction_admin_generate_code():
     body = safe_get_json_dict(request)
+    email = body.get("email", "").lower()
     user = (
-        User.query.filter_by(email=body.get("email").lower())
-        .join(JurisdictionAdministration)
-        .one_or_none()
+        User.query.filter_by(email=email).join(JurisdictionAdministration).one_or_none()
     )
     if user is None:
+        logger.warning(
+            f"Jurisdiction admin code request failed: email not found - email={email}"
+        )
         raise BadRequest(
             "This email address is not authorized to access Arlo."
             " Please check that you typed the email correctly,"
@@ -255,6 +260,11 @@ def jurisdiction_admin_generate_code():
         user.login_code_attempts = 0
 
     if user.login_code_attempts >= 10:
+        organization = list(user.jurisdictions)[0].election.organization
+        logger.warning(
+            f"Jurisdiction admin code request failed: too many attempts - "
+            f"email={user.email}, org_id={organization.id}, org_name={organization.name}"
+        )
         raise BadRequest(
             "Too many incorrect login attempts. Please wait 15 minutes and then request a new code."
         )
@@ -267,10 +277,19 @@ def jurisdiction_admin_generate_code():
     message.add_alternative(
         render_template("email_login_code.html", code=user.login_code), subtype="html"
     )
-    smtp_server = smtplib.SMTP(SMTP_HOST, SMTP_PORT)
-    smtp_server.login(SMTP_USERNAME, SMTP_PASSWORD)
-    smtp_server.send_message(message)
-    smtp_server.quit()
+
+    try:
+        smtp_server = smtplib.SMTP(SMTP_HOST, SMTP_PORT)
+        smtp_server.login(SMTP_USERNAME, SMTP_PASSWORD)
+        smtp_server.send_message(message)
+        smtp_server.quit()
+    except Exception as e:
+        organization = list(user.jurisdictions)[0].election.organization
+        logger.error(
+            f"Jurisdiction admin code request failed: email send failed - "
+            f"email={user.email}, org_id={organization.id}, org_name={organization.name}, error={str(e)}"
+        )
+        raise
 
     db_session.commit()
 
@@ -302,21 +321,35 @@ def record_login(user: User, error: str | None = None):
 @allow_public_access
 def jurisdiction_admin_login():
     body = safe_get_json_dict(request)
+    email = body.get("email", "").lower()
     user = (
-        User.query.filter_by(email=body.get("email").lower())
+        User.query.filter_by(email=email)
         .join(JurisdictionAdministration)
         .with_for_update()
         .one_or_none()
     )
     if user is None:
+        logger.warning(
+            f"Jurisdiction admin login failed: email not found - email={email}"
+        )
         raise BadRequest("Invalid email address.")
 
     if user.login_code is None:
+        organization = list(user.jurisdictions)[0].election.organization
+        logger.warning(
+            f"Jurisdiction admin login failed: code not requested - "
+            f"email={user.email}, org_id={organization.id}, org_name={organization.name}"
+        )
         record_login(user, "Needs new code")
         db_session.commit()
         raise BadRequest("Please request a new code.")
 
     if user.login_code_attempts >= 10:
+        organization = list(user.jurisdictions)[0].election.organization
+        logger.warning(
+            f"Jurisdiction admin login failed: too many attempts - "
+            f"email={user.email}, org_id={organization.id}, org_name={organization.name}"
+        )
         record_login(user, "Too many incorrect attempts")
         db_session.commit()
         raise BadRequest(
@@ -326,9 +359,19 @@ def jurisdiction_admin_login():
     user.login_code_attempts += 1
     db_session.commit()
 
-    if is_code_expired(user.login_code_requested_at) or not secrets.compare_digest(
-        body.get("code"), user.login_code
-    ):
+    code_is_expired = is_code_expired(user.login_code_requested_at)
+    code_matches = secrets.compare_digest(body.get("code", ""), user.login_code)
+
+    if not code_matches or code_is_expired:
+        organization = list(user.jurisdictions)[0].election.organization
+        if code_is_expired:
+            error_msg = "code expired"
+        else:
+            error_msg = "wrong code entered"
+        logger.warning(
+            f"Jurisdiction admin login failed: {error_msg} - "
+            f"email={user.email}, org_id={organization.id}, org_name={organization.name}"
+        )
         record_login(user, "Invalid code")
         db_session.commit()
         raise BadRequest(
