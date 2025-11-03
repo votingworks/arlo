@@ -459,6 +459,36 @@ def test_jurisdiction_admin_bad_code(mock_smtp, client: FlaskClient, ja_email: s
 
 
 @patch("smtplib.SMTP", autospec=True)
+def test_jurisdiction_admin_expired_code(mock_smtp, client: FlaskClient, ja_email: str):
+    config.LOGIN_CODE_LIFETIME = timedelta(seconds=1)
+    clear_logged_in_user(client)
+
+    rv = post_json(client, "/auth/jurisdictionadmin/code", dict(email=ja_email))
+    assert_ok(rv)
+    code = parse_login_code_from_smtp(mock_smtp)
+
+    # Wait for code to expire
+    time.sleep(1.5)
+
+    # Try logging in with expired code
+    rv = post_json(
+        client, "/auth/jurisdictionadmin/login", dict(email=ja_email, code=code)
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "Invalid code. Try entering the code again or click Back and request a new code.",
+            }
+        ]
+    }
+
+    with client.session_transaction() as session:  # type: ignore
+        assert session["_user"] is None
+
+
+@patch("smtplib.SMTP", autospec=True)
 def test_jurisdiction_admin_too_many_attempts(
     mock_smtp, client: FlaskClient, ja_email: str
 ):
