@@ -267,12 +267,19 @@ const BallotAuditContest = ({
     }
   }
 
+  // Sort yes before no for propositions
+  const yesOption = contest.choices.find(c => c.name.toLowerCase() === 'yes')
+  const noOption = contest.choices.find(c => c.name.toLowerCase() === 'no')
+  const sortedContestChoices =
+    contest.choices.length === 2 && yesOption && noOption
+      ? [yesOption, noOption]
+      : contest.choices
   return (
     <ContestCard>
       <BlockCheckboxes>
         <LeftCheckboxes>
           <ContestTitle>{contest.name}</ContestTitle>
-          {contest.choices.map(c => (
+          {sortedContestChoices.map(c => (
             <BlockCheckbox
               key={c.id}
               handleChange={onCheckboxClick(c.id)}

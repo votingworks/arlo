@@ -784,5 +784,26 @@ describe('AuditBoardView', () => {
         expect(contest2InvalidWriteInButton).toBeChecked()
       })
     })
+
+    it('sorts yes before no for propositions', async () => {
+      const expectedCalls = [
+        apiCalls.getAuditBoard,
+        apiCalls.getAuditBoard,
+        {
+          ...apiCalls.getContests,
+          response: { contests: contestMocks.oneProposition },
+        },
+        apiCalls.getBallotsInitial,
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        renderBallot()
+
+        const yes = await screen.findByRole('checkbox', { name: 'Yes' })
+        const no = await screen.findByRole('checkbox', { name: 'No' })
+        expect(yes.compareDocumentPosition(no)).toEqual(
+          Node.DOCUMENT_POSITION_FOLLOWING
+        )
+      })
+    })
   })
 })
