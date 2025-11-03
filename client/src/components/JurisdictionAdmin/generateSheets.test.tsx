@@ -572,9 +572,9 @@ describe('generateSheets', () => {
     'Barry Batts (I)', // Incumbent
     'Crazy Cabbs (Ind)',
     'Danny Durnham Sr.',
-    'Elliot Ezekiel III',
+    ' Elliot Ezekiel III ',
     'Farrih Fallahahahah ii',
-    'Farrih Fallahahahahah Jr',
+    'Farrih Fallahahahahah    Jr  ',
     'Hubert Blaine Holfeschlegelsteinhausenbergerdorff Sr',
     'Isabel Isabella IV (Grn)',
     'Prince', // Don't crash on a name without a last name

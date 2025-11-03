@@ -827,7 +827,9 @@ function formCandidateLabelTitle(candidateFullName: string): string {
   const commonSuffixes = ['sr.', 'sr', 'jr.', 'jr', 'ii', 'iii', 'iv', 'v']
   let nameToUse = nameParts[nameParts.length - 1]
   for (let i = nameParts.length - 1; i >= 0; i -= 1) {
+    const namePart = nameParts[i].trim()
     if (
+      namePart &&
       !commonSuffixes.includes(nameParts[i].toLowerCase()) &&
       // Exclude labels like (I) for the incumbent or (Dem)/(Rep) for party affiliation
       !(nameParts[i].startsWith('(') && nameParts[i].endsWith(')'))
