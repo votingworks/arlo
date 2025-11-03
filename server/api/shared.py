@@ -526,15 +526,32 @@ def ballot_vote_deltas(
     if reported is None:
         reported = {choice.id: "0" for choice in contest.choices}
 
-    deltas = {}
-    for choice in contest.choices:
-        reported_vote = (
-            0 if reported[choice.id] in ["o", "u"] else int(reported[choice.id])
-        )
-        audited_vote = (
-            0 if audited[choice.id] in ["o", "u"] else int(audited[choice.id])
-        )
-        deltas[choice.id] = reported_vote - audited_vote
+    # Special case for ES&S overvotes/undervotes.
+    has_overvote = "o" in reported.values()
+    has_undervote = "u" in reported.values()
+    audited_votes = sum(map(int, (audited.values())))
+    # If the audited result correctly identified overvote/undervote, return no
+    # delta. Otherwise, return discrepancies as usual, but substituting in
+    # overvotes/undervotes.
+    if has_overvote:
+        if audited_votes > 1:
+            return None
+        else:
+            deltas = {
+                choice.id: 1 - int(audited[choice.id]) for choice in contest.choices
+            }
+    elif has_undervote:
+        if audited_votes < 1:
+            return None
+        else:
+            deltas = {
+                choice.id: 0 - int(audited[choice.id]) for choice in contest.choices
+            }
+    else:
+        deltas = {
+            choice.id: int(reported[choice.id]) - int(audited[choice.id])
+            for choice in contest.choices
+        }
 
     if all(delta == 0 for delta in deltas.values()):
         return None
