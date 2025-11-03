@@ -13,7 +13,7 @@
     "*.py": [
       "poetry run ruff format",
       "poetry run ruff check",
-      "poetry run basedpyright"
+      "./scripts/run-basedpyright.sh"
     ],
     "package.json": [
       "sort-package-json"
