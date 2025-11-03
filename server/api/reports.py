@@ -755,9 +755,10 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction | None = 
     if election.online:
         result_columns.append("Audited?")
         for contest in election.contests:
-            result_columns.append(f"Audit Result: {contest.name}")
             if show_cvrs:
                 result_columns.append(f"CVR Result: {contest.name}")
+            result_columns.append(f"Audit Result: {contest.name}")
+            if show_cvrs:
                 result_columns.append(f"Change in Results: {contest.name}")
                 result_columns.append(f"Change in Margin: {contest.name}")
 
@@ -808,14 +809,15 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction | None = 
             else:
                 result_values.append(ballot.status)
                 for contest in election.contests:
-                    result_values.append(
-                        pretty_ballot_interpretation(interpretations, contest)
-                    )
                     if show_cvrs:
                         cvr_interpretation = pretty_cvr_interpretation(
                             ballot, contest, cvrs_by_contest[contest.id]
                         )
                         result_values.append(cvr_interpretation)
+                    result_values.append(
+                        pretty_ballot_interpretation(interpretations, contest)
+                    )
+                    if show_cvrs:
                         audited_result = audited_cvrs_by_contest[contest.id].get(
                             ballot.id
                         )
@@ -908,8 +910,8 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
     for contest in contests:
         ticket_number_columns += [f"Ticket Numbers: {contest.name}"]
         result_columns += [
-            f"Audit Results: {contest.name}",
             f"Reported Results: {contest.name}",
+            f"Audit Results: {contest.name}",
             f"Change in Results: {contest.name}",
             f"Change in Margin: {contest.name}",
         ]
@@ -1003,13 +1005,13 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
 
             row += [
                 (
-                    pretty_choice_votes(audit_results_by_name)
-                    if audit_results_by_name and not is_combined
+                    pretty_choice_votes(reported_results_by_name)
+                    if reported_results_by_name
                     else ""
                 ),
                 (
-                    pretty_choice_votes(reported_results_by_name)
-                    if reported_results_by_name
+                    pretty_choice_votes(audit_results_by_name)
+                    if audit_results_by_name and not is_combined
                     else ""
                 ),
                 (
@@ -1089,12 +1091,12 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
                 )
 
                 combined_batch_row += [
+                    pretty_choice_votes(reported_results_by_name),
                     (
                         pretty_choice_votes(audit_results_by_name)
                         if audit_results_by_name
                         else ""
                     ),
-                    pretty_choice_votes(reported_results_by_name),
                     (
                         pretty_vote_deltas(
                             contest,
@@ -1125,8 +1127,8 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
             for choice in contest.choices
         }
         totals_row += [
-            pretty_choice_votes(total_audit_results_by_name),
             pretty_choice_votes(total_reported_results_by_name),
+            pretty_choice_votes(total_audit_results_by_name),
             "",  # change in results not calculated for totals
             "",  # change in margin not calculated for totals
         ]
