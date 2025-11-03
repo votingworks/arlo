@@ -574,7 +574,7 @@ describe('generateSheets', () => {
     'Danny Durnham Sr.',
     ' Elliot Ezekiel III ',
     'Farrih Fallahahahah ii',
-    'Farrih Fallahahahahah    Jr  ',
+    'Farrih \n Fallahahahahah    Jr  ',
     'Hubert Blaine Holfeschlegelsteinhausenbergerdorff Sr',
     'Isabel Isabella IV (Grn)',
     'Prince', // Don't crash on a name without a last name
