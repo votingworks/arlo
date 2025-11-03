@@ -801,7 +801,7 @@ export const downloadTallyEntryLoginLinkPrintout = async (
 }
 
 const STACK_LABEL_MAX_CONTEST_NAME_LENGTH = 40
-const STACK_LABEL_MAX_SURNAME_LENGTH = 20
+const STACK_LABEL_MAX_CANDIDATE_NAME_LENGTH = 20
 const STACK_LABEL_TITLE_LENGTH_XL_FONT_CUTOFF = 12
 const STACK_LABEL_TEXT_COLOR = Colors.GRAY2
 const STACK_LABEL_TITLE_COLORS = [
@@ -821,24 +821,30 @@ const DEFAULT_STACK_LABELS = [
   { title: 'For Review', subtitle: 'Undetermined, duplicated, etc.' },
 ]
 
-function parseSurname(fullName: string, maxLength: number) {
-  const suffixes = ['sr.', 'sr', 'jr.', 'jr', 'ii', 'iii', 'iv', 'v']
-  const nameParts = fullName.trim().split(' ')
-  const lastNameIndex = suffixes.includes(
-    nameParts[nameParts.length - 1].toLowerCase()
-  )
-    ? nameParts.length - 2
-    : nameParts.length - 1
-  let surname = nameParts.slice(lastNameIndex).join(' ')
-  if (surname.length > maxLength) {
-    surname = `${surname.slice(0, maxLength)}...`
+function formCandidateLabelTitle(candidateFullName: string): string {
+  const nameParts = candidateFullName.trim().split(' ')
+
+  const commonSuffixes = ['sr.', 'sr', 'jr.', 'jr', 'ii', 'iii', 'iv', 'v']
+  let nameToUse = nameParts[nameParts.length - 1]
+  for (let i = nameParts.length - 1; i >= 0; i -= 1) {
+    if (
+      !commonSuffixes.includes(nameParts[i].toLowerCase()) &&
+      // Exclude labels like (I) for the incumbent or (Dem)/(Rep) for party affiliation
+      !(nameParts[i].startsWith('(') && nameParts[i].endsWith(')'))
+    ) {
+      nameToUse = nameParts[i]
+      break
+    }
   }
-  return surname
+
+  return nameToUse.length > STACK_LABEL_MAX_CANDIDATE_NAME_LENGTH
+    ? `${nameToUse.slice(0, STACK_LABEL_MAX_CANDIDATE_NAME_LENGTH)}…`
+    : nameToUse
 }
 
-function formCandidateLabelSubtitle(contestName: string) {
+function formCandidateLabelSubtitle(contestName: string): string {
   return contestName.length > STACK_LABEL_MAX_CONTEST_NAME_LENGTH
-    ? `${contestName.slice(0, STACK_LABEL_MAX_CONTEST_NAME_LENGTH)}...`
+    ? `${contestName.slice(0, STACK_LABEL_MAX_CONTEST_NAME_LENGTH)}…`
     : contestName
 }
 
@@ -847,7 +853,7 @@ function formCandidateLabels(
 ): { title: string; subtitle: string }[] {
   return contests.flatMap(contest =>
     contest.choices.map(choice => ({
-      title: parseSurname(choice.name, STACK_LABEL_MAX_SURNAME_LENGTH),
+      title: formCandidateLabelTitle(choice.name),
       subtitle: formCandidateLabelSubtitle(contest.name),
     }))
   )
