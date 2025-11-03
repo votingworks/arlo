@@ -569,13 +569,16 @@ describe('generateSheets', () => {
 
   const names = [
     'Aaron Adams',
-    'Barry Batts',
-    'Crazy Cabbs',
+    'Barry Batts (I)', // Incumbent
+    'Crazy Cabbs (Ind)',
     'Danny Durnham Sr.',
     'Elliot Ezekiel III',
     'Farrih Fallahahahah ii',
     'Farrih Fallahahahahah Jr',
-    'Hubert Blaine Wolfeschlegelsteinhausenbergerdorff Sr',
+    'Hubert Blaine Holfeschlegelsteinhausenbergerdorff Sr',
+    'Isabel Isabella IV (Grn)',
+    'Prince', // Don't crash on a name without a last name
+    '', // Don't crash on an empty string
   ]
 
   describe('downloadStackLabels', () => {
