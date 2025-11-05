@@ -64,6 +64,9 @@ run: # Used for development, not during production deployment. Defaults to 3 por
 typecheck:
 	poetry run basedpyright --baseline-file .basedpyright/baseline.json
 
+typecheck-update-baseline:
+	poetry run basedpyright --baseline-file .basedpyright/baseline.json --writebaseline
+
 format:
 	poetry run ruff format .
 
