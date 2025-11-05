@@ -7,15 +7,11 @@ module.exports = {
     browser: true,
     node: true,
     es6: true,
-    'jest/globals': true,
     'cypress/globals': true,
   },
   parser: '@typescript-eslint/parser', // Specifies the ESLint parser
   extends: [
     'airbnb',
-    'plugin:import/errors',
-    'plugin:import/warnings',
-    'plugin:import/typescript',
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended', // Uses the recommended rules from @typescript-eslint/eslint-plugin
     'prettier/@typescript-eslint', // Uses eslint-config-prettier to disable ESLint rules from @typescript-eslint/eslint-plugin that would conflict with prettier
@@ -25,7 +21,6 @@ module.exports = {
     'prettier/react', // Overrides some of the rules in 'airbnb' to have more relaxed formatting in react.
     'plugin:cypress/recommended',
     'plugin:testing-library/react',
-    'plugin:jest-dom/recommended',
   ],
   globals: {
     browser: true,
@@ -33,8 +28,6 @@ module.exports = {
     $$: true,
     Atomics: 'readonly',
     SharedArrayBuffer: 'readonly',
-    // fetch: true, // required if using via 'jest-fetch-mock'
-    fetchMock: true, // required if using via 'jest-fetch-mock'
   },
   parserOptions: {
     ecmaFeatures: {
@@ -46,13 +39,11 @@ module.exports = {
   },
   plugins: [
     '@typescript-eslint',
-    'jest',
     'react',
     'cypress',
     'jsx-a11y',
     'react-hooks',
     'testing-library',
-    'jest-dom',
   ],
   settings: {
     react: {

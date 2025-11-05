@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 
 const devFlaskServerUrl = 'http://localhost:3001'
@@ -14,12 +14,12 @@ export default defineConfig({
     outDir: 'build',
   },
   // Blueprint (UI component library) tries to check some env variables to set a
-  // CSS namespace, but we don't use that. It breaks because `process` is not
-  // defined. To fix we just substitute undefined, which causes Blueprint to use
-  // a default namespace.
+  // CSS namespace, but we don't use that. This causes a runtime exception since
+  // `process` is not defined in the browser environment. So we define these to
+  // be the value that Blueprint actually uses.
   define: {
-    'process.env.BLUEPRINT_NAMESPACE': 'undefined',
-    'process.env.REACT_APP_BLUEPRINT_NAMESPACE': 'undefined',
+    'process.env.BLUEPRINT_NAMESPACE': '"bp3"',
+    'process.env.REACT_APP_BLUEPRINT_NAMESPACE': '"bp3"',
   },
   // Configure the Vite dev server to proxy API requests to the dev Flask server
   server: {
@@ -30,5 +30,15 @@ export default defineConfig({
       '/tallyentry': devFlaskServerUrl,
     },
     port: 3000,
+  },
+  test: {
+    environment: 'jsdom',
+    setupFiles: ['src/setupTests.ts'],
+    coverage: {
+      thresholds: {
+        lines: -206,
+        branches: -217,
+      },
+    },
   },
 })

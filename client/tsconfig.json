@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "es2015",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -16,9 +20,17 @@
     "declaration": true,
     "emitDeclarationOnly": true,
     "outDir": "dist",
-    "types": ["node", "@types/jest", "@testing-library/jest-dom"],
+    "types": [
+      "node",
+      "@testing-library/jest-dom"
+    ],
     "jsx": "preserve"
   },
-  "include": ["src"],
-  "exclude": ["**/node_modules", "**/.*/"]
+  "include": [
+    "src",
+  ],
+  "exclude": [
+    "**/node_modules",
+    "**/.*/"
+  ]
 }
