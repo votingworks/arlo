@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`RoundProgress renders an audit board with auditing complete that has not signed off 1`] = `
+exports[`RoundProgress > renders an audit board with auditing complete that has not signed off 1`] = `
 <div>
   <div
     class="sc-bdVaJa ervxYq"
@@ -54,7 +54,7 @@ exports[`RoundProgress renders an audit board with auditing complete that has no
 </div>
 `;
 
-exports[`RoundProgress renders complete round 1`] = `
+exports[`RoundProgress > renders complete round 1`] = `
 <div>
   <div
     class="sc-bdVaJa ervxYq"
@@ -108,7 +108,7 @@ exports[`RoundProgress renders complete round 1`] = `
 </div>
 `;
 
-exports[`RoundProgress renders incomplete round with an audit board 1`] = `
+exports[`RoundProgress > renders incomplete round with an audit board 1`] = `
 <div>
   <div
     class="sc-bdVaJa ervxYq"
@@ -162,7 +162,7 @@ exports[`RoundProgress renders incomplete round with an audit board 1`] = `
 </div>
 `;
 
-exports[`RoundProgress renders incomplete round with an audit board with no ballots sampled 1`] = `
+exports[`RoundProgress > renders incomplete round with an audit board with no ballots sampled 1`] = `
 <div>
   <div
     class="sc-bdVaJa ervxYq"
@@ -228,7 +228,7 @@ exports[`RoundProgress renders incomplete round with an audit board with no ball
 </div>
 `;
 
-exports[`RoundProgress renders incomplete round with auditing in progress 1`] = `
+exports[`RoundProgress > renders incomplete round with auditing in progress 1`] = `
 <div>
   <div
     class="sc-bdVaJa ervxYq"
@@ -282,7 +282,7 @@ exports[`RoundProgress renders incomplete round with auditing in progress 1`] = 
 </div>
 `;
 
-exports[`RoundProgress renders incomplete round with two audit boards 1`] = `
+exports[`RoundProgress > renders incomplete round with two audit boards 1`] = `
 <div>
   <div
     class="sc-bdVaJa ervxYq"
@@ -362,4 +362,4 @@ exports[`RoundProgress renders incomplete round with two audit boards 1`] = `
 </div>
 `;
 
-exports[`RoundProgress renders nothing with no audit boards 1`] = `<div />`;
+exports[`RoundProgress > renders nothing with no audit boards 1`] = `<div />`;

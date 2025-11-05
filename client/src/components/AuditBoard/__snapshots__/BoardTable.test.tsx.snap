@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`BoardTable enables the submit button when all ballots are done 1`] = `
+exports[`BoardTable > enables the submit button when all ballots are done 1`] = `
 <div>
   <div
     class="board-table-container"
@@ -625,7 +625,7 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
 </div>
 `;
 
-exports[`BoardTable renders container and no tabulator columns 1`] = `
+exports[`BoardTable > renders container and no tabulator columns 1`] = `
 <div>
   <div
     class="board-table-container"
@@ -1010,7 +1010,7 @@ exports[`BoardTable renders container and no tabulator columns 1`] = `
 </div>
 `;
 
-exports[`BoardTable renders container and tabulator columns 1`] = `
+exports[`BoardTable > renders container and tabulator columns 1`] = `
 <div>
   <div
     class="board-table-container"
@@ -1442,7 +1442,7 @@ exports[`BoardTable renders container and tabulator columns 1`] = `
 </div>
 `;
 
-exports[`BoardTable renders no container and no tabulator columns 1`] = `
+exports[`BoardTable > renders no container and no tabulator columns 1`] = `
 <div>
   <div
     class="board-table-container"
@@ -1780,7 +1780,7 @@ exports[`BoardTable renders no container and no tabulator columns 1`] = `
 </div>
 `;
 
-exports[`BoardTable renders tabulator and no container columns 1`] = `
+exports[`BoardTable > renders tabulator and no container columns 1`] = `
 <div>
   <div
     class="board-table-container"
@@ -2165,7 +2165,7 @@ exports[`BoardTable renders tabulator and no container columns 1`] = `
 </div>
 `;
 
-exports[`BoardTable shows audit first ballot button when no ballots are audited 1`] = `
+exports[`BoardTable > shows audit first ballot button when no ballots are audited 1`] = `
 <div>
   <div
     class="board-table-container"
@@ -4013,7 +4013,7 @@ exports[`BoardTable shows audit first ballot button when no ballots are audited 
 </div>
 `;
 
-exports[`BoardTable shows audit next ballot button when some are remaining to audit 1`] = `
+exports[`BoardTable > shows audit next ballot button when some are remaining to audit 1`] = `
 <div>
   <div
     class="board-table-container"
