@@ -1,3 +1,4 @@
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import React from 'react'
 import { waitFor, screen, within } from '@testing-library/react'
 import { useParams } from 'react-router-dom'
@@ -18,12 +19,12 @@ import {
 } from '../../types'
 import { contestMocks } from '../_mocks'
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'), // use actual for all non-hook parts
-  useRouteMatch: jest.fn(),
-  useParams: jest.fn(),
+vi.mock(import('react-router-dom'), async importActual => ({
+  ...(await importActual()), // use actual for all non-hook parts
+  useRouteMatch: vi.fn(),
+  useParams: vi.fn(),
 }))
-const paramsMock = useParams as jest.Mock
+const paramsMock = vi.mocked(useParams)
 paramsMock.mockReturnValue({
   electionId: '1',
   auditBoardId: 'audit-board-1',
@@ -36,7 +37,7 @@ afterEach(() => {
   })
 })
 
-window.scrollTo = jest.fn()
+window.scrollTo = vi.fn()
 
 const AuditBoardViewWithAuth: React.FC = () => {
   const auth = useAuthDataContext()
@@ -275,7 +276,7 @@ describe('AuditBoardView', () => {
       await withMockFetch(expectedCalls, async () => {
         const { history } = renderBallot()
 
-        const pushSpy = jest.spyOn(history, 'push').mockImplementation()
+        const pushSpy = vi.spyOn(history, 'push').mockReturnValue(undefined)
 
         userEvent.click(
           await screen.findByRole('button', {

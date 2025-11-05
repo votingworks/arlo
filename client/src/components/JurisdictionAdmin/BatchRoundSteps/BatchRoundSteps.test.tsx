@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import React from 'react'
 import { screen, waitFor, within } from '@testing-library/react'
 import { QueryClientProvider } from 'react-query'
@@ -23,23 +24,27 @@ import {
   tallyEntryAccountStatusMocks,
 } from '../_mocks'
 
-jest.mock('copy-to-clipboard', () => jest.fn(() => true))
+vi.mock(import('copy-to-clipboard'), async importActual => ({
+  ...(await importActual()),
+  default: vi.fn(() => true),
+}))
 
-const mockSavePDF = jest.fn()
-jest.mock('jspdf', () => {
-  const { jsPDF } = jest.requireActual('jspdf')
+const mockSavePDF = vi.fn()
+vi.mock('jspdf', async () => {
+  const { jsPDF } = (await vi.importActual('jspdf')) as any
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return function mockJsPDF(options?: any) {
+  function mockJsPDF(options?: any) {
     return {
       ...new jsPDF(options),
-      addImage: jest.fn(),
+      addImage: vi.fn(),
       save: mockSavePDF,
     }
   }
+  return { default: mockJsPDF, jsPDF: mockJsPDF }
 })
 
-jest.mock('@sentry/react', () => ({
-  captureException: jest.fn(),
+vi.mock('@sentry/react', () => ({
+  captureException: vi.fn(),
 }))
 
 const renderComponent = (stepPath = '') => {
@@ -61,7 +66,12 @@ const renderComponent = (stepPath = '') => {
 
 describe('BatchRoundSteps', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
+  })
+
+  afterEach(() => {
+    // Ensure timers are reset after each test, in case fake timers were used
+    vi.useRealTimers()
   })
 
   it('navigates between steps using buttons or links', async () => {
@@ -148,7 +158,7 @@ describe('BatchRoundSteps', () => {
 
   it('shows Step 1: Prepare Batches', async () => {
     const mockDownloadWindow: { onbeforeunload?: () => void } = {}
-    window.open = jest.fn().mockReturnValue(mockDownloadWindow)
+    window.open = vi.fn().mockReturnValue(mockDownloadWindow)
 
     const expectedCalls = [
       jaApiCalls.getBatches(batchesMocks.emptyInitial),
@@ -320,7 +330,8 @@ describe('BatchRoundSteps', () => {
   })
 
   it('on Step 2, polls for login requests and can confirm/reject a request', async () => {
-    jest.useFakeTimers()
+    vi.useFakeTimers()
+
     const expectedCalls = [
       jaApiCalls.getBatches(batchesMocks.emptyInitial),
       jaApiCalls.getTallyEntryAccountStatus(
@@ -341,10 +352,10 @@ describe('BatchRoundSteps', () => {
         },
         error: { status: 400, statusText: 'Bad Request' },
       },
-      jaApiCalls.postConfirmTallyEntryLoginCode,
       jaApiCalls.getTallyEntryAccountStatus(
-        tallyEntryAccountStatusMocks.loginRequestsOneConfirmed
+        tallyEntryAccountStatusMocks.loginRequestsUnconfirmed
       ),
+      jaApiCalls.postConfirmTallyEntryLoginCode,
       jaApiCalls.getTallyEntryAccountStatus(
         tallyEntryAccountStatusMocks.loginRequestsOneConfirmed
       ),
@@ -359,7 +370,15 @@ describe('BatchRoundSteps', () => {
             .loginRequests[0],
         ],
       }),
+      jaApiCalls.getTallyEntryAccountStatus({
+        ...tallyEntryAccountStatusMocks.loginRequestsOneConfirmed,
+        loginRequests: [
+          tallyEntryAccountStatusMocks.loginRequestsOneConfirmed
+            .loginRequests[0],
+        ],
+      }),
     ]
+
     await withMockFetch(expectedCalls, async () => {
       renderComponent('/tally-entry-accounts')
       await screen.findByRole('heading', {
@@ -371,7 +390,7 @@ describe('BatchRoundSteps', () => {
       screen.getByText('No tally entry accounts have logged in yet')
 
       // On next poll, two login requests
-      jest.advanceTimersByTime(1000)
+      vi.advanceTimersByTime(1000)
       let loginRequest1 = (await screen.findByText('John Doe')).closest(
         `.${Classes.CARD}`
       ) as HTMLElement
@@ -423,7 +442,7 @@ describe('BatchRoundSteps', () => {
       screen.getAllByRole('button', { name: 'Close' })
 
       // The dialog auto-closes after a bit
-      jest.advanceTimersByTime(1000)
+      vi.advanceTimersByTime(1000)
       await waitFor(() => {
         expect(
           screen.queryByText('Confirm Login: John Doe, Jane Smith')
@@ -458,7 +477,7 @@ describe('BatchRoundSteps', () => {
         expect(loginRequest2).not.toBeInTheDocument()
       })
 
-      jest.useRealTimers()
+      vi.useRealTimers()
     })
   })
 

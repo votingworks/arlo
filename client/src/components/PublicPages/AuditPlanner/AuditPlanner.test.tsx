@@ -1,3 +1,4 @@
+import { beforeEach, expect, Mock, test, vi } from 'vitest'
 import React from 'react'
 import userEvent from '@testing-library/user-event'
 import { QueryClientProvider } from 'react-query'
@@ -217,23 +218,20 @@ const apiMocks = {
   }),
 }
 
-jest.mock(
-  '../../../utils/responsiveness',
-  (): typeof import('../../../utils/responsiveness') => {
-    return {
-      ...jest.requireActual('../../../utils/responsiveness'),
-      useCssBreakpoints: () => ({
-        isMobileWidth: false,
-        isTabletWidth: false,
-        isDesktopWidth: true,
-      }),
-    }
+vi.mock(import('../../../utils/responsiveness'), async importActual => {
+  return {
+    ...(await importActual()),
+    useCssBreakpoints: () => ({
+      isMobileWidth: false,
+      isTabletWidth: false,
+      isDesktopWidth: true,
+    }),
   }
-)
-let mockScrollIntoView: jest.Mock
+})
+let mockScrollIntoView: Mock
 
 beforeEach(async () => {
-  mockScrollIntoView = jest.fn()
+  mockScrollIntoView = vi.fn()
   window.HTMLElement.prototype.scrollIntoView = mockScrollIntoView
 })
 

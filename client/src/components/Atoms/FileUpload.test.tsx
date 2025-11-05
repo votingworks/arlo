@@ -1,3 +1,4 @@
+import { describe, expect, it, vi } from 'vitest'
 import React from 'react'
 import { render as testingLibraryRender, screen } from '@testing-library/react'
 import { QueryClientProvider } from 'react-query'
@@ -18,7 +19,7 @@ import {
 } from '../testUtilities'
 import { fileInfoMocks } from '../_mocks'
 
-jest.mock('axios')
+vi.mock('axios')
 
 // Set up a test component that hooks up useFileUpload to FileUpload in the way
 // they are used together. We test them together because they are designed to be
@@ -29,7 +30,7 @@ const TestFileUpload = ({
   ...props
 }: Partial<IFileUploadProps> & { onFileChange?: () => void }) => {
   const uploadedFile = useUploadedFile(['test-key'], '/test', {
-    onFileChange: onFileChange || jest.fn(),
+    onFileChange: onFileChange || vi.fn(),
   })
   const uploadFiles = useUploadFiles(['test-key'], '/test')
   const deleteFile = useDeleteFile(['test-key'], '/test')
@@ -112,7 +113,7 @@ describe('FileUpload + useFileUpload', () => {
       { url: '/test', response: fileInfoMocks.processed },
     ]
     await withMockFetch(expectedCalls, async () => {
-      const onFileChange = jest.fn()
+      const onFileChange = vi.fn()
       render(<TestFileUpload onFileChange={onFileChange} />)
 
       await screen.findByText('Test File')
@@ -151,7 +152,7 @@ describe('FileUpload + useFileUpload', () => {
       { url: '/test', response: fileInfoMocks.empty },
     ]
     await withMockFetch(expectedCalls, async () => {
-      const onFileChange = jest.fn()
+      const onFileChange = vi.fn()
       render(<TestFileUpload onFileChange={onFileChange} />)
 
       await screen.findByText('Uploaded')

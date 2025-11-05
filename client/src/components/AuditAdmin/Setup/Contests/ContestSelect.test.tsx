@@ -1,3 +1,4 @@
+import { describe, expect, it, vi } from 'vitest'
 import React from 'react'
 import { screen, within, waitFor, render } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -8,8 +9,8 @@ import { IContest, INewContest } from '../../../useContestsBallotComparison'
 import { aaApiCalls } from '../../../_mocks'
 
 const renderContests = (props: Partial<IContestsProps> = {}) => {
-  const goToNextStage = jest.fn()
-  const goToPrevStage = jest.fn()
+  const goToNextStage = vi.fn()
+  const goToPrevStage = vi.fn()
   return {
     goToNextStage,
     goToPrevStage,
@@ -58,12 +59,13 @@ const apiCalls = {
   }),
 }
 
-jest.mock('uuidv4', () => {
+vi.mock('uuidv4', async importActual => {
   let id = 0
-  return () => {
+  function uuidv4() {
     id += 1
     return id.toString()
   }
+  return { ...(await importActual()), default: uuidv4 }
 })
 
 describe('Audit Setup > Contests (Ballot Comparison)', () => {

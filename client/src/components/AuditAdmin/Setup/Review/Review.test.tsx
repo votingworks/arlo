@@ -1,3 +1,4 @@
+import { describe, expect, it, vi } from 'vitest'
 import React from 'react'
 import userEvent from '@testing-library/user-event'
 import { screen, fireEvent, waitFor, within } from '@testing-library/react'
@@ -128,8 +129,8 @@ const apiCalls = {
 }
 
 const renderView = (props = {}) => {
-  const goToPrevStage = jest.fn()
-  const startNextRound = jest.fn().mockResolvedValue(true)
+  const goToPrevStage = vi.fn()
+  const startNextRound = vi.fn().mockResolvedValue(true)
 
   return {
     goToPrevStage,
@@ -1207,7 +1208,7 @@ describe('Audit Setup > Review & Launch', () => {
   })
 
   it('shows a spinner while sample sizes are computed', async () => {
-    jest.useFakeTimers()
+    vi.useFakeTimers()
     const expectedCalls = [
       apiCalls.getSettings(settingsMock.full),
       apiCalls.getJurisdictions({
@@ -1227,12 +1228,12 @@ describe('Audit Setup > Review & Launch', () => {
       expect(
         screen.getByRole('button', { name: 'Preview Sample' })
       ).toBeDisabled()
-      jest.advanceTimersByTime(1000)
+      vi.advanceTimersByTime(1000)
       await screen.findByText(
         'Choose the initial sample size for each contest you would like to use for Round 1 of the audit from the options below.'
       )
     })
-    jest.useRealTimers()
+    vi.useRealTimers()
   })
 
   it('prevents sample size calculation if CVR choice names are inconsistent across jurisdictions in a ballot comparison audit', async () => {

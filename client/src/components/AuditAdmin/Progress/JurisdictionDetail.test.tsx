@@ -1,3 +1,4 @@
+import { describe, expect, it, vi } from 'vitest'
 import React from 'react'
 import {
   render as testingLibraryRender,
@@ -29,33 +30,34 @@ import { withMockFetch, createQueryClient } from '../../testUtilities'
 import { dummyBallots } from '../../AuditBoard/_mocks'
 import { batchesMocks } from '../../JurisdictionAdmin/_mocks'
 
-jest.mock('axios')
+vi.mock('axios')
 
 // Borrowed from generateSheets.test.tsx
-const mockSavePDF = jest.fn()
-jest.mock('jspdf', () => {
-  const { jsPDF } = jest.requireActual('jspdf')
+const mockSavePDF = vi.fn()
+vi.mock('jspdf', async importActual => {
+  const { jsPDF } = (await importActual()) as any
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return function mockJsPDF(options?: any) {
+  function mockJsPDF(options?: any) {
     return {
       ...new jsPDF(options),
-      addImage: jest.fn(),
+      addImage: vi.fn(),
       save: mockSavePDF,
     }
   }
+  return { default: mockJsPDF, jsPDF: mockJsPDF }
 })
-window.URL.createObjectURL = jest.fn()
-window.open = jest.fn()
+window.URL.createObjectURL = vi.fn()
+window.open = vi.fn()
 Object.defineProperty(window, 'location', {
   writable: true,
-  value: { reload: jest.fn() },
+  value: { reload: vi.fn() },
 })
 
 const render = (props: Partial<IJurisdictionDetailProps>) =>
   testingLibraryRender(
     <QueryClientProvider client={createQueryClient()}>
       <JurisdictionDetail
-        handleClose={jest.fn()}
+        handleClose={vi.fn()}
         jurisdiction={jurisdictionMocks.noManifests[0]}
         electionId="1"
         round={null}

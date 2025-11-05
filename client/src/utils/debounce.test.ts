@@ -1,3 +1,4 @@
+import { expect, test } from 'vitest'
 import { renderHook } from '@testing-library/react-hooks'
 
 import { useDebounce } from './debounce'

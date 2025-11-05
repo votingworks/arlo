@@ -1,7 +1,9 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import React from 'react'
 import { screen, waitFor, render } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QueryClientProvider } from 'react-query'
+import uuidv4 from 'uuidv4'
 import {
   withMockFetch,
   regexpEscape,
@@ -65,8 +67,8 @@ const hybridContestsInputMocks = {
 }
 
 const renderContests = (props: Partial<IContestsProps> = {}) => {
-  const goToNextStage = jest.fn()
-  const goToPrevStage = jest.fn()
+  const goToNextStage = vi.fn()
+  const goToPrevStage = vi.fn()
   return {
     goToNextStage,
     goToPrevStage,
@@ -115,8 +117,11 @@ const apiCalls = {
   }),
 }
 
-const mockUuid = jest.fn()
-jest.mock('uuidv4', () => () => mockUuid())
+vi.mock('uuidv4', async importActual => ({
+  ...(await importActual()),
+  default: vi.fn(),
+}))
+const mockUuid = vi.mocked(uuidv4)
 
 describe('Audit Setup > Contests (Hybrid)', () => {
   let getID: () => string

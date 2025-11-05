@@ -1,3 +1,4 @@
+import { beforeAll, describe, expect, it, vi } from 'vitest'
 import React from 'react'
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -280,7 +281,7 @@ const renderRoute = (route: string) =>
 
 beforeAll(() => {
   // eslint-disable-next-line no-console
-  console.error = jest.fn()
+  console.error = vi.fn()
 })
 
 describe('Support Tools', () => {
@@ -1257,18 +1258,21 @@ describe('Support Tools', () => {
         'Combined Batch 1'
       )
       userEvent.click(screen.getByPlaceholderText('Select batches...'))
-      const options = (await screen.findByText('Batch 3')).closest(
-        '.bp3-menu'
+
+      // Find the dropdown menu - use the popover content container
+      const popover = (await screen.findByText('Batch 3')).closest(
+        '.bp3-popover-content'
       ) as HTMLElement
+
       // Select and remove a batch
-      userEvent.click(within(options).getByText('Batch 3'))
+      userEvent.click(within(popover).getByText('Batch 3'))
       userEvent.click(screen.getByRole('button', { name: 'Remove' }))
       // Select and deselect a batch
-      userEvent.click(within(options).getByText('Batch 4'))
-      userEvent.click(within(options).getByText('Batch 4'))
+      userEvent.click(within(popover).getByText('Batch 4'))
+      userEvent.click(within(popover).getByText('Batch 4'))
       // Select two batches
-      userEvent.click(screen.getByText('Batch 1'))
-      userEvent.click(screen.getByText('Batch 2'))
+      userEvent.click(within(popover).getByText('Batch 1'))
+      userEvent.click(within(popover).getByText('Batch 2'))
       userEvent.click(
         screen.getByRole('button', { name: /Create Combined Batch/ })
       )

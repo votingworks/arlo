@@ -1,3 +1,4 @@
+import { describe, expect, it, vi } from 'vitest'
 import React from 'react'
 import { screen } from '@testing-library/react'
 import { QueryClientProvider } from 'react-query'
@@ -24,7 +25,7 @@ const renderSetup = (props: Partial<ISetupProps> = {}) =>
       <Setup
         electionId="1"
         auditSettings={auditSettingsMocks.blank}
-        startNextRound={jest.fn()}
+        startNextRound={vi.fn()}
         isAuditStarted={false}
         {...props}
       />

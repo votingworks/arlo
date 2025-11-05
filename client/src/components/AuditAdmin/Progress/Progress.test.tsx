@@ -1,3 +1,4 @@
+import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import React from 'react'
 import { screen, within, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -7,6 +8,7 @@ import {
   withMockFetch,
   renderWithRouter,
   createQueryClient,
+  readBlobAsText,
 } from '../../testUtilities'
 import {
   aaApiCalls,
@@ -25,20 +27,21 @@ import * as utilities from '../../utilities'
 import { ExtendedIntent } from '../../Atoms/StatusTag'
 
 // Borrowed from generateSheets.test.tsx
-const mockSavePDF = jest.fn()
-jest.mock('jspdf', () => {
-  const { jsPDF } = jest.requireActual('jspdf')
+const mockSavePDF = vi.fn()
+vi.mock('jspdf', async importActual => {
+  const { jsPDF } = (await importActual()) as any
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return function mockJsPDF(options?: any) {
+  function mockJsPDF(options?: any) {
     return {
       ...new jsPDF(options),
-      addImage: jest.fn(),
+      addImage: vi.fn(),
       save: mockSavePDF,
     }
   }
+  return { default: mockJsPDF, jsPDF: mockJsPDF }
 })
-window.URL.createObjectURL = jest.fn()
-window.open = jest.fn()
+window.URL.createObjectURL = vi.fn()
+window.open = vi.fn()
 
 const expectStatusTag = (
   cell: HTMLElement,
@@ -74,10 +77,10 @@ const render = (props: Partial<IProgressProps> = {}, searchParams = '') =>
 describe('Progress screen', () => {
   beforeEach(() => {
     // Clear mock call counts, etc.
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
-  afterAll(() => jest.restoreAllMocks())
+  afterAll(() => vi.restoreAllMocks())
 
   function getDefaultExpectedCalls() {
     return [aaApiCalls.getLastLoginByJurisdiction(), aaApiCalls.getMapData]
@@ -430,7 +433,7 @@ describe('Progress screen', () => {
         name: /Download Discrepancy Report/,
       })
       const mockDownloadWindow: { onbeforeunload?: () => void } = {}
-      window.open = jest.fn().mockReturnValue(mockDownloadWindow)
+      window.open = vi.fn().mockReturnValue(mockDownloadWindow)
       userEvent.click(downloadReportButton)
       expect(downloadReportButton).toBeDisabled()
       await waitFor(() => {
@@ -559,7 +562,7 @@ describe('Progress screen', () => {
         name: /Download Discrepancy Report/,
       })
       const mockDownloadWindow: { onbeforeunload?: () => void } = {}
-      window.open = jest.fn().mockReturnValue(mockDownloadWindow)
+      window.open = vi.fn().mockReturnValue(mockDownloadWindow)
       userEvent.click(downloadReportButton)
       expect(downloadReportButton).toBeDisabled()
       await waitFor(() => {
@@ -810,9 +813,9 @@ describe('Progress screen', () => {
       },
       configurable: true,
     })
-    const downloadFileMock = jest
+    const downloadFileMock = vi
       .spyOn(utilities, 'downloadFile')
-      .mockImplementation()
+      .mockResolvedValue(undefined)
 
     const expectedCalls = getDefaultExpectedCalls()
     await withMockFetch(expectedCalls, async () => {
@@ -835,7 +838,7 @@ describe('Progress screen', () => {
       )
       const fileBlob = downloadFileMock.mock.calls[0][0] as Blob
       expect(fileBlob.type).toEqual('text/csv')
-      expect(await new Response(fileBlob).text()).toEqual(
+      expect(await readBlobAsText(fileBlob)).toEqual(
         '"Jurisdiction","Status","Ballots in Manifest","Ballots Audited","Ballots Remaining"\n' +
           '"Jurisdiction 1","In progress","2,117","4","6"\n' +
           '"Jurisdiction 2","Logged in","2,117","0","20"\n' +
@@ -844,10 +847,6 @@ describe('Progress screen', () => {
       )
 
       downloadFileMock.mockRestore()
-      Object.defineProperty(HTMLElement.prototype, 'innerText', {
-        value: '',
-        configurable: true,
-      })
     })
   })
 

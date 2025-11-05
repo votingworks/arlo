@@ -1,9 +1,10 @@
+import { expect, test, vi } from 'vitest'
 import React from 'react'
 import { render, waitFor, fireEvent } from '@testing-library/react'
 import CreateAuditBoards from './CreateAuditBoards'
 
 test('names audit boards numerically', async () => {
-  const createAuditBoards = jest.fn()
+  const createAuditBoards = vi.fn()
   const { getByText, getByTestId } = render(
     <CreateAuditBoards createAuditBoards={createAuditBoards} />
   )
@@ -21,7 +22,7 @@ test('names audit boards numerically', async () => {
 })
 
 test('names audit boards such that the names sort sensibly', async () => {
-  const createAuditBoards = jest.fn()
+  const createAuditBoards = vi.fn()
   const { getByText, getByTestId } = render(
     <CreateAuditBoards createAuditBoards={createAuditBoards} />
   )

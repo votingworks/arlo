@@ -1,3 +1,4 @@
+import { describe, expect, it, vi } from 'vitest'
 import React from 'react'
 import { render, fireEvent, waitFor, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -7,13 +8,13 @@ import { dummyBoards } from './_mocks'
 describe('Sign Off', () => {
   it('renders correctly', () => {
     const { container } = render(
-      <SignOff auditBoard={dummyBoards()[0]} submitSignoff={jest.fn()} />
+      <SignOff auditBoard={dummyBoards()[0]} submitSignoff={vi.fn()} />
     )
     expect(container).toMatchSnapshot()
   })
 
   it('handles inputs', async () => {
-    const submitSignoffMock = jest.fn()
+    const submitSignoffMock = vi.fn()
     const { container, queryAllByLabelText, getByText } = render(
       <SignOff
         auditBoard={dummyBoards()[0]}
