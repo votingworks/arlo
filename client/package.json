@@ -8,9 +8,9 @@
     "lint:fix": "yarn lint --fix",
     "start": "vite",
     "test": "is-ci \"test:ci\" \"test:watch\"",
-    "test:ci": "CI=true tsc && jest --maxWorkers 4 --coverage --testTimeout 30000",
-    "test:coverage": "TZ=UTC jest --coverage",
-    "test:watch": "TZ=UTC jest --watchAll"
+    "test:ci": "CI=true tsc && vitest --maxWorkers 4 --coverage --testTimeout 30000",
+    "test:coverage": "TZ=UTC vitest run --coverage",
+    "test:watch": "TZ=UTC vitest watch"
   },
   "lint-staged": {
     "*.+(css|graphql|json|less|md|mdx|sass|scss|yaml|yml)": [
@@ -56,9 +56,11 @@
     "minimist": "1.2.8",
     "node-notifier": "5.4.5",
     "property-expr": "2.0.6",
+    "psl": "1.15.0",
     "rollup": "4.29.1",
     "tough-cookie": "4.1.4",
     "unset-value": "2.0.1",
+    "whatwg-url": "14.2.0",
     "yargs-parser": "13.1.2"
   },
   "dependencies": {
@@ -67,7 +69,7 @@
     "@hookform/error-message": "^2.0.0",
     "@sentry/react": "^5.27.3",
     "@sentry/tracing": "^5.27.3",
-    "@vitejs/plugin-react": "^4",
+    "@vitejs/plugin-react": "^5.0.4",
     "axios": "^0.30.2",
     "classnames": "^2.3.2",
     "copy-to-clipboard": "^3.3.1",
@@ -89,19 +91,18 @@
     "styled-components": "^4.3.2",
     "topojson-client": "^3.1.0",
     "uuidv4": "^4.0.0",
-    "vite": "^5",
+    "vite": "^7.1.12",
     "yup": "^0.27.0"
   },
   "devDependencies": {
     "@babel/core": "7.8.4",
     "@sinonjs/fake-timers": "^6.0.1",
     "@testing-library/cypress": "^7.0.3",
-    "@testing-library/jest-dom": "^5.8.0",
+    "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^12.1.4",
     "@testing-library/react-hooks": "^3.3.0",
     "@testing-library/user-event": "^12.3.0",
     "@types/d3": "^6.7.0",
-    "@types/jest": "^24.0.15",
     "@types/jspdf": "^1.3.3",
     "@types/node": "12.0.7",
     "@types/qrcode.react": "^0.8.2",
@@ -117,7 +118,7 @@
     "@types/yup": "^0.26.22",
     "@typescript-eslint/eslint-plugin": "^3.0.1",
     "@typescript-eslint/parser": "^3.0.1",
-    "babel-jest": "^24.9.0",
+    "@vitest/coverage-v8": "^4.0.4",
     "babel-preset-react-app": "^9.1.1",
     "camelcase": "^5.3.1",
     "cypress": "^11.0.0",
@@ -127,8 +128,6 @@
     "eslint-config-prettier": "^4.2.0",
     "eslint-plugin-cypress": "^2.2.1",
     "eslint-plugin-import": "^2.17.2",
-    "eslint-plugin-jest": "^22.5.1",
-    "eslint-plugin-jest-dom": "^2.1.0",
     "eslint-plugin-jsx-a11y": "^6.2.1",
     "eslint-plugin-prettier": "^3.1.0",
     "eslint-plugin-react": "^7.13.0",
@@ -136,10 +135,6 @@
     "eslint-plugin-testing-library": "^3.1.3",
     "identity-obj-proxy": "3.0.0",
     "is-ci-cli": "^1.1.1",
-    "jest": "24.9.0",
-    "jest-canvas-mock": "^2.1.1",
-    "jest-environment-jsdom-sixteen": "^1.0.3",
-    "jest-watch-typeahead": "0.4.2",
     "jsdom": "^16.5.0",
     "lint-staged": "^13.0.3",
     "maildev": "^2.1.0",
@@ -153,6 +148,8 @@
     "stylelint-config-prettier": "^5.1.0",
     "stylelint-config-styled-components": "^0.1.1",
     "stylelint-processor-styled-components": "^1.10.0",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "vitest": "^4.0.4",
+    "vitest-canvas-mock": "^0.3.3"
   }
 }
