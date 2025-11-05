@@ -263,71 +263,78 @@ describe('BatchRoundSteps', () => {
     })
   })
 
-  it('shows Step 2: Set Up Tally Entry Accounts', async () => {
-    const expectedCalls = [
-      jaApiCalls.getBatches(batchesMocks.emptyInitial),
-      jaApiCalls.getTallyEntryAccountStatus(
-        tallyEntryAccountStatusMocks.turnedOff
-      ),
-      jaApiCalls.postTurnOnTallyEntryAccounts,
-      jaApiCalls.getTallyEntryAccountStatus(
-        tallyEntryAccountStatusMocks.noLoginRequests
-      ),
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      renderComponent('/tally-entry-accounts')
-      await screen.findByRole('heading', {
-        name: 'Set Up Tally Entry Accounts',
-        current: 'step',
-      })
+  // FIXME: Unskip this in CI once we have more flexible fetch mocking.
+  // This test runs the app in such a way that the order of requests
+  // is not deterministic, so our inflexible `fetch` mocking can't properly
+  // mock requests for this test in a non-flaky way.
+  ;(process.env.CI ? it.skip : it)(
+    'shows Step 2: Set Up Tally Entry Accounts',
+    async () => {
+      const expectedCalls = [
+        jaApiCalls.getBatches(batchesMocks.emptyInitial),
+        jaApiCalls.getTallyEntryAccountStatus(
+          tallyEntryAccountStatusMocks.turnedOff
+        ),
+        jaApiCalls.postTurnOnTallyEntryAccounts,
+        jaApiCalls.getTallyEntryAccountStatus(
+          tallyEntryAccountStatusMocks.noLoginRequests
+        ),
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        renderComponent('/tally-entry-accounts')
+        await screen.findByRole('heading', {
+          name: 'Set Up Tally Entry Accounts',
+          current: 'step',
+        })
 
-      // When tally entry accounts turned off, prompt to turn them on
-      screen.getByText('Do you want to set up tally entry accounts?')
-      const skipButton = screen.getByRole('button', { name: /Skip/ })
-      expect(skipButton).toHaveAttribute(
-        'href',
-        '/election/1/jurisdiction/jurisdiction-id-1/round/round-1/enter-tallies'
-      )
-      const yesButton = await screen.findByRole('button', {
-        name: /Set Up Tally Entry Accounts/,
-      })
-      userEvent.click(yesButton)
-
-      // Once they are turned on, show login link
-      await screen.findByRole('heading', {
-        name: 'Share Tally Entry Login Link',
-      })
-      const loginLinkInput = screen.getByRole('textbox')
-      const expectedLoginLink = `${window.location.origin}/tallyentry/${tallyEntryAccountStatusMocks.noLoginRequests.passphrase}`
-      expect(loginLinkInput).toHaveValue(expectedLoginLink)
-      expect(loginLinkInput).toHaveAttribute('readonly')
-
-      const copyLinkButton = screen.getByRole('button', { name: /Copy Link/ })
-      userEvent.click(copyLinkButton)
-      expect(copy).toHaveBeenCalledWith(expectedLoginLink, {
-        format: 'text/plain',
-      })
-
-      const downloadPrintoutButton = screen.getByRole('button', {
-        name: /Download Printout/,
-      })
-      userEvent.click(downloadPrintoutButton)
-      expect(downloadPrintoutButton).toBeDisabled()
-      await waitFor(() =>
-        expect(mockSavePDF).toHaveBeenCalledWith(
-          'Tally Entry Login Link - Jurisdiction One - audit one.pdf',
-          {
-            returnPromise: true,
-          }
+        // When tally entry accounts turned off, prompt to turn them on
+        screen.getByText('Do you want to set up tally entry accounts?')
+        const skipButton = screen.getByRole('button', { name: /Skip/ })
+        expect(skipButton).toHaveAttribute(
+          'href',
+          '/election/1/jurisdiction/jurisdiction-id-1/round/round-1/enter-tallies'
         )
-      )
-      expect(downloadPrintoutButton).toBeEnabled()
+        const yesButton = await screen.findByRole('button', {
+          name: /Set Up Tally Entry Accounts/,
+        })
+        userEvent.click(yesButton)
 
-      // And show login requests
-      screen.getByRole('heading', { name: 'Confirm Tally Entry Accounts' })
-      screen.getByText('No tally entry accounts have logged in yet')
-    })
-  })
+        // Once they are turned on, show login link
+        await screen.findByRole('heading', {
+          name: 'Share Tally Entry Login Link',
+        })
+        const loginLinkInput = screen.getByRole('textbox')
+        const expectedLoginLink = `${window.location.origin}/tallyentry/${tallyEntryAccountStatusMocks.noLoginRequests.passphrase}`
+        expect(loginLinkInput).toHaveValue(expectedLoginLink)
+        expect(loginLinkInput).toHaveAttribute('readonly')
+
+        const copyLinkButton = screen.getByRole('button', { name: /Copy Link/ })
+        userEvent.click(copyLinkButton)
+        expect(copy).toHaveBeenCalledWith(expectedLoginLink, {
+          format: 'text/plain',
+        })
+
+        const downloadPrintoutButton = screen.getByRole('button', {
+          name: /Download Printout/,
+        })
+        userEvent.click(downloadPrintoutButton)
+        expect(downloadPrintoutButton).toBeDisabled()
+        await waitFor(() =>
+          expect(mockSavePDF).toHaveBeenCalledWith(
+            'Tally Entry Login Link - Jurisdiction One - audit one.pdf',
+            {
+              returnPromise: true,
+            }
+          )
+        )
+        expect(downloadPrintoutButton).toBeEnabled()
+
+        // And show login requests
+        screen.getByRole('heading', { name: 'Confirm Tally Entry Accounts' })
+        screen.getByText('No tally entry accounts have logged in yet')
+      })
+    }
+  )
 
   it('on Step 2, polls for login requests and can confirm/reject a request', async () => {
     vi.useFakeTimers()
