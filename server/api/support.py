@@ -20,7 +20,6 @@ from ..auth import (
     restrict_access_support,
     set_loggedin_user,
     UserType,
-    get_support_user,
 )
 from ..config import (
     AUDITADMIN_AUTH0_BASE_URL,
@@ -38,7 +37,7 @@ from .rounds import (
     is_audit_complete,
 )
 from ..util.get_json import safe_get_json_dict
-from .shared import combined_batch_representative, group_combined_batches
+from .shared import group_combined_batches
 
 AUTH0_DOMAIN = urlparse(AUDITADMIN_AUTH0_BASE_URL).hostname
 
@@ -704,27 +703,8 @@ def create_combined_batch(jurisdiction_id: str):
     if all(len(batch.draws) == 0 for batch in batches):
         raise Conflict("At least one batch must be part of the sample")
 
-    representative_batch = combined_batch_representative(batches)
-    support_user_email = get_support_user(session)
-
     for batch in batches:
         batch.combined_batch_name = combined_batch["name"]
-        # Add 0 tallies for all but the representative batch
-        if batch.id != representative_batch.id:
-            batch.result_tally_sheets = [
-                BatchResultTallySheet(
-                    id=str(uuid.uuid4()),
-                    name="Combined Batch Zero Tally",
-                    results=[
-                        BatchResult(contest_choice_id=choice.id, result=0)
-                        for contest in list(jurisdiction.contests)
-                        for choice in contest.choices
-                    ],
-                )
-            ]
-            batch.last_edited_by_support_user_email = support_user_email
-            batch.last_edited_by_user_id = None
-            batch.last_edited_by_tally_entry_user_id = None
 
     db_session.commit()
 

@@ -308,6 +308,33 @@ def record_batch_results(
         batch.last_edited_by_user_id = None
         batch.last_edited_by_tally_entry_user_id = user_key
 
+    # If this is a combined batch, add 0 tallies for the non-representative sub batches
+    if batch.combined_batch_name is not None:
+        non_representative_sub_batches = Batch.query.filter(
+            Batch.combined_batch_name == batch.combined_batch_name,
+            Batch.jurisdiction_id == jurisdiction.id,
+            Batch.id != batch.id,
+        )
+        for sub_batch in non_representative_sub_batches:
+            sub_batch.result_tally_sheets = [
+                BatchResultTallySheet(
+                    id=str(uuid.uuid4()),
+                    name="Combined Batch Zero Tally",
+                    results=[
+                        BatchResult(contest_choice_id=choice.id, result=0)
+                        for contest in list(jurisdiction.contests)
+                        for choice in contest.choices
+                    ],
+                )
+            ]
+            sub_batch.last_edited_by_support_user_email = (
+                batch.last_edited_by_support_user_email
+            )
+            sub_batch.last_edited_by_user_id = batch.last_edited_by_user_id
+            sub_batch.last_edited_by_tally_entry_user_id = (
+                batch.last_edited_by_tally_entry_user_id
+            )
+
     db_session.commit()
 
     return jsonify(status="ok")
