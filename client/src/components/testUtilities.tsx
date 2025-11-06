@@ -1,3 +1,4 @@
+import { expect, vi } from 'vitest'
 import axios, { AxiosRequestConfig, AxiosError, AxiosResponse } from 'axios'
 import React from 'react'
 import { createLocation, createMemoryHistory, MemoryHistory } from 'history'
@@ -84,7 +85,7 @@ export function renderWithRouter(
 
 // withMockFetch is a helper to mock calls to external APIs (e.g. the Arlo backend).
 // - It takes an array of expected FetchRequests and a test runner function
-// - It mocks window.fetch to return the given response for each request
+// - It mocks global.fetch to return the given response for each request
 // - After running the test function, it checks that the actual received
 //   requests exactly match the expected requests.
 
@@ -117,12 +118,47 @@ const normalizeRequestOptions = (options: RequestInit) => ({
   body: requestBodyToJSON(options.body),
 })
 
+function maybeMockAxios() {
+  // Also mock axios, since we use that in some cases
+  // To enable axios mock, the test file must have vi.mock('axios') at the top
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  if ('mockImplementation' in (axios as any).default) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ;(axios as any).mockImplementation(
+      async (
+        url: string,
+        { onUploadProgress, data, ...options }: AxiosRequestConfig
+      ) => {
+        if (onUploadProgress)
+          onUploadProgress({ loaded: 1, total: 2 } as ProgressEvent)
+        const response = await fetch(url, {
+          ...options,
+          body: data,
+        } as RequestInit)
+        if (response.status >= 400) {
+          const error = new Error() as AxiosError
+          error.response = ({
+            config: {},
+            ...response,
+            data: JSON.parse(await response.text()),
+          } as unknown) as AxiosResponse
+          throw error
+        }
+        return {
+          ...response,
+          data: await response.json(),
+        }
+      }
+    )
+  }
+}
+
 export const withMockFetch = async (
   requests: FetchRequest[],
   testFn: () => Promise<void>
 ): Promise<void> => {
   const requestsLeft = [...requests]
-  const mockFetch = jest.fn(async (url: string, options: RequestInit = {}) => {
+  const mockFetch = vi.fn(async (url: string, options: RequestInit = {}) => {
     const [expectedRequest] = requestsLeft.splice(0, 1)
     if (!expectedRequest) {
       // eslint-disable-next-line no-console
@@ -160,52 +196,26 @@ export const withMockFetch = async (
   })
 
   // Set up fetch mock
-  window.fetch = mockFetch as typeof window.fetch
+  const originalFetch = globalThis.fetch
+  globalThis.fetch = mockFetch as typeof globalThis.fetch
 
-  // Also mock axios, since we use that in some cases
-  // To enable axios mock, the test file must have jest.mock('axios') at the top
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  if ('mockImplementation' in (axios as any).default) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ;(axios as any).mockImplementation(
-      async (
-        url: string,
-        { onUploadProgress, data, ...options }: AxiosRequestConfig
-      ) => {
-        if (onUploadProgress)
-          onUploadProgress({ loaded: 1, total: 2 } as ProgressEvent)
-        const response = await mockFetch(url, {
-          ...options,
-          body: data,
-        } as RequestInit)
-        if (response.status >= 400) {
-          const error = new Error() as AxiosError
-          error.response = ({
-            config: {},
-            ...response,
-            data: JSON.parse(await response.text()),
-          } as unknown) as AxiosResponse
-          throw error
-        }
-        return {
-          ...response,
-          data: await response.json(),
-        }
-      }
-    )
+  maybeMockAxios()
+
+  try {
+    await testFn()
+
+    const actualRequests = mockFetch.mock.calls.map(([url, options]) => ({
+      url,
+      options: options && normalizeRequestOptions(options),
+    }))
+    const expectedRequests = requests.map(({ url, options }) => ({
+      url,
+      options: options && normalizeRequestOptions(options),
+    }))
+    expect(actualRequests).toEqual(expectedRequests)
+  } finally {
+    globalThis.fetch = originalFetch
   }
-
-  await testFn()
-
-  const actualRequests = mockFetch.mock.calls.map(([url, options]) => ({
-    url,
-    options: options && normalizeRequestOptions(options),
-  }))
-  const expectedRequests = requests.map(({ url, options }) => ({
-    url,
-    options: options && normalizeRequestOptions(options),
-  }))
-  expect(actualRequests).toEqual(expectedRequests)
 }
 
 export const serverError = (
@@ -293,4 +303,16 @@ export function hasTextAcrossElements(text: string): Matcher {
     )
     return nodeHasText && childrenDoNotHaveText
   }
+}
+
+/**
+ * Read text from `blob`.
+ */
+export function readBlobAsText(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result as string)
+    reader.onerror = () => reject(reader.error)
+    reader.readAsText(blob)
+  })
 }

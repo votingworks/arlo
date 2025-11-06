@@ -1,5 +1,7 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import React from 'react'
 import { render } from '@testing-library/react'
+import { jsPDFOptions } from 'jspdf'
 import QRs from './QRs'
 import {
   downloadAuditBoardCredentials,
@@ -47,20 +49,21 @@ function constructMinimalContest(
   return { name: contestName, choices }
 }
 
-const mockSavePDF = jest.fn()
-jest.mock('jspdf', () => {
-  const { jsPDF } = jest.requireActual('jspdf')
+const mockSavePDF = vi.fn()
+vi.mock('jspdf', async () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return function mockJsPDF(options?: any) {
+  const { jsPDF } = (await vi.importActual('jspdf')) as any
+  function mockJsPDF(options?: jsPDFOptions) {
     return {
       ...new jsPDF(options),
-      addImage: jest.fn(),
+      addImage: vi.fn(),
       save: mockSavePDF,
     }
   }
+  return { default: mockJsPDF, jsPDF: mockJsPDF }
 })
 
-window.URL.createObjectURL = jest.fn()
+window.URL.createObjectURL = vi.fn()
 
 const apiCalls = {
   getBallots: {

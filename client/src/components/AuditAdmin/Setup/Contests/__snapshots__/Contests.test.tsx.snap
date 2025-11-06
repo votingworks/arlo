@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Audit Setup > Contests renders empty opportunistic state correctly 1`] = `
+exports[`Audit Setup > Contests > renders empty opportunistic state correctly 1`] = `
 <div>
   <form
     data-testid="form-one"
@@ -401,7 +401,7 @@ exports[`Audit Setup > Contests renders empty opportunistic state correctly 1`] 
 </div>
 `;
 
-exports[`Audit Setup > Contests renders empty targeted state correctly 1`] = `
+exports[`Audit Setup > Contests > renders empty targeted state correctly 1`] = `
 <div>
   <form
     data-testid="form-one"
@@ -802,7 +802,7 @@ exports[`Audit Setup > Contests renders empty targeted state correctly 1`] = `
 </div>
 `;
 
-exports[`Audit Setup > Contests renders filled opportunistic state correctly 1`] = `
+exports[`Audit Setup > Contests > renders filled opportunistic state correctly 1`] = `
 <div>
   <form
     data-testid="form-one"
@@ -1203,7 +1203,7 @@ exports[`Audit Setup > Contests renders filled opportunistic state correctly 1`]
 </div>
 `;
 
-exports[`Audit Setup > Contests renders filled targeted state correctly 1`] = `
+exports[`Audit Setup > Contests > renders filled targeted state correctly 1`] = `
 <div>
   <form
     data-testid="form-one"

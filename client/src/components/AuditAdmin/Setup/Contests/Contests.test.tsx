@@ -1,3 +1,4 @@
+import { describe, expect, it, vi } from 'vitest'
 import React from 'react'
 import { waitFor, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -15,11 +16,11 @@ import { contestMocks, aaApiCalls } from '../../../_mocks'
 import { IContest } from '../../../../types'
 import { AuditType } from '../../../useAuditSettings'
 
-jest.mock('uuidv4')
+vi.mock(import('uuidv4'))
 
 const renderContests = (props: Partial<IContestsProps> = {}) => {
-  const goToNextStage = jest.fn()
-  const goToPrevStage = jest.fn()
+  const goToNextStage = vi.fn()
+  const goToPrevStage = vi.fn()
   return {
     goToNextStage,
     goToPrevStage,
@@ -492,7 +493,7 @@ describe('Audit Setup > Contests', () => {
       'choice-id-4',
     ]
     let uuidIndex = -1
-    ;((uuidv4 as unknown) as jest.Mock).mockImplementation(() => {
+    vi.mocked(uuidv4).mockImplementation(() => {
       uuidIndex += 1
       return uuids[uuidIndex] ?? 'missing-uuid-in-mock'
     })

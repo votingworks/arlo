@@ -1,3 +1,4 @@
+import { describe, expect, it, vi } from 'vitest'
 import React from 'react'
 import { screen, within, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -77,7 +78,7 @@ describe('Home screen', () => {
 
       Object.defineProperty(window, 'location', {
         writable: true,
-        value: { reload: jest.fn() },
+        value: { reload: vi.fn() },
       })
       userEvent.click(
         screen.getByRole('button', {

@@ -1,3 +1,4 @@
+import { describe, expect, it, vi } from 'vitest'
 import React from 'react'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -18,7 +19,7 @@ const asyncMock = (): [
     resolvePromise = resolve
     rejectPromise = reject
   })
-  const mock = jest.fn().mockReturnValue(promise)
+  const mock = vi.fn().mockReturnValue(promise)
   return [mock, resolvePromise, rejectPromise]
 }
 

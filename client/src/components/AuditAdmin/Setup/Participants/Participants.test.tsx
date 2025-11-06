@@ -1,3 +1,4 @@
+import { describe, expect, it, vi } from 'vitest'
 import React from 'react'
 import { screen, waitFor, render } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -11,10 +12,10 @@ import {
   getMockJsonDataForUploadComplete,
 } from '../../../_mocks'
 
-jest.mock('axios')
+vi.mock('axios')
 
 const renderParticipants = (props: Partial<IParticipantsProps> = {}) => {
-  const goToNextStage = jest.fn()
+  const goToNextStage = vi.fn()
   return {
     goToNextStage,
     ...render(

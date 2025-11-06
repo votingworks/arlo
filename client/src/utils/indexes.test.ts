@@ -1,3 +1,4 @@
+import { expect, test } from 'vitest'
 import { upTo, formattedUpTo } from './indexes'
 
 test('upTo yields nothing given maximum below 1', () => {

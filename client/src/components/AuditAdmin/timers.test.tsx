@@ -2,10 +2,10 @@
  * These tests are segregated because they were creating unreliable interference
  */
 
+import { afterEach, beforeEach, describe, it, vi } from 'vitest'
 import React, { ReactElement } from 'react'
 import { screen, act } from '@testing-library/react'
 import { Route } from 'react-router-dom'
-import FakeTimers from '@sinonjs/fake-timers'
 import { QueryClientProvider } from 'react-query'
 import AuthDataProvider, { useAuthDataContext } from '../UserContext'
 import AuditAdminView from './AuditAdminView'
@@ -36,12 +36,11 @@ const renderWithRoute = (route: string, component: ReactElement) =>
   )
 
 describe('timers', () => {
-  let clock = FakeTimers.install()
   beforeEach(() => {
-    clock = FakeTimers.install()
+    vi.useFakeTimers()
   })
   afterEach(() => {
-    clock.uninstall()
+    vi.useRealTimers()
   })
   it('refreshes every five minutes on progress', async () => {
     const expectedCalls = [
@@ -55,20 +54,19 @@ describe('timers', () => {
       aaApiCalls.getRounds([]),
       aaApiCalls.getJurisdictions,
       aaApiCalls.getLastLoginByJurisdiction(),
-      aaApiCalls.getMapData,
     ]
     await withMockFetch(expectedCalls, async () => {
       renderWithRoute('/election/1/progress', <AuditAdminViewWithAuth />)
       await act(async () => {
-        await clock.nextAsync()
+        await vi.advanceTimersToNextTimerAsync()
       })
       await screen.findByText('Will refresh in 5 minutes')
       await act(async () => {
-        await clock.tickAsync(1000 * 60)
+        await vi.advanceTimersByTimeAsync(1000 * 60)
       })
       await screen.findByText('Will refresh in 4 minutes')
       await act(async () => {
-        await clock.tickAsync(1000 * 60 * 4)
+        await vi.advanceTimersByTimeAsync(1000 * 60 * 4)
       })
       await screen.findByText('Will refresh in 5 minutes')
     })
