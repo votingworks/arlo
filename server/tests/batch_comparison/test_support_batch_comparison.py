@@ -98,7 +98,17 @@ def test_support_combined_batches(
         )
     ]
 
+    # Ensure that a computation that has to account for combined batches doesn't crash. This
+    # specific API call has crashed in the past.
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/discrepancy")
+    discrepancy_result = json.loads(rv.data)
+    assert discrepancy_result == {}
+
     # Record some audit results for the combined batch
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches"
     )

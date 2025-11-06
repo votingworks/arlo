@@ -62,10 +62,10 @@ run: # Used for development, not during production deployment. Defaults to 3 por
 #
 
 typecheck:
-	poetry run basedpyright --baseline-file .basedpyright/baseline.json
+	poetry run basedpyright
 
 typecheck-update-baseline:
-	poetry run basedpyright --baseline-file .basedpyright/baseline.json --writebaseline
+	poetry run basedpyright --writebaseline
 
 format:
 	poetry run ruff format .
@@ -74,7 +74,7 @@ lint:
 	poetry run ruff check server scripts fixtures
 
 test:
-	poetry run pytest -n auto --ignore=server/tests/arlo-extra-tests 
+	poetry run pytest -n auto --ignore=server/tests/arlo-extra-tests
 
 test-coverage:
 	poetry run pytest -n auto --cov=. --ignore=server/tests/arlo-extra-tests
@@ -84,6 +84,11 @@ test-extra: # This additionally runs the tests in arlo-extra-tests (must downloa
 
 test-extra-coverage:
 	poetry run pytest -n auto --cov=.
+
+# Can't run with parallelization (-n auto) when updating snapshots
+test-update-snapshots:
+	poetry run pytest -n 1 --ignore=server/tests/arlo-extra-tests --snapshot-update
+	poetry run ruff format .
 
 db-clean:
 	FLASK_ENV=$${FLASK_ENV:-development} poetry run python -m scripts.resetdb
