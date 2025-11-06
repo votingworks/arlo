@@ -53,6 +53,21 @@ def test_support_combined_batches(
     )
     sampled_batches = json.loads(rv.data)["batches"]
     all_batches = Batch.query.filter_by(jurisdiction_id=jurisdiction_ids[0]).all()
+    unsampled_batches = [
+        batch
+        for batch in all_batches
+        if batch.id not in [sampled_batch["id"] for sampled_batch in sampled_batches]
+    ]
+
+    # Must be authenticated as an audit admin to use this helper
+    def count_num_batches_audited():
+        rv = client.get(f"/api/election/{election_id}/jurisdiction")
+        jurisdictions = json.loads(rv.data)["jurisdictions"]
+        jurisdiction = next(
+            (j for j in jurisdictions if j["id"] == jurisdiction_ids[0]), None
+        )
+        assert jurisdiction is not None
+        return jurisdiction["currentRoundStatus"]["numUniqueAudited"]
 
     # Initially, no combined batches
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)
@@ -68,13 +83,18 @@ def test_support_combined_batches(
     assert response["combinedBatches"] == []
 
     # Create a combined batch
-    assert sampled_batches[0]["id"] != all_batches[1].id
+    combined_batch_1_sub_batch_ids = [
+        # Use two sampled batches and one unsampled batch to cover all our bases
+        sampled_batches[0]["id"],
+        sampled_batches[1]["id"],
+        unsampled_batches[0].id,
+    ]
     rv = post_json(
         client,
         f"/api/support/jurisdictions/{jurisdiction_ids[0]}/combined-batches",
         dict(
             name="Combined Batch 1",
-            subBatchIds=[sampled_batches[0]["id"], all_batches[1].id],
+            subBatchIds=combined_batch_1_sub_batch_ids,
         ),
     )
     assert_ok(rv)
@@ -91,8 +111,12 @@ def test_support_combined_batches(
                     name=sampled_batches[0]["name"],
                 ),
                 dict(
-                    id=all_batches[1].id,
-                    name=all_batches[1].name,
+                    id=sampled_batches[1]["id"],
+                    name=sampled_batches[1]["name"],
+                ),
+                dict(
+                    id=unsampled_batches[0].id,
+                    name=unsampled_batches[0].name,
                 ),
             ],
         )
@@ -102,8 +126,10 @@ def test_support_combined_batches(
     # specific API call has crashed in the past.
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/discrepancy")
-    discrepancy_result = json.loads(rv.data)
-    assert discrepancy_result == {}
+    assert json.loads(rv.data) == {}
+
+    # Ensure that no batches are considered audited to begin with
+    assert count_num_batches_audited() == 0
 
     # Record some audit results for the combined batch
     set_logged_in_user(
@@ -130,16 +156,22 @@ def test_support_combined_batches(
     )
     assert_ok(rv)
 
+    # Ensure that both sampled batches in the combined batch are considered audited
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    assert count_num_batches_audited() == 2
+
     # Create another combined batch
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)
-    assert sampled_batches[3]["id"] != all_batches[3].id
-    assert sampled_batches[3]["id"] != all_batches[1].id
+    combined_batch_2_sub_batch_ids = [
+        sampled_batches[2]["id"],
+        unsampled_batches[1].id,
+    ]
     rv = post_json(
         client,
         f"/api/support/jurisdictions/{jurisdiction_ids[0]}/combined-batches",
         dict(
             name="Combined Batch 2",
-            subBatchIds=[sampled_batches[3]["id"], all_batches[3].id],
+            subBatchIds=combined_batch_2_sub_batch_ids,
         ),
     )
 
@@ -149,7 +181,7 @@ def test_support_combined_batches(
     )
     assert_ok(rv)
 
-    # Check that the combined batch is gone
+    # Check that the first combined batch is gone
     rv = client.get(f"/api/support/jurisdictions/{jurisdiction_ids[0]}/batches")
     response = json.loads(rv.data)
     assert response["combinedBatches"] == [
@@ -157,12 +189,12 @@ def test_support_combined_batches(
             name="Combined Batch 2",
             subBatches=[
                 dict(
-                    id=all_batches[3].id,
-                    name=all_batches[3].name,
+                    id=sampled_batches[2]["id"],
+                    name=sampled_batches[2]["name"],
                 ),
                 dict(
-                    id=sampled_batches[3]["id"],
-                    name=sampled_batches[3]["name"],
+                    id=unsampled_batches[1].id,
+                    name=unsampled_batches[1].name,
                 ),
             ],
         )
@@ -177,8 +209,12 @@ def test_support_combined_batches(
     )
     batches = json.loads(rv.data)["batches"]
     for batch in batches:
-        if batch["id"] in [sampled_batches[0]["id"], all_batches[1].id]:
+        if batch["id"] in combined_batch_1_sub_batch_ids:
             assert batch["resultTallySheets"] == []
+
+    # Ensure that we're back to no batches being considered audited
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    assert count_num_batches_audited() == 0
 
 
 def test_support_invalid_combined_batches(
