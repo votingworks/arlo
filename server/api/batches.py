@@ -294,33 +294,27 @@ def record_batch_results(
 
     user_type, user_key = get_loggedin_user(session)
     support_user_email = get_support_user(session)
-
-    last_edited_by: dict[str, str | None] = {
-        "support_user_email": None,
-        "user_id": None,
-        "tally_entry_user_id": None,
-    }
     if support_user_email:
-        last_edited_by["support_user_email"] = support_user_email
+        batch.last_edited_by_support_user_email = support_user_email
+        batch.last_edited_by_user_id = None
+        batch.last_edited_by_tally_entry_user_id = None
     elif user_type == UserType.JURISDICTION_ADMIN:
         user = User.query.filter_by(email=user_key).one()
-        last_edited_by["user_id"] = user.id
+        batch.last_edited_by_support_user_email = None
+        batch.last_edited_by_user_id = user.id
+        batch.last_edited_by_tally_entry_user_id = None
     elif user_type == UserType.TALLY_ENTRY:
-        last_edited_by["tally_entry_user_id"] = user_key
-
-    batch.last_edited_by_support_user_email = last_edited_by["support_user_email"]
-    batch.last_edited_by_user_id = last_edited_by["user_id"]
-    batch.last_edited_by_tally_entry_user_id = last_edited_by["tally_entry_user_id"]
+        batch.last_edited_by_support_user_email = None
+        batch.last_edited_by_user_id = None
+        batch.last_edited_by_tally_entry_user_id = user_key
 
     # If this is a combined batch, add 0 tallies for the non-representative sub batches
     if batch.combined_batch_name is not None:
-        sub_batches = Batch.query.filter_by(
-            combined_batch_name=batch.combined_batch_name,
-            jurisdiction_id=jurisdiction.id,
+        non_representative_sub_batches = Batch.query.filter(
+            Batch.combined_batch_name == batch.combined_batch_name,
+            Batch.jurisdiction_id == jurisdiction.id,
+            Batch.id != batch.id,
         )
-        non_representative_sub_batches = [
-            sub_batch for sub_batch in sub_batches if sub_batch.id != batch.id
-        ]
         for sub_batch in non_representative_sub_batches:
             sub_batch.result_tally_sheets = [
                 BatchResultTallySheet(
@@ -333,13 +327,13 @@ def record_batch_results(
                     ],
                 )
             ]
-            sub_batch.last_edited_by_support_user_email = last_edited_by[
-                "support_user_email"
-            ]
-            sub_batch.last_edited_by_user_id = last_edited_by["user_id"]
-            sub_batch.last_edited_by_tally_entry_user_id = last_edited_by[
-                "tally_entry_user_id"
-            ]
+            sub_batch.last_edited_by_support_user_email = (
+                batch.last_edited_by_support_user_email
+            )
+            sub_batch.last_edited_by_user_id = batch.last_edited_by_user_id
+            sub_batch.last_edited_by_tally_entry_user_id = (
+                batch.last_edited_by_tally_entry_user_id
+            )
 
     db_session.commit()
 
