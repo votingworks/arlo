@@ -199,13 +199,16 @@ def sampled_batch_results(
     combined_batches = group_combined_batches(all_sub_batches)
     for combined_batch in combined_batches:
         representative_batch = combined_batch["representative_batch"]
-        representative_results = results[
-            (representative_batch.jurisdiction.name, representative_batch.name)
-        ]
-        for sub_batch in combined_batch["sub_batches"]:
-            sub_batch_key = (sub_batch.jurisdiction.name, sub_batch.name)
-            if sub_batch_key in results:
-                results[sub_batch_key] = representative_results
+        representative_batch_key = (
+            representative_batch.jurisdiction.name,
+            representative_batch.name,
+        )
+        if representative_batch_key in results:
+            representative_results = results[representative_batch_key]
+            for sub_batch in combined_batch["sub_batches"]:
+                sub_batch_key = (sub_batch.jurisdiction.name, sub_batch.name)
+                if sub_batch_key in results:
+                    results[sub_batch_key] = representative_results
 
     # Don't include non-RLA batches unless explicitly requested, e.g., for discrepancy
     # and audit reports
