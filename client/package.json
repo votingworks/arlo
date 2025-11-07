@@ -57,7 +57,7 @@
     "node-notifier": "5.4.5",
     "property-expr": "2.0.6",
     "psl": "1.15.0",
-    "rollup": "4.29.1",
+    "rollup": "^4.43.0",
     "tough-cookie": "4.1.4",
     "unset-value": "2.0.1",
     "whatwg-url": "14.2.0",
