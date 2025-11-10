@@ -16,6 +16,10 @@ const BATCH_INVENTORY_CONFIGS: {
   'b6f34a14-1cb2-4d44-8f29-b4fe04fd2932': {
     showBallotManifest: false,
   },
+  // Pennsylvania - CVR Upload
+  '82d9b42b-b21e-4ff6-a884-14a97da2f2f4' : {
+    showBallotManifest: false,
+  },
   // Rhode Island
   '0225f953-c201-46c8-8582-617eb72ce2b4': {
     showBallotManifest: false,
