@@ -19,7 +19,7 @@ import scipy as sp
 
 
 from .sampler_contest import Contest, CVRS, SAMPLECVRS
-from . import bravo, supersimple
+from . import bravo, supersimple_non_raire
 
 
 class HybridPair(NamedTuple):
@@ -756,7 +756,7 @@ def misstatements(
     misstatements: MISSTATEMENTS = {}
     for winner, loser in product(contest.winners, contest.losers):
         discrepancies = [
-            supersimple.discrepancy(
+            supersimple_non_raire.discrepancy(
                 contest,
                 winner,
                 loser,

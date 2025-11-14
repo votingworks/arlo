@@ -754,6 +754,7 @@ class BallotInterpretation(BaseModel):
     __table_args__ = (PrimaryKeyConstraint("ballot_id", "contest_id"),)
 
     interpretation = Column(Enum(Interpretation), nullable=False)
+    # Need to change schema
     selected_choices = relationship(
         "ContestChoice",
         uselist=True,

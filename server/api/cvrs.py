@@ -280,7 +280,7 @@ def csv_reader_for_cvr(cvr_file: BinaryIO) -> CSVIterator:
     validate_comma_delimited(text_file)
     return csv.reader(text_file, delimiter=",")
 
-
+# Change this to parse RCV version and persist RAIRE CVRs (interpretations are numbers)
 def parse_clearballot_cvrs(
     jurisdiction: Jurisdiction,
     working_directory: str,

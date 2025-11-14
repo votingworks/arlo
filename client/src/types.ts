@@ -44,6 +44,7 @@ export enum Interpretation {
   CONTEST_NOT_ON_BALLOT = 'CONTEST_NOT_ON_BALLOT',
 }
 
+// CHANGE THIS
 export interface IBallotInterpretation {
   contestId: string
   interpretation: Interpretation | null
