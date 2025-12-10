@@ -190,7 +190,7 @@ def find_assertions(
     return False  # pragma: no cover
 
 
-# TODO: Determine what to provide for this function
+# Confirmed with Mark that this is a valid function to use (it's what we use in tests, too)
 def default_asn_func(m):
     return 1 / m if m > 0 else np.inf
 
