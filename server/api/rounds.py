@@ -37,9 +37,10 @@ from ..util.collections import group_by
 from ..audit_math import (
     ballot_polling,
     macro,
-    supersimple,
+    supersimple_raire,
     sampler_contest,
     suite,
+    raire,
 )
 from .ballot_manifest import hybrid_contest_total_ballots
 from ..worker.tasks import (
@@ -302,11 +303,12 @@ def calculate_risk_measurements(election: Election, round: Round):
                 combined_batch_keys(election.id),
             )
         elif election.audit_type == AuditType.BALLOT_COMPARISON:
-            p_value, is_complete = supersimple.compute_risk(
+            p_value, is_complete = supersimple_raire.compute_risk(
                 election.risk_limit,
                 sampler_contest.from_db_contest(contest),
                 cvrs_for_contest(contest),
                 sampled_ballot_interpretations_to_cvrs(contest),
+                raire.compute_raire_assertions(contest, cvrs_for_contest(contest)),
             )
         else:
             assert election.audit_type == AuditType.HYBRID
