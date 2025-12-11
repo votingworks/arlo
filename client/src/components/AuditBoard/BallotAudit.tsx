@@ -224,7 +224,7 @@ const BallotAuditContest = ({
     comment,
     isBlankVoteChecked,
     isContestNotOnBallotChecked,
-    isInvalidWriteInChecked,
+    // isInvalidWriteInChecked,
   } = interpretation
 
   const onCheckboxClick = (value: string) => (
@@ -306,7 +306,12 @@ const BallotAuditContest = ({
               }}
               key={c.id}
             >
-              <span>{c.name}</span>
+              {/* margin-top: -3px matches margin-top within BlockCheckbox */}
+              <span style={{ marginRight: '0.5rem', marginTop: '-3px' }}>
+                {c.name === 'Write-in-118'
+                  ? 'Invalid Write-In: Bubble Filled, No Interpretable Text'
+                  : c.name}
+              </span>
               <div style={{ flexGrow: 1 }} />
               <div style={{ display: 'flex' }}>
                 {/* Hardcode 6 choices, what seems to be the number of choices allotted in the Portland CVRs */}
@@ -336,12 +341,12 @@ const BallotAuditContest = ({
             label="Not on Ballot"
             small
           />
-          <BlockCheckbox
+          {/* <BlockCheckbox
             handleChange={onCheckboxClick(INVALID_WRITE_IN)}
             checked={isInvalidWriteInChecked}
             label="Invalid Write-In"
             small
-          />
+          /> */}
           <NoteField
             name={`comment-${contest.name}`}
             value={comment || ''}
