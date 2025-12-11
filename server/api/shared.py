@@ -439,10 +439,18 @@ def sampled_ballot_interpretations_to_cvrs(
                 }
 
                 INVALID_WRITE_IN = "Write-in-118"
+                INVALID_WRITE_IN_CHOICE_ID = next(
+                    (
+                        choice.id
+                        for choice in contest.choices
+                        if choice.name == INVALID_WRITE_IN
+                    ),
+                    None,
+                )
                 max_ranks_with_invalid_write_ins_removed = {
                     choice_id: max_choice_rank
                     for choice_id, max_choice_rank in max_ranks_with_dupes_removed.items()
-                    if choice_id != INVALID_WRITE_IN
+                    if choice_id != INVALID_WRITE_IN_CHOICE_ID
                 }
 
                 sorted_ranks = sorted(
