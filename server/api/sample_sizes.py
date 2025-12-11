@@ -189,11 +189,11 @@ def sample_size_options(election: Election) -> dict[str, dict[str, SampleSizeOpt
             sample_size = supersimple_raire.get_sample_sizes(
                 election.risk_limit,
                 contest_for_sampler,
-                rounds.cvrs_for_contest(contest),
+                rounds.cvrs_for_contest(contest, sampled_only=False),
                 None,  # Fine for a round 1 calculation
                 raire.compute_raire_assertions(
                     contest_for_sampler,
-                    rounds.cvrs_for_contest(contest),
+                    rounds.cvrs_for_contest(contest, sampled_only=False),
                 ),
             )
 

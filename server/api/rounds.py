@@ -306,9 +306,11 @@ def calculate_risk_measurements(election: Election, round: Round):
             p_value, is_complete = supersimple_raire.compute_risk(
                 election.risk_limit,
                 sampler_contest.from_db_contest(contest),
-                cvrs_for_contest(contest),
+                cvrs_for_contest(contest),  # TODO: Should this be all CVRs? Unsure
                 sampled_ballot_interpretations_to_cvrs(contest),
-                raire.compute_raire_assertions(contest, cvrs_for_contest(contest)),
+                raire.compute_raire_assertions(
+                    contest, cvrs_for_contest(contest, sampled_only=False)
+                ),
             )
         else:
             assert election.audit_type == AuditType.HYBRID

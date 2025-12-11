@@ -291,22 +291,33 @@ def round_sizes(contest: Contest) -> ballot_polling_types.BALLOT_POLLING_ROUND_S
         }
 
 
-def cvrs_for_contest(contest: Contest) -> raire_utils.CVRS:
+# Retrieves only sampled CVRs by default. Set sampled_only to False to retrieve all CVRs
+def cvrs_for_contest(contest: Contest, sampled_only=True) -> raire_utils.CVRS:
     cvrs: raire_utils.CVRS = {}
 
     ballot_interpretations = (
-        CvrBallot.query.join(Batch)
-        .join(Jurisdiction)
-        .join(Jurisdiction.contests)
-        .filter_by(id=contest.id)
-        .join(
-            SampledBallot,
-            and_(
-                CvrBallot.batch_id == SampledBallot.batch_id,
-                CvrBallot.ballot_position == SampledBallot.ballot_position,
-            ),
+        (
+            CvrBallot.query.join(Batch)
+            .join(Jurisdiction)
+            .join(Jurisdiction.contests)
+            .filter_by(id=contest.id)
+            .join(
+                SampledBallot,
+                and_(
+                    CvrBallot.batch_id == SampledBallot.batch_id,
+                    CvrBallot.ballot_position == SampledBallot.ballot_position,
+                ),
+            )
+            .values(Jurisdiction.id, SampledBallot.id, CvrBallot.interpretations)
         )
-        .values(Jurisdiction.id, SampledBallot.id, CvrBallot.interpretations)
+        if sampled_only
+        else (
+            CvrBallot.query.join(Batch)
+            .join(Jurisdiction)
+            .join(Jurisdiction.contests)
+            .filter_by(id=contest.id)
+            .values(Jurisdiction.id, CvrBallot.imprinted_id, CvrBallot.interpretations)
+        )
     )
 
     metadata_by_jurisdictions = {
