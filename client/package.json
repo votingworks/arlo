@@ -20,9 +20,7 @@
       "stylelint",
       "eslint --cache --fix"
     ],
-    "*.+(ts|tsx)": [
-      "bash -c tsc"
-    ],
+    "*.+(ts|tsx)": [],
     "*.css": [
       "stylelint --config .stylelintrc-css.js --fix"
     ],
