@@ -47,6 +47,7 @@ interface IProps {
   handleChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
   checked?: boolean
   small?: boolean
+  style?: React.CSSProperties
 }
 
 const BlockCheckbox: React.FC<IProps> = ({
@@ -54,8 +55,9 @@ const BlockCheckbox: React.FC<IProps> = ({
   handleChange,
   small,
   checked,
+  style,
 }) => (
-  <Block className="bp3-control bp3-checkbox">
+  <Block className="bp3-control bp3-checkbox" style={style}>
     <input type="checkbox" onChange={handleChange} checked={checked} />
     <span className={`${small && 'small'} bp3-control-indicator`}>
       <span className="checkbox-text">{label}</span>

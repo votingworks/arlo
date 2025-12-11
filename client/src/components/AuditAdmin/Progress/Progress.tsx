@@ -83,7 +83,8 @@ const Progress: React.FC<IProgressProps> = ({
   const { auditType } = auditSettings
   const showDiscrepancies =
     Boolean(round) &&
-    (auditType === 'BALLOT_COMPARISON' || auditType === 'BATCH_COMPARISON')
+    (auditType === 'BALLOT_COMPARISON' || auditType === 'BATCH_COMPARISON') &&
+    false
   const discrepancyQuery = useDiscrepanciesByJurisdiction(electionId, {
     enabled: showDiscrepancies,
   })
