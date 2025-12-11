@@ -9,6 +9,7 @@ from ..models import *
 from ..audit_math import (
     ballot_polling_types,
     macro,
+    raire_utils,
     sampler,
     sampler_contest,
     suite,
@@ -290,8 +291,8 @@ def round_sizes(contest: Contest) -> ballot_polling_types.BALLOT_POLLING_ROUND_S
         }
 
 
-def cvrs_for_contest(contest: Contest) -> sampler_contest.CVRS:
-    cvrs: sampler_contest.CVRS = {}
+def cvrs_for_contest(contest: Contest) -> raire_utils.CVRS:
+    cvrs: raire_utils.CVRS = {}
 
     ballot_interpretations = (
         CvrBallot.query.join(Batch)
@@ -323,7 +324,7 @@ def cvrs_for_contest(contest: Contest) -> sampler_contest.CVRS:
         # column index for each choice when we parsed the CVR.
         interpretations = interpretations_str.split(",")
         choice_interpretations = {
-            choice_name: interpretations[choice_metadata["column"]]
+            choice_name: int(interpretations[choice_metadata["column"]] or 0)
             for choice_name, choice_metadata in choices_metadata.items()
         }
 
@@ -342,7 +343,7 @@ def cvrs_for_contest(contest: Contest) -> sampler_contest.CVRS:
             # it didn't get voted for and set its interpretation to 0.
             cvrs[ballot_key] = {
                 contest.id: {
-                    choice.id: choice_interpretations.get(choice.name, "0")
+                    choice.id: choice_interpretations.get(choice.name, 0)
                     for choice in contest.choices
                 }
             }
