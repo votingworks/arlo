@@ -400,7 +400,7 @@ def sampled_ballot_interpretations_to_cvrs(
     ).all()
 
     # - Contest wasn't on the ballot - CVR should be an empty object
-    # - Audit board couldn't find the ballot - CVR should be None - TODO: Not sure if this is true for RAIRE module
+    # - Audit board couldn't find the ballot - CVR should be None
     cvrs: raire_utils.SAMPLECVRS = {}
     for ballot, times_sampled in ballots:
         if ballot.status == BallotStatus.NOT_FOUND:
@@ -425,14 +425,12 @@ def sampled_ballot_interpretations_to_cvrs(
                     contest.id: {choice.id: "0" for choice in contest.choices}
                 }
             elif interpretation.interpretation == Interpretation.VOTE:
-                # TODO: Ask Mark what the expected behavior is when multiple ranks are indicated
-                # for one candidate. For now, I'll just pick the max rank.
+                # Apply Portland RCV rules
+
                 max_ranks = {
                     choice_id: max(choice_ranks)
                     for choice_id, choice_ranks in interpretation.ranks.items()
                 }
-
-                # Apply Portland RCV rules
 
                 max_ranks_with_dupes_removed = {
                     choice_id: max_choice_rank
@@ -440,15 +438,15 @@ def sampled_ballot_interpretations_to_cvrs(
                     if list(max_ranks.values()).count(max_choice_rank) == 1
                 }
 
-                UNVERIFIED_WRITE_IN = "Write-in-118"
-                max_ranks_with_unverified_write_ins_removed = {
+                INVALID_WRITE_IN = "Write-in-118"
+                max_ranks_with_invalid_write_ins_removed = {
                     choice_id: max_choice_rank
                     for choice_id, max_choice_rank in max_ranks_with_dupes_removed.items()
-                    if choice_id != UNVERIFIED_WRITE_IN
+                    if choice_id != INVALID_WRITE_IN
                 }
 
                 sorted_ranks = sorted(
-                    max_ranks_with_unverified_write_ins_removed.items(),
+                    max_ranks_with_invalid_write_ins_removed.items(),
                     key=lambda x: x[1],
                 )
                 renumbered_ranks = {
