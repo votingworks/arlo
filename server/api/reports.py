@@ -781,6 +781,7 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction | None = 
             for contest in election.contests
         }
         discrepancies_by_contest = {
+            # Punt on reporting for now
             contest.id: supersimple.compute_discrepancies(
                 sampler_contest.from_db_contest(contest),
                 cvrs_by_contest[contest.id],
