@@ -19,7 +19,6 @@ depends_on = None
 
 def upgrade():
     op.add_column("ballot_interpretation", sa.Column("ranks", sa.JSON(), nullable=True))
-    op.drop_column("ballot_interpretation", "selected_choices")
 
 
 def downgrade():
