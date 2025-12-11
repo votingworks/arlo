@@ -308,7 +308,9 @@ def calculate_risk_measurements(election: Election, round: Round):
                 sampler_contest.from_db_contest(contest),
                 cvrs_for_contest(contest),
                 sampled_ballot_interpretations_to_cvrs(contest),
-                raire.compute_raire_assertions(contest, cvrs_for_contest(contest)),
+                raire.compute_raire_assertions(
+                    contest, cvrs_for_contest(contest, sampled_only=False)
+                ),
             )
         else:
             assert election.audit_type == AuditType.HYBRID
