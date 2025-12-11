@@ -8,7 +8,12 @@ from werkzeug.exceptions import BadRequest
 from . import api
 from ..models import *
 from ..database import db_session
-from .shared import BatchTallies, combined_batch_keys, samples_not_found_by_round
+from .shared import (
+    BatchTallies,
+    combined_batch_keys,
+    samples_not_found_by_round,
+    cache_compute_raire_assertions,
+)
 from ..auth import restrict_access, UserType
 from ..audit_math import (
     ballot_polling,
@@ -16,7 +21,6 @@ from ..audit_math import (
     supersimple_raire,
     sampler_contest,
     suite,
-    raire,
 )
 from ..audit_math.ballot_polling import SampleSizeOption
 from . import rounds
@@ -196,10 +200,7 @@ def sample_size_options(election: Election) -> dict[str, dict[str, SampleSizeOpt
                 contest_for_sampler,
                 rounds.cvrs_for_contest(contest, sampled_only=False),
                 None,  # Fine for a round 1 calculation
-                raire.compute_raire_assertions(
-                    contest_for_sampler,
-                    rounds.cvrs_for_contest(contest, sampled_only=False),
-                ),
+                cache_compute_raire_assertions(election, contest),
             )
 
             return {"default": {"key": "default", "size": sample_size, "prob": None}}

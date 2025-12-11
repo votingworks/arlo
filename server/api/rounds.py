@@ -30,6 +30,7 @@ from .shared import (
     sampled_batch_results,
     sampled_batches_by_ticket_number,
     samples_not_found_by_round,
+    cache_compute_raire_assertions,
 )
 from ..auth import restrict_access, UserType
 from ..util.isoformat import isoformat
@@ -40,7 +41,6 @@ from ..audit_math import (
     supersimple_raire,
     sampler_contest,
     suite,
-    raire,
 )
 from .ballot_manifest import hybrid_contest_total_ballots
 from ..worker.tasks import (
@@ -308,10 +308,7 @@ def calculate_risk_measurements(election: Election, round: Round):
                 sampler_contest.from_db_contest(contest),
                 cvrs_for_contest(contest),  # TODO: Should this be all CVRs? Unsure
                 sampled_ballot_interpretations_to_cvrs(contest),
-                raire.compute_raire_assertions(
-                    sampler_contest.from_db_contest(contest),
-                    cvrs_for_contest(contest, sampled_only=False),
-                ),
+                cache_compute_raire_assertions(election, contest),
             )
         else:
             assert election.audit_type == AuditType.HYBRID
