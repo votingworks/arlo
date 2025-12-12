@@ -116,15 +116,16 @@ const InterpretationSummary: React.FC<IInterpretationSummaryProps> = ({
   contest,
 }) => {
   const {
-    choiceIds,
+    ranks,
     isBlankVoteChecked,
     isContestNotOnBallotChecked,
     isInvalidWriteInChecked,
   } = interpretation
 
-  if (choiceIds.length > 0) {
+  if (Object.values(ranks).some(rankArray => rankArray.length > 0)) {
     const choiceNames = contest.choices
-      .filter(choice => choiceIds.includes(choice.id))
+      .filter(choice => ranks[choice.id]?.length > 0)
+      .sort((choice1, choice2) => ranks[choice1.id][0] - ranks[choice2.id][0])
       .map(choice => choice.name)
     return (
       <>

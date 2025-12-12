@@ -309,7 +309,8 @@ def calculate_risk_measurements(election: Election, round: Round):
                 cvrs_for_contest(contest),  # TODO: Should this be all CVRs? Unsure
                 sampled_ballot_interpretations_to_cvrs(contest),
                 raire.compute_raire_assertions(
-                    contest, cvrs_for_contest(contest, sampled_only=False)
+                    sampler_contest.from_db_contest(contest),
+                    cvrs_for_contest(contest, sampled_only=False),
                 ),
             )
         else:
@@ -632,7 +633,8 @@ def finish_round(election: Election):
     if current_round.ended_at:
         raise Conflict("Round already finished")
 
-    count_audited_votes(election, current_round)
+    # Not strictly necessary, maybe just needed for reporting, TBD
+    # count_audited_votes(election, current_round)
     calculate_risk_measurements(election, current_round)
     current_round.ended_at = datetime.now(timezone.utc)
 
