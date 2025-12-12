@@ -310,7 +310,8 @@ def parse_portland_cvrs(
     )
 
     # Build a deduped list of choices in this contest
-    choices_to_deduped_index: dict[str, int] = {}
+    deduped_choices_in_order: list[str] = []
+
     for header in headers[first_contest_column:]:
         match = re.match(
             r"^Choice_\d+_\d+:(.+):\d+:Number of Winners (\d+):(.+):.*$", header
@@ -318,13 +319,13 @@ def parse_portland_cvrs(
         if not match:
             raise UserError(f"Invalid contest header during header parsing: {header}")
         [contest_name, votes_allowed, choice_name] = match.groups()
-        if choice_name not in choices_to_deduped_index:
-            choices_to_deduped_index[choice_name] = len(choices_to_deduped_index)
+        if choice_name not in deduped_choices_in_order:
+            deduped_choices_in_order.append(choice_name)
         contests_metadata[contest_name]["votes_allowed"] = int(votes_allowed)
         contests_metadata[contest_name]["choices"][choice_name] = dict(
             # Store the current deduped column index of this contest choice so we can parse
             # interpretations later
-            column=choices_to_deduped_index[choice_name],
+            column=deduped_choices_in_order.index(choice_name),
             num_votes=0,  # Will be counted while parsing rows
         )
         # Will be counted while parsing rows
@@ -345,7 +346,7 @@ def parse_portland_cvrs(
                 row, "ScanComputerName", row_number, header_indices
             )
 
-            rank_dict = {choice: ["0"] for choice in choices_to_deduped_index}
+            ranks = {}
             interpretations = row[first_contest_column:]
             for i, interpretation in enumerate(interpretations):
                 header = headers[i + first_contest_column]
@@ -357,24 +358,47 @@ def parse_portland_cvrs(
                         f"Invalid contest header during interpretation parsing: {header}"
                     )
                 [rank, choice_name] = match.groups()
-                # Keep ranks as strings for now for easier joining
                 if interpretation != "0":
-                    rank_dict[choice_name].append(rank)
+                    if choice_name not in ranks:
+                        ranks[choice_name] = []
+                    ranks[choice_name].append(int(rank))
 
-            # serialize interpretations from {choice_name: [ranks]} to a single string of interpretations,
-            # throwing out choices that had more than one rank or ranks that had more than one choice selected
-            # eg. throws out
-            # A. George Washington if he was ranked 1 and 2
-            # B. George Washington and John Adams if they were both ranked 3
-            # TODO: handle excluded write-ins
-            rank_counts = defaultdict(int)
-            for ranks in rank_dict.values():
-                if len(ranks) == 2:
-                    rank_counts[ranks[-1]] += 1
+            # Apply Portland rules
 
+            max_ranks = {
+                choice_name: max(choice_ranks)
+                for choice_name, choice_ranks in ranks.items()
+            }
+
+            max_ranks_with_dupes_removed = {
+                choice_name: max_choice_rank
+                for choice_name, max_choice_rank in max_ranks.items()
+                if list(max_ranks.values()).count(max_choice_rank) == 1
+            }
+
+            INVALID_WRITE_IN = "Write-in-118"
+            max_ranks_with_invalid_write_ins_removed = {
+                choice_name: max_choice_rank
+                for choice_name, max_choice_rank in max_ranks_with_dupes_removed.items()
+                if choice_name != INVALID_WRITE_IN
+            }
+
+            sorted_ranks = sorted(
+                max_ranks_with_invalid_write_ins_removed.items(),
+                key=lambda x: x[1],
+            )
+            renumbered_ranks = {
+                choice_name: i + 1 for i, (choice_name, _) in enumerate(sorted_ranks)
+            }
+
+            # Serialize interpretations
             interpretations_str = ",".join(
-                ranks[-1] if len(ranks) == 2 and rank_counts[ranks[-1]] == 1 else "0"
-                for ranks in rank_dict.values()
+                str(
+                    renumbered_ranks[choice_name]
+                    if choice_name in renumbered_ranks
+                    else "0"
+                )
+                for choice_name in deduped_choices_in_order
             )
 
             db_batch = batches_by_key.get((scan_computer_name, box_id))
