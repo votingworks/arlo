@@ -277,7 +277,7 @@ def count_audited_votes(election: Election, round: Round):
 
 
 @background_task
-def calculate_risk_measurements(election_id: str):
+def calculate_risk_measurements(election_id: str, only_calculate_for_reporting: bool):
     election = Election.query.get(election_id)
     round = get_current_round(election)
     assert election.risk_limit is not None
@@ -306,13 +306,14 @@ def calculate_risk_measurements(election_id: str):
                 combined_batch_keys(election.id),
             )
         elif election.audit_type == AuditType.BALLOT_COMPARISON:
-            p_value, is_complete = supersimple_raire.compute_risk(
+            p_value, is_complete, report_text = supersimple_raire.compute_risk(
                 election.risk_limit,
                 sampler_contest.from_db_contest(contest),
                 cvrs_for_contest(contest),
                 sampled_ballot_interpretations_to_cvrs(contest),
                 cache_compute_raire_assertions(election, contest),
             )
+            round.report_text = report_text
         else:
             assert election.audit_type == AuditType.HYBRID
             non_cvr_stratum, cvr_stratum = hybrid_contest_strata(contest)
@@ -322,6 +323,9 @@ def calculate_risk_measurements(election_id: str):
                 non_cvr_stratum,
                 cvr_stratum,
             )
+
+        if only_calculate_for_reporting:
+            return
 
         round_contest.end_p_value = p_value
         round_contest.is_complete = is_complete
@@ -648,7 +652,25 @@ def finish_round(election: Election):
     # count_audited_votes(election, current_round)
 
     current_round.calculate_risk_measurements_task = create_background_task(
-        calculate_risk_measurements, dict(election_id=election.id)
+        calculate_risk_measurements,
+        dict(election_id=election.id, only_calculate_for_reporting=False),
+    )
+
+    db_session.commit()
+
+    return jsonify(status="ok")
+
+
+@api.route("/election/<election_id>/generate-report", methods=["POST"])
+@restrict_access([UserType.AUDIT_ADMIN])
+def generate_report(election: Election):
+    current_round = get_current_round(election)
+    if not current_round:
+        raise Conflict("Audit not started")
+
+    current_round.generate_report_task = create_background_task(
+        calculate_risk_measurements,
+        dict(election_id=election.id, only_calculate_for_reporting=True),
     )
 
     db_session.commit()
@@ -669,6 +691,7 @@ def serialize_round(round: Round) -> dict:
         "calculateRiskMeasurementsTask": serialize_background_task(
             round.calculate_risk_measurements_task
         ),
+        "generateReportTask": serialize_background_task(round.generate_report_task),
     }
 
 

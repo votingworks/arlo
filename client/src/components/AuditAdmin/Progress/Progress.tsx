@@ -1,9 +1,9 @@
 /* eslint-disable react/prop-types */
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { Column, Cell, TableInstance, SortingRule } from 'react-table'
-import { Button, Switch, Icon, AnchorButton, Spinner } from '@blueprintjs/core'
+import { Button, Switch, Icon, Spinner } from '@blueprintjs/core'
 import H2Title from '../../Atoms/H2Title'
 import {
   JurisdictionRoundStatus,
@@ -21,7 +21,11 @@ import {
   FilterInput,
   downloadTableAsCSV,
 } from '../../Atoms/Table'
-import { IRound } from '../useRoundsAuditAdmin'
+import {
+  IRound,
+  isGeneratingReport,
+  useGenerateReport,
+} from '../useRoundsAuditAdmin'
 import StatusTag, { IStatusTagProps } from '../../Atoms/StatusTag'
 import { IAuditSettings } from '../../useAuditSettings'
 import { FileProcessingStatus, IFileInfo } from '../../useCSV'
@@ -89,6 +93,26 @@ const Progress: React.FC<IProgressProps> = ({
     enabled: showDiscrepancies,
   })
   const lastLoginQuery = useLastLoginByJurisdiction(electionId)
+  const generateReportMutation = useGenerateReport(electionId)
+
+  const prevGenerateReportTaskRef = useRef<IRound['generateReportTask']>()
+  const currentGenerateReportTask = round?.generateReportTask
+  useEffect(() => {
+    if (
+      prevGenerateReportTaskRef.current &&
+      !prevGenerateReportTaskRef.current.completedAt &&
+      currentGenerateReportTask?.completedAt
+    ) {
+      // Background report generation just completed, auto-download
+      const a = document.createElement('a')
+      a.href = `/api/election/${electionId}/report`
+      a.download = '' // Use server-generated file name
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+    }
+    prevGenerateReportTaskRef.current = currentGenerateReportTask
+  }, [prevGenerateReportTaskRef, currentGenerateReportTask])
 
   // Store sort and filter state in URL search params to allow it to persist
   // across page refreshes
@@ -444,12 +468,13 @@ const Progress: React.FC<IProgressProps> = ({
 
   const downloadButtons = (
     <div style={{ display: 'flex', alignSelf: 'end', gap: '5px' }}>
-      <AnchorButton
+      <Button
         icon="download"
-        href={`/api/election/${electionId}/batch-tallies/summed-by-jurisdiction-csv`}
+        onClick={() => generateReportMutation.mutateAsync()}
+        loading={round ? isGeneratingReport([round]) : false}
       >
-        Download Reported Results
-      </AnchorButton>
+        Download In-Flight Audit Report
+      </Button>
       <Button
         icon="download"
         onClick={() => {

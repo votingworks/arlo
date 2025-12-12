@@ -30,7 +30,13 @@ export interface IRound {
     startedAt: string | null
     completedAt: string | null
     error: string | null
-  }
+  } | null
+  generateReportTask: {
+    status: FileProcessingStatus
+    startedAt: string | null
+    completedAt: string | null
+    error: string | null
+  } | null
 }
 
 export interface ISampleSizes {
@@ -44,6 +50,10 @@ export const isDrawingSample = (rounds: IRound[]): boolean =>
 export const isCalculatingRiskMeasurements = (rounds: IRound[]): boolean =>
   rounds.length > 0 &&
   rounds[rounds.length - 1].calculateRiskMeasurementsTask?.completedAt === null
+
+export const isGeneratingReport = (rounds: IRound[]): boolean =>
+  rounds.length > 0 &&
+  rounds[rounds.length - 1].generateReportTask?.completedAt === null
 
 export const isDrawSampleComplete = (rounds: IRound[]): boolean =>
   rounds.length > 0 &&
@@ -113,6 +123,23 @@ export const useFinishRound = (
   const queryClient = useQueryClient()
 
   return useMutation(postFinishRound, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(roundsQueryKey(electionId))
+    },
+  })
+}
+
+export const useGenerateReport = (
+  electionId: string
+): UseMutationResult<unknown, ApiError, void> => {
+  const postGenerateReport = async () =>
+    fetchApi(`/api/election/${electionId}/generate-report`, {
+      method: 'POST',
+    })
+
+  const queryClient = useQueryClient()
+
+  return useMutation(postGenerateReport, {
     onSuccess: () => {
       queryClient.invalidateQueries(roundsQueryKey(electionId))
     },

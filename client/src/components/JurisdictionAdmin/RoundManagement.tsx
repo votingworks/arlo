@@ -88,11 +88,7 @@ const RoundManagement: React.FC<IRoundManagementProps> = ({
               <H2>Audit Complete</H2>
               <AsyncButton
                 intent="primary"
-                onClick={() =>
-                  apiDownload(
-                    `/election/${electionId}/jurisdiction/${jurisdictionId}/report`
-                  )
-                }
+                onClick={() => apiDownload(`/election/${electionId}/report`)}
               >
                 Download Audit Report
               </AsyncButton>

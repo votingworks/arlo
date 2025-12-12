@@ -5,6 +5,7 @@ from collections import defaultdict, Counter
 from sqlalchemy import func, and_
 from sqlalchemy.dialects.postgresql import aggregate_order_by
 from werkzeug.exceptions import Conflict, BadRequest
+from flask import Response
 
 
 from . import api
@@ -1144,33 +1145,20 @@ def audit_admin_audit_report(election: Election):
     if len(list(election.rounds)) == 0:
         raise Conflict("Cannot generate report until audit starts")
 
-    row_sets = [
-        election_info_rows(election),
-        contest_rows(election),
-        contest_name_standardization_rows(election),
-        audit_settings_rows(election),
-        audit_board_rows(election),
-        round_rows(election),
-        (
-            sampled_batch_rows(election)
-            if election.audit_type == AuditType.BATCH_COMPARISON
-            else sampled_ballot_rows(election)
-        ),
-    ]
-    row_sets = [row_set for row_set in row_sets if row_set]
+    text = io.StringIO()
+    for round in election.rounds:
+        text.write(f"Round {round.round_num}\n")
+        if round.report_text is not None:
+            text.write(round.report_text)
+        text.write("\n")
 
-    csv_io = io.StringIO()
-    report = csv.writer(csv_io)
-
-    for row_set in row_sets[:-1]:
-        report.writerows(row_set)
-        report.writerow([])
-    report.writerows(row_sets[-1])
-
-    csv_io.seek(0)
-    return csv_response(
-        csv_io,
-        filename=f"audit-report-{election_timestamp_name(election)}.csv",
+    text.seek(0)
+    return Response(
+        text,
+        mimetype="text/plain",
+        headers={
+            "Content-Disposition": f'attachment; filename="audit-report-{election_timestamp_name(election)}.txt"'
+        },
     )
 
 

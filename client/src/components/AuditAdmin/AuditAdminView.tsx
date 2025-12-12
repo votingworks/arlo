@@ -14,6 +14,7 @@ import {
   IRound,
   useFinishRound,
   isCalculatingRiskMeasurements,
+  isGeneratingReport,
 } from './useRoundsAuditAdmin'
 import { jurisdictionsQueryKey, useJurisdictions } from '../useJurisdictions'
 import { useContests } from '../useContests'
@@ -38,7 +39,9 @@ const AuditAdminView: React.FC = () => {
   const roundsQuery = useRounds(electionId, {
     refetchInterval: rounds =>
       rounds &&
-      (isDrawingSample(rounds) || isCalculatingRiskMeasurements(rounds))
+      (isDrawingSample(rounds) ||
+        isCalculatingRiskMeasurements(rounds) ||
+        isGeneratingReport(rounds))
         ? 1000
         : false,
     onSuccess: rounds => {

@@ -661,6 +661,15 @@ class Round(BaseModel):
         "BackgroundTask", foreign_keys=[calculate_risk_measurements_task_id]
     )
 
+    generate_report_task_id = Column(
+        String(200), ForeignKey("background_task.id", ondelete="set null")
+    )
+    generate_report_task = relationship(
+        "BackgroundTask", foreign_keys=[generate_report_task_id]
+    )
+
+    report_text = Column(Text)
+
     __table_args__ = (UniqueConstraint("election_id", "round_num"),)
 
     round_contests = relationship(

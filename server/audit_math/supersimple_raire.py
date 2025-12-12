@@ -1,4 +1,5 @@
 from decimal import Decimal, ROUND_CEILING
+import json
 import math
 
 from .sampler_contest import Contest
@@ -281,10 +282,10 @@ def compute_margin_for_assertion(cvrs: CVRS, assertion: RaireAssertion) -> Decim
 def compute_risk(
     risk_limit: int,
     contest: Contest,
-    cvrs: CVRS,
-    sample_cvr: SAMPLECVRS,
+    reported_results: CVRS,
+    audit_results: SAMPLECVRS,
     assertions: list[RaireAssertion],
-) -> tuple[float, bool]:
+) -> tuple[float, bool, str]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
 
@@ -321,18 +322,32 @@ def compute_risk(
     alpha = Decimal(risk_limit) / 100
     assert alpha < 1
 
+    sampled_reported_results = {
+        k: v for k, v in reported_results.items() if k in audit_results
+    }
+
+    report_text = f"""
+Reported results =======================
+{json.dumps(sampled_reported_results, indent=2)}
+Audit results ==========================
+{json.dumps(audit_results, indent=2)}
+========================================
+"""
+
     N = contest.ballots
     max_p = Decimal(0.0)
     result = False
     for assertion in assertions:
         p = Decimal(1.0)
 
-        V = compute_margin_for_assertion(cvrs, assertion)
+        V = compute_margin_for_assertion(reported_results, assertion)
         margin = V / N
 
-        discrepancies = compute_discrepancies(cvrs, sample_cvr, assertion)
+        discrepancies = compute_discrepancies(
+            reported_results, audit_results, assertion
+        )
 
-        for ballot in sample_cvr:
+        for ballot in audit_results:
             if ballot in discrepancies:
                 # We want to be conservative, so we will ignore understatements (i.e. errors
                 # that favor the winner) which are negative.
@@ -346,18 +361,43 @@ def compute_risk(
             denom = (2 * gamma) / V
             p_b = (1 - 1 / U) / (1 - (e_r / denom))
 
-            multiplicity = sample_cvr[ballot]["times_sampled"]
+            multiplicity = audit_results[ballot]["times_sampled"]
             p *= p_b**multiplicity
+
+        formatted_discrepancies = "\n".join(
+            [
+                f"{ballot},{discrepancy['counted_as']},{discrepancy['weighted_error']}"
+                for ballot, discrepancy in discrepancies.items()
+            ]
+        )
+        report_text += f"""
+Assertion ==============================
+{assertion}
+Margin =================================
+{margin}
+Discrepancies ==========================
+Ballot,Counted As,Weighted Error
+{formatted_discrepancies}
+p-value ================================
+{p}
+========================================
+"""
 
         # Get the largest p-value across all assertions
         if p > max_p:
             max_p = p
 
+    report_text += f"""
+Max p-value ============================
+{max_p}
+========================================
+"""
+
     if 0 < max_p < alpha:
         result = True
 
     # Special case if the sample size equals all the ballots (i.e. a full hand tally)
-    if sum(ballot["times_sampled"] for ballot in sample_cvr.values()) >= N:
+    if sum(ballot["times_sampled"] for ballot in audit_results.values()) >= N:
         return 0, True
 
-    return min(float(max_p), 1.0), result
+    return min(float(max_p), 1.0), result, report_text
