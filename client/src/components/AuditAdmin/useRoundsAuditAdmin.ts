@@ -43,7 +43,7 @@ export const isDrawingSample = (rounds: IRound[]): boolean =>
 
 export const isCalculatingRiskMeasurements = (rounds: IRound[]): boolean =>
   rounds.length > 0 &&
-  rounds[rounds.length - 1].calculateRiskMeasurementsTask.completedAt === null
+  rounds[rounds.length - 1].calculateRiskMeasurementsTask?.completedAt === null
 
 export const isDrawSampleComplete = (rounds: IRound[]): boolean =>
   rounds.length > 0 &&
