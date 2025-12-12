@@ -286,6 +286,8 @@ def parse_portland_cvrs(
     jurisdiction: Jurisdiction,
     working_directory: str,
 ) -> tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
+    jurisdiction.election.raire_assertions_pickle = None
+
     cvr_file = retrieve_file_to_buffer(jurisdiction.cvr_file, working_directory)
     cvrs = csv_reader_for_cvr(cvr_file)
     headers = next(cvrs)

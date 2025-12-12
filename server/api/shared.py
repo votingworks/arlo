@@ -3,12 +3,14 @@ import random
 from typing import TypedDict
 from sqlalchemy import and_, func, literal
 from sqlalchemy.orm import joinedload, load_only
+import pickle
 
 
 from ..models import *
 from ..audit_math import (
     ballot_polling_types,
     macro,
+    raire,
     raire_utils,
     sampler,
     sampler_contest,
@@ -970,3 +972,19 @@ def compute_sample_ballots(
         for sample in compute_sample_for_contest(contest, sample_size)
     ]
     return samples
+
+
+def cache_compute_raire_assertions(
+    election: Election, contest: Contest
+) -> list[raire.RaireAssertion]:
+    if election.raire_assertions_pickle is not None:
+        print("Using cached RAIRE assertions")
+        return pickle.loads(election.raire_assertions_pickle)
+
+    print("Computing RAIRE assertions from scratch")
+    raire_assertions = raire.compute_raire_assertions(
+        sampler_contest.from_db_contest(contest),
+        cvrs_for_contest(contest, sampled_only=False),
+    )
+    election.raire_assertions_pickle = pickle.dumps(raire_assertions)
+    return raire_assertions

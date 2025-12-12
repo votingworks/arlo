@@ -20,6 +20,7 @@ from sqlalchemy import (
     UniqueConstraint,
     PrimaryKeyConstraint,
     CheckConstraint,
+    LargeBinary,
 )
 from sqlalchemy.orm import relationship, backref, validates
 from sqlalchemy.types import TypeDecorator
@@ -227,6 +228,8 @@ class Election(BaseModel):
     sample_preview_task = relationship(
         "BackgroundTask", single_parent=True, cascade="all, delete-orphan"
     )
+
+    raire_assertions_pickle = Column(LargeBinary)
 
     __table_args__ = (UniqueConstraint("organization_id", "audit_name"),)
 
