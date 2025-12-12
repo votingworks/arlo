@@ -1,9 +1,10 @@
 from decimal import Decimal, ROUND_CEILING
 import math
 
-from .sampler_contest import Contest
+from .sampler_contest import Contest, from_db_contest
 from .supersimple import Discrepancy
 from .raire_utils import RaireAssertion, CVR, CVRS, SAMPLECVRS
+from ..models import Contest as DbContest
 
 l: Decimal = Decimal(0.5)  # noqa: E741
 gamma: Decimal = Decimal(1.03905)  # This gamma is used in Stark's tool, AGI, and CORLA
@@ -282,10 +283,11 @@ def compute_margin_for_assertion(cvrs: CVRS, assertion: RaireAssertion) -> Decim
 
 def compute_risk(
     risk_limit: int,
-    contest: Contest,
+    db_contest: DbContest,
     reported_results: CVRS,
     audit_results: SAMPLECVRS,
     assertions: list[RaireAssertion],
+    sampled_ballot_id_mapping: dict[str, str],
 ) -> tuple[float, bool, str]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
@@ -320,36 +322,46 @@ def compute_risk(
                           result is correct based on the sample, for each winner-loser pair.
         confirmed       - a boolean indicating whether the audit can stop
     """
+    contest = from_db_contest(db_contest)
+    choice_id_to_name = {
+        choice.id: "Invalid Write-In: Bubble Filled, No Interpretable Text"
+        if choice.name == "Write-in-118"
+        else choice.name
+        for choice in db_contest.choices
+    }
+
     alpha = Decimal(risk_limit) / 100
     assert alpha < 1
 
     sampled_reported_results = {
         # Sampled reported results will have a UUID as a key;
-        # rest will have shorter imprinted IDs as a key
+        # rest will have shorter imprinted IDs as a key -
+        # hacky of course
         k: v
         for k, v in reported_results.items()
         if len(k) == 36
     }
 
-    sampled_reported_results_str = "Choice ID,Rank"
-    for ballot_key, ballot in sampled_reported_results.items():
-        sampled_reported_results_str += f"\nBallot Key: {ballot_key}"
+    sampled_reported_results_str = ""
+    for sampled_ballot_id, ballot in sampled_reported_results.items():
+        sampled_reported_results_str += f"\nBallot ID: {sampled_ballot_id_mapping.get(sampled_ballot_id, sampled_ballot_id)}\n"
         _, contest_results = list(ballot.items())[0]  # Should only be one contest
         for choice_id, rank in contest_results.items():
+            choice_name = choice_id_to_name.get(choice_id, choice_id)
             if rank > 0:
-                sampled_reported_results_str += f"\n{choice_id},{rank}"
+                sampled_reported_results_str += f"{choice_name},{rank}\n"
 
-    audit_results_str = "Choice ID,Rank"
-    for ballot_key, ballot in audit_results.items():
+    audit_results_str = ""
+    for sampled_ballot_id, ballot in audit_results.items():
         _, contest_results = list(ballot["cvr"].items())[
             0
         ]  # Should only be one contest
-        audit_results_str += (
-            f"\nBallot Key: {ballot_key}; Times Sampled: {ballot['times_sampled']}"
-        )
+        audit_results_str += f"\nBallot ID: {sampled_ballot_id_mapping.get(sampled_ballot_id, sampled_ballot_id)}\n"
+        audit_results_str += f"Times Sampled: {ballot['times_sampled']}\n"
         for choice_id, rank in contest_results.items():
+            choice_name = choice_id_to_name.get(choice_id, choice_id)
             if rank > 0:
-                audit_results_str += f"\n{choice_id},{rank}"
+                audit_results_str += f"{choice_name},{rank}\n"
 
     report_text = f"""
 Reported Results =======================
@@ -389,19 +401,31 @@ Audit Results ==========================
             multiplicity = audit_results[ballot]["times_sampled"]
             p *= p_b**multiplicity
 
+        assertion_token_mapping = {
+            **choice_id_to_name,
+            "Winner": "Winner ---------------------------------",
+            "Loser": "Loser ----------------------------------",
+            "Eliminated": "Eliminated -----------------------------",
+        }
+        formatted_assertion = "\n".join(
+            [
+                assertion_token_mapping.get(token, token)
+                for token in str(assertion).split(",")
+            ]
+        )
         formatted_discrepancies = "\n".join(
             [
-                f"{ballot},{discrepancy['counted_as']},{discrepancy['weighted_error']}"
-                for ballot, discrepancy in discrepancies.items()
+                f"{sampled_ballot_id_mapping.get(sampled_ballot_id, sampled_ballot_id)},{discrepancy['counted_as']},{discrepancy['weighted_error']}"
+                for sampled_ballot_id, discrepancy in discrepancies.items()
             ]
         )
         report_text += f"""
 Assertion ==============================
-{assertion}
+{formatted_assertion}
 Margin =================================
 {margin}
 Discrepancies ==========================
-Ballot Key,Counted As,Weighted Error
+Ballot ID,Counted As,Weighted Error
 {formatted_discrepancies or "N/A"}
 p-value ================================
 {p}

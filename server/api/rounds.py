@@ -306,12 +306,30 @@ def calculate_risk_measurements(election_id: str, only_calculate_for_reporting: 
                 combined_batch_keys(election.id),
             )
         elif election.audit_type == AuditType.BALLOT_COMPARISON:
+            sampled_ballot_id_mapping = {
+                sampled_ballot_id: ballot_imprinted_id
+                for sampled_ballot_id, ballot_imprinted_id in list(
+                    CvrBallot.query.join(Batch)
+                    .join(Jurisdiction)
+                    .join(Jurisdiction.contests)
+                    .filter_by(id=contest.id)
+                    .join(
+                        SampledBallot,
+                        and_(
+                            CvrBallot.batch_id == SampledBallot.batch_id,
+                            CvrBallot.ballot_position == SampledBallot.ballot_position,
+                        ),
+                    )
+                    .values(SampledBallot.id, CvrBallot.imprinted_id)
+                )
+            }
             p_value, is_complete, report_text = supersimple_raire.compute_risk(
                 election.risk_limit,
-                sampler_contest.from_db_contest(contest),
+                contest,
                 cvrs_for_contest(contest),
                 sampled_ballot_interpretations_to_cvrs(contest),
                 cache_compute_raire_assertions(election, contest),
+                sampled_ballot_id_mapping,
             )
             round.report_text = report_text
         else:
