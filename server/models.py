@@ -237,6 +237,7 @@ class CvrFileType(str, enum.Enum):
     ESS = "ESS"
     ESS_MD = "ESS_MD"
     HART = "HART"
+    CLEARBALLOT_RCV = "CLEARBALLOT_RCV"
 
 
 # these are typically counties
