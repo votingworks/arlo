@@ -370,6 +370,7 @@ def parse_portland_cvrs(
             max_ranks = {
                 choice_name: max(choice_ranks)
                 for choice_name, choice_ranks in ranks.items()
+                if len(choice_ranks) > 0
             }
 
             max_ranks_with_dupes_removed = {
@@ -1543,17 +1544,18 @@ def process_cvr_file(
                             parsed_interpretation
                         )
 
-                    # Skip overvotes
-                    votes = sum(parsed_contest_interpretations.values())
-                    if votes > contest_metadata["votes_allowed"]:
-                        continue
+                    # # Skip overvotes
+                    # votes = sum(parsed_contest_interpretations.values())
+                    # if votes > contest_metadata["votes_allowed"]:
+                    #     continue
 
                     for (
                         choice_name,
                         parsed_interpretation,
                     ) in parsed_contest_interpretations.items():
                         contest_metadata["choices"][choice_name]["num_votes"] += (
-                            parsed_interpretation
+                            # Count 1st choice RCV votes
+                            1 if parsed_interpretation == 1 else 0
                         )
 
                 for contest_name in contests_on_ballot:

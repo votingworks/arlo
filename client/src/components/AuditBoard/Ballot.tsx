@@ -126,7 +126,11 @@ const InterpretationSummary: React.FC<IInterpretationSummaryProps> = ({
     const choiceNames = contest.choices
       .filter(choice => ranks[choice.id]?.length > 0)
       .sort((choice1, choice2) => ranks[choice1.id][0] - ranks[choice2.id][0])
-      .map(choice => choice.name)
+      .map(choice =>
+        choice.name === 'Write-in-118'
+          ? 'Invalid Write-In: Bubble Filled, No Interpretable Text'
+          : choice.name
+      )
     return (
       <>
         {choiceNames.map(choiceName => (

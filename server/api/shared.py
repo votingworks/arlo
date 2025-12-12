@@ -423,15 +423,14 @@ def sampled_ballot_interpretations_to_cvrs(
             ):
                 ballot_cvr = {}
             elif interpretation.interpretation == Interpretation.BLANK:
-                ballot_cvr = {
-                    contest.id: {choice.id: "0" for choice in contest.choices}
-                }
+                ballot_cvr = {contest.id: {choice.id: 0 for choice in contest.choices}}
             elif interpretation.interpretation == Interpretation.VOTE:
                 # Apply Portland RCV rules
 
                 max_ranks = {
                     choice_id: max(choice_ranks)
                     for choice_id, choice_ranks in interpretation.ranks.items()
+                    if len(choice_ranks) > 0
                 }
 
                 max_ranks_with_dupes_removed = {
