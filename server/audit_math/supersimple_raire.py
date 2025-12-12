@@ -1,5 +1,4 @@
 from decimal import Decimal, ROUND_CEILING
-import json
 import math
 
 from .sampler_contest import Contest
@@ -100,6 +99,8 @@ def compute_discrepancies(
     return discrepancies
 
 
+# Not fully in line with Portland RCV rules.
+# We normalize ourselves before this function is called.
 def normalize_cvr(cvr: CVR) -> CVR:
     """
     This function normalizes a CVR according to the following rules:
@@ -323,14 +324,38 @@ def compute_risk(
     assert alpha < 1
 
     sampled_reported_results = {
-        k: v for k, v in reported_results.items() if k in audit_results
+        # Sampled reported results will have a UUID as a key;
+        # rest will have shorter imprinted IDs as a key
+        k: v
+        for k, v in reported_results.items()
+        if len(k) == 36
     }
 
+    sampled_reported_results_str = "Choice ID,Rank"
+    for ballot_key, ballot in sampled_reported_results.items():
+        sampled_reported_results_str += f"\nBallot Key: {ballot_key}"
+        _, contest_results = list(ballot.items())[0]  # Should only be one contest
+        for choice_id, rank in contest_results.items():
+            if rank > 0:
+                sampled_reported_results_str += f"\n{choice_id},{rank}"
+
+    audit_results_str = "Choice ID,Rank"
+    for ballot_key, ballot in audit_results.items():
+        _, contest_results = list(ballot["cvr"].items())[
+            0
+        ]  # Should only be one contest
+        audit_results_str += (
+            f"\nBallot Key: {ballot_key}; Times Sampled: {ballot['times_sampled']}"
+        )
+        for choice_id, rank in contest_results.items():
+            if rank > 0:
+                audit_results_str += f"\n{choice_id},{rank}"
+
     report_text = f"""
-Reported results =======================
-{json.dumps(sampled_reported_results, indent=2)}
-Audit results ==========================
-{json.dumps(audit_results, indent=2)}
+Reported Results =======================
+{sampled_reported_results_str}
+Audit Results ==========================
+{audit_results_str}
 ========================================
 """
 
@@ -376,8 +401,8 @@ Assertion ==============================
 Margin =================================
 {margin}
 Discrepancies ==========================
-Ballot,Counted As,Weighted Error
-{formatted_discrepancies}
+Ballot Key,Counted As,Weighted Error
+{formatted_discrepancies or "N/A"}
 p-value ================================
 {p}
 ========================================

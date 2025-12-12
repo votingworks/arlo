@@ -312,7 +312,7 @@ def cvrs_for_contest(contest: Contest) -> raire_utils.CVRS:
         )
         .values(
             Jurisdiction.id,
-            func.coalesce(SampledBallot.id, CvrBallot.imprinted_id).label("ballot_id"),
+            func.coalesce(SampledBallot.id, CvrBallot.imprinted_id).label("ballot_key"),
             CvrBallot.interpretations,
         )
     )
