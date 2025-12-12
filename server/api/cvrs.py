@@ -1,4 +1,5 @@
 from math import floor
+import traceback
 import uuid
 import tempfile
 import csv
@@ -279,6 +280,143 @@ def csv_reader_for_cvr(cvr_file: BinaryIO) -> CSVIterator:
     text_file = decode_csv(cvr_file)
     validate_comma_delimited(text_file)
     return csv.reader(text_file, delimiter=",")
+
+
+def parse_portland_cvrs(
+    jurisdiction: Jurisdiction,
+    working_directory: str,
+) -> tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
+    cvr_file = retrieve_file_to_buffer(jurisdiction.cvr_file, working_directory)
+    cvrs = csv_reader_for_cvr(cvr_file)
+    headers = next(cvrs)
+
+    if not any(header.startswith("Choice_") for header in headers):
+        raise UserError(
+            "CVR file should have at least one column beginning with 'Choice_'"
+        )
+
+    first_contest_column = next(
+        i for i, header in enumerate(headers) if header.startswith("Choice_")
+    )
+
+    # Parse out metadata about the contests to store - we'll later use this
+    # to populate the Contest object.
+    #
+    # Contest headers look like this:
+    # "Choice_3_1:City of Portland, Mayor:4:Number of Winners 1:George Washington:NON"
+    # We want to parse: contest_name="City of Portland, Mayor", votes_allowed=1, choice_name="George Washington", rank=4
+    contests_metadata: CVR_CONTESTS_METADATA = defaultdict(
+        lambda: dict(choices=dict(), votes_allowed=0, total_ballots_cast=0)
+    )
+
+    # Build a deduped list of choices in this contest
+    choices_to_deduped_index: dict[str, int] = {}
+    for header in headers[first_contest_column:]:
+        match = re.match(
+            r"^Choice_\d+_\d+:(.+):\d+:Number of Winners (\d+):(.+):.*$", header
+        )
+        if not match:
+            raise UserError(f"Invalid contest header during header parsing: {header}")
+        [contest_name, votes_allowed, choice_name] = match.groups()
+        if choice_name not in choices_to_deduped_index:
+            choices_to_deduped_index[choice_name] = len(choices_to_deduped_index)
+        contests_metadata[contest_name]["votes_allowed"] = int(votes_allowed)
+        contests_metadata[contest_name]["choices"][choice_name] = dict(
+            # Store the current deduped column index of this contest choice so we can parse
+            # interpretations later
+            column=choices_to_deduped_index[choice_name],
+            num_votes=0,  # Will be counted while parsing rows
+        )
+        # Will be counted while parsing rows
+        contests_metadata[contest_name]["total_ballots_cast"] = 0
+
+    batches_by_key = {
+        (batch.tabulator, batch.name): batch for batch in jurisdiction.batches
+    }
+    header_indices = get_header_indices(headers)
+
+    def parse_cvr_rows() -> Iterable[CvrBallot]:
+        for row_index, row in enumerate(cvrs):
+            row_number = column_value(row, "RowNumber", row_index + 1, header_indices)
+            box_id = column_value(row, "BoxID", row_number, header_indices)
+            box_position = column_value(row, "BoxPosition", row_number, header_indices)
+            ballot_id = column_value(row, "BallotID", row_number, header_indices)
+            scan_computer_name = column_value(
+                row, "ScanComputerName", row_number, header_indices
+            )
+
+            rank_dict = {choice: ["0"] for choice in choices_to_deduped_index}
+            interpretations = row[first_contest_column:]
+            for i, interpretation in enumerate(interpretations):
+                header = headers[i + first_contest_column]
+                match = re.match(
+                    r"^Choice_\d+_\d+:.+:(\d+):Number of Winners \d+:(.+):.*$", header
+                )
+                if not match:
+                    raise UserError(
+                        f"Invalid contest header during interpretation parsing: {header}"
+                    )
+                [rank, choice_name] = match.groups()
+                # Keep ranks as strings for now for easier joining
+                if interpretation != "0":
+                    rank_dict[choice_name].append(rank)
+
+            # serialize interpretations from {choice_name: [ranks]} to a single string of interpretations,
+            # throwing out choices that had more than one rank or ranks that had more than one choice selected
+            # eg. throws out
+            # A. George Washington if he was ranked 1 and 2
+            # B. George Washington and John Adams if they were both ranked 3
+            # TODO: handle excluded write-ins
+            rank_counts = defaultdict(int)
+            for ranks in rank_dict.values():
+                if len(ranks) == 2:
+                    rank_counts[ranks[-1]] += 1
+
+            interpretations_str = ",".join(
+                ranks[-1] if len(ranks) == 2 and rank_counts[ranks[-1]] == 1 else "0"
+                for ranks in rank_dict.values()
+            )
+
+            db_batch = batches_by_key.get((scan_computer_name, box_id))
+            if db_batch:
+                yield CvrBallot(
+                    batch=db_batch,
+                    record_id=int(box_position),
+                    imprinted_id=ballot_id,
+                    interpretations=interpretations_str,
+                )
+            else:
+                close_matches = difflib.get_close_matches(
+                    str((scan_computer_name, box_id)),
+                    (str(batch_key) for batch_key in batches_by_key),
+                    n=1,
+                )
+                closest_match = (
+                    ast.literal_eval(close_matches[0]) if close_matches else None
+                )
+                raise UserError(
+                    "Couldn't find a matching batch for"
+                    f" ScanComputerName: {scan_computer_name}, BoxID: {box_id}"
+                    f" (RowNumber: {row_number})."
+                    " The ScanComputerName and BoxID fields in the CVR file"
+                    " must match the Tabulator and Batch Name fields in the"
+                    " ballot manifest."
+                    + (
+                        (
+                            " The closest match we found in the ballot manifest was"
+                            f" Tabulator: {closest_match[0]}, Batch Name: {closest_match[1]}."
+                        )
+                        if closest_match
+                        else ""
+                    )
+                    + " Please check your CVR file and ballot manifest thoroughly"
+                    " to make sure these values match - there may be a similar"
+                    " inconsistency in other rows in the CVR file."
+                )
+
+        cvr_file.close()
+
+    return contests_metadata, parse_cvr_rows()
 
 
 def parse_clearballot_cvrs(
@@ -1301,6 +1439,8 @@ def process_cvr_file(
                 return parse_ess_cvrs(jurisdiction, working_directory)
             elif jurisdiction.cvr_file_type == CvrFileType.HART:
                 return parse_hart_cvrs(jurisdiction, working_directory)
+            elif jurisdiction.cvr_file_type == CvrFileType.CLEARBALLOT_RCV:
+                return parse_portland_cvrs(jurisdiction, working_directory)
             else:
                 raise Exception(
                     f"Unsupported CVR file type: {jurisdiction.cvr_file_type}"
@@ -1457,6 +1597,7 @@ def process_cvr_file(
     try:
         process()
     except Exception as exc:
+        traceback.print_exc()
         error = str(exc) or str(exc.__class__.__name__)
         if isinstance(exc, UserError):
             raise exc
@@ -1499,8 +1640,9 @@ def validate_cvr_upload(
     if cvr_file_type is None:
         raise BadRequest("CVR file type is required")
 
-    if cvr_file_type not in [cvr_file_type.value for cvr_file_type in CvrFileType]:
-        raise BadRequest("Invalid file type")
+    accepted_types = [cvr_file_type.value for cvr_file_type in CvrFileType]
+    if cvr_file_type not in accepted_types:
+        raise BadRequest("Invalid file type {}".format(cvr_file_type))
 
 
 def clear_cvr_contests_metadata(jurisdiction: Jurisdiction):
