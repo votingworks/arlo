@@ -293,32 +293,27 @@ def round_sizes(contest: Contest) -> ballot_polling_types.BALLOT_POLLING_ROUND_S
         }
 
 
-# Retrieves only sampled CVRs by default. Set sampled_only to False to retrieve all CVRs
-def cvrs_for_contest(contest: Contest, sampled_only=True) -> raire_utils.CVRS:
+# Retrieves all CVRs. Uses SampledBallot.id as an ID if a ballot was sampled, otherwise
+# CvrBallot.imprinted_id
+def cvrs_for_contest(contest: Contest) -> raire_utils.CVRS:
     cvrs: raire_utils.CVRS = {}
 
     ballot_interpretations = (
-        (
-            CvrBallot.query.join(Batch)
-            .join(Jurisdiction)
-            .join(Jurisdiction.contests)
-            .filter_by(id=contest.id)
-            .join(
-                SampledBallot,
-                and_(
-                    CvrBallot.batch_id == SampledBallot.batch_id,
-                    CvrBallot.ballot_position == SampledBallot.ballot_position,
-                ),
-            )
-            .values(Jurisdiction.id, SampledBallot.id, CvrBallot.interpretations)
+        CvrBallot.query.join(Batch)
+        .join(Jurisdiction)
+        .join(Jurisdiction.contests)
+        .filter_by(id=contest.id)
+        .outerjoin(
+            SampledBallot,
+            and_(
+                CvrBallot.batch_id == SampledBallot.batch_id,
+                CvrBallot.ballot_position == SampledBallot.ballot_position,
+            ),
         )
-        if sampled_only
-        else (
-            CvrBallot.query.join(Batch)
-            .join(Jurisdiction)
-            .join(Jurisdiction.contests)
-            .filter_by(id=contest.id)
-            .values(Jurisdiction.id, CvrBallot.imprinted_id, CvrBallot.interpretations)
+        .values(
+            Jurisdiction.id,
+            func.coalesce(SampledBallot.id, CvrBallot.imprinted_id).label("ballot_id"),
+            CvrBallot.interpretations,
         )
     )
 
@@ -983,7 +978,7 @@ def cache_compute_raire_assertions(
     print("Computing RAIRE assertions from scratch")
     raire_assertions = raire.compute_raire_assertions(
         sampler_contest.from_db_contest(contest),
-        cvrs_for_contest(contest, sampled_only=False),
+        cvrs_for_contest(contest),
     )
     election.raire_assertions_pickle = pickle.dumps(raire_assertions)
     return raire_assertions

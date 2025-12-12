@@ -309,7 +309,7 @@ def calculate_risk_measurements(election_id: str):
             p_value, is_complete = supersimple_raire.compute_risk(
                 election.risk_limit,
                 sampler_contest.from_db_contest(contest),
-                cvrs_for_contest(contest, sampled_only=False),
+                cvrs_for_contest(contest),
                 sampled_ballot_interpretations_to_cvrs(contest),
                 cache_compute_raire_assertions(election, contest),
             )
