@@ -309,11 +309,12 @@ def parse_portland_cvrs(
         lambda: dict(choices=dict(), votes_allowed=0, total_ballots_cast=0)
     )
 
-
     # Build a deduped list of choices in this contest
     choices_to_deduped_index: dict[str, int] = {}
     for header in headers[first_contest_column:]:
-        match = re.match(r"^Choice_\d+_\d+:(.+):\d+:Number of Winners (\d+):(.+):.*$", header)
+        match = re.match(
+            r"^Choice_\d+_\d+:(.+):\d+:Number of Winners (\d+):(.+):.*$", header
+        )
         if not match:
             raise UserError(f"Invalid contest header during header parsing: {header}")
         [contest_name, votes_allowed, choice_name] = match.groups()
@@ -348,9 +349,13 @@ def parse_portland_cvrs(
             interpretations = row[first_contest_column:]
             for i, interpretation in enumerate(interpretations):
                 header = headers[i + first_contest_column]
-                match = re.match(r"^Choice_\d+_\d+:.+:(\d+):Number of Winners \d+:(.+):.*$", header)
+                match = re.match(
+                    r"^Choice_\d+_\d+:.+:(\d+):Number of Winners \d+:(.+):.*$", header
+                )
                 if not match:
-                    raise UserError(f"Invalid contest header during interpretation parsing: {header}")
+                    raise UserError(
+                        f"Invalid contest header during interpretation parsing: {header}"
+                    )
                 [rank, choice_name] = match.groups()
                 # Keep ranks as strings for now for easier joining
                 if interpretation != "0":
@@ -361,7 +366,7 @@ def parse_portland_cvrs(
             # eg. throws out
             # A. George Washington if he was ranked 1 and 2
             # B. George Washington and John Adams if they were both ranked 3
-            # TODO handle excluded write-ins
+            # TODO: handle excluded write-ins
             rank_counts = defaultdict(int)
             for ranks in rank_dict.values():
                 if len(ranks) == 2:
@@ -371,7 +376,6 @@ def parse_portland_cvrs(
                 ranks[-1] if len(ranks) == 2 and rank_counts[ranks[-1]] == 1 else "0"
                 for ranks in rank_dict.values()
             )
-
 
             db_batch = batches_by_key.get((scan_computer_name, box_id))
             if db_batch:
