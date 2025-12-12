@@ -177,7 +177,9 @@ const CvrsFileUpload = ({
         uploadFiles={uploadFiles}
         acceptFileTypes={
           selectedCvrFileType &&
-          [CvrFileType.HART, CvrFileType.ESS].includes(selectedCvrFileType)
+          [CvrFileType.HART, CvrFileType.ESS, CvrFileType.ESS_MD].includes(
+            selectedCvrFileType
+          )
             ? ['zip']
             : ['csv']
         }
@@ -198,13 +200,14 @@ const CvrsFileUpload = ({
               style={{ width: '195px', marginLeft: '10px' }}
             >
               <option></option>
-              <option value={CvrFileType.DOMINION}>Dominion</option>
               <option value={CvrFileType.CLEARBALLOT}>ClearBallot</option>
-              <option value={CvrFileType.ESS}>ES&amp;S</option>
-              <option value={CvrFileType.HART}>Hart</option>
               <option value={CvrFileType.CLEARBALLOT_RCV}>
                 ClearBallot RCV
               </option>
+              <option value={CvrFileType.DOMINION}>Dominion</option>
+              <option value={CvrFileType.ESS}>ES&amp;S</option>
+              <option value={CvrFileType.ESS_MD}>ES&amp;S MD</option>
+              <option value={CvrFileType.HART}>Hart</option>
             </HTMLSelect>
           </div>
         }
