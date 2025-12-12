@@ -754,15 +754,7 @@ class BallotInterpretation(BaseModel):
     __table_args__ = (PrimaryKeyConstraint("ballot_id", "contest_id"),)
 
     interpretation = Column(Enum(Interpretation), nullable=False)
-    selected_choices = relationship(
-        "ContestChoice",
-        uselist=True,
-        secondary="ballot_interpretation_contest_choice",
-        primaryjoin="and_("
-        + "ballot_interpretation.c.ballot_id == ballot_interpretation_contest_choice.c.ballot_id,"
-        + "ballot_interpretation.c.contest_id == ballot_interpretation_contest_choice.c.contest_id)",
-        order_by="ContestChoice.created_at",
-    )
+    ranks = Column(JSON)
     comment = Column(Text)
 
     # If the number of selected_choices is greater than Contest.votes_allowed,

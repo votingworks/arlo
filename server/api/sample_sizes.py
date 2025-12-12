@@ -186,6 +186,11 @@ def sample_size_options(election: Election) -> dict[str, dict[str, SampleSizeOpt
             #     election.risk_limit, contest_for_sampler, discrepancy_counts
             # )
 
+            if len(election.rounds) > 0:
+                raise UserError(
+                    "RCV round 2 sample size calculation not yet implemented"
+                )
+
             sample_size = supersimple_raire.get_sample_sizes(
                 election.risk_limit,
                 contest_for_sampler,

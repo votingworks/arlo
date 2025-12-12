@@ -73,7 +73,7 @@ function constructEmptyInterpretation(
   contest: IContest
 ): IBallotInterpretationFormState {
   return {
-    choiceIds: [],
+    ranks: {},
     comment: null,
     contestId: contest.id,
     isBlankVoteChecked: false,
@@ -83,13 +83,13 @@ function constructEmptyInterpretation(
 }
 
 function hasInterpretationBeenSpecified({
-  choiceIds,
+  ranks,
   isBlankVoteChecked,
   isContestNotOnBallotChecked,
   isInvalidWriteInChecked,
 }: IBallotInterpretationFormState): boolean {
   return (
-    choiceIds.length > 0 ||
+    Object.values(ranks).some(rankArray => rankArray.length > 0) ||
     isBlankVoteChecked ||
     isContestNotOnBallotChecked ||
     isInvalidWriteInChecked
@@ -220,7 +220,7 @@ const BallotAuditContest = ({
   setInterpretation,
 }: IBallotAuditContestProps) => {
   const {
-    choiceIds,
+    ranks,
     comment,
     isBlankVoteChecked,
     isContestNotOnBallotChecked,
@@ -234,7 +234,7 @@ const BallotAuditContest = ({
     if (value === Interpretation.BLANK) {
       setInterpretation({
         ...interpretation,
-        choiceIds: [],
+        ranks: {},
         isBlankVoteChecked: checked,
         isContestNotOnBallotChecked: false,
         isInvalidWriteInChecked: false,
@@ -242,7 +242,7 @@ const BallotAuditContest = ({
     } else if (value === Interpretation.CONTEST_NOT_ON_BALLOT) {
       setInterpretation({
         ...interpretation,
-        choiceIds: [],
+        ranks: {},
         isBlankVoteChecked: false,
         isContestNotOnBallotChecked: checked,
         isInvalidWriteInChecked: false,
@@ -255,15 +255,33 @@ const BallotAuditContest = ({
         isInvalidWriteInChecked: checked,
       })
     } else {
-      const newChoiceIds = checked
-        ? [...choiceIds, value]
-        : choiceIds.filter(v => v !== value)
-      setInterpretation({
-        ...interpretation,
-        choiceIds: newChoiceIds,
-        isBlankVoteChecked: false,
-        isContestNotOnBallotChecked: false,
-      })
+      const [choiceId, i] = value.split('/')
+      if (interpretation.ranks[choiceId]?.includes(Number(i))) {
+        setInterpretation({
+          ...interpretation,
+          ranks: {
+            ...interpretation.ranks,
+            [choiceId]: interpretation.ranks[choiceId].filter(
+              rank => rank !== Number(i)
+            ),
+          },
+          isBlankVoteChecked: false,
+          isContestNotOnBallotChecked: false,
+        })
+      } else {
+        setInterpretation({
+          ...interpretation,
+          ranks: {
+            ...interpretation.ranks,
+            [choiceId]: [
+              ...(interpretation.ranks[choiceId] ?? []),
+              Number(i),
+            ].sort(),
+          },
+          isBlankVoteChecked: false,
+          isContestNotOnBallotChecked: false,
+        })
+      }
     }
   }
 
@@ -280,12 +298,29 @@ const BallotAuditContest = ({
         <LeftCheckboxes>
           <ContestTitle>{contest.name}</ContestTitle>
           {sortedContestChoices.map(c => (
-            <BlockCheckbox
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                marginBottom: '0.5rem',
+              }}
               key={c.id}
-              handleChange={onCheckboxClick(c.id)}
-              checked={choiceIds.includes(c.id)}
-              label={c.name}
-            />
+            >
+              <span>{c.name}</span>
+              <div style={{ flexGrow: 1 }} />
+              <div style={{ display: 'flex' }}>
+                {/* Hardcode 6 choices, what seems to be the number of choices allotted in the Portland CVRs */}
+                {[1, 2, 3, 4, 5, 6].map(i => (
+                  <BlockCheckbox
+                    style={{ margin: '0.15rem', width: '30px' }}
+                    key={`${c.id}/${i}`}
+                    handleChange={onCheckboxClick(`${c.id}/${i}`)}
+                    checked={ranks[c.id]?.includes(i) ?? false}
+                    label={`${i}`}
+                  />
+                ))}
+              </div>
+            </div>
           ))}
         </LeftCheckboxes>
         <RightCheckboxes>

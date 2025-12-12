@@ -364,7 +364,7 @@ def cvrs_for_contest(contest: Contest, sampled_only=True) -> raire_utils.CVRS:
 
 def sampled_ballot_interpretations_to_cvrs(
     contest: Contest,
-) -> sampler_contest.SAMPLECVRS:
+) -> raire_utils.SAMPLECVRS:
     ballots_query = SampledBallot.query.join(Batch)
 
     # In hybrid audits, only count CVR ballots
@@ -392,17 +392,16 @@ def sampled_ballot_interpretations_to_cvrs(
 
     ballots = ballots_query.options(
         load_only(SampledBallot.id, SampledBallot.status),
-        joinedload(SampledBallot.interpretations)
-        .load_only(BallotInterpretation.contest_id, BallotInterpretation.interpretation)
-        .joinedload(BallotInterpretation.selected_choices)
-        .load_only(ContestChoice.id),
+        joinedload(SampledBallot.interpretations).load_only(
+            BallotInterpretation.contest_id,
+            BallotInterpretation.interpretation,
+            BallotInterpretation.ranks,
+        ),
     ).all()
 
-    # The CVR we build should have a 1 for each choice that got voted for,
-    # and a 0 otherwise. There are a couple special cases:
     # - Contest wasn't on the ballot - CVR should be an empty object
-    # - Audit board couldn't find the ballot - CVR should be None
-    cvrs: sampler_contest.SAMPLECVRS = {}
+    # - Audit board couldn't find the ballot - CVR should be None - TODO: Not sure if this is true for RAIRE module
+    cvrs: raire_utils.SAMPLECVRS = {}
     for ballot, times_sampled in ballots:
         if ballot.status == BallotStatus.NOT_FOUND:
             cvrs[ballot.id] = {"times_sampled": times_sampled, "cvr": None}
@@ -426,19 +425,37 @@ def sampled_ballot_interpretations_to_cvrs(
                     contest.id: {choice.id: "0" for choice in contest.choices}
                 }
             elif interpretation.interpretation == Interpretation.VOTE:
-                ballot_cvr = {
-                    contest.id: {
-                        choice.id: (
-                            "1"
-                            if any(
-                                selected_choice.id == choice.id
-                                for selected_choice in interpretation.selected_choices
-                            )
-                            else "0"
-                        )
-                        for choice in contest.choices
-                    }
+                # TODO: Ask Mark what the expected behavior is when multiple ranks are indicated
+                # for one candidate. For now, I'll just pick the max rank.
+                max_ranks = {
+                    choice_id: max(choice_ranks)
+                    for choice_id, choice_ranks in interpretation.ranks.items()
                 }
+
+                # Apply Portland RCV rules
+
+                max_ranks_with_dupes_removed = {
+                    choice_id: max_choice_rank
+                    for choice_id, max_choice_rank in max_ranks.items()
+                    if list(max_ranks.values()).count(max_choice_rank) == 1
+                }
+
+                UNVERIFIED_WRITE_IN = "Write-in-118"
+                max_ranks_with_unverified_write_ins_removed = {
+                    choice_id: max_choice_rank
+                    for choice_id, max_choice_rank in max_ranks_with_dupes_removed.items()
+                    if choice_id != UNVERIFIED_WRITE_IN
+                }
+
+                sorted_ranks = sorted(
+                    max_ranks_with_unverified_write_ins_removed.items(),
+                    key=lambda x: x[1],
+                )
+                renumbered_ranks = {
+                    choice_id: i + 1 for i, (choice_id, _) in enumerate(sorted_ranks)
+                }
+
+                ballot_cvr = {contest.id: renumbered_ranks}
             else:
                 raise Exception(
                     f"Unexpected interpretation type: {interpretation.interpretation}"
