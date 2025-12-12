@@ -202,6 +202,9 @@ const CvrsFileUpload = ({
               <option value={CvrFileType.CLEARBALLOT}>ClearBallot</option>
               <option value={CvrFileType.ESS}>ES&amp;S</option>
               <option value={CvrFileType.HART}>Hart</option>
+              <option value={CvrFileType.CLEARBALLOT_RCV}>
+                ClearBallot RCV
+              </option>
             </HTMLSelect>
           </div>
         }
