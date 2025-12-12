@@ -276,7 +276,10 @@ def count_audited_votes(election: Election, round: Round):
             db_session.add(result)
 
 
-def calculate_risk_measurements(election: Election, round: Round):
+@background_task
+def calculate_risk_measurements(election_id: str):
+    election = Election.query.get(election_id)
+    round = get_current_round(election)
     assert election.risk_limit is not None
 
     for round_contest in round.round_contests:
@@ -322,6 +325,17 @@ def calculate_risk_measurements(election: Election, round: Round):
 
         round_contest.end_p_value = p_value
         round_contest.is_complete = is_complete
+
+        round.ended_at = datetime.now(timezone.utc)
+        db_session.flush()  # Ensure round contest results are queryable by is_audit_complete
+        record_activity(
+            EndRound(
+                timestamp=round.ended_at,
+                base=activity_base(election),
+                round_num=round.round_num,
+                is_audit_complete=is_audit_complete(round),
+            )
+        )
 
 
 @background_task
@@ -632,17 +646,9 @@ def finish_round(election: Election):
 
     # Not strictly necessary, maybe just needed for reporting, TBD
     # count_audited_votes(election, current_round)
-    calculate_risk_measurements(election, current_round)
-    current_round.ended_at = datetime.now(timezone.utc)
 
-    db_session.flush()  # Ensure round contest results are queryable by is_audit_complete
-    record_activity(
-        EndRound(
-            timestamp=current_round.ended_at,
-            base=activity_base(election),
-            round_num=current_round.round_num,
-            is_audit_complete=is_audit_complete(current_round),
-        )
+    current_round.calculate_risk_measurements_task = create_background_task(
+        calculate_risk_measurements, dict(election_id=election.id)
     )
 
     db_session.commit()
@@ -660,6 +666,9 @@ def serialize_round(round: Round) -> dict:
         "needsFullHandTally": needs_full_hand_tally(round, round.election),
         "isFullHandTally": is_full_hand_tally(round, round.election),
         "drawSampleTask": serialize_background_task(round.draw_sample_task),
+        "calculateRiskMeasurementsTask": serialize_background_task(
+            round.calculate_risk_measurements_task
+        ),
     }
 
 

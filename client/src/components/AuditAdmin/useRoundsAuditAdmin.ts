@@ -25,6 +25,12 @@ export interface IRound {
     completedAt: string | null
     error: string | null
   }
+  calculateRiskMeasurementsTask: {
+    status: FileProcessingStatus
+    startedAt: string | null
+    completedAt: string | null
+    error: string | null
+  }
 }
 
 export interface ISampleSizes {
@@ -34,6 +40,10 @@ export interface ISampleSizes {
 export const isDrawingSample = (rounds: IRound[]): boolean =>
   rounds.length > 0 &&
   rounds[rounds.length - 1].drawSampleTask.completedAt === null
+
+export const isCalculatingRiskMeasurements = (rounds: IRound[]): boolean =>
+  rounds.length > 0 &&
+  rounds[rounds.length - 1].calculateRiskMeasurementsTask.completedAt === null
 
 export const isDrawSampleComplete = (rounds: IRound[]): boolean =>
   rounds.length > 0 &&
