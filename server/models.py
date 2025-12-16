@@ -20,6 +20,7 @@ from sqlalchemy import (
     UniqueConstraint,
     PrimaryKeyConstraint,
     CheckConstraint,
+    LargeBinary,
 )
 from sqlalchemy.orm import relationship, backref, validates
 from sqlalchemy.types import TypeDecorator
@@ -228,6 +229,8 @@ class Election(BaseModel):
         "BackgroundTask", single_parent=True, cascade="all, delete-orphan"
     )
 
+    raire_assertions_pickle = Column(LargeBinary)
+
     __table_args__ = (UniqueConstraint("organization_id", "audit_name"),)
 
 
@@ -237,6 +240,7 @@ class CvrFileType(str, enum.Enum):
     ESS = "ESS"
     ESS_MD = "ESS_MD"
     HART = "HART"
+    CLEARBALLOT_RCV = "CLEARBALLOT_RCV"
 
 
 # these are typically counties
@@ -646,7 +650,25 @@ class Round(BaseModel):
     draw_sample_task_id = Column(
         String(200), ForeignKey("background_task.id", ondelete="set null")
     )
-    draw_sample_task = relationship("BackgroundTask")
+    draw_sample_task = relationship(
+        "BackgroundTask", foreign_keys=[draw_sample_task_id]
+    )
+
+    calculate_risk_measurements_task_id = Column(
+        String(200), ForeignKey("background_task.id", ondelete="set null")
+    )
+    calculate_risk_measurements_task = relationship(
+        "BackgroundTask", foreign_keys=[calculate_risk_measurements_task_id]
+    )
+
+    generate_report_task_id = Column(
+        String(200), ForeignKey("background_task.id", ondelete="set null")
+    )
+    generate_report_task = relationship(
+        "BackgroundTask", foreign_keys=[generate_report_task_id]
+    )
+
+    report_text = Column(Text)
 
     __table_args__ = (UniqueConstraint("election_id", "round_num"),)
 
@@ -754,15 +776,7 @@ class BallotInterpretation(BaseModel):
     __table_args__ = (PrimaryKeyConstraint("ballot_id", "contest_id"),)
 
     interpretation = Column(Enum(Interpretation), nullable=False)
-    selected_choices = relationship(
-        "ContestChoice",
-        uselist=True,
-        secondary="ballot_interpretation_contest_choice",
-        primaryjoin="and_("
-        + "ballot_interpretation.c.ballot_id == ballot_interpretation_contest_choice.c.ballot_id,"
-        + "ballot_interpretation.c.contest_id == ballot_interpretation_contest_choice.c.contest_id)",
-        order_by="ContestChoice.created_at",
-    )
+    ranks = Column(JSON)
     comment = Column(Text)
 
     # If the number of selected_choices is greater than Contest.votes_allowed,

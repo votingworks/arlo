@@ -190,10 +190,15 @@ def find_assertions(
     return False  # pragma: no cover
 
 
+# Confirmed with Mark that this is a valid function to use (it's what we use in tests, too)
+def default_asn_func(m):
+    return 1 / m if m > 0 else np.inf
+
+
 def compute_raire_assertions(
     contest: Contest,
     cvrs: CVRS,
-    asn_func: Callable,
+    asn_func: Callable = default_asn_func,
     agap: float = 0.0,
 ) -> list[RaireAssertion]:
     """

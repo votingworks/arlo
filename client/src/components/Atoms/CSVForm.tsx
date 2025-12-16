@@ -65,7 +65,7 @@ const CSVFile: React.FC<IProps> = ({
         cvrFileType: showCvrFileType
           ? file
             ? file.cvrFileType
-            : CvrFileType.DOMINION
+            : CvrFileType.CLEARBALLOT_RCV
           : undefined,
       }}
       validationSchema={schema}
@@ -102,10 +102,13 @@ const CSVFile: React.FC<IProps> = ({
                     disabled={!enabled || !(isEditing || !file)}
                     onChange={e => setFieldValue('cvrFileType', e.target.value)}
                   >
-                    <option value={CvrFileType.DOMINION}>Dominion</option>
                     <option value={CvrFileType.CLEARBALLOT}>ClearBallot</option>
+                    <option value={CvrFileType.CLEARBALLOT_RCV}>
+                      ClearBallot RCV
+                    </option>
+                    <option value={CvrFileType.DOMINION}>Dominion</option>
                     <option value={CvrFileType.ESS}>ES&amp;S</option>
-                    <option value={CvrFileType.ESS_MD}>ES&amp;S (MD)</option>
+                    <option value={CvrFileType.ESS_MD}>ES&amp;S MD</option>
                     <option value={CvrFileType.HART}>Hart</option>
                   </HTMLSelect>
                 </label>

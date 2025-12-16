@@ -30,6 +30,7 @@ from .shared import (
     sampled_batch_results,
     sampled_batches_by_ticket_number,
     samples_not_found_by_round,
+    cache_compute_raire_assertions,
 )
 from ..auth import restrict_access, UserType
 from ..util.isoformat import isoformat
@@ -37,7 +38,7 @@ from ..util.collections import group_by
 from ..audit_math import (
     ballot_polling,
     macro,
-    supersimple,
+    supersimple_raire,
     sampler_contest,
     suite,
 )
@@ -275,7 +276,10 @@ def count_audited_votes(election: Election, round: Round):
             db_session.add(result)
 
 
-def calculate_risk_measurements(election: Election, round: Round):
+@background_task
+def calculate_risk_measurements(election_id: str, only_calculate_for_reporting: bool):
+    election = Election.query.get(election_id)
+    round = get_current_round(election)
     assert election.risk_limit is not None
 
     for round_contest in round.round_contests:
@@ -302,12 +306,32 @@ def calculate_risk_measurements(election: Election, round: Round):
                 combined_batch_keys(election.id),
             )
         elif election.audit_type == AuditType.BALLOT_COMPARISON:
-            p_value, is_complete = supersimple.compute_risk(
+            sampled_ballot_id_mapping = {
+                sampled_ballot_id: ballot_imprinted_id
+                for sampled_ballot_id, ballot_imprinted_id in list(
+                    CvrBallot.query.join(Batch)
+                    .join(Jurisdiction)
+                    .join(Jurisdiction.contests)
+                    .filter_by(id=contest.id)
+                    .join(
+                        SampledBallot,
+                        and_(
+                            CvrBallot.batch_id == SampledBallot.batch_id,
+                            CvrBallot.ballot_position == SampledBallot.ballot_position,
+                        ),
+                    )
+                    .values(SampledBallot.id, CvrBallot.imprinted_id)
+                )
+            }
+            p_value, is_complete, report_text = supersimple_raire.compute_risk(
                 election.risk_limit,
-                sampler_contest.from_db_contest(contest),
+                contest,
                 cvrs_for_contest(contest),
                 sampled_ballot_interpretations_to_cvrs(contest),
+                cache_compute_raire_assertions(election, contest),
+                sampled_ballot_id_mapping,
             )
+            round.report_text = report_text
         else:
             assert election.audit_type == AuditType.HYBRID
             non_cvr_stratum, cvr_stratum = hybrid_contest_strata(contest)
@@ -318,8 +342,22 @@ def calculate_risk_measurements(election: Election, round: Round):
                 cvr_stratum,
             )
 
+        if only_calculate_for_reporting:
+            return
+
         round_contest.end_p_value = p_value
         round_contest.is_complete = is_complete
+
+        round.ended_at = datetime.now(timezone.utc)
+        db_session.flush()  # Ensure round contest results are queryable by is_audit_complete
+        record_activity(
+            EndRound(
+                timestamp=round.ended_at,
+                base=activity_base(election),
+                round_num=round.round_num,
+                is_audit_complete=is_audit_complete(round),
+            )
+        )
 
 
 @background_task
@@ -628,18 +666,29 @@ def finish_round(election: Election):
     if current_round.ended_at:
         raise Conflict("Round already finished")
 
-    count_audited_votes(election, current_round)
-    calculate_risk_measurements(election, current_round)
-    current_round.ended_at = datetime.now(timezone.utc)
+    # Not strictly necessary, maybe just needed for reporting, TBD
+    # count_audited_votes(election, current_round)
 
-    db_session.flush()  # Ensure round contest results are queryable by is_audit_complete
-    record_activity(
-        EndRound(
-            timestamp=current_round.ended_at,
-            base=activity_base(election),
-            round_num=current_round.round_num,
-            is_audit_complete=is_audit_complete(current_round),
-        )
+    current_round.calculate_risk_measurements_task = create_background_task(
+        calculate_risk_measurements,
+        dict(election_id=election.id, only_calculate_for_reporting=False),
+    )
+
+    db_session.commit()
+
+    return jsonify(status="ok")
+
+
+@api.route("/election/<election_id>/generate-report", methods=["POST"])
+@restrict_access([UserType.AUDIT_ADMIN])
+def generate_report(election: Election):
+    current_round = get_current_round(election)
+    if not current_round:
+        raise Conflict("Audit not started")
+
+    current_round.generate_report_task = create_background_task(
+        calculate_risk_measurements,
+        dict(election_id=election.id, only_calculate_for_reporting=True),
     )
 
     db_session.commit()
@@ -657,6 +706,10 @@ def serialize_round(round: Round) -> dict:
         "needsFullHandTally": needs_full_hand_tally(round, round.election),
         "isFullHandTally": is_full_hand_tally(round, round.election),
         "drawSampleTask": serialize_background_task(round.draw_sample_task),
+        "calculateRiskMeasurementsTask": serialize_background_task(
+            round.calculate_risk_measurements_task
+        ),
+        "generateReportTask": serialize_background_task(round.generate_report_task),
     }
 
 

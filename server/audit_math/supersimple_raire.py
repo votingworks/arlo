@@ -1,9 +1,10 @@
 from decimal import Decimal, ROUND_CEILING
 import math
 
-from .sampler_contest import Contest
+from .sampler_contest import Contest, from_db_contest
 from .supersimple import Discrepancy
 from .raire_utils import RaireAssertion, CVR, CVRS, SAMPLECVRS
+from ..models import Contest as DbContest
 
 l: Decimal = Decimal(0.5)  # noqa: E741
 gamma: Decimal = Decimal(1.03905)  # This gamma is used in Stark's tool, AGI, and CORLA
@@ -99,6 +100,8 @@ def compute_discrepancies(
     return discrepancies
 
 
+# Not fully in line with Portland RCV rules.
+# We normalize ourselves before this function is called.
 def normalize_cvr(cvr: CVR) -> CVR:
     """
     This function normalizes a CVR according to the following rules:
@@ -280,11 +283,12 @@ def compute_margin_for_assertion(cvrs: CVRS, assertion: RaireAssertion) -> Decim
 
 def compute_risk(
     risk_limit: int,
-    contest: Contest,
-    cvrs: CVRS,
-    sample_cvr: SAMPLECVRS,
+    db_contest: DbContest,
+    reported_results: CVRS,
+    audit_results: SAMPLECVRS,
     assertions: list[RaireAssertion],
-) -> tuple[float, bool]:
+    sampled_ballot_id_mapping: dict[str, str],
+) -> tuple[float, bool, str]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
 
@@ -318,8 +322,54 @@ def compute_risk(
                           result is correct based on the sample, for each winner-loser pair.
         confirmed       - a boolean indicating whether the audit can stop
     """
+    contest = from_db_contest(db_contest)
+    choice_id_to_name = {
+        choice.id: "Invalid Write-In: Bubble Filled, No Interpretable Text"
+        if choice.name == "Write-in-118"
+        else choice.name
+        for choice in db_contest.choices
+    }
+
     alpha = Decimal(risk_limit) / 100
     assert alpha < 1
+
+    sampled_reported_results = {
+        # Sampled reported results will have a UUID as a key;
+        # rest will have shorter imprinted IDs as a key -
+        # hacky of course
+        k: v
+        for k, v in reported_results.items()
+        if len(k) == 36
+    }
+
+    sampled_reported_results_str = ""
+    for sampled_ballot_id, ballot in sampled_reported_results.items():
+        sampled_reported_results_str += f"\nBallot ID: {sampled_ballot_id_mapping.get(sampled_ballot_id, sampled_ballot_id)}\n"
+        _, contest_results = list(ballot.items())[0]  # Should only be one contest
+        for choice_id, rank in contest_results.items():
+            choice_name = choice_id_to_name.get(choice_id, choice_id)
+            if rank > 0:
+                sampled_reported_results_str += f"{choice_name},{rank}\n"
+
+    audit_results_str = ""
+    for sampled_ballot_id, ballot in audit_results.items():
+        _, contest_results = list(ballot["cvr"].items())[
+            0
+        ]  # Should only be one contest
+        audit_results_str += f"\nBallot ID: {sampled_ballot_id_mapping.get(sampled_ballot_id, sampled_ballot_id)}\n"
+        audit_results_str += f"Times Sampled: {ballot['times_sampled']}\n"
+        for choice_id, rank in contest_results.items():
+            choice_name = choice_id_to_name.get(choice_id, choice_id)
+            if rank > 0:
+                audit_results_str += f"{choice_name},{rank}\n"
+
+    report_text = f"""
+Reported Results =======================
+{sampled_reported_results_str}
+Audit Results ==========================
+{audit_results_str}
+========================================
+"""
 
     N = contest.ballots
     max_p = Decimal(0.0)
@@ -327,12 +377,14 @@ def compute_risk(
     for assertion in assertions:
         p = Decimal(1.0)
 
-        V = compute_margin_for_assertion(cvrs, assertion)
+        V = compute_margin_for_assertion(reported_results, assertion)
         margin = V / N
 
-        discrepancies = compute_discrepancies(cvrs, sample_cvr, assertion)
+        discrepancies = compute_discrepancies(
+            reported_results, audit_results, assertion
+        )
 
-        for ballot in sample_cvr:
+        for ballot in audit_results:
             if ballot in discrepancies:
                 # We want to be conservative, so we will ignore understatements (i.e. errors
                 # that favor the winner) which are negative.
@@ -346,18 +398,55 @@ def compute_risk(
             denom = (2 * gamma) / V
             p_b = (1 - 1 / U) / (1 - (e_r / denom))
 
-            multiplicity = sample_cvr[ballot]["times_sampled"]
+            multiplicity = audit_results[ballot]["times_sampled"]
             p *= p_b**multiplicity
+
+        assertion_token_mapping = {
+            **choice_id_to_name,
+            "Winner": "Winner ---------------------------------",
+            "Loser": "Loser ----------------------------------",
+            "Eliminated": "Eliminated -----------------------------",
+        }
+        formatted_assertion = "\n".join(
+            [
+                assertion_token_mapping.get(token, token)
+                for token in str(assertion).split(",")
+            ]
+        )
+        formatted_discrepancies = "\n".join(
+            [
+                f"{sampled_ballot_id_mapping.get(sampled_ballot_id, sampled_ballot_id)},{discrepancy['counted_as']},{discrepancy['weighted_error']}"
+                for sampled_ballot_id, discrepancy in discrepancies.items()
+            ]
+        )
+        report_text += f"""
+Assertion ==============================
+{formatted_assertion}
+Margin =================================
+{margin}
+Discrepancies ==========================
+Ballot ID,Counted As,Weighted Error
+{formatted_discrepancies or "N/A"}
+p-value ================================
+{p}
+========================================
+"""
 
         # Get the largest p-value across all assertions
         if p > max_p:
             max_p = p
 
+    report_text += f"""
+Max p-value ============================
+{max_p}
+========================================
+"""
+
     if 0 < max_p < alpha:
         result = True
 
     # Special case if the sample size equals all the ballots (i.e. a full hand tally)
-    if sum(ballot["times_sampled"] for ballot in sample_cvr.values()) >= N:
+    if sum(ballot["times_sampled"] for ballot in audit_results.values()) >= N:
         return 0, True
 
-    return min(float(max_p), 1.0), result
+    return min(float(max_p), 1.0), result, report_text

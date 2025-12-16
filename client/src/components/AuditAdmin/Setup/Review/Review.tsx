@@ -367,8 +367,6 @@ const Review: React.FC<IProps> = ({
               <p>
                 {contest.numWinners}{' '}
                 {pluralize('winner', Number(contest.numWinners))} -{' '}
-                {contest.votesAllowed}{' '}
-                {pluralize('vote', Number(contest.votesAllowed))} allowed -{' '}
                 {Number(contest.totalBallotsCast).toLocaleString()} total
                 ballots cast
               </p>
@@ -433,7 +431,7 @@ const Review: React.FC<IProps> = ({
                     <thead>
                       <tr>
                         <th>Choice</th>
-                        <th>Votes</th>
+                        <th>1st Choice Votes</th>
                         {auditType === 'HYBRID' && (
                           <>
                             <th>CVR</th>
@@ -445,7 +443,11 @@ const Review: React.FC<IProps> = ({
                     <tbody>
                       {contest.choices.map(choice => (
                         <tr key={choice.id}>
-                          <td>{choice.name}</td>
+                          <td>
+                            {choice.name === 'Write-in-118'
+                              ? 'Invalid Write-In: Bubble Filled, No Interpretable Text'
+                              : choice.name}
+                          </td>
                           <td>{choice.numVotes.toLocaleString()}</td>
                           {auditType === 'HYBRID' && (
                             <>

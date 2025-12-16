@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { Callout, H3, H4 } from '@blueprintjs/core'
+import { Button, Callout, H3, H4 } from '@blueprintjs/core'
 import { toast } from 'react-toastify'
 import { apiDownload } from '../utilities'
 import { Inner } from './Wrapper'
@@ -12,6 +12,7 @@ import {
   IRound,
   drawSampleError,
   ISampleSizes,
+  isCalculatingRiskMeasurements,
 } from '../AuditAdmin/useRoundsAuditAdmin'
 import { IContest } from '../../types'
 import useSampleSizes from '../AuditAdmin/Setup/Review/useSampleSizes'
@@ -228,9 +229,18 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
         auditName={auditSettings.auditName}
         action={
           canFinishRound ? (
-            <AsyncButton onClick={finishRound} intent="primary">
-              Finish Round {roundNum}
-            </AsyncButton>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              {isCalculatingRiskMeasurements(rounds) && (
+                <i>Calculating risk measurements</i>
+              )}
+              <Button
+                onClick={finishRound}
+                intent="primary"
+                loading={isCalculatingRiskMeasurements(rounds)}
+              >
+                Finish Round {roundNum}
+              </Button>
+            </div>
           ) : canUndoLaunch ? (
             <AsyncButton onClick={undoRoundStart}>
               Undo Audit Launch

@@ -149,17 +149,13 @@ def get_retrieval_list(election: Election, jurisdiction: Jurisdiction, round: Ro
 def deserialize_interpretation(
     ballot_id: str, interpretation: JSONDict
 ) -> BallotInterpretation:
-    choices = ContestChoice.query.filter(
-        ContestChoice.id.in_(interpretation["choiceIds"])
-    ).all()
-    contest = Contest.query.get(interpretation["contestId"])
     return BallotInterpretation(
         ballot_id=ballot_id,
         contest_id=interpretation["contestId"],
         interpretation=interpretation["interpretation"],
-        selected_choices=choices,
+        ranks=interpretation["ranks"],
         comment=interpretation["comment"],
-        is_overvote=len(choices) > contest.votes_allowed,
+        is_overvote=False,  # TODO: What constitutes an overvote for RCV? How is this field used?
         has_invalid_write_in=interpretation["hasInvalidWriteIn"],
     )
 
@@ -168,7 +164,7 @@ def serialize_interpretation(interpretation: BallotInterpretation) -> JSONDict:
     return {
         "contestId": interpretation.contest_id,
         "interpretation": interpretation.interpretation,
-        "choiceIds": [choice.id for choice in interpretation.selected_choices],
+        "ranks": interpretation.ranks,
         "comment": interpretation.comment,
         "hasInvalidWriteIn": interpretation.has_invalid_write_in,
     }
@@ -248,9 +244,9 @@ def list_ballots_for_jurisdiction(
         .options(
             contains_eager(SampledBallot.batch),
             contains_eager(SampledBallot.audit_board),
-            joinedload(SampledBallot.interpretations)
-            .joinedload(BallotInterpretation.selected_choices)
-            .load_only(ContestChoice.id),
+            joinedload(SampledBallot.interpretations),
+            # .joinedload(BallotInterpretation.selected_choices)
+            # .load_only(ContestChoice.id),
         )
         .all()
     )
@@ -301,9 +297,9 @@ def list_ballots_for_audit_board(
         .with_entities(SampledBallot, CvrBallot.imprinted_id, CvrBallot.record_id)
         .options(
             contains_eager(SampledBallot.batch),
-            joinedload(SampledBallot.interpretations)
-            .joinedload(BallotInterpretation.selected_choices)
-            .load_only(ContestChoice.id),
+            joinedload(SampledBallot.interpretations),
+            # .joinedload(BallotInterpretation.selected_choices)
+            # .load_only(ContestChoice.id),
         )
         .all()
     )
@@ -324,7 +320,13 @@ BALLOT_INTERPRETATION_SCHEMA = {
             "type": "string",
             "enum": [interpretation.value for interpretation in Interpretation],
         },
-        "choiceIds": {"type": "array", "items": {"type": "string"}},
+        "ranks": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "array",
+                "items": {"type": "number"},
+            },
+        },
         "comment": {"anyOf": [{"type": "string"}, {"type": "null"}]},
         "hasInvalidWriteIn": {"type": "boolean"},
     },
@@ -332,7 +334,7 @@ BALLOT_INTERPRETATION_SCHEMA = {
     "required": [
         "contestId",
         "interpretation",
-        "choiceIds",
+        "ranks",
         "comment",
         "hasInvalidWriteIn",
     ],
@@ -355,25 +357,25 @@ def validate_interpretation(interpretation: JSONDict):
         raise BadRequest(f"Contest not found: {interpretation['contestId']}")
 
     if interpretation["interpretation"] == Interpretation.VOTE:
-        if len(interpretation["choiceIds"]) == 0:
+        if len(interpretation["ranks"]) == 0:
             raise BadRequest(
-                f"Must include choiceIds with interpretation {Interpretation.VOTE.value} for contest {interpretation['contestId']}"
+                f"Must include ranks with interpretation {Interpretation.VOTE.value} for contest {interpretation['contestId']}"
             )
-        choices = ContestChoice.query.filter(
-            ContestChoice.id.in_(interpretation["choiceIds"])
-        ).all()
-        missing_choices = set(interpretation["choiceIds"]) - set(c.id for c in choices)
-        if len(missing_choices) > 0:
-            raise BadRequest(f"Contest choices not found: {', '.join(missing_choices)}")
-        for choice in choices:
-            if choice.contest_id != interpretation["contestId"]:
-                raise BadRequest(
-                    f"Contest choice {choice.id} is not associated with contest {interpretation['contestId']}"
-                )
+        # choices = ContestChoice.query.filter(
+        #     ContestChoice.id.in_(interpretation["choiceIds"])
+        # ).all()
+        # missing_choices = set(interpretation["choiceIds"]) - set(c.id for c in choices)
+        # if len(missing_choices) > 0:
+        #     raise BadRequest(f"Contest choices not found: {', '.join(missing_choices)}")
+        # for choice in choices:
+        #     if choice.contest_id != interpretation["contestId"]:
+        #         raise BadRequest(
+        #             f"Contest choice {choice.id} is not associated with contest {interpretation['contestId']}"
+        #         )
     else:
-        if len(interpretation["choiceIds"]) > 0:
+        if len(interpretation["ranks"]) > 0:
             raise BadRequest(
-                f"Cannot include choiceIds with interpretation {interpretation['interpretation']} for contest {interpretation['contestId']}"
+                f"Cannot include ranks with interpretation {interpretation['interpretation']} for contest {interpretation['contestId']}"
             )
 
     if (

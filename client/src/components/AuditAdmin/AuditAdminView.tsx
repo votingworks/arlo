@@ -13,6 +13,8 @@ import {
   roundsQueryKey,
   IRound,
   useFinishRound,
+  isCalculatingRiskMeasurements,
+  isGeneratingReport,
 } from './useRoundsAuditAdmin'
 import { jurisdictionsQueryKey, useJurisdictions } from '../useJurisdictions'
 import { useContests } from '../useContests'
@@ -36,7 +38,12 @@ const AuditAdminView: React.FC = () => {
   const lastFetchedRounds = useRef<IRound[] | null>(null)
   const roundsQuery = useRounds(electionId, {
     refetchInterval: rounds =>
-      rounds && isDrawingSample(rounds) ? 1000 : false,
+      rounds &&
+      (isDrawingSample(rounds) ||
+        isCalculatingRiskMeasurements(rounds) ||
+        isGeneratingReport(rounds))
+        ? 1000
+        : false,
     onSuccess: rounds => {
       // If we ever see the round status change from drawing to complete,
       // redirect to the progress view and reload jurisdiction progress.

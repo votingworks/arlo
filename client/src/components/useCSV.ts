@@ -18,6 +18,7 @@ export enum CvrFileType {
   ESS = 'ESS',
   ESS_MD = 'ESS_MD',
   HART = 'HART',
+  CLEARBALLOT_RCV = 'CLEARBALLOT_RCV',
 }
 
 export interface IFileInfo {

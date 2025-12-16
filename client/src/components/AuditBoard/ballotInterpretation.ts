@@ -6,7 +6,9 @@ export const INVALID_WRITE_IN = 'INVALID_WRITE_IN'
  * A modified representation of a ballot interpretation, optimized for the audit board form
  */
 export interface IBallotInterpretationFormState {
-  choiceIds: string[]
+  ranks: {
+    [choiceId: string]: number[]
+  }
   comment: string | null
   contestId: string
   isBlankVoteChecked: boolean
@@ -18,14 +20,14 @@ export interface IBallotInterpretationFormState {
  * Converts an IBallotInterpretation to an IBallotInterpretationFormState
  */
 export function ballotInterpretationToFormState({
-  choiceIds,
+  ranks,
   comment,
   contestId,
   hasInvalidWriteIn,
   interpretation,
 }: IBallotInterpretation): IBallotInterpretationFormState {
   return {
-    choiceIds,
+    ranks,
     comment,
     contestId,
     isBlankVoteChecked:
@@ -40,7 +42,7 @@ export function ballotInterpretationToFormState({
  * Converts an IBallotInterpretationFormState to an IBallotInterpretation
  */
 export function ballotInterpretationFromFormState({
-  choiceIds,
+  ranks,
   comment,
   contestId,
   isBlankVoteChecked,
@@ -48,7 +50,7 @@ export function ballotInterpretationFromFormState({
   isInvalidWriteInChecked,
 }: IBallotInterpretationFormState): IBallotInterpretation {
   let interpretation: Interpretation | null = null
-  if (choiceIds.length > 0) {
+  if (Object.values(ranks).some(rankArray => rankArray.length > 0)) {
     interpretation = Interpretation.VOTE
   } else if (isBlankVoteChecked || isInvalidWriteInChecked) {
     interpretation = Interpretation.BLANK
@@ -58,7 +60,7 @@ export function ballotInterpretationFromFormState({
   return {
     contestId,
     interpretation,
-    choiceIds,
+    ranks,
     comment,
     hasInvalidWriteIn: isInvalidWriteInChecked,
   }

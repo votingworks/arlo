@@ -47,7 +47,7 @@ export enum Interpretation {
 export interface IBallotInterpretation {
   contestId: string
   interpretation: Interpretation | null
-  choiceIds: string[]
+  ranks: { [choiceId: string]: number[] }
   comment: string | null
   /**
    * If a ballot has an invalid write-in with no other selections, the corresponding interpretation

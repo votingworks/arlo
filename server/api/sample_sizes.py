@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from typing import cast as typing_cast
-from collections import Counter, defaultdict
+from collections import defaultdict  # Counter
 from flask import jsonify
 from werkzeug.exceptions import BadRequest
 
@@ -8,12 +8,17 @@ from werkzeug.exceptions import BadRequest
 from . import api
 from ..models import *
 from ..database import db_session
-from .shared import BatchTallies, combined_batch_keys, samples_not_found_by_round
+from .shared import (
+    BatchTallies,
+    combined_batch_keys,
+    samples_not_found_by_round,
+    cache_compute_raire_assertions,
+)
 from ..auth import restrict_access, UserType
 from ..audit_math import (
     ballot_polling,
     macro,
-    supersimple,
+    supersimple_raire,
     sampler_contest,
     suite,
 )
@@ -162,28 +167,42 @@ def sample_size_options(election: Election) -> dict[str, dict[str, SampleSizeOpt
 
             contest_for_sampler = sampler_contest.from_db_contest(contest)
 
-            num_previous_samples = SampledBallotDraw.query.filter_by(
-                contest_id=contest.id
-            ).count()
-            discrepancies = supersimple.compute_discrepancies(
+            # num_previous_samples = SampledBallotDraw.query.filter_by(
+            #     contest_id=contest.id
+            # ).count()
+            # discrepancies = supersimple.compute_discrepancies(
+            #     contest_for_sampler,
+            #     rounds.cvrs_for_contest(contest),
+            #     rounds.sampled_ballot_interpretations_to_cvrs(contest),
+            # )
+            # discrepancy_counter = Counter(
+            #     d["counted_as"] for d in discrepancies.values()
+            # )
+            # discrepancy_counts = {
+            #     "sample_size": num_previous_samples,
+            #     "1-under": discrepancy_counter[-1],
+            #     "1-over": discrepancy_counter[1],
+            #     "2-under": discrepancy_counter[-2],
+            #     "2-over": discrepancy_counter[2],
+            # }
+
+            # sample_size = supersimple.get_sample_sizes(
+            #     election.risk_limit, contest_for_sampler, discrepancy_counts
+            # )
+
+            if len(election.rounds) > 0:
+                raise UserError(
+                    "RCV round 2 sample size calculation not yet implemented"
+                )
+
+            sample_size = supersimple_raire.get_sample_sizes(
+                election.risk_limit,
                 contest_for_sampler,
                 rounds.cvrs_for_contest(contest),
-                rounds.sampled_ballot_interpretations_to_cvrs(contest),
+                None,  # Fine for a round 1 calculation
+                cache_compute_raire_assertions(election, contest),
             )
-            discrepancy_counter = Counter(
-                d["counted_as"] for d in discrepancies.values()
-            )
-            discrepancy_counts = {
-                "sample_size": num_previous_samples,
-                "1-under": discrepancy_counter[-1],
-                "1-over": discrepancy_counter[1],
-                "2-under": discrepancy_counter[-2],
-                "2-over": discrepancy_counter[2],
-            }
 
-            sample_size = supersimple.get_sample_sizes(
-                election.risk_limit, contest_for_sampler, discrepancy_counts
-            )
             return {"default": {"key": "default", "size": sample_size, "prob": None}}
 
         else:

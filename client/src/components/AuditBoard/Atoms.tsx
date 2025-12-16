@@ -87,7 +87,7 @@ export const BlockCheckboxes = styled.div`
 export const LeftCheckboxes = styled.div`
   display: flex;
   flex-direction: column;
-  width: 50%;
+  width: 60%;
   @media only screen and (max-width: 767px) {
     width: 100%;
   }

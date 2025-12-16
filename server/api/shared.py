@@ -3,12 +3,15 @@ import random
 from typing import TypedDict
 from sqlalchemy import and_, func, literal
 from sqlalchemy.orm import joinedload, load_only
+import pickle
 
 
 from ..models import *
 from ..audit_math import (
     ballot_polling_types,
     macro,
+    raire,
+    raire_utils,
     sampler,
     sampler_contest,
     suite,
@@ -290,22 +293,28 @@ def round_sizes(contest: Contest) -> ballot_polling_types.BALLOT_POLLING_ROUND_S
         }
 
 
-def cvrs_for_contest(contest: Contest) -> sampler_contest.CVRS:
-    cvrs: sampler_contest.CVRS = {}
+# Retrieves all CVRs. Uses SampledBallot.id as an ID if a ballot was sampled, otherwise
+# CvrBallot.imprinted_id
+def cvrs_for_contest(contest: Contest) -> raire_utils.CVRS:
+    cvrs: raire_utils.CVRS = {}
 
     ballot_interpretations = (
         CvrBallot.query.join(Batch)
         .join(Jurisdiction)
         .join(Jurisdiction.contests)
         .filter_by(id=contest.id)
-        .join(
+        .outerjoin(
             SampledBallot,
             and_(
                 CvrBallot.batch_id == SampledBallot.batch_id,
                 CvrBallot.ballot_position == SampledBallot.ballot_position,
             ),
         )
-        .values(Jurisdiction.id, SampledBallot.id, CvrBallot.interpretations)
+        .values(
+            Jurisdiction.id,
+            func.coalesce(SampledBallot.id, CvrBallot.imprinted_id).label("ballot_key"),
+            CvrBallot.interpretations,
+        )
     )
 
     metadata_by_jurisdictions = {
@@ -323,7 +332,7 @@ def cvrs_for_contest(contest: Contest) -> sampler_contest.CVRS:
         # column index for each choice when we parsed the CVR.
         interpretations = interpretations_str.split(",")
         choice_interpretations = {
-            choice_name: interpretations[choice_metadata["column"]]
+            choice_name: int(interpretations[choice_metadata["column"]] or 0)
             for choice_name, choice_metadata in choices_metadata.items()
         }
 
@@ -342,7 +351,7 @@ def cvrs_for_contest(contest: Contest) -> sampler_contest.CVRS:
             # it didn't get voted for and set its interpretation to 0.
             cvrs[ballot_key] = {
                 contest.id: {
-                    choice.id: choice_interpretations.get(choice.name, "0")
+                    choice.id: choice_interpretations.get(choice.name, 0)
                     for choice in contest.choices
                 }
             }
@@ -352,7 +361,7 @@ def cvrs_for_contest(contest: Contest) -> sampler_contest.CVRS:
 
 def sampled_ballot_interpretations_to_cvrs(
     contest: Contest,
-) -> sampler_contest.SAMPLECVRS:
+) -> raire_utils.SAMPLECVRS:
     ballots_query = SampledBallot.query.join(Batch)
 
     # In hybrid audits, only count CVR ballots
@@ -380,17 +389,16 @@ def sampled_ballot_interpretations_to_cvrs(
 
     ballots = ballots_query.options(
         load_only(SampledBallot.id, SampledBallot.status),
-        joinedload(SampledBallot.interpretations)
-        .load_only(BallotInterpretation.contest_id, BallotInterpretation.interpretation)
-        .joinedload(BallotInterpretation.selected_choices)
-        .load_only(ContestChoice.id),
+        joinedload(SampledBallot.interpretations).load_only(
+            BallotInterpretation.contest_id,
+            BallotInterpretation.interpretation,
+            BallotInterpretation.ranks,
+        ),
     ).all()
 
-    # The CVR we build should have a 1 for each choice that got voted for,
-    # and a 0 otherwise. There are a couple special cases:
     # - Contest wasn't on the ballot - CVR should be an empty object
     # - Audit board couldn't find the ballot - CVR should be None
-    cvrs: sampler_contest.SAMPLECVRS = {}
+    cvrs: raire_utils.SAMPLECVRS = {}
     for ballot, times_sampled in ballots:
         if ballot.status == BallotStatus.NOT_FOUND:
             cvrs[ballot.id] = {"times_sampled": times_sampled, "cvr": None}
@@ -410,23 +418,46 @@ def sampled_ballot_interpretations_to_cvrs(
             ):
                 ballot_cvr = {}
             elif interpretation.interpretation == Interpretation.BLANK:
-                ballot_cvr = {
-                    contest.id: {choice.id: "0" for choice in contest.choices}
-                }
+                ballot_cvr = {contest.id: {choice.id: 0 for choice in contest.choices}}
             elif interpretation.interpretation == Interpretation.VOTE:
-                ballot_cvr = {
-                    contest.id: {
-                        choice.id: (
-                            "1"
-                            if any(
-                                selected_choice.id == choice.id
-                                for selected_choice in interpretation.selected_choices
-                            )
-                            else "0"
-                        )
-                        for choice in contest.choices
-                    }
+                # Apply Portland RCV rules
+
+                max_ranks = {
+                    choice_id: max(choice_ranks)
+                    for choice_id, choice_ranks in interpretation.ranks.items()
+                    if len(choice_ranks) > 0
                 }
+
+                max_ranks_with_dupes_removed = {
+                    choice_id: max_choice_rank
+                    for choice_id, max_choice_rank in max_ranks.items()
+                    if list(max_ranks.values()).count(max_choice_rank) == 1
+                }
+
+                INVALID_WRITE_IN = "Write-in-118"
+                INVALID_WRITE_IN_CHOICE_ID = next(
+                    (
+                        choice.id
+                        for choice in contest.choices
+                        if choice.name == INVALID_WRITE_IN
+                    ),
+                    None,
+                )
+                max_ranks_with_invalid_write_ins_removed = {
+                    choice_id: max_choice_rank
+                    for choice_id, max_choice_rank in max_ranks_with_dupes_removed.items()
+                    if choice_id != INVALID_WRITE_IN_CHOICE_ID
+                }
+
+                sorted_ranks = sorted(
+                    max_ranks_with_invalid_write_ins_removed.items(),
+                    key=lambda x: x[1],
+                )
+                renumbered_ranks = {
+                    choice_id: i + 1 for i, (choice_id, _) in enumerate(sorted_ranks)
+                }
+
+                ballot_cvr = {contest.id: renumbered_ranks}
             else:
                 raise Exception(
                     f"Unexpected interpretation type: {interpretation.interpretation}"
@@ -935,3 +966,19 @@ def compute_sample_ballots(
         for sample in compute_sample_for_contest(contest, sample_size)
     ]
     return samples
+
+
+def cache_compute_raire_assertions(
+    election: Election, contest: Contest
+) -> list[raire.RaireAssertion]:
+    if election.raire_assertions_pickle is not None:
+        print("Using cached RAIRE assertions")
+        return pickle.loads(election.raire_assertions_pickle)
+
+    print("Computing RAIRE assertions from scratch")
+    raire_assertions = raire.compute_raire_assertions(
+        sampler_contest.from_db_contest(contest),
+        cvrs_for_contest(contest),
+    )
+    election.raire_assertions_pickle = pickle.dumps(raire_assertions)
+    return raire_assertions
