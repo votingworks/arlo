@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useQuery } from 'react-query'
-import { HTMLSelect, H3, Button } from '@blueprintjs/core'
+import { HTMLSelect, H1, Button } from '@blueprintjs/core'
 import { IOrganization, useAuthDataContext, IAuditAdmin } from '../UserContext'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
 import { StyledTable, downloadTableAsCSV } from '../Atoms/Table'
@@ -105,7 +105,7 @@ const ActivityLogOrgsLoaded = ({
               marginBottom: '10px',
             }}
           >
-            <H3 style={{ margin: 0 }}>Activity Log</H3>
+            <H1 style={{ margin: 0 }}>Activity Log</H1>
             <div>
               {showOrgSelect && (
                 // eslint-disable-next-line jsx-a11y/label-has-associated-control

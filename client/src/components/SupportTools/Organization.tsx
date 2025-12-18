@@ -3,12 +3,12 @@ import { toast } from 'react-toastify'
 import {
   Button,
   Classes,
+  H1,
   H2,
   AnchorButton,
   Intent,
   HTMLSelect,
   Tag,
-  H4,
 } from '@blueprintjs/core'
 import { useForm } from 'react-hook-form'
 import {
@@ -166,7 +166,7 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
           alignItems: 'end',
         }}
       >
-        <H2 style={{ margin: 0 }}>{name}</H2>
+        <H1 style={{ margin: 0 }}>{name}</H1>
         <div>
           <Button icon="edit" minimal onClick={onClickEditOrg}>
             Edit
@@ -186,7 +186,7 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
       </Tag>
       <Row>
         <Column>
-          <H4>Audits</H4>
+          <H2>Audits</H2>
           <List style={{ marginBottom: '30px' }}>
             {sortedElections
               .filter(election => !election.deletedAt)
@@ -202,7 +202,7 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
                 )
               })}
           </List>
-          <H4>Deleted Audits</H4>
+          <H2>Deleted Audits</H2>
           <Table striped>
             <tbody>
               {elections
@@ -226,7 +226,7 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
           </Table>
         </Column>
         <Column>
-          <H4>Audit Admins</H4>
+          <H2>Audit Admins</H2>
           <form
             style={{ display: 'flex' }}
             onSubmit={handleSubmitCreateAdmin(onSubmitCreateAuditAdmin)}

@@ -1,11 +1,11 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Card, H2, Callout } from '@blueprintjs/core'
+import { Card, H1, Callout } from '@blueprintjs/core'
 import { Inner } from '../Atoms/Wrapper'
 import BatchRoundTallyEntry from '../JurisdictionAdmin/BatchRoundSteps/BatchRoundTallyEntry'
 import { useBatches } from '../JurisdictionAdmin/useBatchResults'
 
-const Heading = styled(H2)`
+const Heading = styled(H1)`
   margin-bottom: 16px;
 `
 
