@@ -6,24 +6,24 @@ exports[`AA setup flow > renders sidebar when authenticated on /setup 1`] = `
     class="sc-bdVaJa bKocXA"
   >
     <div
-      class="bp3-callout sc-ifAKCX dZENeW"
+      class="bp3-callout sc-EHOje epwUhp"
     >
       <div
         class="sc-bwzfXH ijTqJq"
       >
         <div
-          class="text"
+          class=""
         >
-          <h3
-            class="bp3-heading sc-bxivhb fRKsxU"
+          <h1
+            class="bp3-heading sc-bxivhb jlghxK"
           >
             Test Audit
-          </h3>
-          <h4
-            class="bp3-heading"
+          </h1>
+          <p
+            class="sc-ifAKCX gBhNHZ"
           >
             The audit has not started.
-          </h4>
+          </p>
           <p>
             Audit setup is complete.
           </p>
@@ -38,10 +38,10 @@ exports[`AA setup flow > renders sidebar when authenticated on /setup 1`] = `
       class="sc-bwzfXH ijTqJq"
     >
       <div
-        class="sc-jAaTju dLqAeR"
+        class="sc-gPEVay eKPtBv"
       >
         <h2
-          class="bp3-heading sc-gzVnrw eWpiCn"
+          class="bp3-heading sc-htoDjs kqWibi"
         >
           Audit Setup
         </h2>
@@ -138,20 +138,20 @@ exports[`AA setup flow > renders sidebar when authenticated on /setup 1`] = `
         </ul>
       </div>
       <div
-        class="sc-htoDjs tELUi"
+        class="sc-dnqmqq kymPuI"
       >
         <h2
-          class="bp3-heading sc-gzVnrw eWpiCn"
+          class="bp3-heading sc-htoDjs kqWibi"
         >
           Participants
         </h2>
         <form>
           <div
-            class="sc-htoDjs tELUi"
+            class="sc-dnqmqq kymPuI"
           >
             <div>
               <div
-                class="sc-iwsKbI bncGzX"
+                class="sc-gqjmRU fOytwc"
               >
                 Click "Browse" to choose the appropriate file from your computer. This file should be a comma-separated list of all the jurisdictions participating in the audit, plus email addresses for audit administrators in each participating jurisdiction.
               </div>
@@ -165,7 +165,7 @@ exports[`AA setup flow > renders sidebar when authenticated on /setup 1`] = `
                 file name
               </p>
               <p
-                class="sc-gqjmRU sZbzH"
+                class="sc-jTzLTM llAJhK"
               >
                 Uploaded at
                  
@@ -174,7 +174,7 @@ exports[`AA setup flow > renders sidebar when authenticated on /setup 1`] = `
               </p>
               <div>
                 <button
-                  class="bp3-button sc-jTzLTM kWdIFo"
+                  class="bp3-button sc-jzJRlG hHPBsQ"
                   type="button"
                 >
                   <span
@@ -203,7 +203,7 @@ exports[`AA setup flow > renders sidebar when authenticated on /setup 1`] = `
           </div>
         </form>
         <div
-          class="sc-bZQynM bYVib"
+          class="sc-gzVnrw gthdTE"
           style="margin-top: 20px;"
         >
           <button
