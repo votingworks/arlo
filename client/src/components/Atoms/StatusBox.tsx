@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { Callout, H3, H4 } from '@blueprintjs/core'
+import { Callout, H1, Text } from '@blueprintjs/core'
 import { toast } from 'react-toastify'
 import { apiDownload } from '../utilities'
 import { Inner } from './Wrapper'
@@ -18,10 +18,15 @@ import useSampleSizes from '../AuditAdmin/Setup/Review/useSampleSizes'
 import { mapValues } from '../../utils/objects'
 import AsyncButton from './AsyncButton'
 
-const SpacedH3 = styled(H3)`
+const SpacedH1 = styled(H1)`
   &.bp3-heading {
-    margin-bottom: 20px;
+    margin-bottom: 30px;
   }
+`
+
+const Subtitle = styled.p`
+  font-size: 21px;
+  font-weight: bold;
 `
 
 const Wrapper = styled(Callout)`
@@ -53,14 +58,14 @@ const StatusBox: React.FC<IStatusBoxProps> = ({
   return (
     <Wrapper icon={null}>
       <Inner>
-        <div className="text">
-          <SpacedH3>{auditName}</SpacedH3>
-          <H4>{headline}</H4>
+        <Text>
+          <SpacedH1>{auditName}</SpacedH1>
+          <Subtitle>{headline}</Subtitle>
           {details.map(detail => (
             <p key={detail}>{detail}</p>
           ))}
           {children}
-        </div>
+        </Text>
         <div>{action}</div>
       </Inner>
     </Wrapper>

@@ -3,7 +3,7 @@
 exports[`Sign Off > handles inputs 1`] = `
 <div>
   <div
-    class="sc-jzJRlG sc-kAzzGY kmYSRA"
+    class="sc-cSHVUG sc-chPdSV jcLtaa"
   >
     <div>
       <h1
@@ -20,49 +20,49 @@ exports[`Sign Off > handles inputs 1`] = `
       </p>
       <form>
         <div
-          class="sc-bdVaJa kWNzXK"
+          class="sc-bwzfXH eYduEM"
         >
-          <h5
-            class="bp3-heading"
+          <h3
+            class="bp3-heading sc-bdVaJa bKKufZ"
           >
             Audit Board Member: John Doe
-          </h5>
+          </h3>
           <label
-            class="sc-gzVnrw cVHFGk"
+            class="sc-htoDjs flCEIS"
             for="[0]"
           >
             Full Name
           </label>
           <input
-            class="sc-htoDjs jNCbsf"
+            class="sc-dnqmqq joqNgq"
             id="[0]"
             name="[0]"
             value="John Doe"
           />
         </div>
         <div
-          class="sc-bdVaJa kWNzXK"
+          class="sc-bwzfXH eYduEM"
         >
-          <h5
-            class="bp3-heading"
+          <h3
+            class="bp3-heading sc-bdVaJa bKKufZ"
           >
             Audit Board Member: Jane Doe
-          </h5>
+          </h3>
           <label
-            class="sc-gzVnrw cVHFGk"
+            class="sc-htoDjs flCEIS"
             for="[1]"
           >
             Full Name
           </label>
           <input
-            class="sc-htoDjs jNCbsf"
+            class="sc-dnqmqq joqNgq"
             id="[1]"
             name="[1]"
             value="Jane Doe"
           />
         </div>
         <button
-          class="bp3-button bp3-disabled bp3-loading bp3-intent-primary sc-jTzLTM kWdIFo"
+          class="bp3-button bp3-disabled bp3-loading bp3-intent-primary sc-fjdhpX kZMuMf"
           disabled=""
           tabindex="-1"
           type="button"
@@ -108,7 +108,7 @@ exports[`Sign Off > handles inputs 1`] = `
 exports[`Sign Off > renders correctly 1`] = `
 <div>
   <div
-    class="sc-jzJRlG sc-kAzzGY kmYSRA"
+    class="sc-cSHVUG sc-chPdSV jcLtaa"
   >
     <div>
       <h1
@@ -125,49 +125,49 @@ exports[`Sign Off > renders correctly 1`] = `
       </p>
       <form>
         <div
-          class="sc-bdVaJa kWNzXK"
+          class="sc-bwzfXH eYduEM"
         >
-          <h5
-            class="bp3-heading"
+          <h3
+            class="bp3-heading sc-bdVaJa bKKufZ"
           >
             Audit Board Member: John Doe
-          </h5>
+          </h3>
           <label
-            class="sc-gzVnrw cVHFGk"
+            class="sc-htoDjs flCEIS"
             for="[0]"
           >
             Full Name
           </label>
           <input
-            class="sc-htoDjs jNCbsf"
+            class="sc-dnqmqq joqNgq"
             id="[0]"
             name="[0]"
             value=""
           />
         </div>
         <div
-          class="sc-bdVaJa kWNzXK"
+          class="sc-bwzfXH eYduEM"
         >
-          <h5
-            class="bp3-heading"
+          <h3
+            class="bp3-heading sc-bdVaJa bKKufZ"
           >
             Audit Board Member: Jane Doe
-          </h5>
+          </h3>
           <label
-            class="sc-gzVnrw cVHFGk"
+            class="sc-htoDjs flCEIS"
             for="[1]"
           >
             Full Name
           </label>
           <input
-            class="sc-htoDjs jNCbsf"
+            class="sc-dnqmqq joqNgq"
             id="[1]"
             name="[1]"
             value=""
           />
         </div>
         <button
-          class="bp3-button bp3-disabled bp3-intent-primary sc-jTzLTM kWdIFo"
+          class="bp3-button bp3-disabled bp3-intent-primary sc-fjdhpX kZMuMf"
           disabled=""
           tabindex="-1"
           type="button"

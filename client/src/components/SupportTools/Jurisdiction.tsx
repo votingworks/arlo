@@ -3,10 +3,9 @@ import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import styled from 'styled-components'
 import {
-  H4,
+  H1,
   Button,
   Classes,
-  H2,
   AnchorButton,
   Intent,
   Card,
@@ -26,6 +25,7 @@ import { useConfirm, Confirm } from '../Atoms/Confirm'
 import AuditBoardsTable from '../AuditAdmin/Progress/AuditBoardsTable'
 import Breadcrumbs from './Breadcrumbs'
 import { Column, Row, Table } from './shared'
+import H2Title from '../Atoms/H2Title'
 
 const CombinedBatchForm = styled.form`
   display: flex;
@@ -124,12 +124,12 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
         <Link to={`/support/orgs/${organization.id}`}>{organization.name}</Link>
         <Link to={`/support/audits/${election.id}`}>{election.auditName}</Link>
       </Breadcrumbs>
-      <H2>{name}</H2>
+      <H1>{name}</H1>
       <Row>
         <Column>
           {election.auditType !== 'BATCH_COMPARISON' && (
             <>
-              <H4>Current Round Audit Boards</H4>
+              <H2Title>Current Round Audit Boards</H2Title>
               {auditBoards.length === 0 ? (
                 <p>The jurisdiction hasn&apos;t created audit boards yet.</p>
               ) : (
@@ -148,7 +148,7 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
           )}
           {election.auditType === 'BALLOT_POLLING' && !election.online && (
             <>
-              <H4>Offline Results</H4>
+              <H2Title>Offline Results</H2Title>
               {recordedResultsAt ? (
                 <>
                   <p>
@@ -169,7 +169,7 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
           )}
           {election.auditType === 'BATCH_COMPARISON' && batches.isSuccess && (
             <>
-              <H4>Combined Batches</H4>
+              <H2Title>Combined Batches</H2Title>
               <Card>
                 <CombinedBatchForm>
                   <div>
@@ -293,7 +293,7 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
           )}
         </Column>
         <Column>
-          <H4>Jurisdiction Admins</H4>
+          <H2Title>Jurisdiction Admins</H2Title>
           <Table striped>
             <tbody>
               {jurisdictionAdmins.map(jurisdictionAdmin => (
