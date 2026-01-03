@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Divider, Classes } from '@blueprintjs/core'
+import { Classes, H1, H2 } from '@blueprintjs/core'
 import {
   Row,
   // IFlexboxProps is needed by TS in order to export StatusBar
@@ -36,16 +36,11 @@ export const AuditHeading: React.FC<IAuditHeadingProps> = ({
   auditStage,
 }) => {
   return (
-    <div style={{ display: 'flex' }}>
-      <span>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <H1>
         {jurisdictionName} &mdash; {auditName}
-      </span>
-      {auditStage && (
-        <>
-          <Divider style={{ margin: '0 15px' }} />
-          <strong>{auditStage}</strong>
-        </>
-      )}
+      </H1>
+      {auditStage && <H2>{auditStage}</H2>}
     </div>
   )
 }

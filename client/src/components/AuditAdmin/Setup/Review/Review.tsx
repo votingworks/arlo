@@ -356,7 +356,7 @@ const Review: React.FC<IProps> = ({
               <H4 id={contest.id}>{contest.name}</H4>
               <Tag
                 intent={contest.isTargeted ? Intent.SUCCESS : Intent.PRIMARY}
-                style={{ marginLeft: '10px', flexShrink: 0 }}
+                style={{ marginLeft: '10px', flexShrink: 0, color: '#000000' }}
               >
                 {contest.isTargeted
                   ? 'Target Contest'
