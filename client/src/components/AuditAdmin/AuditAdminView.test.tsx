@@ -306,9 +306,7 @@ describe('AA setup flow', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       const { history } = render('progress')
-      await screen.findByRole('heading', {
-        name: 'Arlo could not draw the sample',
-      })
+      await screen.findByText('Arlo could not draw the sample')
       screen.getByText(
         'Please contact our support team for help resolving this issue.'
       )

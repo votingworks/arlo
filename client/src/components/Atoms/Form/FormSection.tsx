@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react'
-import { H5 } from '@blueprintjs/core'
 import styled from 'styled-components'
+import H3Title from '../H3Title'
 
 export const Section = styled.div`
   margin: 20px 0 30px 0;
@@ -28,7 +28,7 @@ const FormSection: React.FC<IProps> = ({
 }: IProps) => {
   return (
     <Section style={style}>
-      {label ? <H5>{label}</H5> : undefined}
+      {label ? <H3Title>{label}</H3Title> : undefined}
       {description ? (
         <FormSectionDescription>{description}</FormSectionDescription>
       ) : (

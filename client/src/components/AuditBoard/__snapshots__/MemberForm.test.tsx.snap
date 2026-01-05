@@ -18,27 +18,27 @@ exports[`MemberForm > renders correctly 1`] = `
     </p>
     <form>
       <div
-        class="sc-bdVaJa kWNzXK"
+        class="sc-bwzfXH eYduEM"
       >
-        <h5
-          class="bp3-heading"
+        <h3
+          class="bp3-heading sc-bdVaJa bKKufZ"
         >
           Audit Board Member
-        </h5>
+        </h3>
         <label
-          class="sc-dnqmqq kSLuZR"
+          class="sc-iwsKbI haXKLx"
           for="[0]name"
         >
           Full Name
         </label>
         <input
-          class="sc-iwsKbI hdoOFn"
+          class="sc-gZMcBi bGIqKC"
           id="[0]name"
           name="[0]name"
           value=""
         />
         <label
-          class="sc-dnqmqq kSLuZR"
+          class="sc-iwsKbI haXKLx"
           for="[0]affiliation"
         >
           Party Affiliation 
@@ -129,27 +129,27 @@ exports[`MemberForm > renders correctly 1`] = `
         </div>
       </div>
       <div
-        class="sc-bdVaJa kWNzXK"
+        class="sc-bwzfXH eYduEM"
       >
-        <h5
-          class="bp3-heading"
+        <h3
+          class="bp3-heading sc-bdVaJa bKKufZ"
         >
           Audit Board Member
-        </h5>
+        </h3>
         <label
-          class="sc-dnqmqq kSLuZR"
+          class="sc-iwsKbI haXKLx"
           for="[1]name"
         >
           Full Name
         </label>
         <input
-          class="sc-iwsKbI hdoOFn"
+          class="sc-gZMcBi bGIqKC"
           id="[1]name"
           name="[1]name"
           value=""
         />
         <label
-          class="sc-dnqmqq kSLuZR"
+          class="sc-iwsKbI haXKLx"
           for="[1]affiliation"
         >
           Party Affiliation 
@@ -240,7 +240,7 @@ exports[`MemberForm > renders correctly 1`] = `
         </div>
       </div>
       <button
-        class="bp3-button bp3-disabled bp3-intent-primary sc-bxivhb WkpPV"
+        class="bp3-button bp3-disabled bp3-intent-primary sc-ifAKCX zdCNs"
         disabled=""
         tabindex="-1"
         type="button"

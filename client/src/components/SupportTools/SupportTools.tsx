@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Redirect, Route, Switch } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import styled from 'styled-components'
-import { H3, Button, Classes, AnchorButton, Tooltip } from '@blueprintjs/core'
+import { Button, Classes, AnchorButton, Tooltip, H1 } from '@blueprintjs/core'
 import { useForm } from 'react-hook-form'
 import { useAuthDataContext } from '../UserContext'
 import { Wrapper, SupportToolsInner } from '../Atoms/Wrapper'
@@ -17,6 +17,7 @@ import Organization from './Organization'
 import Jurisdiction from './Jurisdiction'
 import { AuditStatusTag, Row } from './shared'
 import { FilterInput } from '../Atoms/Table'
+import H2Title from '../Atoms/H2Title'
 
 const SupportTools: React.FC = () => {
   const auth = useAuthDataContext()
@@ -28,17 +29,28 @@ const SupportTools: React.FC = () => {
       <SupportToolsInner>
         <Switch>
           <Route exact path="/support">
-            <Row>
-              <div style={{ flex: '0 0 25%' }}>
-                <Organizations />
-              </div>
-              <div style={{ flex: '0 1 50%' }}>
-                <ActiveAudits />
-              </div>
-              <div style={{ flex: '0 0 25%' }}>
-                <Tools />
-              </div>
-            </Row>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                width: '100%',
+              }}
+            >
+              <Row>
+                <H1>Support Tools</H1>
+              </Row>
+              <Row>
+                <div style={{ flex: '0 0 25%' }}>
+                  <Organizations />
+                </div>
+                <div style={{ flex: '0 1 50%' }}>
+                  <ActiveAudits />
+                </div>
+                <div style={{ flex: '0 0 25%' }}>
+                  <Tools />
+                </div>
+              </Row>
+            </div>
           </Route>
           <Route path="/support/orgs/:organizationId">
             {({ match }: any) => (
@@ -68,7 +80,7 @@ const ActiveAudits = () => {
 
   return (
     <>
-      <H3 style={{ marginBottom: '20px' }}>Active Audits</H3>
+      <H2Title>Active Audits</H2Title>
       <List>
         {elections.data.map(election => (
           <LinkItem key={election.id} to={`/support/audits/${election.id}`}>
@@ -103,7 +115,7 @@ const Organizations = () => {
 
   return (
     <>
-      <H3 style={{ marginBottom: '20px' }}>Organizations</H3>
+      <H2Title>Organizations</H2Title>
       <FilterInput
         onChange={setFilterText}
         placeholder="Filter organizations..."
@@ -154,7 +166,7 @@ const Tools = () => {
 
   return (
     <>
-      <H3 style={{ marginBottom: '20px' }}>Tools</H3>
+      <H2Title>Tools</H2Title>
       <div
         style={{
           display: 'flex',

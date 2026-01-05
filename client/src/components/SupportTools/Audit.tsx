@@ -1,11 +1,12 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { H2, AnchorButton, Tag, H4 } from '@blueprintjs/core'
+import { H1, AnchorButton, Tag } from '@blueprintjs/core'
 import { useElection, IElection } from './support-api'
 import RoundsTable from './RoundsTable'
 import { List, LinkItem } from './List'
 import Breadcrumbs from './Breadcrumbs'
 import { Column, Row } from './shared'
+import H2Title from '../Atoms/H2Title'
 
 const prettyAuditType = (auditType: IElection['auditType']) =>
   ({
@@ -55,7 +56,7 @@ const Audit = ({ electionId }: { electionId: string }) => {
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <H2 style={{ marginBottom: 0 }}>{auditName}</H2>
+            <H1 style={{ marginBottom: 0 }}>{auditName}</H1>
             <Tag large>{prettyAuditType(auditType)}</Tag>
           </div>
           <AnchorButton
@@ -69,7 +70,7 @@ const Audit = ({ electionId }: { electionId: string }) => {
       </Row>
       <Row>
         <Column>
-          <H4>Jurisdictions</H4>
+          <H2Title>Jurisdictions</H2Title>
           <List>
             {jurisdictions.map(jurisdiction => (
               <LinkItem
@@ -89,7 +90,7 @@ const Audit = ({ electionId }: { electionId: string }) => {
           </List>
         </Column>
         <Column>
-          <H4>Rounds</H4>
+          <H2Title>Rounds</H2Title>
           <div
             style={{
               alignItems: 'center',

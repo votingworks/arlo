@@ -5,7 +5,6 @@ import styled from 'styled-components'
 import {
   HTMLSelect,
   FileInput,
-  H4,
   ProgressBar,
   Intent,
   AnchorButton,
@@ -17,6 +16,7 @@ import { FormSectionDescription } from './Form/FormSection'
 import { ErrorLabel, SuccessLabel } from './Form/_helpers'
 import FormButton from './Form/FormButton'
 import AsyncButton from './AsyncButton'
+import H3Title from './H3Title'
 
 // CSVFile is deprecated in favor of FileUpload
 
@@ -90,7 +90,7 @@ const CSVFile: React.FC<IProps> = ({
         <form>
           <FormWrapper>
             <div>
-              {title && <H4>{title}</H4>}
+              {title && <H3Title>{title}</H3Title>}
               <FormSectionDescription>{description}</FormSectionDescription>
             </div>
             {showCvrFileType && (

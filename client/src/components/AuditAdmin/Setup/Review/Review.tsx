@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import {
-  H4,
   Callout,
   RadioGroup,
   Radio,
   Spinner,
   Card,
-  H5,
+  H4,
   Tag,
   Intent,
   Button,
@@ -62,6 +61,7 @@ import {
   StandardizeContestChoiceNamesDialog,
 } from './StandardizeContestChoiceNamesDialog'
 import { useBatchFilesBundle } from '../../../useBatchFilesBundle'
+import H3Title from '../../../Atoms/H3Title'
 
 const percentFormatter = new Intl.NumberFormat(undefined, {
   style: 'percent',
@@ -264,9 +264,9 @@ const Review: React.FC<IProps> = ({
       </Callout>
       <br />
       <section>
-        <H4>
+        <H3Title>
           {needsCvrs ? 'Participants & Standardized Contests' : 'Participants'}
-        </H4>
+        </H3Title>
         <div
           style={{
             display: 'grid',
@@ -300,7 +300,7 @@ const Review: React.FC<IProps> = ({
         </div>
       </section>
       <section>
-        <H4>Contests</H4>
+        <H3Title>Contests</H3Title>
         {contestNameStandardizations && isContestNameStandardizationNeeded && (
           <>
             {isContestNameStandardizationOutstanding ? (
@@ -353,7 +353,7 @@ const Review: React.FC<IProps> = ({
                 alignItems: 'baseline',
               }}
             >
-              <H5 id={contest.id}>{contest.name}</H5>
+              <H4 id={contest.id}>{contest.name}</H4>
               <Tag
                 intent={contest.isTargeted ? Intent.SUCCESS : Intent.PRIMARY}
                 style={{ marginLeft: '10px', flexShrink: 0 }}
@@ -506,7 +506,7 @@ const Review: React.FC<IProps> = ({
         ))}
       </section>
       <section>
-        <H4>Audit Settings</H4>
+        <H3Title>Audit Settings</H3Title>
         <div
           style={{
             display: 'grid',
@@ -549,7 +549,7 @@ const Review: React.FC<IProps> = ({
         </div>
       </section>
       <section>
-        <H4>Sample Size</H4>
+        <H3Title>Sample Size</H3Title>
         {(() => {
           const { sampleSizes, selected } = sampleSizesQuery.data || {}
 
@@ -702,7 +702,7 @@ const Review: React.FC<IProps> = ({
                         icon="download"
                         style={{ marginTop: '30px' }}
                       >
-                        <H5>Download Jurisdiction Files for Sharing</H5>
+                        <H4>Download Jurisdiction Files for Sharing</H4>
                         <p>
                           Download the ZIP bundles containing jurisdiction files
                           and their SHA-256 hashes. You may choose to share the
@@ -840,7 +840,7 @@ const SelectSampleSizes: React.FC<ISelectSampleSizesProps> = ({
 
         return (
           <Card key={contest.id} style={{ background: Colors.LIGHT_GRAY5 }}>
-            <H5>{contest.name}</H5>
+            <H4>{contest.name}</H4>
             {currentOption.size !== null &&
               currentOption.size >= fullHandTallySize && (
                 <Callout
