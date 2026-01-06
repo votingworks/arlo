@@ -33,16 +33,18 @@ interface IProps {
 const Sidebar: React.FC<IProps> = ({ menuItems, title }) => (
   <Wrapper>
     <H2Title>{title}</H2Title>
-    <Menu>
-      {menuItems.map((item, i) => {
-        return (
-          <React.Fragment key={item.id}>
-            {i > 0 && <Menu.Divider />}
-            <Menu.Item {...item} role="link" />
-          </React.Fragment>
-        )
-      })}
-    </Menu>
+    <nav aria-label={`${title} navigation`}>
+      <Menu>
+        {menuItems.map((item, i) => {
+          return (
+            <React.Fragment key={item.id}>
+              {i > 0 && <Menu.Divider />}
+              <Menu.Item {...item} role="link" />
+            </React.Fragment>
+          )
+        })}
+      </Menu>
+    </nav>
   </Wrapper>
 )
 

@@ -2,7 +2,7 @@ import React, { ReactNode } from 'react'
 import styled from 'styled-components'
 import H2Title from '../H2Title'
 
-const StyledFormWrapper = styled.div`
+const StyledFormWrapper = styled.section`
   display: block;
   position: relative;
   max-width: 30rem;
@@ -15,7 +15,7 @@ interface IProps {
 }
 
 const FormWrapper: React.FC<IProps> = ({ children, title }: IProps) => (
-  <StyledFormWrapper>
+  <StyledFormWrapper aria-label={title}>
     {title && <H2Title>{title}</H2Title>}
     {children}
   </StyledFormWrapper>

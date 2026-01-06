@@ -333,18 +333,19 @@ const AuditAdminHomeScreen = ({ user }: { user: IAuditAdmin }) => {
               election => !election.isComplete
             )
             return (
-              <div key={organization.id}>
-                <div>
-                  <h2>Active Audits &mdash; {organization.name}</h2>
-                  {activeElections.length === 0 ? (
-                    <p>You have no active audits at this time.</p>
-                  ) : (
-                    <OrganizationAuditList
-                      elections={activeElections}
-                      onClickDeleteAudit={onClickDeleteAudit}
-                    />
-                  )}
-                </div>
+              <section
+                key={organization.id}
+                aria-label={`Audits for ${organization.name}`}
+              >
+                <h2>Active Audits &mdash; {organization.name}</h2>
+                {activeElections.length === 0 ? (
+                  <p>You have no active audits at this time.</p>
+                ) : (
+                  <OrganizationAuditList
+                    elections={activeElections}
+                    onClickDeleteAudit={onClickDeleteAudit}
+                  />
+                )}
                 {completedElections.length > 0 && (
                   <div>
                     <h2>Completed Audits &mdash; {organization.name}</h2>
@@ -354,7 +355,7 @@ const AuditAdminHomeScreen = ({ user }: { user: IAuditAdmin }) => {
                     />
                   </div>
                 )}
-              </div>
+              </section>
             )
           })}
           <Confirm {...confirmProps} />
@@ -447,7 +448,7 @@ export interface INewAudit {
   auditMathType: IAuditSettings['auditMathType']
 }
 
-const CreateAuditWrapper = styled.div`
+const CreateAuditWrapper = styled.section`
   background-color: #ebf1f5;
   padding: 30px;
 `
@@ -506,7 +507,7 @@ const CreateAudit = ({ organizations }: { organizations: IOrganization[] }) => {
         setValues,
         values,
       }: FormikProps<INewAudit>) => (
-        <CreateAuditWrapper>
+        <CreateAuditWrapper aria-label="New Audit">
           <h2>New Audit</h2>
           <FormSection>
             {/* eslint-disable jsx-a11y/label-has-associated-control */}

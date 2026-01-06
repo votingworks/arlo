@@ -99,62 +99,64 @@ const Setup: React.FC<ISetupProps> = ({
           onClick: () => setCurrentStage(stage),
         }))}
       />
-      {(() => {
-        switch (currentStage) {
-          case 'participants':
-            return (
-              <Participants
-                electionId={electionId}
-                isStandardizedContestsFileEnabled={
-                  isStandardizedContestsFileEnabled
-                }
-                goToNextStage={goToNextStage}
-              />
-            )
-          case 'target-contests':
-            return (
-              <Contests
-                key="targeted"
-                electionId={electionId}
-                isTargeted
-                auditType={auditType}
-                goToPrevStage={goToPrevStage}
-                goToNextStage={goToNextStage}
-              />
-            )
-          case 'opportunistic-contests':
-            return (
-              <Contests
-                key="opportunistic"
-                electionId={electionId}
-                isTargeted={false}
-                auditType={auditType}
-                goToPrevStage={goToPrevStage}
-                goToNextStage={goToNextStage}
-              />
-            )
-          case 'settings':
-            return (
-              <Settings
-                electionId={electionId}
-                goToPrevStage={goToPrevStage}
-                goToNextStage={goToNextStage}
-              />
-            )
-          case 'review':
-            return (
-              <Review
-                electionId={electionId}
-                goToPrevStage={goToPrevStage}
-                startNextRound={startNextRound}
-                locked={isAuditStarted}
-              />
-            )
-          /* istanbul ignore next */
-          default:
-            return null
-        }
-      })()}
+      <section>
+        {(() => {
+          switch (currentStage) {
+            case 'participants':
+              return (
+                <Participants
+                  electionId={electionId}
+                  isStandardizedContestsFileEnabled={
+                    isStandardizedContestsFileEnabled
+                  }
+                  goToNextStage={goToNextStage}
+                />
+              )
+            case 'target-contests':
+              return (
+                <Contests
+                  key="targeted"
+                  electionId={electionId}
+                  isTargeted
+                  auditType={auditType}
+                  goToPrevStage={goToPrevStage}
+                  goToNextStage={goToNextStage}
+                />
+              )
+            case 'opportunistic-contests':
+              return (
+                <Contests
+                  key="opportunistic"
+                  electionId={electionId}
+                  isTargeted={false}
+                  auditType={auditType}
+                  goToPrevStage={goToPrevStage}
+                  goToNextStage={goToNextStage}
+                />
+              )
+            case 'settings':
+              return (
+                <Settings
+                  electionId={electionId}
+                  goToPrevStage={goToPrevStage}
+                  goToNextStage={goToNextStage}
+                />
+              )
+            case 'review':
+              return (
+                <Review
+                  electionId={electionId}
+                  goToPrevStage={goToPrevStage}
+                  startNextRound={startNextRound}
+                  locked={isAuditStarted}
+                />
+              )
+            /* istanbul ignore next */
+            default:
+              return null
+          }
+        })()}
+      </section>
     </Inner>
   )
 }
