@@ -282,7 +282,7 @@ describe('Home screen', () => {
         await screen.findByRole('heading', {
           name: 'Active Audits — State of California',
         })
-      ).closest('div')!
+      ).closest('section')!
       within(californiaActive).getByRole('button', {
         name: 'November Presidential Election 2020',
       })

@@ -333,29 +333,30 @@ const AuditAdminHomeScreen = ({ user }: { user: IAuditAdmin }) => {
               election => !election.isComplete
             )
             return (
-              <section
-                key={organization.id}
-                aria-label={`Audits for ${organization.name}`}
-              >
-                <h2>Active Audits &mdash; {organization.name}</h2>
-                {activeElections.length === 0 ? (
-                  <p>You have no active audits at this time.</p>
-                ) : (
-                  <OrganizationAuditList
-                    elections={activeElections}
-                    onClickDeleteAudit={onClickDeleteAudit}
-                  />
-                )}
+              <div key={organization.id}>
+                <section aria-label={`Active audits for ${organization.name}`}>
+                  <h2>Active Audits &mdash; {organization.name}</h2>
+                  {activeElections.length === 0 ? (
+                    <p>You have no active audits at this time.</p>
+                  ) : (
+                    <OrganizationAuditList
+                      elections={activeElections}
+                      onClickDeleteAudit={onClickDeleteAudit}
+                    />
+                  )}
+                </section>
                 {completedElections.length > 0 && (
-                  <div>
+                  <section
+                    aria-label={`Completed audits for ${organization.name}`}
+                  >
                     <h2>Completed Audits &mdash; {organization.name}</h2>
                     <OrganizationAuditList
                       elections={completedElections}
                       onClickDeleteAudit={onClickDeleteAudit}
                     />
-                  </div>
+                  </section>
                 )}
-              </section>
+              </div>
             )
           })}
           <Confirm {...confirmProps} />
