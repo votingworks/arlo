@@ -2,7 +2,7 @@
 
 exports[`Sign Off > handles inputs 1`] = `
 <div>
-  <div
+  <section
     class="sc-cSHVUG sc-chPdSV jcLtaa"
   >
     <div>
@@ -101,13 +101,13 @@ exports[`Sign Off > handles inputs 1`] = `
         </button>
       </form>
     </div>
-  </div>
+  </section>
 </div>
 `;
 
 exports[`Sign Off > renders correctly 1`] = `
 <div>
-  <div
+  <section
     class="sc-cSHVUG sc-chPdSV jcLtaa"
   >
     <div>
@@ -180,6 +180,6 @@ exports[`Sign Off > renders correctly 1`] = `
         </button>
       </form>
     </div>
-  </div>
+  </section>
 </div>
 `;

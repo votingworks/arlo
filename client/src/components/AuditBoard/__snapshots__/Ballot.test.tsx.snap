@@ -5,7 +5,7 @@ exports[`Ballot > redirects if ballot does not exist 1`] = `<div />`;
 exports[`Ballot > renders correctly with an audited ballot 1`] = `
 <div>
   <div>
-    <div
+    <section
       class="sc-kGXeez fSmIyR"
     >
       <div
@@ -311,7 +311,7 @@ exports[`Ballot > renders correctly with an audited ballot 1`] = `
           </div>
         </div>
       </div>
-    </div>
+    </section>
   </div>
 </div>
 `;
@@ -319,7 +319,7 @@ exports[`Ballot > renders correctly with an audited ballot 1`] = `
 exports[`Ballot > renders correctly with an unaudited ballot 1`] = `
 <div>
   <div>
-    <div
+    <section
       class="sc-kGXeez fSmIyR"
     >
       <div
@@ -624,7 +624,7 @@ exports[`Ballot > renders correctly with an unaudited ballot 1`] = `
           </div>
         </div>
       </div>
-    </div>
+    </section>
   </div>
 </div>
 `;
@@ -632,7 +632,7 @@ exports[`Ballot > renders correctly with an unaudited ballot 1`] = `
 exports[`Ballot > selects Blank Vote 1`] = `
 <div>
   <div>
-    <div
+    <section
       class="sc-kGXeez fSmIyR"
     >
       <div
@@ -935,7 +935,7 @@ exports[`Ballot > selects Blank Vote 1`] = `
           </div>
         </div>
       </div>
-    </div>
+    </section>
   </div>
 </div>
 `;
@@ -943,7 +943,7 @@ exports[`Ballot > selects Blank Vote 1`] = `
 exports[`Ballot > selects Not on Ballot 1`] = `
 <div>
   <div>
-    <div
+    <section
       class="sc-kGXeez fSmIyR"
     >
       <div
@@ -1246,7 +1246,7 @@ exports[`Ballot > selects Not on Ballot 1`] = `
           </div>
         </div>
       </div>
-    </div>
+    </section>
   </div>
 </div>
 `;
@@ -1254,7 +1254,7 @@ exports[`Ballot > selects Not on Ballot 1`] = `
 exports[`Ballot > switches audit and review views 1`] = `
 <div>
   <div>
-    <div
+    <section
       class="sc-kGXeez fSmIyR"
     >
       <div
@@ -1557,7 +1557,7 @@ exports[`Ballot > switches audit and review views 1`] = `
           </div>
         </div>
       </div>
-    </div>
+    </section>
   </div>
 </div>
 `;

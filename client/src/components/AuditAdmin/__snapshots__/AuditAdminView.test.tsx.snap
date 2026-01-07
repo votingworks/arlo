@@ -2,13 +2,13 @@
 
 exports[`AA setup flow > renders sidebar when authenticated on /setup 1`] = `
 <div>
-  <div
+  <main
     class="sc-bdVaJa bKocXA"
   >
     <div
       class="bp3-callout sc-EHOje epwUhp"
     >
-      <div
+      <section
         class="sc-bwzfXH ijTqJq"
       >
         <div
@@ -32,9 +32,9 @@ exports[`AA setup flow > renders sidebar when authenticated on /setup 1`] = `
           </p>
         </div>
         <div />
-      </div>
+      </section>
     </div>
-    <div
+    <section
       class="sc-bwzfXH ijTqJq"
     >
       <div
@@ -45,199 +45,206 @@ exports[`AA setup flow > renders sidebar when authenticated on /setup 1`] = `
         >
           Audit Setup
         </h2>
-        <ul
-          class="bp3-menu"
+        <nav
+          aria-label="Audit Setup navigation"
         >
-          <li
-            class=""
+          <ul
+            class="bp3-menu"
           >
-            <a
-              class="bp3-menu-item bp3-active bp3-intent-primary bp3-popover-dismiss"
-              id="participants"
-              role="link"
+            <li
+              class=""
             >
-              <div
-                class="bp3-text-overflow-ellipsis bp3-fill"
+              <a
+                class="bp3-menu-item bp3-active bp3-intent-primary bp3-popover-dismiss"
+                id="participants"
+                role="link"
               >
-                Participants
-              </div>
-            </a>
-          </li>
-          <li
-            class="bp3-menu-divider"
-          />
-          <li
-            class=""
-          >
-            <a
-              class="bp3-menu-item bp3-popover-dismiss"
-              id="target-contests"
-              role="link"
+                <div
+                  class="bp3-text-overflow-ellipsis bp3-fill"
+                >
+                  Participants
+                </div>
+              </a>
+            </li>
+            <li
+              class="bp3-menu-divider"
+            />
+            <li
+              class=""
             >
-              <div
-                class="bp3-text-overflow-ellipsis bp3-fill"
+              <a
+                class="bp3-menu-item bp3-popover-dismiss"
+                id="target-contests"
+                role="link"
               >
-                Target Contests
-              </div>
-            </a>
-          </li>
-          <li
-            class="bp3-menu-divider"
-          />
-          <li
-            class=""
-          >
-            <a
-              class="bp3-menu-item bp3-popover-dismiss"
-              id="opportunistic-contests"
-              role="link"
+                <div
+                  class="bp3-text-overflow-ellipsis bp3-fill"
+                >
+                  Target Contests
+                </div>
+              </a>
+            </li>
+            <li
+              class="bp3-menu-divider"
+            />
+            <li
+              class=""
             >
-              <div
-                class="bp3-text-overflow-ellipsis bp3-fill"
+              <a
+                class="bp3-menu-item bp3-popover-dismiss"
+                id="opportunistic-contests"
+                role="link"
               >
-                Opportunistic Contests
-              </div>
-            </a>
-          </li>
-          <li
-            class="bp3-menu-divider"
-          />
-          <li
-            class=""
-          >
-            <a
-              class="bp3-menu-item bp3-popover-dismiss"
-              id="settings"
-              role="link"
+                <div
+                  class="bp3-text-overflow-ellipsis bp3-fill"
+                >
+                  Opportunistic Contests
+                </div>
+              </a>
+            </li>
+            <li
+              class="bp3-menu-divider"
+            />
+            <li
+              class=""
             >
-              <div
-                class="bp3-text-overflow-ellipsis bp3-fill"
+              <a
+                class="bp3-menu-item bp3-popover-dismiss"
+                id="settings"
+                role="link"
               >
-                Audit Settings
-              </div>
-            </a>
-          </li>
-          <li
-            class="bp3-menu-divider"
-          />
-          <li
-            class=""
-          >
-            <a
-              class="bp3-menu-item bp3-popover-dismiss"
-              id="review"
-              role="link"
+                <div
+                  class="bp3-text-overflow-ellipsis bp3-fill"
+                >
+                  Audit Settings
+                </div>
+              </a>
+            </li>
+            <li
+              class="bp3-menu-divider"
+            />
+            <li
+              class=""
             >
-              <div
-                class="bp3-text-overflow-ellipsis bp3-fill"
+              <a
+                class="bp3-menu-item bp3-popover-dismiss"
+                id="review"
+                role="link"
               >
-                Review & Launch
-              </div>
-            </a>
-          </li>
-        </ul>
+                <div
+                  class="bp3-text-overflow-ellipsis bp3-fill"
+                >
+                  Review & Launch
+                </div>
+              </a>
+            </li>
+          </ul>
+        </nav>
       </div>
-      <div
-        class="sc-dnqmqq kymPuI"
-      >
-        <h2
-          class="bp3-heading sc-htoDjs kqWibi"
+      <section>
+        <section
+          aria-label="Participants"
+          class="sc-dnqmqq kymPuI"
         >
-          Participants
-        </h2>
-        <form>
-          <div
-            class="sc-dnqmqq kymPuI"
+          <h2
+            class="bp3-heading sc-htoDjs kqWibi"
           >
-            <div>
-              <div
-                class="sc-gqjmRU fOytwc"
-              >
-                Click "Browse" to choose the appropriate file from your computer. This file should be a comma-separated list of all the jurisdictions participating in the audit, plus email addresses for audit administrators in each participating jurisdiction.
-              </div>
-            </div>
-            <div>
-              <p>
-                <strong>
-                  Current file:
-                </strong>
-                 
-                file name
-              </p>
-              <p
-                class="sc-jTzLTM llAJhK"
-              >
-                Uploaded at
-                 
-                12/4/2020, 2:32:15 AM
-                .
-              </p>
+            Participants
+          </h2>
+          <form>
+            <section
+              class="sc-dnqmqq kymPuI"
+            >
               <div>
-                <button
-                  class="bp3-button sc-jzJRlG hHPBsQ"
-                  type="button"
+                <div
+                  class="sc-gqjmRU fOytwc"
                 >
-                  <span
-                    class="bp3-button-text"
-                  >
-                    Replace File
-                  </span>
-                </button>
-                <a
-                  class="bp3-button"
-                  href="/sample_jurisdiction_filesheet.csv"
-                  rel="noopener noreferrer"
-                  role="button"
-                  style="margin-left: 5px;"
-                  tabindex="0"
-                  target="_blank"
-                >
-                  <span
-                    class="bp3-button-text"
-                  >
-                    Download Template
-                  </span>
-                </a>
+                  Click "Browse" to choose the appropriate file from your computer. This file should be a comma-separated list of all the jurisdictions participating in the audit, plus email addresses for audit administrators in each participating jurisdiction.
+                </div>
               </div>
-            </div>
-          </div>
-        </form>
-        <div
-          class="sc-gzVnrw gthdTE"
-          style="margin-top: 20px;"
-        >
-          <button
-            class="bp3-button bp3-intent-primary"
-            type="button"
+              <div>
+                <p>
+                  <strong>
+                    Current file:
+                  </strong>
+                   
+                  file name
+                </p>
+                <p
+                  class="sc-jTzLTM llAJhK"
+                >
+                  Uploaded at
+                   
+                  12/4/2020, 2:32:15 AM
+                  .
+                </p>
+                <div>
+                  <button
+                    class="bp3-button sc-jzJRlG hHPBsQ"
+                    type="button"
+                  >
+                    <span
+                      class="bp3-button-text"
+                    >
+                      Replace File
+                    </span>
+                  </button>
+                  <a
+                    class="bp3-button"
+                    href="/sample_jurisdiction_filesheet.csv"
+                    rel="noopener noreferrer"
+                    role="button"
+                    style="margin-left: 5px;"
+                    tabindex="0"
+                    target="_blank"
+                  >
+                    <span
+                      class="bp3-button-text"
+                    >
+                      Download Template
+                    </span>
+                  </a>
+                </div>
+              </div>
+            </section>
+          </form>
+          <div
+            class="sc-gzVnrw gthdTE"
+            style="margin-top: 20px;"
           >
-            <span
-              class="bp3-button-text"
+            <button
+              class="bp3-button bp3-intent-primary"
+              type="button"
             >
-              Next
-            </span>
-            <span
-              class="bp3-icon bp3-icon-arrow-right"
-              icon="arrow-right"
-            >
-              <svg
-                data-icon="arrow-right"
-                height="16"
-                viewBox="0 0 16 16"
-                width="16"
+              <span
+                class="bp3-button-text"
               >
-                <desc>
-                  arrow-right
-                </desc>
-                <path
-                  d="M14.7 7.29l-5-5a.965.965 0 00-.71-.3 1.003 1.003 0 00-.71 1.71l3.29 3.29H1.99c-.55 0-1 .45-1 1s.45 1 1 1h9.59l-3.29 3.29a1.003 1.003 0 001.42 1.42l5-5c.18-.18.29-.43.29-.71s-.12-.52-.3-.7z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-            </span>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
+                Next
+              </span>
+              <span
+                class="bp3-icon bp3-icon-arrow-right"
+                icon="arrow-right"
+              >
+                <svg
+                  data-icon="arrow-right"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  width="16"
+                >
+                  <desc>
+                    arrow-right
+                  </desc>
+                  <path
+                    d="M14.7 7.29l-5-5a.965.965 0 00-.71-.3 1.003 1.003 0 00-.71 1.71l3.29 3.29H1.99c-.55 0-1 .45-1 1s.45 1 1 1h9.59l-3.29 3.29a1.003 1.003 0 001.42 1.42l5-5c.18-.18.29-.43.29-.71s-.12-.52-.3-.7z"
+                    fill-rule="evenodd"
+                  />
+                </svg>
+              </span>
+            </button>
+          </div>
+        </section>
+      </section>
+    </section>
+  </main>
 </div>
 `;

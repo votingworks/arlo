@@ -10,80 +10,84 @@ exports[`Sidebar > renders all options 1`] = `
     >
       Test Sidebar
     </h2>
-    <ul
-      class="bp3-menu"
+    <nav
+      aria-label="Test Sidebar navigation"
     >
-      <li
-        class=""
+      <ul
+        class="bp3-menu"
       >
-        <a
-          class="bp3-menu-item bp3-popover-dismiss"
-          id="1"
-          role="link"
+        <li
+          class=""
         >
-          <div
-            class="bp3-text-overflow-ellipsis bp3-fill"
+          <a
+            class="bp3-menu-item bp3-popover-dismiss"
+            id="1"
+            role="link"
           >
-            Item One
-          </div>
-        </a>
-      </li>
-      <li
-        class="bp3-menu-divider"
-      />
-      <li
-        class=""
-      >
-        <a
-          class="bp3-menu-item bp3-disabled"
-          id="2"
-          role="link"
-          tabindex="-1"
+            <div
+              class="bp3-text-overflow-ellipsis bp3-fill"
+            >
+              Item One
+            </div>
+          </a>
+        </li>
+        <li
+          class="bp3-menu-divider"
+        />
+        <li
+          class=""
         >
-          <div
-            class="bp3-text-overflow-ellipsis bp3-fill"
+          <a
+            class="bp3-menu-item bp3-disabled"
+            id="2"
+            role="link"
+            tabindex="-1"
           >
-            Item Two
-          </div>
-        </a>
-      </li>
-      <li
-        class="bp3-menu-divider"
-      />
-      <li
-        class=""
-      >
-        <a
-          class="bp3-menu-item bp3-popover-dismiss"
-          id="3"
-          role="link"
+            <div
+              class="bp3-text-overflow-ellipsis bp3-fill"
+            >
+              Item Two
+            </div>
+          </a>
+        </li>
+        <li
+          class="bp3-menu-divider"
+        />
+        <li
+          class=""
         >
-          <div
-            class="bp3-text-overflow-ellipsis bp3-fill"
+          <a
+            class="bp3-menu-item bp3-popover-dismiss"
+            id="3"
+            role="link"
           >
-            Item Three
-          </div>
-        </a>
-      </li>
-      <li
-        class="bp3-menu-divider"
-      />
-      <li
-        class=""
-      >
-        <a
-          class="bp3-menu-item bp3-active bp3-intent-primary bp3-popover-dismiss"
-          id="4"
-          role="link"
+            <div
+              class="bp3-text-overflow-ellipsis bp3-fill"
+            >
+              Item Three
+            </div>
+          </a>
+        </li>
+        <li
+          class="bp3-menu-divider"
+        />
+        <li
+          class=""
         >
-          <div
-            class="bp3-text-overflow-ellipsis bp3-fill"
+          <a
+            class="bp3-menu-item bp3-active bp3-intent-primary bp3-popover-dismiss"
+            id="4"
+            role="link"
           >
-            Item Four
-          </div>
-        </a>
-      </li>
-    </ul>
+            <div
+              class="bp3-text-overflow-ellipsis bp3-fill"
+            >
+              Item Four
+            </div>
+          </a>
+        </li>
+      </ul>
+    </nav>
   </div>
 </div>
 `;

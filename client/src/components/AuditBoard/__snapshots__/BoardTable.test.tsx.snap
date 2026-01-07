@@ -8,7 +8,7 @@ exports[`BoardTable > enables the submit button when all ballots are done 1`] = 
     <div
       class="sc-gzVnrw hDWRhK"
     >
-      <div
+      <section
         class="sc-bxivhb sc-htoDjs jjDggh"
       >
         <div
@@ -54,9 +54,9 @@ exports[`BoardTable > enables the submit button when all ballots are done 1`] = 
             </span>
           </button>
         </div>
-      </div>
+      </section>
     </div>
-    <div
+    <section
       class="sc-bxivhb kYcBbd"
     >
       <div
@@ -620,7 +620,7 @@ exports[`BoardTable > enables the submit button when all ballots are done 1`] = 
           </ol>
         </div>
       </div>
-    </div>
+    </section>
   </div>
 </div>
 `;
@@ -633,7 +633,7 @@ exports[`BoardTable > renders container and no tabulator columns 1`] = `
     <div
       class="sc-gzVnrw hDWRhK"
     >
-      <div
+      <section
         class="sc-bxivhb sc-htoDjs jjDggh"
       >
         <div
@@ -673,9 +673,9 @@ exports[`BoardTable > renders container and no tabulator columns 1`] = `
             </span>
           </button>
         </div>
-      </div>
+      </section>
     </div>
-    <div
+    <section
       class="sc-bxivhb kYcBbd"
     >
       <div
@@ -1005,7 +1005,7 @@ exports[`BoardTable > renders container and no tabulator columns 1`] = `
           </ol>
         </div>
       </div>
-    </div>
+    </section>
   </div>
 </div>
 `;
@@ -1018,7 +1018,7 @@ exports[`BoardTable > renders container and tabulator columns 1`] = `
     <div
       class="sc-gzVnrw hDWRhK"
     >
-      <div
+      <section
         class="sc-bxivhb sc-htoDjs jjDggh"
       >
         <div
@@ -1058,9 +1058,9 @@ exports[`BoardTable > renders container and tabulator columns 1`] = `
             </span>
           </button>
         </div>
-      </div>
+      </section>
     </div>
-    <div
+    <section
       class="sc-bxivhb kYcBbd"
     >
       <div
@@ -1437,7 +1437,7 @@ exports[`BoardTable > renders container and tabulator columns 1`] = `
           </ol>
         </div>
       </div>
-    </div>
+    </section>
   </div>
 </div>
 `;
@@ -1450,7 +1450,7 @@ exports[`BoardTable > renders no container and no tabulator columns 1`] = `
     <div
       class="sc-gzVnrw hDWRhK"
     >
-      <div
+      <section
         class="sc-bxivhb sc-htoDjs jjDggh"
       >
         <div
@@ -1490,9 +1490,9 @@ exports[`BoardTable > renders no container and no tabulator columns 1`] = `
             </span>
           </button>
         </div>
-      </div>
+      </section>
     </div>
-    <div
+    <section
       class="sc-bxivhb kYcBbd"
     >
       <div
@@ -1775,7 +1775,7 @@ exports[`BoardTable > renders no container and no tabulator columns 1`] = `
           </ol>
         </div>
       </div>
-    </div>
+    </section>
   </div>
 </div>
 `;
@@ -1788,7 +1788,7 @@ exports[`BoardTable > renders tabulator and no container columns 1`] = `
     <div
       class="sc-gzVnrw hDWRhK"
     >
-      <div
+      <section
         class="sc-bxivhb sc-htoDjs jjDggh"
       >
         <div
@@ -1828,9 +1828,9 @@ exports[`BoardTable > renders tabulator and no container columns 1`] = `
             </span>
           </button>
         </div>
-      </div>
+      </section>
     </div>
-    <div
+    <section
       class="sc-bxivhb kYcBbd"
     >
       <div
@@ -2160,7 +2160,7 @@ exports[`BoardTable > renders tabulator and no container columns 1`] = `
           </ol>
         </div>
       </div>
-    </div>
+    </section>
   </div>
 </div>
 `;
@@ -2173,7 +2173,7 @@ exports[`BoardTable > shows audit first ballot button when no ballots are audite
     <div
       class="sc-gzVnrw hDWRhK"
     >
-      <div
+      <section
         class="sc-bxivhb sc-htoDjs jjDggh"
       >
         <div
@@ -2213,9 +2213,9 @@ exports[`BoardTable > shows audit first ballot button when no ballots are audite
             </span>
           </button>
         </div>
-      </div>
+      </section>
     </div>
-    <div
+    <section
       class="sc-bxivhb kYcBbd"
     >
       <div
@@ -4008,7 +4008,7 @@ exports[`BoardTable > shows audit first ballot button when no ballots are audite
           </ol>
         </div>
       </div>
-    </div>
+    </section>
   </div>
 </div>
 `;
@@ -4021,7 +4021,7 @@ exports[`BoardTable > shows audit next ballot button when some are remaining to 
     <div
       class="sc-gzVnrw hDWRhK"
     >
-      <div
+      <section
         class="sc-bxivhb sc-htoDjs jjDggh"
       >
         <div
@@ -4061,9 +4061,9 @@ exports[`BoardTable > shows audit next ballot button when some are remaining to 
             </span>
           </button>
         </div>
-      </div>
+      </section>
     </div>
-    <div
+    <section
       class="sc-bxivhb kYcBbd"
     >
       <div
@@ -6234,7 +6234,7 @@ exports[`BoardTable > shows audit next ballot button when some are remaining to 
           </ol>
         </div>
       </div>
-    </div>
+    </section>
   </div>
 </div>
 `;

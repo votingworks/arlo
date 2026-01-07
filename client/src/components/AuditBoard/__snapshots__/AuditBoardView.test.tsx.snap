@@ -2,13 +2,14 @@
 
 exports[`AuditBoardView > ballot interaction > renders ballot route 1`] = `
 <div>
-  <div
+  <main
     class="sc-bdVaJa bKocXA"
   >
     <div
+      aria-label="Main navigation"
       class="bp3-navbar sc-ifAKCX jojstv"
     >
-      <div
+      <section
         class="sc-bwzfXH sc-bZQynM eYXcfZ"
       >
         <div
@@ -54,10 +55,10 @@ exports[`AuditBoardView > ballot interaction > renders ballot route 1`] = `
              
           </a>
         </div>
-      </div>
+      </section>
     </div>
     <div>
-      <div
+      <section
         class="sc-bwzfXH ijTqJq"
       >
         <div
@@ -468,21 +469,22 @@ exports[`AuditBoardView > ballot interaction > renders ballot route 1`] = `
             </div>
           </div>
         </div>
-      </div>
+      </section>
     </div>
-  </div>
+  </main>
 </div>
 `;
 
 exports[`AuditBoardView > ballot interaction > renders board table with ballots 1`] = `
 <div>
-  <div
+  <main
     class="sc-bdVaJa bKocXA"
   >
     <div
+      aria-label="Main navigation"
       class="bp3-navbar sc-ifAKCX jojstv"
     >
-      <div
+      <section
         class="sc-bwzfXH sc-bZQynM eYXcfZ"
       >
         <div
@@ -528,7 +530,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
              
           </a>
         </div>
-      </div>
+      </section>
     </div>
     <div
       class="board-table-container"
@@ -536,7 +538,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
       <div
         class="sc-GMQeP cNVnqQ"
       >
-        <div
+        <section
           class="sc-bwzfXH sc-exAgwC dCATjV"
         >
           <div
@@ -576,9 +578,9 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
               </span>
             </button>
           </div>
-        </div>
+        </section>
       </div>
-      <div
+      <section
         class="sc-bwzfXH ijTqJq"
       >
         <div
@@ -2749,21 +2751,22 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
             </ol>
           </div>
         </div>
-      </div>
+      </section>
     </div>
-  </div>
+  </main>
 </div>
 `;
 
 exports[`AuditBoardView > ballot interaction > renders board table with no audited ballots 1`] = `
 <div>
-  <div
+  <main
     class="sc-bdVaJa bKocXA"
   >
     <div
+      aria-label="Main navigation"
       class="bp3-navbar sc-ifAKCX jojstv"
     >
-      <div
+      <section
         class="sc-bwzfXH sc-bZQynM eYXcfZ"
       >
         <div
@@ -2809,7 +2812,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
              
           </a>
         </div>
-      </div>
+      </section>
     </div>
     <div
       class="board-table-container"
@@ -2817,7 +2820,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
       <div
         class="sc-GMQeP cNVnqQ"
       >
-        <div
+        <section
           class="sc-bwzfXH sc-exAgwC dCATjV"
         >
           <div
@@ -2857,9 +2860,9 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
               </span>
             </button>
           </div>
-        </div>
+        </section>
       </div>
-      <div
+      <section
         class="sc-bwzfXH ijTqJq"
       >
         <div
@@ -4652,21 +4655,22 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
             </ol>
           </div>
         </div>
-      </div>
+      </section>
     </div>
-  </div>
+  </main>
 </div>
 `;
 
 exports[`AuditBoardView > ballot interaction > renders board table with no ballots 1`] = `
 <div>
-  <div
+  <main
     class="sc-bdVaJa bKocXA"
   >
     <div
+      aria-label="Main navigation"
       class="bp3-navbar sc-ifAKCX jojstv"
     >
-      <div
+      <section
         class="sc-bwzfXH sc-bZQynM eYXcfZ"
       >
         <div
@@ -4712,7 +4716,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no ballo
              
           </a>
         </div>
-      </div>
+      </section>
     </div>
     <div
       class="board-table-container"
@@ -4720,7 +4724,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no ballo
       <div
         class="sc-GMQeP cNVnqQ"
       >
-        <div
+        <section
           class="sc-bwzfXH sc-exAgwC dCATjV"
         >
           <div
@@ -4760,9 +4764,9 @@ exports[`AuditBoardView > ballot interaction > renders board table with no ballo
               </span>
             </button>
           </div>
-        </div>
+        </section>
       </div>
-      <div
+      <section
         class="sc-bwzfXH ijTqJq"
       >
         <div
@@ -4976,21 +4980,22 @@ exports[`AuditBoardView > ballot interaction > renders board table with no ballo
             </ol>
           </div>
         </div>
-      </div>
+      </section>
     </div>
-  </div>
+  </main>
 </div>
 `;
 
 exports[`AuditBoardView > member form > submits, goes to ballot table, and header shows member names 1`] = `
 <div>
-  <div
+  <main
     class="sc-bdVaJa bKocXA"
   >
     <div
+      aria-label="Main navigation"
       class="bp3-navbar sc-ifAKCX jojstv"
     >
-      <div
+      <section
         class="sc-bwzfXH sc-bZQynM eYXcfZ"
       >
         <div
@@ -5036,7 +5041,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
              
           </a>
         </div>
-      </div>
+      </section>
     </div>
     <div
       class="board-table-container"
@@ -5044,7 +5049,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
       <div
         class="sc-GMQeP cNVnqQ"
       >
-        <div
+        <section
           class="sc-bwzfXH sc-exAgwC dCATjV"
         >
           <div
@@ -5084,9 +5089,9 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
               </span>
             </button>
           </div>
-        </div>
+        </section>
       </div>
-      <div
+      <section
         class="sc-bwzfXH ijTqJq"
       >
         <div
@@ -7257,8 +7262,8 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
             </ol>
           </div>
         </div>
-      </div>
+      </section>
     </div>
-  </div>
+  </main>
 </div>
 `;
