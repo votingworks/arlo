@@ -8,6 +8,7 @@ import {
   ProgressBar,
   Intent,
   AnchorButton,
+  Colors,
 } from '@blueprintjs/core'
 import * as Yup from 'yup'
 import { CvrFileType, IFileInfo, FileProcessingStatus } from '../useCSV'
@@ -17,6 +18,12 @@ import { ErrorLabel, SuccessLabel } from './Form/_helpers'
 import FormButton from './Form/FormButton'
 import AsyncButton from './AsyncButton'
 import H3Title from './H3Title'
+
+const StyledFileInput = styled(FileInput)`
+  .bp3-file-upload-input {
+    color: ${Colors.DARK_GRAY1};
+  }
+`
 
 // CSVFile is deprecated in favor of FileUpload
 
@@ -114,7 +121,7 @@ const CSVFile: React.FC<IProps> = ({
             {isEditing || !file || isProcessing ? (
               <>
                 <div>
-                  <FileInput
+                  <StyledFileInput
                     inputProps={{
                       // While this component is named CSVFile, it can accept zip files in the case
                       // of Hart and ESS CVRs
