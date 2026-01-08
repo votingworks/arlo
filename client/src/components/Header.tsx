@@ -40,7 +40,7 @@ const SupportBar = styled(Navbar)`
   }
 `
 
-const Nav = styled(Navbar)`
+const StyledNavbarInner = styled(Navbar)`
   width: 100%;
   height: auto;
   padding: 0;
@@ -48,6 +48,17 @@ const Nav = styled(Navbar)`
     height: 35px;
   }
 `
+
+function Nav(
+  props: React.ComponentProps<typeof Navbar> & { wrappingAriaLabel: string }
+) {
+  // Wraps in <nav> because Blueprint's Navbar does not set the <nav> landmark itself
+  return (
+    <nav aria-label={props.wrappingAriaLabel} style={{ width: '100%' }}>
+      <StyledNavbarInner {...props} aria-label={props.wrappingAriaLabel} />
+    </nav>
+  )
+}
 
 const UserMenu = styled.div`
   .bp3-button {
@@ -109,94 +120,90 @@ const Header: React.FC = () => {
     <>
       {auth && auth.supportUser && (
         <SupportBar>
-          <nav aria-label="Support tools navigation">
-            <NavbarGroup align={Alignment.LEFT}>
-              <a href="/support">
-                <Icon icon="eye-open" />
-                <span style={{ fontWeight: 600 }}>Arlo Support Tools</span>
-              </a>
-            </NavbarGroup>
-            <NavbarGroup align={Alignment.RIGHT}>
-              <span>{auth.supportUser.email}</span>
-              <NavbarDivider />
-              <a href="/auth/support/logout">Log out</a>
-            </NavbarGroup>
-          </nav>
+          <NavbarGroup align={Alignment.LEFT}>
+            <a href="/support">
+              <Icon icon="eye-open" />
+              <span style={{ fontWeight: 600 }}>Arlo Support Tools</span>
+            </a>
+          </NavbarGroup>
+          <NavbarGroup align={Alignment.RIGHT}>
+            <span>{auth.supportUser.email}</span>
+            <NavbarDivider />
+            <a href="/auth/support/logout">Log out</a>
+          </NavbarGroup>
         </SupportBar>
       )}
       {!supportMatch && (
-        <Nav>
-          <nav aria-label="Main navigation">
-            <InnerBar>
-              <NavbarGroup align={Alignment.LEFT}>
-                <NavbarHeading>
-                  <Link to="/" className="title">
-                    <img
-                      src="/votingworks-logo-circle.png"
-                      alt="Arlo, by VotingWorks"
-                    />
-                    <span>Arlo</span>
-                  </Link>
-                </NavbarHeading>
-              </NavbarGroup>
-              {auth &&
-                auth.user &&
-                auth.user.type !== 'audit_board' &&
-                auth.user.type !== 'tally_entry' && (
-                  <>
-                    <NavbarGroup align={Alignment.RIGHT}>
-                      {auth.user.type === 'audit_admin' && (
-                        <>
-                          {electionId && (
-                            <>
-                              <LinkButton
-                                to={`/election/${electionId}/setup`}
-                                minimal
-                                icon="wrench"
-                              >
-                                Audit Setup
-                              </LinkButton>
-                              <LinkButton
-                                to={`/election/${electionId}/progress`}
-                                minimal
-                                icon="horizontal-bar-chart"
-                              >
-                                Audit Progress
-                              </LinkButton>
-                              <NavbarDivider />
-                            </>
-                          )}
-                          <LinkButton to="/" minimal icon="projects">
-                            All Audits
-                          </LinkButton>
-                          <LinkButton to="/activity" minimal icon="history">
-                            Activity Log
-                          </LinkButton>
-                          <NavbarDivider />
-                        </>
-                      )}
-                      <UserMenu>
-                        <Popover
-                          content={
-                            <Menu>
-                              <MenuItem text="Log out" href="/auth/logout" />
-                            </Menu>
-                          }
-                          usePortal={false}
-                          position={Position.BOTTOM}
-                          minimal
-                          fill
-                        >
-                          <Button icon="user" minimal>
-                            {auth.user.email}
-                          </Button>
-                        </Popover>
-                      </UserMenu>
-                    </NavbarGroup>
-                  </>
-                )}
-            </InnerBar>
-          </nav>
+        <Nav wrappingAriaLabel="Main navigation">
+          <InnerBar>
+            <NavbarGroup align={Alignment.LEFT}>
+              <NavbarHeading>
+                <Link to="/" className="title">
+                  <img
+                    src="/votingworks-logo-circle.png"
+                    alt="Arlo, by VotingWorks"
+                  />
+                  <span>Arlo</span>
+                </Link>
+              </NavbarHeading>
+            </NavbarGroup>
+            {auth &&
+              auth.user &&
+              auth.user.type !== 'audit_board' &&
+              auth.user.type !== 'tally_entry' && (
+                <>
+                  <NavbarGroup align={Alignment.RIGHT}>
+                    {auth.user.type === 'audit_admin' && (
+                      <>
+                        {electionId && (
+                          <>
+                            <LinkButton
+                              to={`/election/${electionId}/setup`}
+                              minimal
+                              icon="wrench"
+                            >
+                              Audit Setup
+                            </LinkButton>
+                            <LinkButton
+                              to={`/election/${electionId}/progress`}
+                              minimal
+                              icon="horizontal-bar-chart"
+                            >
+                              Audit Progress
+                            </LinkButton>
+                            <NavbarDivider />
+                          </>
+                        )}
+                        <LinkButton to="/" minimal icon="projects">
+                          All Audits
+                        </LinkButton>
+                        <LinkButton to="/activity" minimal icon="history">
+                          Activity Log
+                        </LinkButton>
+                        <NavbarDivider />
+                      </>
+                    )}
+                    <UserMenu>
+                      <Popover
+                        content={
+                          <Menu>
+                            <MenuItem text="Log out" href="/auth/logout" />
+                          </Menu>
+                        }
+                        usePortal={false}
+                        position={Position.BOTTOM}
+                        minimal
+                        fill
+                      >
+                        <Button icon="user" minimal>
+                          {auth.user.email}
+                        </Button>
+                      </Popover>
+                    </UserMenu>
+                  </NavbarGroup>
+                </>
+              )}
+          </InnerBar>
         </Nav>
       )}
     </>
@@ -213,7 +220,7 @@ export const HeaderAuditBoard: React.FC<IHeaderAuditBoardProps> = ({
   members,
 }: IHeaderAuditBoardProps) => {
   return (
-    <Nav aria-label="Main navigation">
+    <Nav wrappingAriaLabel="Main navigation">
       <InnerBar>
         <NavbarGroup align={Alignment.LEFT}>
           <NavbarHeading>
@@ -247,7 +254,7 @@ export const HeaderAuditBoard: React.FC<IHeaderAuditBoardProps> = ({
 }
 
 export const HeaderTallyEntry: React.FC = () => (
-  <Nav aria-label="Main navigation">
+  <Nav wrappingAriaLabel="Main navigation">
     <InnerBar>
       <NavbarGroup align={Alignment.LEFT}>
         <NavbarHeading>
