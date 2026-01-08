@@ -158,7 +158,7 @@ const AuditAdminView: React.FC = () => {
             />
           </AuditAdminStatusBox>
           {!drawSampleError(rounds) && (
-            <Inner>
+            <Inner aria-label="Audit Progress">
               <Progress
                 jurisdictions={jurisdictions}
                 auditSettings={auditSettings}

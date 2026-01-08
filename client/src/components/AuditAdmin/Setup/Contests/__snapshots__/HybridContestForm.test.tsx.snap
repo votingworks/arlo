@@ -6,7 +6,8 @@ exports[`Audit Setup > Contests (Hybrid) > Audit Setup > Contests 1`] = `
     data-testid="form-one"
     style="width: 100%;"
   >
-    <div
+    <section
+      aria-label="Target Contests"
       class="sc-brqgnP jMCFHE"
     >
       <h2
@@ -289,7 +290,7 @@ exports[`Audit Setup > Contests (Hybrid) > Audit Setup > Contests 1`] = `
           </span>
         </button>
       </div>
-    </div>
+    </section>
     <div
       class="sc-gxMtzJ iPrMIO"
       style="margin-top: 15px;"

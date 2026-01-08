@@ -36,11 +36,13 @@ export const AuditHeading: React.FC<IAuditHeadingProps> = ({
   auditStage,
 }) => {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <H1>
-        {jurisdictionName} &mdash; {auditName}
-      </H1>
-      {auditStage && <H2>{auditStage}</H2>}
-    </div>
+    <header aria-label={auditName} style={{ display: 'flex' }}>
+      <div>
+        <H1>
+          {jurisdictionName} &mdash; {auditName}
+        </H1>
+        {auditStage && <H2>{auditStage}</H2>}
+      </div>
+    </header>
   )
 }

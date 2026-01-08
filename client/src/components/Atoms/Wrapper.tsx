@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-export const Wrapper = styled.div`
+export const Wrapper = styled.main`
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -12,7 +12,7 @@ interface IInnerProps {
   withTopPadding?: boolean
 }
 
-export const Inner = styled.div<IInnerProps>`
+export const Inner = styled.section<IInnerProps>`
   display: flex;
   margin-right: auto;
   margin-left: auto;

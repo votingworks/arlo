@@ -334,7 +334,7 @@ const AuditAdminHomeScreen = ({ user }: { user: IAuditAdmin }) => {
             )
             return (
               <div key={organization.id}>
-                <div>
+                <section aria-label={`Active audits for ${organization.name}`}>
                   <h2>Active Audits &mdash; {organization.name}</h2>
                   {activeElections.length === 0 ? (
                     <p>You have no active audits at this time.</p>
@@ -344,15 +344,17 @@ const AuditAdminHomeScreen = ({ user }: { user: IAuditAdmin }) => {
                       onClickDeleteAudit={onClickDeleteAudit}
                     />
                   )}
-                </div>
+                </section>
                 {completedElections.length > 0 && (
-                  <div>
+                  <section
+                    aria-label={`Completed audits for ${organization.name}`}
+                  >
                     <h2>Completed Audits &mdash; {organization.name}</h2>
                     <OrganizationAuditList
                       elections={completedElections}
                       onClickDeleteAudit={onClickDeleteAudit}
                     />
-                  </div>
+                  </section>
                 )}
               </div>
             )
@@ -447,7 +449,7 @@ export interface INewAudit {
   auditMathType: IAuditSettings['auditMathType']
 }
 
-const CreateAuditWrapper = styled.div`
+const CreateAuditWrapper = styled.section`
   background-color: #ebf1f5;
   padding: 30px;
 `
@@ -506,7 +508,7 @@ const CreateAudit = ({ organizations }: { organizations: IOrganization[] }) => {
         setValues,
         values,
       }: FormikProps<INewAudit>) => (
-        <CreateAuditWrapper>
+        <CreateAuditWrapper aria-label="New Audit">
           <h2>New Audit</h2>
           <FormSection>
             {/* eslint-disable jsx-a11y/label-has-associated-control */}

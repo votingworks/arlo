@@ -110,113 +110,123 @@ const JurisdictionAdminView: React.FC = () => {
             )}
             {isBatchComparison && batchInventoryConfig && (
               <Card elevation={1}>
-                <H4>Batch Audit File Preparation Tool</H4>
-                <p>
-                  Create your{' '}
-                  {batchInventoryConfig.showBallotManifest
-                    ? 'Ballot Manifest and Candidate Totals by Batch files'
-                    : 'Candidate Totals by Batch file'}{' '}
-                  using the batch audit file preparation tool.
-                </p>
-                <p>
-                  <LinkButton
-                    to={`/election/${electionId}/jurisdiction/${jurisdictionId}/batch-inventory`}
-                    intent="primary"
-                  >
-                    Go to Batch Audit File Preparation Tool
-                  </LinkButton>
-                </p>
+                <section aria-label="batch audit file preparation tool">
+                  <H4>Batch Audit File Preparation Tool</H4>
+                  <p>
+                    Create your{' '}
+                    {batchInventoryConfig.showBallotManifest
+                      ? 'Ballot Manifest and Candidate Totals by Batch files'
+                      : 'Candidate Totals by Batch file'}{' '}
+                    using the batch audit file preparation tool.
+                  </p>
+                  <p>
+                    <LinkButton
+                      to={`/election/${electionId}/jurisdiction/${jurisdictionId}/batch-inventory`}
+                      intent="primary"
+                    >
+                      Go to Batch Audit File Preparation Tool
+                    </LinkButton>
+                  </p>
+                </section>
               </Card>
             )}
             <Card elevation={1}>
-              <CSVFile
-                csvFile={ballotManifest}
-                uploadCSVFile={uploadBallotManifest}
-                deleteCSVFile={deleteBallotManifest}
-                title={
-                  isHybrid ? 'Ballot Manifest (All ballots)' : 'Ballot Manifest'
-                }
-                description={
-                  isHybrid
-                    ? `Click "Browse" to choose the appropriate Ballot
+              <section aria-label="ballot manifest">
+                <CSVFile
+                  csvFile={ballotManifest}
+                  uploadCSVFile={uploadBallotManifest}
+                  deleteCSVFile={deleteBallotManifest}
+                  title={
+                    isHybrid
+                      ? 'Ballot Manifest (All ballots)'
+                      : 'Ballot Manifest'
+                  }
+                  description={
+                    isHybrid
+                      ? `Click "Browse" to choose the appropriate Ballot
+                    Manifest file from your computer. This should be a
+                    comma-separated list of all the ballot batches/containers used
+                    to store ballots for this particular election, plus a count of
+                    how many ballot cards (individual pieces of paper) are stored
+                    in each container, and whether each batch has cast vote records.`
+                      : `Click "Browse" to choose the appropriate Ballot
                   Manifest file from your computer. This should be a
-                  comma-separated list of all the ballot batches/containers used
+                  comma-separated list of all the ballot boxes/containers used
                   to store ballots for this particular election, plus a count of
                   how many ballot cards (individual pieces of paper) are stored
-                  in each container, and whether each batch has cast vote records.`
-                    : `Click "Browse" to choose the appropriate Ballot
-                Manifest file from your computer. This should be a
-                comma-separated list of all the ballot boxes/containers used
-                to store ballots for this particular election, plus a count of
-                how many ballot cards (individual pieces of paper) are stored
-                in each container.`
-                }
-                sampleFileLink={(type => {
-                  switch (type) {
-                    case 'BALLOT_COMPARISON':
-                      return '/sample_manifest_BC.csv'
-                    case 'HYBRID':
-                      return '/sample_manifest_hybrid.csv'
-                    default:
-                      return '/sample_ballot_manifest.csv'
+                  in each container.`
                   }
-                })(auditSettings.auditType)}
-                enabled
-              />
+                  sampleFileLink={(type => {
+                    switch (type) {
+                      case 'BALLOT_COMPARISON':
+                        return '/sample_manifest_BC.csv'
+                      case 'HYBRID':
+                        return '/sample_manifest_hybrid.csv'
+                      default:
+                        return '/sample_ballot_manifest.csv'
+                    }
+                  })(auditSettings.auditType)}
+                  enabled
+                />
+              </section>
             </Card>
             {isBatchComparison && (
               <Card elevation={1}>
-                <CSVFile
-                  csvFile={batchTallies!}
-                  enabled={
-                    !!ballotManifest.processing &&
-                    ballotManifest.processing.status ===
-                      FileProcessingStatus.PROCESSED
-                  }
-                  uploadCSVFile={uploadBatchTallies}
-                  deleteCSVFile={deleteBatchTallies}
-                  title="Candidate Totals by Batch"
-                  description='Click "Browse" to choose the appropriate Candidate
-                  Totals by Batch file from your computer. This should be a
-                  comma-separated list of all the ballot boxes/containers used
-                  to store ballots for this particular election, plus a count of
-                  how many votes were counted for each candidate in each of
-                  those containers.'
-                  sampleFileLink={candidateTotalsByBatchTemplateCsvPath({
-                    electionId,
-                    jurisdictionId,
-                  })}
-                />
+                <section aria-label="candidate totals by batch">
+                  <CSVFile
+                    csvFile={batchTallies!}
+                    enabled={
+                      !!ballotManifest.processing &&
+                      ballotManifest.processing.status ===
+                        FileProcessingStatus.PROCESSED
+                    }
+                    uploadCSVFile={uploadBatchTallies}
+                    deleteCSVFile={deleteBatchTallies}
+                    title="Candidate Totals by Batch"
+                    description='Click "Browse" to choose the appropriate Candidate
+                    Totals by Batch file from your computer. This should be a
+                    comma-separated list of all the ballot boxes/containers used
+                    to store ballots for this particular election, plus a count of
+                    how many votes were counted for each candidate in each of
+                    those containers.'
+                    sampleFileLink={candidateTotalsByBatchTemplateCsvPath({
+                      electionId,
+                      jurisdictionId,
+                    })}
+                  />
+                </section>
               </Card>
             )}
             {(isBallotComparison || isHybrid) && (
               <Card elevation={1}>
-                <CSVFile
-                  csvFile={cvrs!}
-                  enabled={
-                    !!ballotManifest.processing &&
-                    ballotManifest.processing.status ===
-                      FileProcessingStatus.PROCESSED
-                  }
-                  uploadCSVFile={uploadCVRS}
-                  deleteCSVFile={deleteCVRS}
-                  title={
-                    isHybrid
-                      ? 'Cast Vote Records (CVR ballots only)'
-                      : 'Cast Vote Records'
-                  }
-                  description={
-                    isHybrid
-                      ? `Click "Browse" to choose the appropriate Cast Vote
-                  Records (CVR) file(s) from your computer. This should be an export
-                  of all the ballots centrally counted by your tabulator(s),
-                  but should not include precinct-count ballots.`
-                      : `Click "Browse" to choose the appropriate Cast Vote
-                  Records (CVR) file(s) from your computer. This should be an export
-                  of all the ballots counted by your tabulator(s).`
-                  }
-                  showCvrFileType
-                />
+                <section aria-label="Cast Vote Records">
+                  <CSVFile
+                    csvFile={cvrs!}
+                    enabled={
+                      !!ballotManifest.processing &&
+                      ballotManifest.processing.status ===
+                        FileProcessingStatus.PROCESSED
+                    }
+                    uploadCSVFile={uploadCVRS}
+                    deleteCSVFile={deleteCVRS}
+                    title={
+                      isHybrid
+                        ? 'Cast Vote Records (CVR ballots only)'
+                        : 'Cast Vote Records'
+                    }
+                    description={
+                      isHybrid
+                        ? `Click "Browse" to choose the appropriate Cast Vote
+                    Records (CVR) file(s) from your computer. This should be an export
+                    of all the ballots centrally counted by your tabulator(s),
+                    but should not include precinct-count ballots.`
+                        : `Click "Browse" to choose the appropriate Cast Vote
+                    Records (CVR) file(s) from your computer. This should be an export
+                    of all the ballots counted by your tabulator(s).`
+                    }
+                    showCvrFileType
+                  />
+                </section>
               </Card>
             )}
           </Column>

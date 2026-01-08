@@ -40,7 +40,7 @@ const SupportBar = styled(Navbar)`
   }
 `
 
-const Nav = styled(Navbar)`
+const StyledNavbarInner = styled(Navbar)`
   width: 100%;
   height: auto;
   padding: 0;
@@ -48,6 +48,17 @@ const Nav = styled(Navbar)`
     height: 35px;
   }
 `
+
+function Nav(
+  props: React.ComponentProps<typeof Navbar> & { wrappingAriaLabel: string }
+) {
+  // Wraps in <nav> because Blueprint's Navbar does not set the <nav> landmark itself
+  return (
+    <nav aria-label={props.wrappingAriaLabel} style={{ width: '100%' }}>
+      <StyledNavbarInner {...props} aria-label={props.wrappingAriaLabel} />
+    </nav>
+  )
+}
 
 const UserMenu = styled.div`
   .bp3-button {
@@ -123,7 +134,7 @@ const Header: React.FC = () => {
         </SupportBar>
       )}
       {!supportMatch && (
-        <Nav>
+        <Nav wrappingAriaLabel="Main navigation">
           <InnerBar>
             <NavbarGroup align={Alignment.LEFT}>
               <NavbarHeading>
@@ -209,7 +220,7 @@ export const HeaderAuditBoard: React.FC<IHeaderAuditBoardProps> = ({
   members,
 }: IHeaderAuditBoardProps) => {
   return (
-    <Nav>
+    <Nav wrappingAriaLabel="Main navigation">
       <InnerBar>
         <NavbarGroup align={Alignment.LEFT}>
           <NavbarHeading>
@@ -243,7 +254,7 @@ export const HeaderAuditBoard: React.FC<IHeaderAuditBoardProps> = ({
 }
 
 export const HeaderTallyEntry: React.FC = () => (
-  <Nav>
+  <Nav wrappingAriaLabel="Main navigation">
     <InnerBar>
       <NavbarGroup align={Alignment.LEFT}>
         <NavbarHeading>
