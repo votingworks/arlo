@@ -5,58 +5,64 @@ exports[`AuditBoardView > ballot interaction > renders ballot route 1`] = `
   <main
     class="sc-bdVaJa bKocXA"
   >
-    <div
+    <nav
       aria-label="Main navigation"
-      class="bp3-navbar sc-ifAKCX jojstv"
+      style="width: 100%;"
     >
-      <section
-        class="sc-bwzfXH sc-bZQynM eYXcfZ"
+      <div
+        aria-label="Main navigation"
+        class="bp3-navbar sc-ifAKCX jojstv"
+        wrappingarialabel="Main navigation"
       >
-        <div
-          class="bp3-navbar-group bp3-align-left"
+        <section
+          class="sc-bwzfXH sc-bZQynM eYXcfZ"
         >
           <div
-            class="bp3-navbar-heading"
+            class="bp3-navbar-group bp3-align-left"
+          >
+            <div
+              class="bp3-navbar-heading"
+            >
+              <a
+                class="title"
+                href="/"
+              >
+                <img
+                  alt="Arlo, by VotingWorks"
+                  src="/votingworks-logo-circle.png"
+                />
+                <span>
+                  Arlo
+                </span>
+              </a>
+            </div>
+            <div
+              class="bp3-navbar-heading"
+            >
+              Audit Board #1
+              :
+               
+              <strong>
+                John Doe, Jane Doe
+              </strong>
+            </div>
+          </div>
+          <div
+            class="bp3-navbar-group bp3-align-right"
           >
             <a
-              class="title"
-              href="/"
+              href="/auth/logout"
             >
-              <img
-                alt="Arlo, by VotingWorks"
-                src="/votingworks-logo-circle.png"
-              />
+               
               <span>
-                Arlo
+                Log out
               </span>
+               
             </a>
           </div>
-          <div
-            class="bp3-navbar-heading"
-          >
-            Audit Board #1
-            :
-             
-            <strong>
-              John Doe, Jane Doe
-            </strong>
-          </div>
-        </div>
-        <div
-          class="bp3-navbar-group bp3-align-right"
-        >
-          <a
-            href="/auth/logout"
-          >
-             
-            <span>
-              Log out
-            </span>
-             
-          </a>
-        </div>
-      </section>
-    </div>
+        </section>
+      </div>
+    </nav>
     <div>
       <section
         class="sc-bwzfXH ijTqJq"
@@ -480,58 +486,64 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
   <main
     class="sc-bdVaJa bKocXA"
   >
-    <div
+    <nav
       aria-label="Main navigation"
-      class="bp3-navbar sc-ifAKCX jojstv"
+      style="width: 100%;"
     >
-      <section
-        class="sc-bwzfXH sc-bZQynM eYXcfZ"
+      <div
+        aria-label="Main navigation"
+        class="bp3-navbar sc-ifAKCX jojstv"
+        wrappingarialabel="Main navigation"
       >
-        <div
-          class="bp3-navbar-group bp3-align-left"
+        <section
+          class="sc-bwzfXH sc-bZQynM eYXcfZ"
         >
           <div
-            class="bp3-navbar-heading"
+            class="bp3-navbar-group bp3-align-left"
+          >
+            <div
+              class="bp3-navbar-heading"
+            >
+              <a
+                class="title"
+                href="/"
+              >
+                <img
+                  alt="Arlo, by VotingWorks"
+                  src="/votingworks-logo-circle.png"
+                />
+                <span>
+                  Arlo
+                </span>
+              </a>
+            </div>
+            <div
+              class="bp3-navbar-heading"
+            >
+              Audit Board #1
+              :
+               
+              <strong>
+                John Doe, Jane Doe
+              </strong>
+            </div>
+          </div>
+          <div
+            class="bp3-navbar-group bp3-align-right"
           >
             <a
-              class="title"
-              href="/"
+              href="/auth/logout"
             >
-              <img
-                alt="Arlo, by VotingWorks"
-                src="/votingworks-logo-circle.png"
-              />
+               
               <span>
-                Arlo
+                Log out
               </span>
+               
             </a>
           </div>
-          <div
-            class="bp3-navbar-heading"
-          >
-            Audit Board #1
-            :
-             
-            <strong>
-              John Doe, Jane Doe
-            </strong>
-          </div>
-        </div>
-        <div
-          class="bp3-navbar-group bp3-align-right"
-        >
-          <a
-            href="/auth/logout"
-          >
-             
-            <span>
-              Log out
-            </span>
-             
-          </a>
-        </div>
-      </section>
-    </div>
+        </section>
+      </div>
+    </nav>
     <div
       class="board-table-container"
     >
@@ -2762,58 +2774,64 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
   <main
     class="sc-bdVaJa bKocXA"
   >
-    <div
+    <nav
       aria-label="Main navigation"
-      class="bp3-navbar sc-ifAKCX jojstv"
+      style="width: 100%;"
     >
-      <section
-        class="sc-bwzfXH sc-bZQynM eYXcfZ"
+      <div
+        aria-label="Main navigation"
+        class="bp3-navbar sc-ifAKCX jojstv"
+        wrappingarialabel="Main navigation"
       >
-        <div
-          class="bp3-navbar-group bp3-align-left"
+        <section
+          class="sc-bwzfXH sc-bZQynM eYXcfZ"
         >
           <div
-            class="bp3-navbar-heading"
+            class="bp3-navbar-group bp3-align-left"
+          >
+            <div
+              class="bp3-navbar-heading"
+            >
+              <a
+                class="title"
+                href="/"
+              >
+                <img
+                  alt="Arlo, by VotingWorks"
+                  src="/votingworks-logo-circle.png"
+                />
+                <span>
+                  Arlo
+                </span>
+              </a>
+            </div>
+            <div
+              class="bp3-navbar-heading"
+            >
+              Audit Board #1
+              :
+               
+              <strong>
+                John Doe, Jane Doe
+              </strong>
+            </div>
+          </div>
+          <div
+            class="bp3-navbar-group bp3-align-right"
           >
             <a
-              class="title"
-              href="/"
+              href="/auth/logout"
             >
-              <img
-                alt="Arlo, by VotingWorks"
-                src="/votingworks-logo-circle.png"
-              />
+               
               <span>
-                Arlo
+                Log out
               </span>
+               
             </a>
           </div>
-          <div
-            class="bp3-navbar-heading"
-          >
-            Audit Board #1
-            :
-             
-            <strong>
-              John Doe, Jane Doe
-            </strong>
-          </div>
-        </div>
-        <div
-          class="bp3-navbar-group bp3-align-right"
-        >
-          <a
-            href="/auth/logout"
-          >
-             
-            <span>
-              Log out
-            </span>
-             
-          </a>
-        </div>
-      </section>
-    </div>
+        </section>
+      </div>
+    </nav>
     <div
       class="board-table-container"
     >
@@ -4666,58 +4684,64 @@ exports[`AuditBoardView > ballot interaction > renders board table with no ballo
   <main
     class="sc-bdVaJa bKocXA"
   >
-    <div
+    <nav
       aria-label="Main navigation"
-      class="bp3-navbar sc-ifAKCX jojstv"
+      style="width: 100%;"
     >
-      <section
-        class="sc-bwzfXH sc-bZQynM eYXcfZ"
+      <div
+        aria-label="Main navigation"
+        class="bp3-navbar sc-ifAKCX jojstv"
+        wrappingarialabel="Main navigation"
       >
-        <div
-          class="bp3-navbar-group bp3-align-left"
+        <section
+          class="sc-bwzfXH sc-bZQynM eYXcfZ"
         >
           <div
-            class="bp3-navbar-heading"
+            class="bp3-navbar-group bp3-align-left"
+          >
+            <div
+              class="bp3-navbar-heading"
+            >
+              <a
+                class="title"
+                href="/"
+              >
+                <img
+                  alt="Arlo, by VotingWorks"
+                  src="/votingworks-logo-circle.png"
+                />
+                <span>
+                  Arlo
+                </span>
+              </a>
+            </div>
+            <div
+              class="bp3-navbar-heading"
+            >
+              Audit Board #1
+              :
+               
+              <strong>
+                John Doe, Jane Doe
+              </strong>
+            </div>
+          </div>
+          <div
+            class="bp3-navbar-group bp3-align-right"
           >
             <a
-              class="title"
-              href="/"
+              href="/auth/logout"
             >
-              <img
-                alt="Arlo, by VotingWorks"
-                src="/votingworks-logo-circle.png"
-              />
+               
               <span>
-                Arlo
+                Log out
               </span>
+               
             </a>
           </div>
-          <div
-            class="bp3-navbar-heading"
-          >
-            Audit Board #1
-            :
-             
-            <strong>
-              John Doe, Jane Doe
-            </strong>
-          </div>
-        </div>
-        <div
-          class="bp3-navbar-group bp3-align-right"
-        >
-          <a
-            href="/auth/logout"
-          >
-             
-            <span>
-              Log out
-            </span>
-             
-          </a>
-        </div>
-      </section>
-    </div>
+        </section>
+      </div>
+    </nav>
     <div
       class="board-table-container"
     >
@@ -4991,58 +5015,64 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
   <main
     class="sc-bdVaJa bKocXA"
   >
-    <div
+    <nav
       aria-label="Main navigation"
-      class="bp3-navbar sc-ifAKCX jojstv"
+      style="width: 100%;"
     >
-      <section
-        class="sc-bwzfXH sc-bZQynM eYXcfZ"
+      <div
+        aria-label="Main navigation"
+        class="bp3-navbar sc-ifAKCX jojstv"
+        wrappingarialabel="Main navigation"
       >
-        <div
-          class="bp3-navbar-group bp3-align-left"
+        <section
+          class="sc-bwzfXH sc-bZQynM eYXcfZ"
         >
           <div
-            class="bp3-navbar-heading"
+            class="bp3-navbar-group bp3-align-left"
+          >
+            <div
+              class="bp3-navbar-heading"
+            >
+              <a
+                class="title"
+                href="/"
+              >
+                <img
+                  alt="Arlo, by VotingWorks"
+                  src="/votingworks-logo-circle.png"
+                />
+                <span>
+                  Arlo
+                </span>
+              </a>
+            </div>
+            <div
+              class="bp3-navbar-heading"
+            >
+              Audit Board #1
+              :
+               
+              <strong>
+                John Doe, Jane Doe
+              </strong>
+            </div>
+          </div>
+          <div
+            class="bp3-navbar-group bp3-align-right"
           >
             <a
-              class="title"
-              href="/"
+              href="/auth/logout"
             >
-              <img
-                alt="Arlo, by VotingWorks"
-                src="/votingworks-logo-circle.png"
-              />
+               
               <span>
-                Arlo
+                Log out
               </span>
+               
             </a>
           </div>
-          <div
-            class="bp3-navbar-heading"
-          >
-            Audit Board #1
-            :
-             
-            <strong>
-              John Doe, Jane Doe
-            </strong>
-          </div>
-        </div>
-        <div
-          class="bp3-navbar-group bp3-align-right"
-        >
-          <a
-            href="/auth/logout"
-          >
-             
-            <span>
-              Log out
-            </span>
-             
-          </a>
-        </div>
-      </section>
-    </div>
+        </section>
+      </div>
+    </nav>
     <div
       class="board-table-container"
     >

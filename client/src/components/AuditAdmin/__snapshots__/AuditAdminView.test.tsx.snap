@@ -141,7 +141,9 @@ exports[`AA setup flow > renders sidebar when authenticated on /setup 1`] = `
           </ul>
         </nav>
       </div>
-      <section>
+      <section
+        aria-label="Audit setup content"
+      >
         <section
           aria-label="Participants"
           class="sc-dnqmqq kymPuI"
