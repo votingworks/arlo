@@ -99,7 +99,7 @@ const Setup: React.FC<ISetupProps> = ({
           onClick: () => setCurrentStage(stage),
         }))}
       />
-      <section>
+      <section aria-label="Audit setup content">
         {(() => {
           switch (currentStage) {
             case 'participants':
