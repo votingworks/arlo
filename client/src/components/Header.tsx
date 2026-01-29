@@ -19,6 +19,29 @@ import { useAuthDataContext, IMember } from './UserContext'
 import { Inner } from './Atoms/Wrapper'
 import LinkButton from './Atoms/LinkButton'
 
+const VisuallyHiddenFocusableAnchor = styled.a`
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+
+  &:focus,
+  &:focus-visible {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0 0.5rem 0 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+`
+
 const SupportBar = styled(Navbar)`
   background-color: ${Colors.ROSE3};
   height: 35px;
@@ -121,6 +144,9 @@ const Header: React.FC = () => {
       {auth && auth.supportUser && (
         <SupportBar>
           <NavbarGroup align={Alignment.LEFT}>
+            <VisuallyHiddenFocusableAnchor tabIndex={0} href="#main">
+              Skip to main
+            </VisuallyHiddenFocusableAnchor>
             <a href="/support">
               <Icon icon="eye-open" />
               <span style={{ fontWeight: 600 }}>Arlo Support Tools</span>
@@ -137,6 +163,9 @@ const Header: React.FC = () => {
         <Nav wrappingAriaLabel="Main navigation">
           <InnerBar>
             <NavbarGroup align={Alignment.LEFT}>
+              <VisuallyHiddenFocusableAnchor tabIndex={0} href="#main">
+                Skip to main
+              </VisuallyHiddenFocusableAnchor>
               <NavbarHeading>
                 <Link to="/" className="title">
                   <img

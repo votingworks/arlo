@@ -57,7 +57,7 @@ const StatusBox: React.FC<IStatusBoxProps> = ({
 }: IStatusBoxProps) => {
   return (
     <Wrapper icon={null}>
-      <Inner>
+      <Inner flexDirection="row" justifyContent="space-between">
         <Text>
           <SpacedH1>{auditName}</SpacedH1>
           <Subtitle>{headline}</Subtitle>
