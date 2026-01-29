@@ -9,7 +9,7 @@ exports[`BoardTable > enables the submit button when all ballots are done 1`] = 
       class="sc-gzVnrw hDWRhK"
     >
       <section
-        class="sc-bxivhb sc-htoDjs jjDggh"
+        class="sc-bxivhb sc-htoDjs gSycTR"
       >
         <div
           class="sc-EHOje gMhbsl"
@@ -57,7 +57,7 @@ exports[`BoardTable > enables the submit button when all ballots are done 1`] = 
       </section>
     </div>
     <section
-      class="sc-bxivhb kYcBbd"
+      class="sc-bxivhb lcxnWi"
     >
       <div
         class="sc-dnqmqq hvEDwC"
@@ -634,7 +634,7 @@ exports[`BoardTable > renders container and no tabulator columns 1`] = `
       class="sc-gzVnrw hDWRhK"
     >
       <section
-        class="sc-bxivhb sc-htoDjs jjDggh"
+        class="sc-bxivhb sc-htoDjs gSycTR"
       >
         <div
           class="sc-EHOje gMhbsl"
@@ -676,7 +676,7 @@ exports[`BoardTable > renders container and no tabulator columns 1`] = `
       </section>
     </div>
     <section
-      class="sc-bxivhb kYcBbd"
+      class="sc-bxivhb lcxnWi"
     >
       <div
         class="sc-dnqmqq hvEDwC"
@@ -1019,7 +1019,7 @@ exports[`BoardTable > renders container and tabulator columns 1`] = `
       class="sc-gzVnrw hDWRhK"
     >
       <section
-        class="sc-bxivhb sc-htoDjs jjDggh"
+        class="sc-bxivhb sc-htoDjs gSycTR"
       >
         <div
           class="sc-EHOje gMhbsl"
@@ -1061,7 +1061,7 @@ exports[`BoardTable > renders container and tabulator columns 1`] = `
       </section>
     </div>
     <section
-      class="sc-bxivhb kYcBbd"
+      class="sc-bxivhb lcxnWi"
     >
       <div
         class="sc-dnqmqq hvEDwC"
@@ -1451,7 +1451,7 @@ exports[`BoardTable > renders no container and no tabulator columns 1`] = `
       class="sc-gzVnrw hDWRhK"
     >
       <section
-        class="sc-bxivhb sc-htoDjs jjDggh"
+        class="sc-bxivhb sc-htoDjs gSycTR"
       >
         <div
           class="sc-EHOje gMhbsl"
@@ -1493,7 +1493,7 @@ exports[`BoardTable > renders no container and no tabulator columns 1`] = `
       </section>
     </div>
     <section
-      class="sc-bxivhb kYcBbd"
+      class="sc-bxivhb lcxnWi"
     >
       <div
         class="sc-dnqmqq hvEDwC"
@@ -1789,7 +1789,7 @@ exports[`BoardTable > renders tabulator and no container columns 1`] = `
       class="sc-gzVnrw hDWRhK"
     >
       <section
-        class="sc-bxivhb sc-htoDjs jjDggh"
+        class="sc-bxivhb sc-htoDjs gSycTR"
       >
         <div
           class="sc-EHOje gMhbsl"
@@ -1831,7 +1831,7 @@ exports[`BoardTable > renders tabulator and no container columns 1`] = `
       </section>
     </div>
     <section
-      class="sc-bxivhb kYcBbd"
+      class="sc-bxivhb lcxnWi"
     >
       <div
         class="sc-dnqmqq hvEDwC"
@@ -2174,7 +2174,7 @@ exports[`BoardTable > shows audit first ballot button when no ballots are audite
       class="sc-gzVnrw hDWRhK"
     >
       <section
-        class="sc-bxivhb sc-htoDjs jjDggh"
+        class="sc-bxivhb sc-htoDjs gSycTR"
       >
         <div
           class="sc-EHOje gMhbsl"
@@ -2216,7 +2216,7 @@ exports[`BoardTable > shows audit first ballot button when no ballots are audite
       </section>
     </div>
     <section
-      class="sc-bxivhb kYcBbd"
+      class="sc-bxivhb lcxnWi"
     >
       <div
         class="sc-dnqmqq hvEDwC"
@@ -4022,7 +4022,7 @@ exports[`BoardTable > shows audit next ballot button when some are remaining to 
       class="sc-gzVnrw hDWRhK"
     >
       <section
-        class="sc-bxivhb sc-htoDjs jjDggh"
+        class="sc-bxivhb sc-htoDjs gSycTR"
       >
         <div
           class="sc-EHOje gMhbsl"
@@ -4064,7 +4064,7 @@ exports[`BoardTable > shows audit next ballot button when some are remaining to 
       </section>
     </div>
     <section
-      class="sc-bxivhb kYcBbd"
+      class="sc-bxivhb lcxnWi"
     >
       <div
         class="sc-dnqmqq hvEDwC"
