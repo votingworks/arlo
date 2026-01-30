@@ -35,6 +35,10 @@ export const SupportToolsInner = styled.div`
   margin-right: auto;
   padding: 30px 150px;
   width: 100%;
+
+  @media (max-width: 480px) {
+    padding: 30px;
+  }
 `
 
 export default Wrapper

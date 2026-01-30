@@ -164,6 +164,30 @@ body {
   size: letter portrait;
 }
 
+/* Mobile Responsive */
+@media (max-width: 480px) {
+  html {
+    font-size: 18px;
+  }
+
+  body {
+    font-size: 14px;
+  }
+}
+
+/* Prevent horizontal overflow */
+
+/* html,
+body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+#root {
+  max-width: 100%;
+  overflow-x: hidden;
+} */
+
 code {
   font-family: 'source-code-pro', 'Menlo', 'Monaco', 'Consolas', 'Courier New',
     monospace;
