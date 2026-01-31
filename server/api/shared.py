@@ -17,7 +17,10 @@ from ..audit_math import (
 from ..util.collections import group_by
 from .ballot_manifest import CountingGroup, hybrid_contest_total_ballots
 from .cvrs import cvr_contests_metadata, hybrid_contest_choice_vote_counts
-from ..feature_flags import is_enabled_sample_extra_batches_by_counting_group
+from ..feature_flags import (
+    is_enabled_sample_extra_batches_by_counting_group,
+    is_enabled_sample_extra_batches_to_ensure_one_per_jurisdiction,
+)
 
 
 def get_current_round(election: Election) -> Round | None:
@@ -777,6 +780,29 @@ def compute_sample_batches_for_contest(
                         ticket_number=EXTRA_TICKET_NUMBER,
                     )
                 )
+
+    if is_enabled_sample_extra_batches_to_ensure_one_per_jurisdiction(election):
+        rand = random.Random(str(election.random_seed))
+        for jurisdiction in contest.jurisdictions:
+            sampled_batch_keys_from_jurisdiction = {
+                batch_key
+                for _, batch_key in sample
+                if batch_key[0] == jurisdiction.name
+            }
+            # If we didn't sample any batches from this jurisdiction, add one
+            if len(sampled_batch_keys_from_jurisdiction) == 0:
+                jurisdiction_batch_keys = {
+                    (jurisdiction.name, batch.name) for batch in jurisdiction.batches
+                }
+                if len(jurisdiction_batch_keys) > 0:
+                    extra_batch_key = rand.choice(sorted(jurisdiction_batch_keys))
+                    sample_batches.append(
+                        BatchDraw(
+                            batch_id=batch_key_to_id[extra_batch_key],
+                            contest_id=contest.id,
+                            ticket_number=EXTRA_TICKET_NUMBER,
+                        )
+                    )
 
     return sample_batches
 
