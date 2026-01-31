@@ -4,12 +4,14 @@ exports[`AA setup flow > renders sidebar when authenticated on /setup 1`] = `
 <div>
   <main
     class="sc-bdVaJa bKocXA"
+    id="main"
+    tabindex="-1"
   >
     <div
       class="bp3-callout sc-EHOje epwUhp"
     >
       <section
-        class="sc-bwzfXH ijTqJq"
+        class="sc-bwzfXH lhKVhE"
       >
         <div
           class=""
@@ -35,7 +37,7 @@ exports[`AA setup flow > renders sidebar when authenticated on /setup 1`] = `
       </section>
     </div>
     <section
-      class="sc-bwzfXH ijTqJq"
+      class="sc-bwzfXH bIwzaO"
     >
       <div
         class="sc-iRbamj gepcrJ"

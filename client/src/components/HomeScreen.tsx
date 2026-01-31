@@ -323,7 +323,7 @@ const AuditAdminHomeScreen = ({ user }: { user: IAuditAdmin }) => {
   if (!organizations.isSuccess) return null
 
   return (
-    <div style={{ width: '100%' }}>
+    <Wrapper>
       <H1>All Audits</H1>
       <div style={{ display: 'flex', width: '100%' }}>
         <div style={{ width: '50%', padding: '30px 30px 30px 0' }}>
@@ -365,7 +365,7 @@ const AuditAdminHomeScreen = ({ user }: { user: IAuditAdmin }) => {
           <CreateAudit organizations={organizations.data} />
         </div>
       </div>
-    </div>
+    </Wrapper>
   )
 }
 
