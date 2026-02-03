@@ -112,7 +112,6 @@ const CSVFile: React.FC<IProps> = ({
                     <option value={CvrFileType.DOMINION}>Dominion</option>
                     <option value={CvrFileType.CLEARBALLOT}>ClearBallot</option>
                     <option value={CvrFileType.ESS}>ES&amp;S</option>
-                    <option value={CvrFileType.ESS_MD}>ES&amp;S (MD)</option>
                     <option value={CvrFileType.HART}>Hart</option>
                   </HTMLSelect>
                 </label>
