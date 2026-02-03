@@ -26,6 +26,22 @@ const Flexbox = styled.div<IFlexboxProps>`
 `
 
 /**
+ * Convenience component for a flexbox with flex-direction set based on media query.
+ *
+ * Example:
+ *  <FlexContainer justify="space-between" align="center" gap="20px">
+ *    ... items ...
+ *  </FlexContainer>
+ */
+export const FlexContainer = styled(Flexbox)`
+  flex-direction: row;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+  }
+`
+
+/**
  * Convenience component for a flexbox with flex-direction=row.
  *
  * Example:
