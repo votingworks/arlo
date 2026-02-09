@@ -6,7 +6,7 @@ exports[`Ballot > renders correctly with an audited ballot 1`] = `
 <div>
   <div>
     <section
-      class="sc-kGXeez fSmIyR"
+      class="sc-kGXeez hKZNEL"
     >
       <div
         class="sc-ckVGcZ bxAWbg"
@@ -320,7 +320,7 @@ exports[`Ballot > renders correctly with an unaudited ballot 1`] = `
 <div>
   <div>
     <section
-      class="sc-kGXeez fSmIyR"
+      class="sc-kGXeez hKZNEL"
     >
       <div
         class="sc-ckVGcZ bxAWbg"
@@ -633,7 +633,7 @@ exports[`Ballot > selects Blank Vote 1`] = `
 <div>
   <div>
     <section
-      class="sc-kGXeez fSmIyR"
+      class="sc-kGXeez hKZNEL"
     >
       <div
         class="sc-ckVGcZ bxAWbg"
@@ -944,7 +944,7 @@ exports[`Ballot > selects Not on Ballot 1`] = `
 <div>
   <div>
     <section
-      class="sc-kGXeez fSmIyR"
+      class="sc-kGXeez hKZNEL"
     >
       <div
         class="sc-ckVGcZ bxAWbg"
@@ -1255,7 +1255,7 @@ exports[`Ballot > switches audit and review views 1`] = `
 <div>
   <div>
     <section
-      class="sc-kGXeez fSmIyR"
+      class="sc-kGXeez hKZNEL"
     >
       <div
         class="sc-ckVGcZ bxAWbg"

@@ -11,12 +11,20 @@ interface ColumnProps {
 
 export const Column = styled.div<ColumnProps>`
   width: 50%;
+
+  @media (max-width: 480px) {
+    width: 100%;
+  }
 `
 
 export const Row = styled.div`
   display: flex;
   gap: 30px;
   width: 100%;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+  }
 `
 
 export const Table = styled(HTMLTable)`

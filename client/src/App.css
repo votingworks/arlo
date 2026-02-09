@@ -164,6 +164,16 @@ body {
   size: letter portrait;
 }
 
+@media (max-width: 480px) {
+  html {
+    font-size: 18px;
+  }
+
+  body {
+    font-size: 14px;
+  }
+}
+
 code {
   font-family: 'source-code-pro', 'Menlo', 'Monaco', 'Consolas', 'Courier New',
     monospace;

@@ -24,7 +24,7 @@ import FullHandTallyDataEntry from './FullHandTallyDataEntry'
 import BatchRoundSteps from './BatchRoundSteps/BatchRoundSteps'
 import { StatusBar, AuditHeading } from '../Atoms/StatusBar'
 import BatchRoundProgress from './BatchRoundProgress'
-import { Row, Column } from '../Atoms/Layout'
+import { Column, FlexContainer } from '../Atoms/Layout'
 
 const Inner = styled(InnerAtom).attrs({ flexDirection: 'column' })``
 
@@ -180,7 +180,7 @@ const RoundManagement: React.FC<IRoundManagementProps> = ({
   return (
     <Inner>
       <StatusBar>{auditHeading}</StatusBar>
-      <Row gap="15px">
+      <FlexContainer gap="15px">
         <Panel>
           <H3>Prepare Ballots</H3>
           {samplesToAudit}
@@ -200,7 +200,7 @@ const RoundManagement: React.FC<IRoundManagementProps> = ({
             <RoundDataEntry round={round} />
           )}
         </Panel>
-      </Row>
+      </FlexContainer>
     </Inner>
   )
 }

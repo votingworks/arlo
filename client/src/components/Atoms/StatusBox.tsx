@@ -21,6 +21,7 @@ import AsyncButton from './AsyncButton'
 const SpacedH1 = styled(H1)`
   &.bp3-heading {
     margin-bottom: 30px;
+    line-height: 36px;
   }
 `
 
@@ -57,7 +58,7 @@ const StatusBox: React.FC<IStatusBoxProps> = ({
 }: IStatusBoxProps) => {
   return (
     <Wrapper icon={null}>
-      <Inner>
+      <Inner flexDirection="row" justifyContent="space-between">
         <Text>
           <SpacedH1>{auditName}</SpacedH1>
           <Subtitle>{headline}</Subtitle>
