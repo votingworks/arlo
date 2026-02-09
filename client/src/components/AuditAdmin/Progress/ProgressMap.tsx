@@ -268,7 +268,7 @@ const Map: React.FC<IProps> = ({
   }
 
   return (
-    <MapWrapper>
+    <MapWrapper aria-hidden="true">
       <SVGMap className="d3-component" width={0} height={0} ref={d3Container} />
       <Tooltip id="tooltip" className="hide-tooltip" ref={tooltipContainer} />
       {jsonData ? (

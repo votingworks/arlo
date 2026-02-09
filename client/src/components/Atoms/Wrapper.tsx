@@ -1,6 +1,9 @@
 import styled from 'styled-components'
 
-export const Wrapper = styled.main`
+export const Wrapper = styled.main.attrs({
+  id: 'main',
+  tabIndex: -1,
+})`
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -9,6 +12,7 @@ export const Wrapper = styled.main`
 
 interface IInnerProps {
   flexDirection?: 'column' | 'row'
+  justifyContent?: 'start' | 'center' | 'space-between'
   withTopPadding?: boolean
 }
 
@@ -21,6 +25,7 @@ export const Inner = styled.section<IInnerProps>`
   padding: 0 30px;
   padding-top: ${props => (props.withTopPadding ? '30px' : undefined)};
   flex-direction: ${props => props.flexDirection || undefined};
+  justify-content: ${props => props.justifyContent || undefined};
 `
 
 export const SupportToolsInner = styled.div`
@@ -30,6 +35,10 @@ export const SupportToolsInner = styled.div`
   margin-right: auto;
   padding: 30px 150px;
   width: 100%;
+
+  @media (max-width: 480px) {
+    padding: 30px;
+  }
 `
 
 export default Wrapper

@@ -19,6 +19,17 @@ import { AuditStatusTag, Row } from './shared'
 import { FilterInput } from '../Atoms/Table'
 import H2Title from '../Atoms/H2Title'
 
+const SupportToolsOuterColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  @media (max-width: 480px) {
+    flex: none;
+    width: 100%;
+  }
+`
+
 const SupportTools: React.FC = () => {
   const auth = useAuthDataContext()
   if (!auth) return null // Still loading
@@ -29,13 +40,7 @@ const SupportTools: React.FC = () => {
       <SupportToolsInner>
         <Switch>
           <Route exact path="/support">
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                width: '100%',
-              }}
-            >
+            <SupportToolsOuterColumn>
               <Row>
                 <H1>Support Tools</H1>
               </Row>
@@ -50,7 +55,7 @@ const SupportTools: React.FC = () => {
                   <Tools />
                 </div>
               </Row>
-            </div>
+            </SupportToolsOuterColumn>
           </Route>
           <Route path="/support/orgs/:organizationId">
             {({ match }: any) => (

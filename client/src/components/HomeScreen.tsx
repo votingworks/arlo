@@ -35,6 +35,15 @@ import { IAuditSettings } from './useAuditSettings'
 import { useConfirm, Confirm } from './Atoms/Confirm'
 import { ErrorLabel } from './Atoms/Form/_helpers'
 import { addCSRFToken, fetchApi } from '../utils/api'
+import { FlexContainer } from './Atoms/Layout'
+
+const ResponsiveColumn = styled.div`
+  width: 50%;
+
+  @media (max-width: 480px) {
+    width: 100%;
+  }
+`
 
 const HomeScreen: React.FC = () => {
   const auth = useAuthDataContext()
@@ -323,10 +332,10 @@ const AuditAdminHomeScreen = ({ user }: { user: IAuditAdmin }) => {
   if (!organizations.isSuccess) return null
 
   return (
-    <div style={{ width: '100%' }}>
+    <Wrapper>
       <H1>All Audits</H1>
-      <div style={{ display: 'flex', width: '100%' }}>
-        <div style={{ width: '50%', padding: '30px 30px 30px 0' }}>
+      <FlexContainer style={{ width: '100%' }}>
+        <ResponsiveColumn style={{ padding: '30px 30px 30px 0' }}>
           {sortBy(organizations.data, o => o.name).map(organization => {
             const [activeElections, completedElections] = partition(
               organization.elections,
@@ -360,12 +369,12 @@ const AuditAdminHomeScreen = ({ user }: { user: IAuditAdmin }) => {
             )
           })}
           <Confirm {...confirmProps} />
-        </div>
-        <div style={{ width: '50%' }}>
+        </ResponsiveColumn>
+        <ResponsiveColumn>
           <CreateAudit organizations={organizations.data} />
-        </div>
-      </div>
-    </div>
+        </ResponsiveColumn>
+      </FlexContainer>
+    </Wrapper>
   )
 }
 
