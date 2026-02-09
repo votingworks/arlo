@@ -1,12 +1,24 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { H1, AnchorButton, Tag } from '@blueprintjs/core'
+import styled from 'styled-components'
 import { useElection, IElection } from './support-api'
 import RoundsTable from './RoundsTable'
 import { List, LinkItem } from './List'
 import Breadcrumbs from './Breadcrumbs'
 import { Column, Row } from './shared'
 import H2Title from '../Atoms/H2Title'
+
+const HeadingContainer = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  margin: 10px 0 20px 0;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+  }
+`
 
 const prettyAuditType = (auditType: IElection['auditType']) =>
   ({
@@ -16,7 +28,11 @@ const prettyAuditType = (auditType: IElection['auditType']) =>
     HYBRID: 'Hybrid',
   }[auditType])
 
-const Audit = ({ electionId }: { electionId: string }) => {
+const Audit = ({
+  electionId,
+}: {
+  electionId: string
+}): React.ReactElement | null => {
   const election = useElection(electionId)
 
   if (!election.isSuccess) return null
@@ -47,14 +63,7 @@ const Audit = ({ electionId }: { electionId: string }) => {
         </Breadcrumbs>
       </Row>
       <Row>
-        <div
-          style={{
-            display: 'flex',
-            width: '100%',
-            justifyContent: 'space-between',
-            margin: '10px 0 20px 0',
-          }}
-        >
+        <HeadingContainer>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <H1 style={{ marginBottom: 0 }}>{auditName}</H1>
             <Tag large>{prettyAuditType(auditType)}</Tag>
@@ -66,7 +75,7 @@ const Audit = ({ electionId }: { electionId: string }) => {
           >
             Log in as audit admin
           </AnchorButton>
-        </div>
+        </HeadingContainer>
       </Row>
       <Row>
         <Column>

@@ -61,6 +61,10 @@ const SupportBar = styled(Navbar)`
   .bp3-navbar-divider {
     border-color: rgba(255, 255, 255, 0.7);
   }
+
+  @media (max-width: 480px) {
+    padding: 10px;
+  }
 `
 
 const StyledNavbarInner = styled(Navbar)`
@@ -145,7 +149,7 @@ const Header: React.FC = () => {
         <SupportBar>
           <NavbarGroup align={Alignment.LEFT}>
             <VisuallyHiddenFocusableAnchor tabIndex={0} href="#main">
-              Skip to main
+              Skip to main content
             </VisuallyHiddenFocusableAnchor>
             <a href="/support">
               <Icon icon="eye-open" />
@@ -164,7 +168,7 @@ const Header: React.FC = () => {
           <InnerBar>
             <NavbarGroup align={Alignment.LEFT}>
               <VisuallyHiddenFocusableAnchor tabIndex={0} href="#main">
-                Skip to main
+                Skip to main content
               </VisuallyHiddenFocusableAnchor>
               <NavbarHeading>
                 <Link to="/" className="title">

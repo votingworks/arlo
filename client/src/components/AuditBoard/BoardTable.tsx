@@ -18,7 +18,7 @@ const LeftSection = styled.div`
 `
 
 const RightSection = styled.div`
-  @media (max-width: 768px) {
+  @media (max-width: 480px) {
     display: flex;
     margin-top: 10px;
   }
@@ -79,7 +79,7 @@ const InstructionsWrapper = styled.div`
 const AuditBtn = styled(LinkButton)`
   border: 1px solid ${Colors.GRAY4};
   border-radius: 5px;
-  @media only screen and (max-width: 768px) {
+  @media only screen and (max-width: 480px) {
     min-width: auto;
   }
 `

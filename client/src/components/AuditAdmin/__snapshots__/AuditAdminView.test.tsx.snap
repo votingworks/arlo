@@ -17,7 +17,7 @@ exports[`AA setup flow > renders sidebar when authenticated on /setup 1`] = `
           class=""
         >
           <h1
-            class="bp3-heading sc-bxivhb jlghxK"
+            class="bp3-heading sc-bxivhb lmZkrC"
           >
             Test Audit
           </h1>

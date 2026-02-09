@@ -70,19 +70,19 @@ exports[`AuditBoardView > ballot interaction > renders ballot route 1`] = `
         class="sc-bwzfXH bIwzaO"
       >
         <div
-          class="sc-itybZL eqXTwR"
+          class="sc-jVODtj iqifca"
         >
           <div
-            class="sc-eMigcr hdmdQc"
+            class="sc-kUaPvJ cVyMKC"
           >
             <div
-              class="sc-fzsDOv fsderF"
+              class="sc-giadOv fsKLoN"
             >
               <div
-                class="sc-kUaPvJ iefnys"
+                class="sc-ipXKqB cMOaQi"
               >
                 <button
-                  class="bp3-button bp3-minimal sc-jVODtj cAkLnF"
+                  class="bp3-button bp3-minimal sc-VJcYb cCgoQZ"
                   href="/election/1/audit-board/audit-board-1"
                   type="button"
                 >
@@ -112,56 +112,56 @@ exports[`AuditBoardView > ballot interaction > renders ballot route 1`] = `
                   </span>
                 </button>
                 <h3
-                  class="bp3-heading sc-dTdPqK gxdhOu"
+                  class="bp3-heading sc-gPWkxV bZuVrO"
                 >
                   Audit Ballot Selections
                 </h3>
               </div>
               <div
-                class="bp3-divider sc-eerKOB fhUEoD"
+                class="bp3-divider sc-bnXvFD iRnALD"
               />
               <div
-                class="sc-laTMn ewhRYo"
+                class="sc-bHwgHz qkndO"
               >
                 <div>
                   <h5
-                    class="bp3-heading sc-bMvGRv imaeVw"
+                    class="bp3-heading sc-fjmCvl eFkjRc"
                   >
                     Tabulator
                   </h5>
                   <h4
-                    class="bp3-heading sc-hGoxap djrRrA"
+                    class="bp3-heading sc-krDsej hhDRQQ"
                   >
                     11
                   </h4>
                 </div>
                 <div>
                   <h5
-                    class="bp3-heading sc-bMvGRv imaeVw"
+                    class="bp3-heading sc-fjmCvl eFkjRc"
                   >
                     Batch
                   </h5>
                   <h4
-                    class="bp3-heading sc-hGoxap djrRrA"
+                    class="bp3-heading sc-krDsej hhDRQQ"
                   >
                     0003-04-Precinct 19 (Jonesboro Fire Department)
                   </h4>
                 </div>
                 <div>
                   <h5
-                    class="bp3-heading sc-bMvGRv imaeVw"
+                    class="bp3-heading sc-fjmCvl eFkjRc"
                   >
                     Ballot Number
                   </h5>
                   <h4
-                    class="bp3-heading sc-hGoxap djrRrA"
+                    class="bp3-heading sc-krDsej hhDRQQ"
                   >
                     2112
                   </h4>
                 </div>
                 <div>
                   <button
-                    class="bp3-button bp3-large bp3-intent-danger sc-fjmCvl fZEoeE"
+                    class="bp3-button bp3-large bp3-intent-danger sc-dTdPqK jQCnNC"
                     type="button"
                   >
                     <span
@@ -173,36 +173,36 @@ exports[`AuditBoardView > ballot interaction > renders ballot route 1`] = `
                 </div>
               </div>
               <div
-                class="bp3-divider sc-eerKOB fhUEoD"
+                class="bp3-divider sc-bnXvFD iRnALD"
               />
               <div
-                class="sc-emmjRN escvfp"
+                class="sc-gFaPwZ eIIdsi"
               >
                 <div
                   class="ballot-main"
                 >
                   <h5
-                    class="bp3-heading sc-bMvGRv imaeVw"
+                    class="bp3-heading sc-fjmCvl eFkjRc"
                   >
                     Ballot Contests
                   </h5>
                   <form>
                     <div
-                      class="sc-cpmLhU jIUpks"
+                      class="sc-fhYwyz bEUacH"
                     >
                       <div
-                        class="sc-jzgbtB fQxQVu"
+                        class="sc-CtfFt iVVGmP"
                       >
                         <div
-                          class="sc-gJWqzi vuQga"
+                          class="sc-laTMn bYsNhZ"
                         >
                           <h3
-                            class="bp3-heading sc-bHwgHz kglIws"
+                            class="bp3-heading sc-eMigcr jWlqHm"
                           >
                             Contest 1
                           </h3>
                           <label
-                            class="bp3-control bp3-checkbox sc-CtfFt ebDxw"
+                            class="bp3-control bp3-checkbox sc-TFwJa bYPgPv"
                           >
                             <input
                               type="checkbox"
@@ -218,7 +218,7 @@ exports[`AuditBoardView > ballot interaction > renders ballot route 1`] = `
                             </span>
                           </label>
                           <label
-                            class="bp3-control bp3-checkbox sc-CtfFt ebDxw"
+                            class="bp3-control bp3-checkbox sc-TFwJa bYPgPv"
                           >
                             <input
                               type="checkbox"
@@ -235,10 +235,10 @@ exports[`AuditBoardView > ballot interaction > renders ballot route 1`] = `
                           </label>
                         </div>
                         <div
-                          class="sc-rBLzX iVUpZI"
+                          class="sc-hGoxap lmptzZ"
                         >
                           <label
-                            class="bp3-control bp3-checkbox sc-CtfFt ebDxw"
+                            class="bp3-control bp3-checkbox sc-TFwJa bYPgPv"
                           >
                             <input
                               type="checkbox"
@@ -254,7 +254,7 @@ exports[`AuditBoardView > ballot interaction > renders ballot route 1`] = `
                             </span>
                           </label>
                           <label
-                            class="bp3-control bp3-checkbox sc-CtfFt ebDxw"
+                            class="bp3-control bp3-checkbox sc-TFwJa bYPgPv"
                           >
                             <input
                               type="checkbox"
@@ -270,7 +270,7 @@ exports[`AuditBoardView > ballot interaction > renders ballot route 1`] = `
                             </span>
                           </label>
                           <label
-                            class="bp3-control bp3-checkbox sc-CtfFt ebDxw"
+                            class="bp3-control bp3-checkbox sc-TFwJa bYPgPv"
                           >
                             <input
                               type="checkbox"
@@ -286,7 +286,7 @@ exports[`AuditBoardView > ballot interaction > renders ballot route 1`] = `
                             </span>
                           </label>
                           <textarea
-                            class="bp3-input sc-TFwJa eltNGv"
+                            class="bp3-input sc-itybZL cKuYmt"
                             name="comment-Contest 1"
                             placeholder="Add Note"
                           />
@@ -294,21 +294,21 @@ exports[`AuditBoardView > ballot interaction > renders ballot route 1`] = `
                       </div>
                     </div>
                     <div
-                      class="sc-cpmLhU jIUpks"
+                      class="sc-fhYwyz bEUacH"
                     >
                       <div
-                        class="sc-jzgbtB fQxQVu"
+                        class="sc-CtfFt iVVGmP"
                       >
                         <div
-                          class="sc-gJWqzi vuQga"
+                          class="sc-laTMn bYsNhZ"
                         >
                           <h3
-                            class="bp3-heading sc-bHwgHz kglIws"
+                            class="bp3-heading sc-eMigcr jWlqHm"
                           >
                             Contest 2
                           </h3>
                           <label
-                            class="bp3-control bp3-checkbox sc-CtfFt ebDxw"
+                            class="bp3-control bp3-checkbox sc-TFwJa bYPgPv"
                           >
                             <input
                               type="checkbox"
@@ -324,7 +324,7 @@ exports[`AuditBoardView > ballot interaction > renders ballot route 1`] = `
                             </span>
                           </label>
                           <label
-                            class="bp3-control bp3-checkbox sc-CtfFt ebDxw"
+                            class="bp3-control bp3-checkbox sc-TFwJa bYPgPv"
                           >
                             <input
                               type="checkbox"
@@ -341,10 +341,10 @@ exports[`AuditBoardView > ballot interaction > renders ballot route 1`] = `
                           </label>
                         </div>
                         <div
-                          class="sc-rBLzX iVUpZI"
+                          class="sc-hGoxap lmptzZ"
                         >
                           <label
-                            class="bp3-control bp3-checkbox sc-CtfFt ebDxw"
+                            class="bp3-control bp3-checkbox sc-TFwJa bYPgPv"
                           >
                             <input
                               type="checkbox"
@@ -360,7 +360,7 @@ exports[`AuditBoardView > ballot interaction > renders ballot route 1`] = `
                             </span>
                           </label>
                           <label
-                            class="bp3-control bp3-checkbox sc-CtfFt ebDxw"
+                            class="bp3-control bp3-checkbox sc-TFwJa bYPgPv"
                           >
                             <input
                               type="checkbox"
@@ -376,7 +376,7 @@ exports[`AuditBoardView > ballot interaction > renders ballot route 1`] = `
                             </span>
                           </label>
                           <label
-                            class="bp3-control bp3-checkbox sc-CtfFt ebDxw"
+                            class="bp3-control bp3-checkbox sc-TFwJa bYPgPv"
                           >
                             <input
                               type="checkbox"
@@ -392,7 +392,7 @@ exports[`AuditBoardView > ballot interaction > renders ballot route 1`] = `
                             </span>
                           </label>
                           <textarea
-                            class="bp3-input sc-TFwJa eltNGv"
+                            class="bp3-input sc-itybZL cKuYmt"
                             name="comment-Contest 2"
                             placeholder="Add Note"
                           />
@@ -400,10 +400,10 @@ exports[`AuditBoardView > ballot interaction > renders ballot route 1`] = `
                       </div>
                     </div>
                     <div
-                      class="sc-bnXvFD dBghje"
+                      class="sc-gJWqzi LsZDt"
                     >
                       <button
-                        class="bp3-button bp3-disabled bp3-large bp3-intent-success sc-krDsej dFECJU sc-gqjmRU eotNvg"
+                        class="bp3-button bp3-disabled bp3-large bp3-intent-success sc-fzsDOv jphQBj sc-gqjmRU eotNvg"
                         disabled=""
                         tabindex="-1"
                         type="submit"
@@ -430,7 +430,7 @@ exports[`AuditBoardView > ballot interaction > renders ballot route 1`] = `
               </div>
             </div>
             <div
-              class="sc-gPWkxV dZIIie"
+              class="sc-fONwsr fIhBBm"
             >
               <h4
                 class="bp3-heading"
@@ -438,7 +438,7 @@ exports[`AuditBoardView > ballot interaction > renders ballot route 1`] = `
                 Instructions
               </h4>
               <ol
-                class="bp3-list sc-giadOv hNbvlD"
+                class="bp3-list sc-hmXxxW ffXgvC"
               >
                 <li>
                   Confirm that you are looking at the correct ballot for the batch and position. If the ballot was not located, select
@@ -552,13 +552,13 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
       class="board-table-container"
     >
       <div
-        class="sc-exAgwC iuSgWq"
+        class="sc-bXGyLb hcGtwd"
       >
         <section
-          class="sc-bwzfXH sc-cQFLBn cOFlSG"
+          class="sc-bwzfXH sc-lkqHmb egPBqG"
         >
           <div
-            class="sc-iujRgT fCuZgk"
+            class="sc-gojNiO gSDqcI"
           >
             <p>
               18
@@ -567,23 +567,23 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                ballots have been audited.
             </p>
             <span
-              class="summary-label sc-krvtoX ePOmDT"
+              class="summary-label sc-gHboQg cxXeOP"
             >
               Audited: 
               18
             </span>
             <span
-              class="summary-label sc-fYiAbW fMRYmT"
+              class="summary-label sc-eilVRo glcAXK"
             >
               Not Audited: 
               9
             </span>
           </div>
           <div
-            class="sc-GMQeP eJUSYu"
+            class="sc-daURTG iplZSz"
           >
             <button
-              class="bp3-button bp3-intent-success sc-dUjcNx gZaWK"
+              class="bp3-button bp3-intent-success sc-emmjRN clJkMu"
               href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/2112"
               type="button"
             >
@@ -600,10 +600,10 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
         class="sc-bwzfXH bIwzaO"
       >
         <div
-          class="sc-gojNiO ipLgdo"
+          class="sc-eLExRp idhsyl"
         >
           <div
-            class="sc-daURTG heRUho"
+            class="sc-cbkKFq jOZyOQ"
           >
             <h3
               class="bp3-heading"
@@ -612,10 +612,10 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
               Audit Board #1
             </h3>
             <div
-              class="sc-bXGyLb guOIFU"
+              class="sc-krvtoX cLMSyS"
             >
               <table
-                class="sc-eNQAEJ iZDxIm"
+                class="sc-eHgmQL ehyFrf"
                 role="table"
               >
                 <thead>
@@ -817,7 +817,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -827,7 +827,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 13 (Jonesboro Fire Department)
@@ -837,7 +837,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         313
@@ -847,7 +847,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -876,7 +876,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/313"
                         type="button"
                       >
@@ -895,7 +895,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -904,7 +904,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 19 (Jonesboro Fire Department)
                       </p>
@@ -913,7 +913,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         2112
                       </p>
@@ -922,7 +922,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -931,7 +931,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/2112"
                         type="button"
                       >
@@ -952,7 +952,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -962,7 +962,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 29 (Jonesboro Fire Department)
@@ -972,7 +972,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         1789
@@ -982,7 +982,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -1011,7 +1011,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/1789"
                         type="button"
                       >
@@ -1030,7 +1030,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -1040,7 +1040,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 13 (Jonesboro Fire Department)
@@ -1050,7 +1050,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         313
@@ -1060,7 +1060,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -1089,7 +1089,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-2/ballot/313"
                         type="button"
                       >
@@ -1108,7 +1108,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -1117,7 +1117,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 19 (Jonesboro Fire Department)
                       </p>
@@ -1126,7 +1126,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         2112
                       </p>
@@ -1135,7 +1135,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -1144,7 +1144,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-2/ballot/2112"
                         type="button"
                       >
@@ -1165,7 +1165,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -1175,7 +1175,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 29 (Jonesboro Fire Department)
@@ -1185,7 +1185,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         1789
@@ -1195,7 +1195,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -1224,7 +1224,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-2/ballot/1789"
                         type="button"
                       >
@@ -1243,7 +1243,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -1253,7 +1253,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 13 (Jonesboro Fire Department)
@@ -1263,7 +1263,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         313
@@ -1273,7 +1273,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -1302,7 +1302,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-3/ballot/313"
                         type="button"
                       >
@@ -1321,7 +1321,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -1330,7 +1330,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 19 (Jonesboro Fire Department)
                       </p>
@@ -1339,7 +1339,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         2112
                       </p>
@@ -1348,7 +1348,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -1357,7 +1357,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-3/ballot/2112"
                         type="button"
                       >
@@ -1378,7 +1378,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -1388,7 +1388,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 29 (Jonesboro Fire Department)
@@ -1398,7 +1398,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         1789
@@ -1408,7 +1408,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -1437,7 +1437,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-3/ballot/1789"
                         type="button"
                       >
@@ -1456,7 +1456,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -1466,7 +1466,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 13 (Jonesboro Fire Department)
@@ -1476,7 +1476,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         313
@@ -1486,7 +1486,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -1515,7 +1515,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-4/ballot/313"
                         type="button"
                       >
@@ -1534,7 +1534,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -1543,7 +1543,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 19 (Jonesboro Fire Department)
                       </p>
@@ -1552,7 +1552,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         2112
                       </p>
@@ -1561,7 +1561,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -1570,7 +1570,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-4/ballot/2112"
                         type="button"
                       >
@@ -1591,7 +1591,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -1601,7 +1601,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 29 (Jonesboro Fire Department)
@@ -1611,7 +1611,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         1789
@@ -1621,7 +1621,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -1650,7 +1650,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-4/ballot/1789"
                         type="button"
                       >
@@ -1669,7 +1669,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -1679,7 +1679,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 13 (Jonesboro Fire Department)
@@ -1689,7 +1689,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         313
@@ -1699,7 +1699,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -1728,7 +1728,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-5/ballot/313"
                         type="button"
                       >
@@ -1747,7 +1747,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -1756,7 +1756,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 19 (Jonesboro Fire Department)
                       </p>
@@ -1765,7 +1765,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         2112
                       </p>
@@ -1774,7 +1774,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -1783,7 +1783,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-5/ballot/2112"
                         type="button"
                       >
@@ -1804,7 +1804,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -1814,7 +1814,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 29 (Jonesboro Fire Department)
@@ -1824,7 +1824,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         1789
@@ -1834,7 +1834,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -1863,7 +1863,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-5/ballot/1789"
                         type="button"
                       >
@@ -1882,7 +1882,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -1892,7 +1892,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 13 (Jonesboro Fire Department)
@@ -1902,7 +1902,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         313
@@ -1912,7 +1912,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -1941,7 +1941,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-6/ballot/313"
                         type="button"
                       >
@@ -1960,7 +1960,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -1969,7 +1969,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 19 (Jonesboro Fire Department)
                       </p>
@@ -1978,7 +1978,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         2112
                       </p>
@@ -1987,7 +1987,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -1996,7 +1996,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-6/ballot/2112"
                         type="button"
                       >
@@ -2017,7 +2017,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -2027,7 +2027,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 29 (Jonesboro Fire Department)
@@ -2037,7 +2037,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         1789
@@ -2047,7 +2047,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -2076,7 +2076,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-6/ballot/1789"
                         type="button"
                       >
@@ -2095,7 +2095,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -2105,7 +2105,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 13 (Jonesboro Fire Department)
@@ -2115,7 +2115,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         313
@@ -2125,7 +2125,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -2154,7 +2154,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-7/ballot/313"
                         type="button"
                       >
@@ -2173,7 +2173,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -2182,7 +2182,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 19 (Jonesboro Fire Department)
                       </p>
@@ -2191,7 +2191,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         2112
                       </p>
@@ -2200,7 +2200,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -2209,7 +2209,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-7/ballot/2112"
                         type="button"
                       >
@@ -2230,7 +2230,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -2240,7 +2240,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 29 (Jonesboro Fire Department)
@@ -2250,7 +2250,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         1789
@@ -2260,7 +2260,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -2289,7 +2289,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-7/ballot/1789"
                         type="button"
                       >
@@ -2308,7 +2308,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -2318,7 +2318,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 13 (Jonesboro Fire Department)
@@ -2328,7 +2328,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         313
@@ -2338,7 +2338,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -2367,7 +2367,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-8/ballot/313"
                         type="button"
                       >
@@ -2386,7 +2386,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -2395,7 +2395,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 19 (Jonesboro Fire Department)
                       </p>
@@ -2404,7 +2404,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         2112
                       </p>
@@ -2413,7 +2413,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -2422,7 +2422,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-8/ballot/2112"
                         type="button"
                       >
@@ -2443,7 +2443,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -2453,7 +2453,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 29 (Jonesboro Fire Department)
@@ -2463,7 +2463,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         1789
@@ -2473,7 +2473,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -2502,7 +2502,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-8/ballot/1789"
                         type="button"
                       >
@@ -2521,7 +2521,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -2531,7 +2531,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 13 (Jonesboro Fire Department)
@@ -2541,7 +2541,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         313
@@ -2551,7 +2551,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -2580,7 +2580,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-9/ballot/313"
                         type="button"
                       >
@@ -2599,7 +2599,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -2608,7 +2608,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 19 (Jonesboro Fire Department)
                       </p>
@@ -2617,7 +2617,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         2112
                       </p>
@@ -2626,7 +2626,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -2635,7 +2635,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-9/ballot/2112"
                         type="button"
                       >
@@ -2656,7 +2656,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -2666,7 +2666,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 29 (Jonesboro Fire Department)
@@ -2676,7 +2676,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         1789
@@ -2686,7 +2686,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -2715,7 +2715,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-9/ballot/1789"
                         type="button"
                       >
@@ -2731,7 +2731,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
               </table>
             </div>
             <button
-              class="bp3-button bp3-disabled bp3-large sc-gHboQg jElwWY"
+              class="bp3-button bp3-disabled bp3-large sc-cpmLhU bIOgkC"
               disabled=""
               href="/election/1/audit-board/audit-board-1/signoff"
               tabindex="-1"
@@ -2745,7 +2745,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
             </button>
           </div>
           <div
-            class="sc-lkqHmb QdwnG"
+            class="sc-fYiAbW cVavGr"
           >
             <h4
               class="bp3-heading"
@@ -2753,7 +2753,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with ballots 
               Instructions
             </h4>
             <ol
-              class="bp3-list sc-fOKMvo bKYIhG"
+              class="bp3-list sc-eerKOB koAbpa"
             >
               <li>
                 Locate and retrieve the list of ballots to audit from storage.
@@ -2842,13 +2842,13 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
       class="board-table-container"
     >
       <div
-        class="sc-exAgwC iuSgWq"
+        class="sc-bXGyLb hcGtwd"
       >
         <section
-          class="sc-bwzfXH sc-cQFLBn cOFlSG"
+          class="sc-bwzfXH sc-lkqHmb egPBqG"
         >
           <div
-            class="sc-iujRgT fCuZgk"
+            class="sc-gojNiO gSDqcI"
           >
             <p>
               0
@@ -2857,23 +2857,23 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                ballots have been audited.
             </p>
             <span
-              class="summary-label sc-krvtoX ePOmDT"
+              class="summary-label sc-gHboQg cxXeOP"
             >
               Audited: 
               0
             </span>
             <span
-              class="summary-label sc-fYiAbW fMRYmT"
+              class="summary-label sc-eilVRo glcAXK"
             >
               Not Audited: 
               27
             </span>
           </div>
           <div
-            class="sc-GMQeP eJUSYu"
+            class="sc-daURTG iplZSz"
           >
             <button
-              class="bp3-button bp3-intent-success sc-dUjcNx gZaWK"
+              class="bp3-button bp3-intent-success sc-emmjRN clJkMu"
               href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/313"
               type="button"
             >
@@ -2890,10 +2890,10 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
         class="sc-bwzfXH bIwzaO"
       >
         <div
-          class="sc-gojNiO ipLgdo"
+          class="sc-eLExRp idhsyl"
         >
           <div
-            class="sc-daURTG heRUho"
+            class="sc-cbkKFq jOZyOQ"
           >
             <h3
               class="bp3-heading"
@@ -2902,10 +2902,10 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
               Audit Board #1
             </h3>
             <div
-              class="sc-bXGyLb guOIFU"
+              class="sc-krvtoX cLMSyS"
             >
               <table
-                class="sc-eNQAEJ iZDxIm"
+                class="sc-eHgmQL ehyFrf"
                 role="table"
               >
                 <thead>
@@ -3107,7 +3107,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -3116,7 +3116,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 13 (Jonesboro Fire Department)
                       </p>
@@ -3125,7 +3125,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         313
                       </p>
@@ -3134,7 +3134,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -3143,7 +3143,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/313"
                         type="button"
                       >
@@ -3164,7 +3164,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -3173,7 +3173,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 19 (Jonesboro Fire Department)
                       </p>
@@ -3182,7 +3182,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         2112
                       </p>
@@ -3191,7 +3191,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -3200,7 +3200,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/2112"
                         type="button"
                       >
@@ -3221,7 +3221,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -3230,7 +3230,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 29 (Jonesboro Fire Department)
                       </p>
@@ -3239,7 +3239,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         1789
                       </p>
@@ -3248,7 +3248,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -3257,7 +3257,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/1789"
                         type="button"
                       >
@@ -3278,7 +3278,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -3287,7 +3287,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 13 (Jonesboro Fire Department)
                       </p>
@@ -3296,7 +3296,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         313
                       </p>
@@ -3305,7 +3305,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -3314,7 +3314,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-2/ballot/313"
                         type="button"
                       >
@@ -3335,7 +3335,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -3344,7 +3344,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 19 (Jonesboro Fire Department)
                       </p>
@@ -3353,7 +3353,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         2112
                       </p>
@@ -3362,7 +3362,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -3371,7 +3371,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-2/ballot/2112"
                         type="button"
                       >
@@ -3392,7 +3392,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -3401,7 +3401,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 29 (Jonesboro Fire Department)
                       </p>
@@ -3410,7 +3410,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         1789
                       </p>
@@ -3419,7 +3419,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -3428,7 +3428,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-2/ballot/1789"
                         type="button"
                       >
@@ -3449,7 +3449,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -3458,7 +3458,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 13 (Jonesboro Fire Department)
                       </p>
@@ -3467,7 +3467,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         313
                       </p>
@@ -3476,7 +3476,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -3485,7 +3485,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-3/ballot/313"
                         type="button"
                       >
@@ -3506,7 +3506,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -3515,7 +3515,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 19 (Jonesboro Fire Department)
                       </p>
@@ -3524,7 +3524,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         2112
                       </p>
@@ -3533,7 +3533,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -3542,7 +3542,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-3/ballot/2112"
                         type="button"
                       >
@@ -3563,7 +3563,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -3572,7 +3572,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 29 (Jonesboro Fire Department)
                       </p>
@@ -3581,7 +3581,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         1789
                       </p>
@@ -3590,7 +3590,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -3599,7 +3599,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-3/ballot/1789"
                         type="button"
                       >
@@ -3620,7 +3620,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -3629,7 +3629,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 13 (Jonesboro Fire Department)
                       </p>
@@ -3638,7 +3638,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         313
                       </p>
@@ -3647,7 +3647,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -3656,7 +3656,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-4/ballot/313"
                         type="button"
                       >
@@ -3677,7 +3677,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -3686,7 +3686,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 19 (Jonesboro Fire Department)
                       </p>
@@ -3695,7 +3695,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         2112
                       </p>
@@ -3704,7 +3704,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -3713,7 +3713,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-4/ballot/2112"
                         type="button"
                       >
@@ -3734,7 +3734,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -3743,7 +3743,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 29 (Jonesboro Fire Department)
                       </p>
@@ -3752,7 +3752,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         1789
                       </p>
@@ -3761,7 +3761,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -3770,7 +3770,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-4/ballot/1789"
                         type="button"
                       >
@@ -3791,7 +3791,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -3800,7 +3800,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 13 (Jonesboro Fire Department)
                       </p>
@@ -3809,7 +3809,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         313
                       </p>
@@ -3818,7 +3818,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -3827,7 +3827,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-5/ballot/313"
                         type="button"
                       >
@@ -3848,7 +3848,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -3857,7 +3857,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 19 (Jonesboro Fire Department)
                       </p>
@@ -3866,7 +3866,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         2112
                       </p>
@@ -3875,7 +3875,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -3884,7 +3884,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-5/ballot/2112"
                         type="button"
                       >
@@ -3905,7 +3905,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -3914,7 +3914,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 29 (Jonesboro Fire Department)
                       </p>
@@ -3923,7 +3923,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         1789
                       </p>
@@ -3932,7 +3932,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -3941,7 +3941,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-5/ballot/1789"
                         type="button"
                       >
@@ -3962,7 +3962,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -3971,7 +3971,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 13 (Jonesboro Fire Department)
                       </p>
@@ -3980,7 +3980,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         313
                       </p>
@@ -3989,7 +3989,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -3998,7 +3998,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-6/ballot/313"
                         type="button"
                       >
@@ -4019,7 +4019,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -4028,7 +4028,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 19 (Jonesboro Fire Department)
                       </p>
@@ -4037,7 +4037,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         2112
                       </p>
@@ -4046,7 +4046,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -4055,7 +4055,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-6/ballot/2112"
                         type="button"
                       >
@@ -4076,7 +4076,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -4085,7 +4085,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 29 (Jonesboro Fire Department)
                       </p>
@@ -4094,7 +4094,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         1789
                       </p>
@@ -4103,7 +4103,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -4112,7 +4112,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-6/ballot/1789"
                         type="button"
                       >
@@ -4133,7 +4133,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -4142,7 +4142,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 13 (Jonesboro Fire Department)
                       </p>
@@ -4151,7 +4151,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         313
                       </p>
@@ -4160,7 +4160,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -4169,7 +4169,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-7/ballot/313"
                         type="button"
                       >
@@ -4190,7 +4190,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -4199,7 +4199,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 19 (Jonesboro Fire Department)
                       </p>
@@ -4208,7 +4208,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         2112
                       </p>
@@ -4217,7 +4217,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -4226,7 +4226,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-7/ballot/2112"
                         type="button"
                       >
@@ -4247,7 +4247,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -4256,7 +4256,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 29 (Jonesboro Fire Department)
                       </p>
@@ -4265,7 +4265,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         1789
                       </p>
@@ -4274,7 +4274,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -4283,7 +4283,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-7/ballot/1789"
                         type="button"
                       >
@@ -4304,7 +4304,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -4313,7 +4313,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 13 (Jonesboro Fire Department)
                       </p>
@@ -4322,7 +4322,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         313
                       </p>
@@ -4331,7 +4331,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -4340,7 +4340,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-8/ballot/313"
                         type="button"
                       >
@@ -4361,7 +4361,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -4370,7 +4370,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 19 (Jonesboro Fire Department)
                       </p>
@@ -4379,7 +4379,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         2112
                       </p>
@@ -4388,7 +4388,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -4397,7 +4397,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-8/ballot/2112"
                         type="button"
                       >
@@ -4418,7 +4418,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -4427,7 +4427,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 29 (Jonesboro Fire Department)
                       </p>
@@ -4436,7 +4436,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         1789
                       </p>
@@ -4445,7 +4445,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -4454,7 +4454,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-8/ballot/1789"
                         type="button"
                       >
@@ -4475,7 +4475,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -4484,7 +4484,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 13 (Jonesboro Fire Department)
                       </p>
@@ -4493,7 +4493,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         313
                       </p>
@@ -4502,7 +4502,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -4511,7 +4511,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-9/ballot/313"
                         type="button"
                       >
@@ -4532,7 +4532,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -4541,7 +4541,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 19 (Jonesboro Fire Department)
                       </p>
@@ -4550,7 +4550,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         2112
                       </p>
@@ -4559,7 +4559,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -4568,7 +4568,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-9/ballot/2112"
                         type="button"
                       >
@@ -4589,7 +4589,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -4598,7 +4598,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 29 (Jonesboro Fire Department)
                       </p>
@@ -4607,7 +4607,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         1789
                       </p>
@@ -4616,7 +4616,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -4625,7 +4625,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-9/ballot/1789"
                         type="button"
                       >
@@ -4643,7 +4643,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
               </table>
             </div>
             <button
-              class="bp3-button bp3-disabled bp3-large sc-gHboQg jElwWY"
+              class="bp3-button bp3-disabled bp3-large sc-cpmLhU bIOgkC"
               disabled=""
               href="/election/1/audit-board/audit-board-1/signoff"
               tabindex="-1"
@@ -4657,7 +4657,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
             </button>
           </div>
           <div
-            class="sc-lkqHmb QdwnG"
+            class="sc-fYiAbW cVavGr"
           >
             <h4
               class="bp3-heading"
@@ -4665,7 +4665,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no audit
               Instructions
             </h4>
             <ol
-              class="bp3-list sc-fOKMvo bKYIhG"
+              class="bp3-list sc-eerKOB koAbpa"
             >
               <li>
                 Locate and retrieve the list of ballots to audit from storage.
@@ -4754,13 +4754,13 @@ exports[`AuditBoardView > ballot interaction > renders board table with no ballo
       class="board-table-container"
     >
       <div
-        class="sc-exAgwC iuSgWq"
+        class="sc-bXGyLb hcGtwd"
       >
         <section
-          class="sc-bwzfXH sc-cQFLBn cOFlSG"
+          class="sc-bwzfXH sc-lkqHmb egPBqG"
         >
           <div
-            class="sc-iujRgT fCuZgk"
+            class="sc-gojNiO gSDqcI"
           >
             <p>
               0
@@ -4769,23 +4769,23 @@ exports[`AuditBoardView > ballot interaction > renders board table with no ballo
                ballots have been audited.
             </p>
             <span
-              class="summary-label sc-krvtoX ePOmDT"
+              class="summary-label sc-gHboQg cxXeOP"
             >
               Audited: 
               0
             </span>
             <span
-              class="summary-label sc-fYiAbW fMRYmT"
+              class="summary-label sc-eilVRo glcAXK"
             >
               Not Audited: 
               0
             </span>
           </div>
           <div
-            class="sc-GMQeP eJUSYu"
+            class="sc-daURTG iplZSz"
           >
             <button
-              class="bp3-button bp3-intent-success sc-dUjcNx gZaWK"
+              class="bp3-button bp3-intent-success sc-emmjRN clJkMu"
               href="/election/1/audit-board/audit-board-1/signoff"
               type="button"
             >
@@ -4802,10 +4802,10 @@ exports[`AuditBoardView > ballot interaction > renders board table with no ballo
         class="sc-bwzfXH bIwzaO"
       >
         <div
-          class="sc-gojNiO ipLgdo"
+          class="sc-eLExRp idhsyl"
         >
           <div
-            class="sc-daURTG heRUho"
+            class="sc-cbkKFq jOZyOQ"
           >
             <h3
               class="bp3-heading"
@@ -4814,10 +4814,10 @@ exports[`AuditBoardView > ballot interaction > renders board table with no ballo
               Audit Board #1
             </h3>
             <div
-              class="sc-bXGyLb guOIFU"
+              class="sc-krvtoX cLMSyS"
             >
               <table
-                class="sc-eNQAEJ iZDxIm"
+                class="sc-eHgmQL ehyFrf"
                 role="table"
               >
                 <thead>
@@ -4978,7 +4978,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no ballo
               </table>
             </div>
             <button
-              class="bp3-button bp3-large bp3-intent-success sc-gHboQg jElwWY"
+              class="bp3-button bp3-large bp3-intent-success sc-cpmLhU bIOgkC"
               href="/election/1/audit-board/audit-board-1/signoff"
               type="button"
             >
@@ -4990,7 +4990,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no ballo
             </button>
           </div>
           <div
-            class="sc-lkqHmb QdwnG"
+            class="sc-fYiAbW cVavGr"
           >
             <h4
               class="bp3-heading"
@@ -4998,7 +4998,7 @@ exports[`AuditBoardView > ballot interaction > renders board table with no ballo
               Instructions
             </h4>
             <ol
-              class="bp3-list sc-fOKMvo bKYIhG"
+              class="bp3-list sc-eerKOB koAbpa"
             >
               <li>
                 Locate and retrieve the list of ballots to audit from storage.
@@ -5087,13 +5087,13 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
       class="board-table-container"
     >
       <div
-        class="sc-exAgwC iuSgWq"
+        class="sc-bXGyLb hcGtwd"
       >
         <section
-          class="sc-bwzfXH sc-cQFLBn cOFlSG"
+          class="sc-bwzfXH sc-lkqHmb egPBqG"
         >
           <div
-            class="sc-iujRgT fCuZgk"
+            class="sc-gojNiO gSDqcI"
           >
             <p>
               18
@@ -5102,23 +5102,23 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                ballots have been audited.
             </p>
             <span
-              class="summary-label sc-krvtoX ePOmDT"
+              class="summary-label sc-gHboQg cxXeOP"
             >
               Audited: 
               18
             </span>
             <span
-              class="summary-label sc-fYiAbW fMRYmT"
+              class="summary-label sc-eilVRo glcAXK"
             >
               Not Audited: 
               9
             </span>
           </div>
           <div
-            class="sc-GMQeP eJUSYu"
+            class="sc-daURTG iplZSz"
           >
             <button
-              class="bp3-button bp3-intent-success sc-dUjcNx gZaWK"
+              class="bp3-button bp3-intent-success sc-emmjRN clJkMu"
               href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/2112"
               type="button"
             >
@@ -5135,10 +5135,10 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
         class="sc-bwzfXH bIwzaO"
       >
         <div
-          class="sc-gojNiO ipLgdo"
+          class="sc-eLExRp idhsyl"
         >
           <div
-            class="sc-daURTG heRUho"
+            class="sc-cbkKFq jOZyOQ"
           >
             <h3
               class="bp3-heading"
@@ -5147,10 +5147,10 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
               Audit Board #1
             </h3>
             <div
-              class="sc-bXGyLb guOIFU"
+              class="sc-krvtoX cLMSyS"
             >
               <table
-                class="sc-eNQAEJ iZDxIm"
+                class="sc-eHgmQL ehyFrf"
                 role="table"
               >
                 <thead>
@@ -5352,7 +5352,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -5362,7 +5362,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 13 (Jonesboro Fire Department)
@@ -5372,7 +5372,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         313
@@ -5382,7 +5382,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -5411,7 +5411,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/313"
                         type="button"
                       >
@@ -5430,7 +5430,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -5439,7 +5439,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 19 (Jonesboro Fire Department)
                       </p>
@@ -5448,7 +5448,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         2112
                       </p>
@@ -5457,7 +5457,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -5466,7 +5466,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/2112"
                         type="button"
                       >
@@ -5487,7 +5487,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -5497,7 +5497,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 29 (Jonesboro Fire Department)
@@ -5507,7 +5507,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         1789
@@ -5517,7 +5517,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -5546,7 +5546,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/1789"
                         type="button"
                       >
@@ -5565,7 +5565,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -5575,7 +5575,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 13 (Jonesboro Fire Department)
@@ -5585,7 +5585,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         313
@@ -5595,7 +5595,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -5624,7 +5624,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-2/ballot/313"
                         type="button"
                       >
@@ -5643,7 +5643,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -5652,7 +5652,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 19 (Jonesboro Fire Department)
                       </p>
@@ -5661,7 +5661,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         2112
                       </p>
@@ -5670,7 +5670,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -5679,7 +5679,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-2/ballot/2112"
                         type="button"
                       >
@@ -5700,7 +5700,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -5710,7 +5710,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 29 (Jonesboro Fire Department)
@@ -5720,7 +5720,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         1789
@@ -5730,7 +5730,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -5759,7 +5759,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-2/ballot/1789"
                         type="button"
                       >
@@ -5778,7 +5778,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -5788,7 +5788,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 13 (Jonesboro Fire Department)
@@ -5798,7 +5798,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         313
@@ -5808,7 +5808,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -5837,7 +5837,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-3/ballot/313"
                         type="button"
                       >
@@ -5856,7 +5856,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -5865,7 +5865,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 19 (Jonesboro Fire Department)
                       </p>
@@ -5874,7 +5874,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         2112
                       </p>
@@ -5883,7 +5883,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -5892,7 +5892,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-3/ballot/2112"
                         type="button"
                       >
@@ -5913,7 +5913,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -5923,7 +5923,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 29 (Jonesboro Fire Department)
@@ -5933,7 +5933,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         1789
@@ -5943,7 +5943,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -5972,7 +5972,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-3/ballot/1789"
                         type="button"
                       >
@@ -5991,7 +5991,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -6001,7 +6001,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 13 (Jonesboro Fire Department)
@@ -6011,7 +6011,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         313
@@ -6021,7 +6021,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -6050,7 +6050,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-4/ballot/313"
                         type="button"
                       >
@@ -6069,7 +6069,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -6078,7 +6078,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 19 (Jonesboro Fire Department)
                       </p>
@@ -6087,7 +6087,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         2112
                       </p>
@@ -6096,7 +6096,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -6105,7 +6105,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-4/ballot/2112"
                         type="button"
                       >
@@ -6126,7 +6126,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -6136,7 +6136,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 29 (Jonesboro Fire Department)
@@ -6146,7 +6146,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         1789
@@ -6156,7 +6156,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -6185,7 +6185,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-4/ballot/1789"
                         type="button"
                       >
@@ -6204,7 +6204,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -6214,7 +6214,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 13 (Jonesboro Fire Department)
@@ -6224,7 +6224,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         313
@@ -6234,7 +6234,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -6263,7 +6263,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-5/ballot/313"
                         type="button"
                       >
@@ -6282,7 +6282,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -6291,7 +6291,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 19 (Jonesboro Fire Department)
                       </p>
@@ -6300,7 +6300,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         2112
                       </p>
@@ -6309,7 +6309,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -6318,7 +6318,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-5/ballot/2112"
                         type="button"
                       >
@@ -6339,7 +6339,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -6349,7 +6349,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 29 (Jonesboro Fire Department)
@@ -6359,7 +6359,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         1789
@@ -6369,7 +6369,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -6398,7 +6398,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-5/ballot/1789"
                         type="button"
                       >
@@ -6417,7 +6417,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -6427,7 +6427,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 13 (Jonesboro Fire Department)
@@ -6437,7 +6437,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         313
@@ -6447,7 +6447,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -6476,7 +6476,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-6/ballot/313"
                         type="button"
                       >
@@ -6495,7 +6495,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -6504,7 +6504,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 19 (Jonesboro Fire Department)
                       </p>
@@ -6513,7 +6513,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         2112
                       </p>
@@ -6522,7 +6522,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -6531,7 +6531,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-6/ballot/2112"
                         type="button"
                       >
@@ -6552,7 +6552,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -6562,7 +6562,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 29 (Jonesboro Fire Department)
@@ -6572,7 +6572,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         1789
@@ -6582,7 +6582,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -6611,7 +6611,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-6/ballot/1789"
                         type="button"
                       >
@@ -6630,7 +6630,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -6640,7 +6640,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 13 (Jonesboro Fire Department)
@@ -6650,7 +6650,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         313
@@ -6660,7 +6660,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -6689,7 +6689,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-7/ballot/313"
                         type="button"
                       >
@@ -6708,7 +6708,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -6717,7 +6717,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 19 (Jonesboro Fire Department)
                       </p>
@@ -6726,7 +6726,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         2112
                       </p>
@@ -6735,7 +6735,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -6744,7 +6744,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-7/ballot/2112"
                         type="button"
                       >
@@ -6765,7 +6765,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -6775,7 +6775,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 29 (Jonesboro Fire Department)
@@ -6785,7 +6785,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         1789
@@ -6795,7 +6795,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -6824,7 +6824,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-7/ballot/1789"
                         type="button"
                       >
@@ -6843,7 +6843,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -6853,7 +6853,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 13 (Jonesboro Fire Department)
@@ -6863,7 +6863,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         313
@@ -6873,7 +6873,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -6902,7 +6902,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-8/ballot/313"
                         type="button"
                       >
@@ -6921,7 +6921,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -6930,7 +6930,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 19 (Jonesboro Fire Department)
                       </p>
@@ -6939,7 +6939,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         2112
                       </p>
@@ -6948,7 +6948,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -6957,7 +6957,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-8/ballot/2112"
                         type="button"
                       >
@@ -6978,7 +6978,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -6988,7 +6988,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 29 (Jonesboro Fire Department)
@@ -6998,7 +6998,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         1789
@@ -7008,7 +7008,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -7037,7 +7037,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-8/ballot/1789"
                         type="button"
                       >
@@ -7056,7 +7056,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -7066,7 +7066,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 13 (Jonesboro Fire Department)
@@ -7076,7 +7076,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         313
@@ -7086,7 +7086,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -7115,7 +7115,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-9/ballot/313"
                         type="button"
                       >
@@ -7134,7 +7134,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         11
                       </p>
@@ -7143,7 +7143,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         0003-04-Precinct 19 (Jonesboro Fire Department)
                       </p>
@@ -7152,7 +7152,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                       >
                         2112
                       </p>
@@ -7161,7 +7161,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <span
-                        class="sc-fYiAbW fMRYmT"
+                        class="sc-eilVRo glcAXK"
                       >
                         Not Audited
                       </span>
@@ -7170,7 +7170,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-9/ballot/2112"
                         type="button"
                       >
@@ -7191,7 +7191,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         11
@@ -7201,7 +7201,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         0003-04-Precinct 29 (Jonesboro Fire Department)
@@ -7211,7 +7211,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         1789
@@ -7221,7 +7221,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <p
-                        class="sc-eilVRo cNyMpE"
+                        class="sc-dymIpo gHZYlV"
                         style="color: rgb(138, 155, 168);"
                       >
                         <span
@@ -7250,7 +7250,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
                       role="cell"
                     >
                       <button
-                        class="bp3-button bp3-fill bp3-minimal sc-eLExRp doEISP"
+                        class="bp3-button bp3-fill bp3-minimal sc-fOKMvo htVrhS"
                         href="/election/1/audit-board/audit-board-1/batch/batch-id-9/ballot/1789"
                         type="button"
                       >
@@ -7266,7 +7266,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
               </table>
             </div>
             <button
-              class="bp3-button bp3-disabled bp3-large sc-gHboQg jElwWY"
+              class="bp3-button bp3-disabled bp3-large sc-cpmLhU bIOgkC"
               disabled=""
               href="/election/1/audit-board/audit-board-1/signoff"
               tabindex="-1"
@@ -7280,7 +7280,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
             </button>
           </div>
           <div
-            class="sc-lkqHmb QdwnG"
+            class="sc-fYiAbW cVavGr"
           >
             <h4
               class="bp3-heading"
@@ -7288,7 +7288,7 @@ exports[`AuditBoardView > member form > submits, goes to ballot table, and heade
               Instructions
             </h4>
             <ol
-              class="bp3-list sc-fOKMvo bKYIhG"
+              class="bp3-list sc-eerKOB koAbpa"
             >
               <li>
                 Locate and retrieve the list of ballots to audit from storage.

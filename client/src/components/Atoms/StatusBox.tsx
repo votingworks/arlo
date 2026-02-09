@@ -21,6 +21,7 @@ import AsyncButton from './AsyncButton'
 const SpacedH1 = styled(H1)`
   &.bp3-heading {
     margin-bottom: 30px;
+    line-height: 36px;
   }
 `
 

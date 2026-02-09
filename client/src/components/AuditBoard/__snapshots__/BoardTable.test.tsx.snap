@@ -40,7 +40,7 @@ exports[`BoardTable > enables the submit button when all ballots are done 1`] = 
           </span>
         </div>
         <div
-          class="sc-bZQynM iHGTTL"
+          class="sc-bZQynM jLvZMZ"
         >
           <button
             class="bp3-button bp3-intent-success sc-kAzzGY brfNjR"
@@ -336,7 +336,7 @@ exports[`BoardTable > enables the submit button when all ballots are done 1`] = 
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-1/ballot/313"
                       type="button"
                     >
@@ -414,7 +414,7 @@ exports[`BoardTable > enables the submit button when all ballots are done 1`] = 
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-1/ballot/2112"
                       type="button"
                     >
@@ -492,7 +492,7 @@ exports[`BoardTable > enables the submit button when all ballots are done 1`] = 
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-1/ballot/1789"
                       type="button"
                     >
@@ -570,7 +570,7 @@ exports[`BoardTable > enables the submit button when all ballots are done 1`] = 
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-1/ballot/1965"
                       type="button"
                     >
@@ -659,7 +659,7 @@ exports[`BoardTable > renders container and no tabulator columns 1`] = `
           </span>
         </div>
         <div
-          class="sc-bZQynM iHGTTL"
+          class="sc-bZQynM jLvZMZ"
         >
           <button
             class="bp3-button bp3-intent-success sc-kAzzGY brfNjR"
@@ -955,7 +955,7 @@ exports[`BoardTable > renders container and no tabulator columns 1`] = `
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-1/ballot/313"
                       type="button"
                     >
@@ -1044,7 +1044,7 @@ exports[`BoardTable > renders container and tabulator columns 1`] = `
           </span>
         </div>
         <div
-          class="sc-bZQynM iHGTTL"
+          class="sc-bZQynM jLvZMZ"
         >
           <button
             class="bp3-button bp3-intent-success sc-kAzzGY brfNjR"
@@ -1387,7 +1387,7 @@ exports[`BoardTable > renders container and tabulator columns 1`] = `
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-1/ballot/313"
                       type="button"
                     >
@@ -1476,7 +1476,7 @@ exports[`BoardTable > renders no container and no tabulator columns 1`] = `
           </span>
         </div>
         <div
-          class="sc-bZQynM iHGTTL"
+          class="sc-bZQynM jLvZMZ"
         >
           <button
             class="bp3-button bp3-intent-success sc-kAzzGY brfNjR"
@@ -1725,7 +1725,7 @@ exports[`BoardTable > renders no container and no tabulator columns 1`] = `
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-1/ballot/313"
                       type="button"
                     >
@@ -1814,7 +1814,7 @@ exports[`BoardTable > renders tabulator and no container columns 1`] = `
           </span>
         </div>
         <div
-          class="sc-bZQynM iHGTTL"
+          class="sc-bZQynM jLvZMZ"
         >
           <button
             class="bp3-button bp3-intent-success sc-kAzzGY brfNjR"
@@ -2110,7 +2110,7 @@ exports[`BoardTable > renders tabulator and no container columns 1`] = `
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-1/ballot/313"
                       type="button"
                     >
@@ -2199,7 +2199,7 @@ exports[`BoardTable > shows audit first ballot button when no ballots are audite
           </span>
         </div>
         <div
-          class="sc-bZQynM iHGTTL"
+          class="sc-bZQynM jLvZMZ"
         >
           <button
             class="bp3-button bp3-intent-success sc-kAzzGY brfNjR"
@@ -2472,7 +2472,7 @@ exports[`BoardTable > shows audit first ballot button when no ballots are audite
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-1/ballot/313"
                       type="button"
                     >
@@ -2529,7 +2529,7 @@ exports[`BoardTable > shows audit first ballot button when no ballots are audite
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-1/ballot/2112"
                       type="button"
                     >
@@ -2586,7 +2586,7 @@ exports[`BoardTable > shows audit first ballot button when no ballots are audite
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-1/ballot/1789"
                       type="button"
                     >
@@ -2643,7 +2643,7 @@ exports[`BoardTable > shows audit first ballot button when no ballots are audite
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-2/ballot/313"
                       type="button"
                     >
@@ -2700,7 +2700,7 @@ exports[`BoardTable > shows audit first ballot button when no ballots are audite
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-2/ballot/2112"
                       type="button"
                     >
@@ -2757,7 +2757,7 @@ exports[`BoardTable > shows audit first ballot button when no ballots are audite
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-2/ballot/1789"
                       type="button"
                     >
@@ -2814,7 +2814,7 @@ exports[`BoardTable > shows audit first ballot button when no ballots are audite
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-3/ballot/313"
                       type="button"
                     >
@@ -2871,7 +2871,7 @@ exports[`BoardTable > shows audit first ballot button when no ballots are audite
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-3/ballot/2112"
                       type="button"
                     >
@@ -2928,7 +2928,7 @@ exports[`BoardTable > shows audit first ballot button when no ballots are audite
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-3/ballot/1789"
                       type="button"
                     >
@@ -2985,7 +2985,7 @@ exports[`BoardTable > shows audit first ballot button when no ballots are audite
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-4/ballot/313"
                       type="button"
                     >
@@ -3042,7 +3042,7 @@ exports[`BoardTable > shows audit first ballot button when no ballots are audite
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-4/ballot/2112"
                       type="button"
                     >
@@ -3099,7 +3099,7 @@ exports[`BoardTable > shows audit first ballot button when no ballots are audite
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-4/ballot/1789"
                       type="button"
                     >
@@ -3156,7 +3156,7 @@ exports[`BoardTable > shows audit first ballot button when no ballots are audite
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-5/ballot/313"
                       type="button"
                     >
@@ -3213,7 +3213,7 @@ exports[`BoardTable > shows audit first ballot button when no ballots are audite
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-5/ballot/2112"
                       type="button"
                     >
@@ -3270,7 +3270,7 @@ exports[`BoardTable > shows audit first ballot button when no ballots are audite
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-5/ballot/1789"
                       type="button"
                     >
@@ -3327,7 +3327,7 @@ exports[`BoardTable > shows audit first ballot button when no ballots are audite
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-6/ballot/313"
                       type="button"
                     >
@@ -3384,7 +3384,7 @@ exports[`BoardTable > shows audit first ballot button when no ballots are audite
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-6/ballot/2112"
                       type="button"
                     >
@@ -3441,7 +3441,7 @@ exports[`BoardTable > shows audit first ballot button when no ballots are audite
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-6/ballot/1789"
                       type="button"
                     >
@@ -3498,7 +3498,7 @@ exports[`BoardTable > shows audit first ballot button when no ballots are audite
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-7/ballot/313"
                       type="button"
                     >
@@ -3555,7 +3555,7 @@ exports[`BoardTable > shows audit first ballot button when no ballots are audite
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-7/ballot/2112"
                       type="button"
                     >
@@ -3612,7 +3612,7 @@ exports[`BoardTable > shows audit first ballot button when no ballots are audite
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-7/ballot/1789"
                       type="button"
                     >
@@ -3669,7 +3669,7 @@ exports[`BoardTable > shows audit first ballot button when no ballots are audite
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-8/ballot/313"
                       type="button"
                     >
@@ -3726,7 +3726,7 @@ exports[`BoardTable > shows audit first ballot button when no ballots are audite
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-8/ballot/2112"
                       type="button"
                     >
@@ -3783,7 +3783,7 @@ exports[`BoardTable > shows audit first ballot button when no ballots are audite
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-8/ballot/1789"
                       type="button"
                     >
@@ -3840,7 +3840,7 @@ exports[`BoardTable > shows audit first ballot button when no ballots are audite
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-9/ballot/313"
                       type="button"
                     >
@@ -3897,7 +3897,7 @@ exports[`BoardTable > shows audit first ballot button when no ballots are audite
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-9/ballot/2112"
                       type="button"
                     >
@@ -3954,7 +3954,7 @@ exports[`BoardTable > shows audit first ballot button when no ballots are audite
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-9/ballot/1789"
                       type="button"
                     >
@@ -4047,7 +4047,7 @@ exports[`BoardTable > shows audit next ballot button when some are remaining to 
           </span>
         </div>
         <div
-          class="sc-bZQynM iHGTTL"
+          class="sc-bZQynM jLvZMZ"
         >
           <button
             class="bp3-button bp3-intent-success sc-kAzzGY brfNjR"
@@ -4343,7 +4343,7 @@ exports[`BoardTable > shows audit next ballot button when some are remaining to 
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-1/ballot/313"
                       type="button"
                     >
@@ -4398,7 +4398,7 @@ exports[`BoardTable > shows audit next ballot button when some are remaining to 
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-1/ballot/2112"
                       type="button"
                     >
@@ -4478,7 +4478,7 @@ exports[`BoardTable > shows audit next ballot button when some are remaining to 
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-1/ballot/1789"
                       type="button"
                     >
@@ -4556,7 +4556,7 @@ exports[`BoardTable > shows audit next ballot button when some are remaining to 
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-2/ballot/313"
                       type="button"
                     >
@@ -4611,7 +4611,7 @@ exports[`BoardTable > shows audit next ballot button when some are remaining to 
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-2/ballot/2112"
                       type="button"
                     >
@@ -4691,7 +4691,7 @@ exports[`BoardTable > shows audit next ballot button when some are remaining to 
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-2/ballot/1789"
                       type="button"
                     >
@@ -4769,7 +4769,7 @@ exports[`BoardTable > shows audit next ballot button when some are remaining to 
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-3/ballot/313"
                       type="button"
                     >
@@ -4824,7 +4824,7 @@ exports[`BoardTable > shows audit next ballot button when some are remaining to 
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-3/ballot/2112"
                       type="button"
                     >
@@ -4904,7 +4904,7 @@ exports[`BoardTable > shows audit next ballot button when some are remaining to 
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-3/ballot/1789"
                       type="button"
                     >
@@ -4982,7 +4982,7 @@ exports[`BoardTable > shows audit next ballot button when some are remaining to 
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-4/ballot/313"
                       type="button"
                     >
@@ -5037,7 +5037,7 @@ exports[`BoardTable > shows audit next ballot button when some are remaining to 
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-4/ballot/2112"
                       type="button"
                     >
@@ -5117,7 +5117,7 @@ exports[`BoardTable > shows audit next ballot button when some are remaining to 
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-4/ballot/1789"
                       type="button"
                     >
@@ -5195,7 +5195,7 @@ exports[`BoardTable > shows audit next ballot button when some are remaining to 
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-5/ballot/313"
                       type="button"
                     >
@@ -5250,7 +5250,7 @@ exports[`BoardTable > shows audit next ballot button when some are remaining to 
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-5/ballot/2112"
                       type="button"
                     >
@@ -5330,7 +5330,7 @@ exports[`BoardTable > shows audit next ballot button when some are remaining to 
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-5/ballot/1789"
                       type="button"
                     >
@@ -5408,7 +5408,7 @@ exports[`BoardTable > shows audit next ballot button when some are remaining to 
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-6/ballot/313"
                       type="button"
                     >
@@ -5463,7 +5463,7 @@ exports[`BoardTable > shows audit next ballot button when some are remaining to 
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-6/ballot/2112"
                       type="button"
                     >
@@ -5543,7 +5543,7 @@ exports[`BoardTable > shows audit next ballot button when some are remaining to 
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-6/ballot/1789"
                       type="button"
                     >
@@ -5621,7 +5621,7 @@ exports[`BoardTable > shows audit next ballot button when some are remaining to 
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-7/ballot/313"
                       type="button"
                     >
@@ -5676,7 +5676,7 @@ exports[`BoardTable > shows audit next ballot button when some are remaining to 
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-7/ballot/2112"
                       type="button"
                     >
@@ -5756,7 +5756,7 @@ exports[`BoardTable > shows audit next ballot button when some are remaining to 
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-7/ballot/1789"
                       type="button"
                     >
@@ -5834,7 +5834,7 @@ exports[`BoardTable > shows audit next ballot button when some are remaining to 
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-8/ballot/313"
                       type="button"
                     >
@@ -5889,7 +5889,7 @@ exports[`BoardTable > shows audit next ballot button when some are remaining to 
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-8/ballot/2112"
                       type="button"
                     >
@@ -5969,7 +5969,7 @@ exports[`BoardTable > shows audit next ballot button when some are remaining to 
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-8/ballot/1789"
                       type="button"
                     >
@@ -6047,7 +6047,7 @@ exports[`BoardTable > shows audit next ballot button when some are remaining to 
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-9/ballot/313"
                       type="button"
                     >
@@ -6102,7 +6102,7 @@ exports[`BoardTable > shows audit next ballot button when some are remaining to 
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-9/ballot/2112"
                       type="button"
                     >
@@ -6182,7 +6182,7 @@ exports[`BoardTable > shows audit next ballot button when some are remaining to 
                     role="cell"
                   >
                     <button
-                      class="bp3-button bp3-fill bp3-minimal sc-VigVT iXdFsj"
+                      class="bp3-button bp3-fill bp3-minimal sc-VigVT kkfPNi"
                       href="/home/batch/batch-id-9/ballot/1789"
                       type="button"
                     >
