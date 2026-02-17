@@ -107,7 +107,11 @@ export const useUploadFiles = (key: string[], url: string) => {
         addCSRFToken({
           method: 'POST',
           data: uploadFileFormData,
-          onUploadProgress: p => setProgress(p.loaded / p.total),
+          onUploadProgress: p => {
+            if (p.total) {
+              setProgress(p.loaded / p.total)
+            }
+          },
         })
       )
 
