@@ -92,8 +92,11 @@ const putCSVFile = async (
       addCSRFToken({
         method: 'POST',
         data: uploadFileFormData,
-        onUploadProgress: progress =>
-          trackProgress(progress.loaded / progress.total),
+        onUploadProgress: progress => {
+          if (progress.total) {
+            trackProgress(progress.loaded / progress.total)
+          }
+        },
       })
     )
 

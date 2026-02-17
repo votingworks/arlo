@@ -1,5 +1,10 @@
 import { expect, vi } from 'vitest'
-import axios, { AxiosRequestConfig, AxiosError, AxiosResponse } from 'axios'
+import axios, {
+  AxiosRequestConfig,
+  AxiosError,
+  AxiosResponse,
+  AxiosProgressEvent,
+} from 'axios'
 import React from 'react'
 import { createLocation, createMemoryHistory, MemoryHistory } from 'history'
 import { match as routerMatch, Router } from 'react-router-dom'
@@ -130,7 +135,7 @@ function maybeMockAxios() {
         { onUploadProgress, data, ...options }: AxiosRequestConfig
       ) => {
         if (onUploadProgress)
-          onUploadProgress({ loaded: 1, total: 2 } as ProgressEvent)
+          onUploadProgress({ loaded: 1, total: 2 } as AxiosProgressEvent)
         const response = await fetch(url, {
           ...options,
           body: data,
