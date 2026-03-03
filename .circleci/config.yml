@@ -78,7 +78,10 @@ jobs:
       - run:
           name: test server
           command: |
-            poetry run pytest -n 8 --cov=.
+            mkdir -p server/test_results
+            poetry run pytest -n 8 --cov=. --junitxml=server/test-results/junit.xml
+      - store_test_results:
+          path: server/test-results
 
   build-and-test-client:
     executor: arlo
@@ -99,6 +102,8 @@ jobs:
           name: test client
           command: |
             make -C client test
+      - store_test_results:
+          path: client/test_results
 
   cypress:
     executor: arlo
