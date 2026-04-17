@@ -6,6 +6,7 @@ def is_enabled_sample_extra_batches_by_counting_group(election: Election):
         election.organization_id
         in [
             "b216ad0d-1481-44e4-a2c1-95da40175084",  # Georgia
+            "99d281ed-ad95-4fb7-b92f-76fc4bfdd198", # Ginny's Sandbox for Georgia
             "TEST-ORG/sample-extra-batches-by-counting-group/automatically-end-audit-after-one-round",  # For tests
             "TEST-ORG/sample-extra-batches-by-counting-group",  # For tests
         ]
