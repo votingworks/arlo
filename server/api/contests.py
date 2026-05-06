@@ -454,6 +454,28 @@ CONTEST_CHOICE_NAME_STANDARDIZATIONS_SCHEMA = {
 }
 
 
+def unique_case_insensitive_match(
+    name: str, options: typing.Iterable[str]
+) -> str | None:
+    folded_name = name.casefold()
+    match = None
+    for option in options:
+        if option.casefold() == folded_name:
+            if match is not None:
+                return None
+            match = option
+    return match
+
+
+def standardization_with_case_insensitive_default(
+    name: str, valid_standardizations: dict[str, str | None], options: list[str]
+) -> str | None:
+    standardization = valid_standardizations.get(name)
+    if standardization in options:
+        return standardization
+    return unique_case_insensitive_match(name, options)
+
+
 @api.route("/election/<election_id>/contest/standardizations", methods=["PUT"])
 @restrict_access([UserType.AUDIT_ADMIN])
 def put_contest_name_standardizations(election: Election):
@@ -497,8 +519,11 @@ def get_contest_name_standardizations(election: Election):
             ).items()
             if cvr_contest_name in jurisdiction.cvr_contests_metadata
         }
+        cvr_contest_names = list(jurisdiction.cvr_contests_metadata.keys())
         return {
-            contest.name: valid_standardizations.get(contest.name)
+            contest.name: standardization_with_case_insensitive_default(
+                contest.name, valid_standardizations, cvr_contest_names
+            )
             for contest in contests_needing_standardization
         }
 
@@ -581,6 +606,8 @@ def get_contest_choice_name_standardizations(election: Election):  # pragma: no 
             ),
             None,
         )
+        if standardized_contest_choice_names is None:
+            return {}
 
         raw_standardizations = (
             typing.cast(
@@ -591,13 +618,16 @@ def get_contest_choice_name_standardizations(election: Election):  # pragma: no 
         ).get(contest.id, {})
 
         standardizations = {
-            cvr_choice_name: raw_standardizations.get(cvr_choice_name, None)
+            cvr_choice_name: standardization_with_case_insensitive_default(
+                cvr_choice_name,
+                raw_standardizations,
+                standardized_contest_choice_names,
+            )
             for cvr_choice_name in cvr_choice_names
             # Include as keys all CVR choice names requiring standardization and no other CVR
             # choice names. The frontend uses the presence of keys to determine whether
             # standardization is needed/outstanding.
-            if standardized_contest_choice_names is not None
-            and cvr_choice_name not in standardized_contest_choice_names
+            if cvr_choice_name not in standardized_contest_choice_names
         }
         return standardizations
 
