@@ -1,5 +1,6 @@
 import typing
 from collections import defaultdict
+from collections.abc import Iterable
 from flask import request, jsonify, session
 from werkzeug.exceptions import BadRequest, Conflict
 
@@ -454,9 +455,7 @@ CONTEST_CHOICE_NAME_STANDARDIZATIONS_SCHEMA = {
 }
 
 
-def unique_case_insensitive_match(
-    name: str, options: typing.Iterable[str]
-) -> str | None:
+def unique_case_insensitive_match(name: str, options: Iterable[str]) -> str | None:
     folded_name = name.casefold()
     match = None
     for option in options:
@@ -502,27 +501,39 @@ def put_contest_name_standardizations(election: Election):
 @api.route("/election/<election_id>/contest/standardizations", methods=["GET"])
 @restrict_access([UserType.AUDIT_ADMIN])
 def get_contest_name_standardizations(election: Election):
-    def standardizations(jurisdiction):
-        if jurisdiction.cvr_contests_metadata is None:
+    def standardizations(jurisdiction: Jurisdiction) -> dict[str, str | None] | None:
+        cvr_contests_metadata = typing.cast(
+            cvrs.CVR_CONTESTS_METADATA | None, jurisdiction.cvr_contests_metadata
+        )
+        if cvr_contests_metadata is None:
             return None
         contests_needing_standardization = [
             contest
             for contest in jurisdiction.contests
-            if contest.name not in jurisdiction.cvr_contests_metadata
+            if typing.cast(str, contest.name) not in cvr_contests_metadata
         ]
         # Since CVR contests could have changed since these mappings were
         # created, filter out any outdated standardizations.
+        saved_standardizations = (
+            typing.cast(
+                dict[str, str | None] | None,
+                jurisdiction.contest_name_standardizations,
+            )
+            or {}
+        )
         valid_standardizations = {
             contest_name: cvr_contest_name
-            for contest_name, cvr_contest_name in (
-                jurisdiction.contest_name_standardizations or {}
-            ).items()
-            if cvr_contest_name in jurisdiction.cvr_contests_metadata
+            for contest_name, cvr_contest_name in saved_standardizations.items()
+            if cvr_contest_name in cvr_contests_metadata
         }
-        cvr_contest_names = list(jurisdiction.cvr_contests_metadata.keys())
+        cvr_contest_names = list(cvr_contests_metadata.keys())
         return {
-            contest.name: standardization_with_case_insensitive_default(
-                contest.name, valid_standardizations, cvr_contest_names
+            typing.cast(
+                str, contest.name
+            ): standardization_with_case_insensitive_default(
+                typing.cast(str, contest.name),
+                valid_standardizations,
+                cvr_contest_names,
             )
             for contest in contests_needing_standardization
         }
@@ -540,7 +551,9 @@ def get_contest_name_standardizations(election: Election):
         },
         cvrContestNames={
             jurisdiction.id: list(
-                typing.cast(dict, jurisdiction.cvr_contests_metadata).keys()
+                typing.cast(
+                    cvrs.CVR_CONTESTS_METADATA, jurisdiction.cvr_contests_metadata
+                ).keys()
             )
             for jurisdiction, jurisdiction_standardizations in standardizations_by_jurisdiction.items()
             if jurisdiction_standardizations
@@ -582,29 +595,35 @@ def put_contest_choice_name_standardizations(election: Election):  # pragma: no 
 )
 @restrict_access([UserType.AUDIT_ADMIN])
 def get_contest_choice_name_standardizations(election: Election):  # pragma: no cover
-    def get_standardizations_for_jurisdiction_and_contest(jurisdiction, contest):
+    def get_standardizations_for_jurisdiction_and_contest(
+        jurisdiction: Jurisdiction, contest: Contest
+    ) -> dict[str, str | None]:
         # Get metadata with contest name standardizations applied but not contest choice name
         # standardizations applied
         metadata = cvrs.cvr_contests_metadata(
             jurisdiction, should_standardize_contest_choice_names=False
         )
         cvr_choice_names = list(
-            (metadata or {}).get(contest.name, {}).get("choices", {}).keys()
+            (metadata or {})
+            .get(typing.cast(str, contest.name), {})
+            .get("choices", {})
+            .keys()
         )
 
         standardized_contests = (
-            typing.cast(
-                list[dict[str, typing.Any]] | None, election.standardized_contests
-            )
+            typing.cast(list[dict[str, object]] | None, election.standardized_contests)
             or []
         )
-        standardized_contest_choice_names = next(
-            (
-                standardized_contest.get("choiceNames", None)
-                for standardized_contest in standardized_contests
-                if standardized_contest["name"] == contest.name
+        standardized_contest_choice_names = typing.cast(
+            list[str] | None,
+            next(
+                (
+                    standardized_contest.get("choiceNames", None)
+                    for standardized_contest in standardized_contests
+                    if standardized_contest["name"] == typing.cast(str, contest.name)
+                ),
+                None,
             ),
-            None,
         )
         if standardized_contest_choice_names is None:
             return {}
@@ -615,7 +634,7 @@ def get_contest_choice_name_standardizations(election: Election):  # pragma: no 
                 jurisdiction.contest_choice_name_standardizations,
             )
             or {}
-        ).get(contest.id, {})
+        ).get(typing.cast(str, contest.id), {})
 
         standardizations = {
             cvr_choice_name: standardization_with_case_insensitive_default(
