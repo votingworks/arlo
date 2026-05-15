@@ -1,3 +1,4 @@
+import io
 import json
 import uuid
 import pytest
@@ -6,7 +7,7 @@ from flask.testing import FlaskClient
 from ..helpers import *
 from ...database import db_session
 from ...models import *
-from ...api.contests import JSONDict
+from ...api.contests import JSONDict, should_reprocess_batch_tallies
 from ...auth import UserType
 
 
@@ -465,3 +466,96 @@ def test_audit_board_contests_list_order(
     assert contests[1]["name"] == db_contests[1].name
     assert contests[0]["choices"][0]["name"] == db_choices[0].name
     assert contests[0]["choices"][1]["name"] == db_choices[1].name
+
+
+def test_should_reprocess_batch_tallies_treats_missing_runoff_flag_as_false():
+    # serialize_contest emits isSubjectToRunoff for batch-comparison contests;
+    # the client conditionally omits it when false. Normalization must treat
+    # "missing" and "False" as equivalent so a no-op save doesn't trigger an
+    # unnecessary batch-tallies reprocess.
+    choice = {"id": "c1", "name": "candidate 1", "numVotes": 60}
+    base_contest = {
+        "id": "contest-1",
+        "name": "Contest 1",
+        "isTargeted": True,
+        "choices": [choice],
+        "numWinners": 1,
+        "votesAllowed": 1,
+        "jurisdictionIds": ["j1"],
+    }
+    previous = {**base_contest, "isSubjectToRunoff": False}
+    new_without = {**base_contest}
+
+    assert not should_reprocess_batch_tallies([previous], [new_without])
+
+
+def test_runoff_flag_rejected_for_non_batch_comparison(
+    client: FlaskClient,
+    org_id: str,
+    election_id: str,
+    jurisdiction_ids: list[str],
+):
+    expected_error = {
+        "errors": [
+            {
+                "message": "Runoff-subject contests are only supported for batch comparison audits",
+                "errorType": "Bad Request",
+            }
+        ]
+    }
+
+    # Ballot polling (default election_id fixture).
+    ballot_polling_contest = {
+        "id": str(uuid.uuid4()),
+        "name": "Contest 1",
+        "isTargeted": True,
+        "choices": [
+            {"id": str(uuid.uuid4()), "name": "Alice", "numVotes": 40},
+            {"id": str(uuid.uuid4()), "name": "Bob", "numVotes": 35},
+            {"id": str(uuid.uuid4()), "name": "Carla", "numVotes": 25},
+        ],
+        "totalBallotsCast": 100,
+        "numWinners": 1,
+        "votesAllowed": 1,
+        "jurisdictionIds": jurisdiction_ids,
+        "isSubjectToRunoff": True,
+    }
+    rv = put_json(
+        client, f"/api/election/{election_id}/contest", [ballot_polling_contest]
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == expected_error
+
+    # Ballot comparison uses a different (minimal) schema; verify the flag
+    # surfaces the same clean error rather than a generic schema rejection.
+    bc_election_id = create_election(
+        client,
+        audit_name="Test Audit ballot_comparison_runoff_rejection",
+        audit_type=AuditType.BALLOT_COMPARISON,
+        audit_math_type=AuditMathType.SUPERSIMPLE,
+        organization_id=org_id,
+    )
+    rv = upload_jurisdictions_file(
+        client,
+        io.BytesIO(
+            f"Jurisdiction,Admin Email\nJ1,j1-{bc_election_id}@example.com\n".encode()
+        ),
+        bc_election_id,
+    )
+    assert_ok(rv)
+    bc_jurisdiction_id = str(
+        Jurisdiction.query.filter_by(election_id=bc_election_id).one().id
+    )
+    ballot_comparison_contest = {
+        "id": str(uuid.uuid4()),
+        "name": "Contest 1",
+        "isTargeted": True,
+        "numWinners": 1,
+        "jurisdictionIds": [bc_jurisdiction_id],
+        "isSubjectToRunoff": True,
+    }
+    rv = put_json(
+        client, f"/api/election/{bc_election_id}/contest", [ballot_comparison_contest]
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == expected_error
