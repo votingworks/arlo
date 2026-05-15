@@ -244,6 +244,10 @@ def election_info_rows(election: Election):
 
 
 def contest_rows(election: Election):
+    show_runoff_columns = any(
+        contest.is_subject_to_runoff for contest in election.contests
+    )
+
     rows = [
         heading("CONTESTS"),
         [
@@ -268,7 +272,8 @@ def contest_rows(election: Election):
             ]
             if election.audit_type == AuditType.HYBRID
             else []
-        ),
+        )
+        + (["Runoff Law", "Reported Runoff Results"] if show_runoff_columns else []),
     ]
 
     for contest in election.contests:
@@ -321,6 +326,18 @@ def contest_rows(election: Election):
                         }
                     ),
                 ]
+
+        if show_runoff_columns:
+            if contest.is_subject_to_runoff:
+                row += [
+                    "Subject to runoff law",
+                    reported_runoff_results_label(
+                        [choice.num_votes for choice in contest.choices]
+                    ),
+                ]
+            else:
+                row += ["Not subject to runoff law", ""]
+
         rows.append(row)
     return rows
 
@@ -395,6 +412,14 @@ def audit_board_rows(election: Election):
                 ]
             )
     return rows
+
+
+def reported_runoff_results_label(choice_votes: list[int]) -> str:
+    valid_votes = sum(choice_votes)
+    leader_votes = max(choice_votes)
+    if leader_votes > valid_votes - leader_votes:
+        return "Majority received, no runoff required"
+    return "No majority, runoff required"
 
 
 def round_rows(election: Election):

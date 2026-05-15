@@ -184,16 +184,19 @@ The `__not_` prefix is purely an ID-naming convention — correctness comes from
   - Blank before the first successful computation.
 - Add `isSubjectToRunoff: Yup.boolean()` to [schema.ts](../client/src/components/AuditAdmin/Setup/Contests/schema.ts).
 
-### 5. Audit report CSV — surface the outcome
+### 5. Audit report CSV — surface the contest's runoff configuration
 
-The audit admin's CSV report ([server/api/reports.py:400](../server/api/reports.py#L400)) is the canonical place audit results land. Per-contest p-values and `is_complete` already appear in the "ROUNDS" section; we extend that section with a single outcome column for flagged contests.
+The audit admin's CSV report ([server/api/reports.py](../server/api/reports.py)) has a `CONTESTS` section that describes each contest. We extend that section with two columns for flagged contests, mirroring the audit-setup form (one column for the configuration flag, one for the reported-tallies outcome it implies).
 
-- **Conditionally add a "Runoff Outcome" column** to the `ROUNDS` header alongside the existing batch-comparison-only columns at [reports.py:419-422](../server/api/reports.py#L419). The column appears only when `any(contest.is_subject_to_runoff for contest in election.contests)`. For audits with no flagged contests (the common case), the CSV looks identical to today.
-- **Populate the cell** in `round_rows` at [reports.py:534-563](../server/api/reports.py#L534) based on the reported tallies (since `num_winners` is always 1 for flagged contests, the direction is derived from `contest.candidates`):
-  - `""` if the contest doesn't have the flag set (but the audit has other contests that do, so the column exists).
-  - `"Majority confirmed"` if `is_complete` is True and the declared winner's reported tally is a strict majority of valid votes.
-  - `"No majority — runoff required"` if `is_complete` is True and the declared winner's reported tally is not a strict majority.
-  - `""` if `is_complete` is False — the existing "Risk Limit Met?" column already says No, and no outcome can be claimed.
+- **Conditionally add `"Runoff Law"` and `"Reported Runoff Results"` columns** to the `CONTESTS` header in `contest_rows`. Both columns appear together when `any(contest.is_subject_to_runoff for contest in election.contests)`. For audits with no flagged contests (the common case), the CSV looks identical to today.
+- **Populate the cells** per contest:
+  - **Runoff Law**:
+    - `"Subject to runoff law"` if the contest's flag is set (matches the form checkbox label).
+    - `"Not subject to runoff law"` otherwise.
+  - **Reported Runoff Results** (based purely on the contest's reported choice tallies — independent of audit progress):
+    - `"Majority received, no runoff required"` if the declared winner's reported tally is a strict majority of valid votes.
+    - `"No majority, runoff required"` otherwise.
+    - `""` for unflagged contests (the column exists because some other contest is flagged).
 
 ### 6. Tests
 
@@ -218,13 +221,11 @@ The audit admin's CSV report ([server/api/reports.py:400](../server/api/reports.
 - `test_runoff_flag_rejects_num_winners_not_one`: 400 if `numWinners != 1`.
 - `test_runoff_flag_requires_three_or_more_choices`: 400 with 2 choices.
 
-**[server/tests/api/test_reports.py](../server/tests/api/test_reports.py)** — new tests (confirm the existing report-test file location before adding):
+**[server/tests/api/test_reports.py](../server/tests/api/test_reports.py)** — new tests for the `reported_runoff_results_label` helper:
 
-- `test_audit_report_runoff_outcome_no_majority`: completed flagged contest, reported tallies Alice 40 / Bob 35 / Carla 15 / Dan 10 — CSV's "Runoff Outcome" cell reads `"No majority — runoff required"`.
-- `test_audit_report_runoff_outcome_majority`: completed flagged contest, reported tallies Alice 55 / Bob 25 / Carla 15 / Dan 5 — cell reads `"Majority confirmed"`.
-- `test_audit_report_runoff_outcome_blank_for_non_flagged_in_same_audit`: an audit with at least one flagged contest and one non-flagged contest — the column is present, the flagged contest's cell is populated, the non-flagged contest's cell is empty.
-- `test_audit_report_runoff_outcome_column_absent_when_no_contest_flagged`: an audit with no flagged contests — the "Runoff Outcome" column does not appear in the CSV at all.
-- `test_audit_report_runoff_outcome_blank_when_incomplete`: flagged contest, `is_complete=False` — cell is empty (the existing "Risk Limit Met?" column says No).
+- `test_reported_runoff_results_majority`: reported tallies 55 / 25 / 15 / 5 → `"Majority received, no runoff required"`.
+- `test_reported_runoff_results_no_majority`: reported tallies 40 / 35 / 15 / 10 → `"No majority, runoff required"`.
+- `test_reported_runoff_results_exact_50_is_not_majority`: reported tallies 50 / 30 / 20 → `"No majority, runoff required"` (Ga. Code § 21-2-501 requires strict majority).
 
 ---
 
@@ -250,7 +251,7 @@ The audit admin's CSV report ([server/api/reports.py:400](../server/api/reports.
    - Without unchecking the box, change one candidate's votes so the leader is now at 55%. Contextual line should flip to _"Reported results: Alice received a majority, no runoff required."_ Submit — also succeed.
    - Upload batch tallies and launch the audit.
    - Run a round, enter audit-board results consistent with the reported tallies, confirm the round closes successfully and the displayed p-value covers all assertions.
-   - **Download the audit report CSV** and verify the new "Runoff Outcome" column reads `"No majority — runoff required"` or `"Majority confirmed"` depending on the reported tallies.
+   - **Download the audit report CSV** and verify the `CONTESTS` section has new `"Runoff Law"` and `"Reported Runoff Results"` columns. The flagged contest's cells should read `"Subject to runoff law"` and either `"Majority received, no runoff required"` or `"No majority, runoff required"` depending on the reported tallies.
 5. **Negative manual cases** — verify that the API rejects (400 with clear message):
    - Submitting a non-batch-comparison audit with the flag.
    - Submitting a contest with `numWinners=2` and the flag.
