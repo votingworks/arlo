@@ -43,7 +43,7 @@ These additional assertions will also be used in `compute_max_error` along with 
 
 _AI-speak technical version_ -
 
-Threshold assertions (real candidate vs aggregate candidate) are represented as **explicit, self-contained pair entries** in a new `contest.margins["runoff_assertions"]` collection. The aggregate side of a threshold pair (`__not_W`) has its per-batch tally pre-computed (sum of all real-candidate tallies in that batch, minus W's tally) before MACRO iterates. In the no-majority case, the runner-up R is additionally promoted into `self.winners` (with `self.num_winners` set to 2) so the existing pairwise winner×loser iteration validates R's standing against every non-advancing candidate — no extra entries needed for those pairs. MACRO iterates the threshold entries with the same arithmetic and produces a single p-value covering everything. Implementation details — including the structural-winner direction rule and the `V_wl ≥ 0` invariant — are in Section 2.
+Threshold assertions (real candidate vs aggregate candidate) are represented as **explicit, self-contained pair entries** in a new `contest.runoff_pairs` collection. The aggregate side of a threshold pair (`__not_W`) has its per-batch tally pre-computed (sum of all real-candidate tallies in that batch, minus W's tally) before MACRO iterates. In the no-majority case, the runner-up R is additionally promoted into `self.winners` (with `self.num_winners` set to 2) so the existing pairwise winner×loser iteration validates R's standing against every non-advancing candidate — no extra entries needed for those pairs. MACRO iterates the threshold entries with the same arithmetic and produces a single p-value covering everything. Implementation details — including the structural-winner direction rule and the `V_wl ≥ 0` invariant — are in Section 2.
 
 ### Design decisions
 
@@ -106,7 +106,7 @@ The entire "two winners advance in the no-majority case" treatment lives here. T
 
    The first block, **before** margin-population, decides direction: if `self.is_subject_to_runoff` and no candidate has a strict majority, set `self.num_winners = 2` so the existing winner-detection loop puts both top candidates into `self.winners` (and their pairwise margins fall out of the margin-population block automatically).
 
-   The second block, **after** margin-population, builds `self.margins["runoff_assertions"]` — a `list[dict]` with shape `{"winner_id", "winner_votes", "loser_id", "loser_votes"}` — by emitting one threshold pair per entry in `self.winners`:
+   The second block, **after** margin-population, builds `self.runoff_pairs` — a `list[dict]` with shape `{"winner_id", "winner_votes", "loser_id", "loser_votes"}` — by emitting one threshold pair per entry in `self.winners`:
 
    ```python
    # Before the existing margin-population block:
@@ -122,39 +122,39 @@ The entire "two winners advance in the no-majority case" treatment lives here. T
    # After the existing margin-population block:
    if self.is_subject_to_runoff:
        total_valid = sum(self.candidates.values())
-       runoff_assertions: list[dict] = []
+       runoff_pairs: list[dict] = []
        for w_id, w_votes in self.winners.items():
            not_id = f"__not_{w_id}"
            not_votes = total_valid - w_votes
            if w_votes > not_votes:
                # Majority case for this winner: assert W > not-W.
-               runoff_assertions.append({
+               runoff_pairs.append({
                    "winner_id": w_id, "winner_votes": w_votes,
                    "loser_id":  not_id, "loser_votes": not_votes,
                })
            else:
                # No-majority case for this winner: assert not-W > W.
-               runoff_assertions.append({
+               runoff_pairs.append({
                    "winner_id": not_id, "winner_votes": not_votes,
                    "loser_id":  w_id, "loser_votes": w_votes,
                })
-       self.margins["runoff_assertions"] = runoff_assertions
+       self.runoff_pairs = runoff_pairs
    ```
 
-   Direction rule for threshold pairs: the structural "winner" is whichever side has more reported votes, ensuring `V_wl ≥ 0`. At exact 50/50, `V_wl = 0` and MACRO's existing guard forces a hand recount — the correct fallback (zero reported margin cannot be statistically distinguished from a true majority or shortfall). Aggregate candidates (`__not_W`, `__not_R`) live exclusively in `self.margins["runoff_assertions"]` — they are not added to `self.winners` or `self.losers`.
+   Direction rule for threshold pairs: the structural "winner" is whichever side has more reported votes, ensuring `V_wl ≥ 0`. At exact 50/50, `V_wl = 0` and MACRO's existing guard forces a hand recount — the correct fallback (zero reported margin cannot be statistically distinguished from a true majority or shortfall). Aggregate candidates (`__not_W`, `__not_R`) live exclusively in `self.runoff_pairs` — they are not added to `self.winners` or `self.losers`.
 
 **[server/audit_math/macro.py](../server/audit_math/macro.py)** — changes:
 
-1. Add a helper `add_aggregate_tallies(contest, results_by_batch)` that mutates the input dict: for each batch's per-contest entry, adds a `__not_<X>` key for every aggregate ID referenced in `contest.margins["runoff_assertions"]`, with value `sum_of_real_candidates_in_batch − X_votes_in_batch`. Skip any batch where `contest.name` is not present (mirrors the existing `if contest.name not in sample_results[batch]: continue` check at [macro.py:345](../server/audit_math/macro.py#L345)). Assignment-based (idempotent) so that double-augmentation through `get_sample_sizes → compute_risk` is harmless — only mutates if `contest.is_subject_to_runoff`.
+1. Add a helper `add_aggregate_tallies(contest, results_by_batch)` that mutates the input dict: for each batch's per-contest entry, adds a `__not_<X>` key for every aggregate ID referenced in `contest.runoff_pairs`, with value `sum_of_real_candidates_in_batch − X_votes_in_batch`. Skip any batch where `contest.name` is not present (mirrors the existing `if contest.name not in sample_results[batch]: continue` check at [macro.py:345](../server/audit_math/macro.py#L345)). Assignment-based (idempotent) so that double-augmentation through `get_sample_sizes → compute_risk` is harmless — only mutates if `contest.is_subject_to_runoff`.
 2. Call `add_aggregate_tallies` at the top of MACRO's two public entry points — `get_sample_sizes` ([macro.py:209](../server/audit_math/macro.py#L209)) on `reported_results`, and `compute_risk` ([macro.py:287](../server/audit_math/macro.py#L287)) on both `reported_results` and `sample_results`. After these calls, every downstream lookup of `batch_results[contest.name][__not_<X>]` resolves to a real number.
 3. In `compute_error` at [macro.py:106-114](../server/audit_math/macro.py#L106-L114), after the existing `error_for_candidate_pair` list comprehension, append errors from each runoff assertion:
    ```python
    maybe_errors += [
-       error_for_runoff_assertion(a) for a in contest.margins.get("runoff_assertions", [])
+       error_for_runoff_pair(p) for p in contest.runoff_pairs
    ]
    ```
-4. Add `error_for_runoff_assertion(assertion)` next to [`error_for_candidate_pair`](../server/audit_math/macro.py#L82). Same arithmetic, but `V_wl` is read from `assertion["winner_votes"] - assertion["loser_votes"]` rather than from `contest.candidates`. Returns the same `BatchError` shape so the surrounding `max(...)` aggregation just works. (May be simpler to refactor `error_for_candidate_pair` to accept `(winner_id, loser_id, V_wl)` directly and drive both iterations through it.)
-5. In `compute_max_error` at [macro.py:147-172](../server/audit_math/macro.py#L147-L172), same change: add a parallel inner loop over `contest.margins["runoff_assertions"]` calling a sibling `max_error_for_runoff_assertion(assertion)` (same `((v_wp − v_lp) + b_cp) / V_wl` shape, where `b_cp` is the total **b**allot count for the **c**ontest in batch **p**, read from `batch_results[contest.name]["ballots"]`).
+4. Add `error_for_runoff_pair(pair)` next to [`error_for_candidate_pair`](../server/audit_math/macro.py#L82). Same arithmetic, but `V_wl` is read from `pair["winner_votes"] - pair["loser_votes"]` rather than from `contest.candidates`. Returns the same `BatchError` shape so the surrounding `max(...)` aggregation just works. (May be simpler to refactor `error_for_candidate_pair` to accept `(winner_id, loser_id, V_wl)` directly and drive both iterations through it.)
+5. In `compute_max_error` at [macro.py:147-172](../server/audit_math/macro.py#L147-L172), same change: add a parallel inner loop over `contest.runoff_pairs` calling a sibling `max_error_for_runoff_pair(pair)` (same `((v_wp − v_lp) + b_cp) / V_wl` shape, where `b_cp` is the total **b**allot count for the **c**ontest in batch **p**, read from `batch_results[contest.name]["ballots"]`).
 
 The `__not_` prefix is purely an ID-naming convention — correctness comes from the assertion list being closed over its own `(winner_id, loser_id, V_wl)` tuples, not from any string matching. Aggregate candidates are a math-module concern and stay inside `macro.py` + `sampler_contest.py`.
 
@@ -199,10 +199,10 @@ The audit admin's CSV report ([server/api/reports.py:400](../server/api/reports.
 
 **[server/tests/audit_math/test_sampler_contest.py](../server/tests/audit_math/test_sampler_contest.py)** — new tests:
 
-- `test_runoff_no_majority_assertions`: 4-candidate contest 40/35/15/10 with `isSubjectToRunoff=True` and `numWinners=1`. Asserts:
+- `test_runoff_no_majority_pairs`: 4-candidate contest 40/35/15/10 with `isSubjectToRunoff=True` and `numWinners=1`. Asserts:
   - `contest.num_winners == 2` and `contest.winners` contains both Alice and Bob (runner-up promoted), `contest.losers` contains only Carla and Dan.
-  - `contest.margins["runoff_assertions"]` has exactly two entries — `not_W > W` and `not_R > R` — both with `winner_votes > loser_votes`. (R-vs-non-advancing pairs are validated by the existing winner×loser iteration, not via this list.)
-- `test_runoff_majority_assertions`: 4-candidate contest 55/25/15/5 with the flag on and `numWinners=1`. Asserts `runoff_assertions` has one entry: `W > not_W` with `winner_votes > loser_votes`.
+  - `contest.runoff_pairs` has exactly two entries — `not_W > W` and `not_R > R` — both with `winner_votes > loser_votes`. (R-vs-non-advancing pairs are validated by the existing winner×loser iteration, not via this list.)
+- `test_runoff_majority_pairs`: 4-candidate contest 55/25/15/5 with the flag on and `numWinners=1`. Asserts `runoff_pairs` has one entry: `W > not_W` with `winner_votes > loser_votes`.
 
 **[server/tests/audit_math/test_macro.py](../server/tests/audit_math/test_macro.py)** — new tests, follow the existing fixture style at [test_macro.py:12-101](../server/tests/audit_math/test_macro.py#L12):
 

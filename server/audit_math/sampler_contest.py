@@ -23,6 +23,7 @@ def from_db_contest(db_contest):
         "numWinners": db_contest.num_winners,
         "votesAllowed": db_contest.votes_allowed,
         "pendingBallots": db_contest.pending_ballots,
+        "isSubjectToRunoff": db_contest.is_subject_to_runoff,
     }
 
     # Initialize the choices in this contest and how many votes each received
@@ -44,6 +45,8 @@ class Contest:
     ballots: int  # The total number of ballots cast in this contest
     # Ballots that weren't tallied yet and thus not included in reported results (batch comparison only)
     pending_ballots: int
+    # Whether this contest is governed by majority-or-runoff law (batch comparison only)
+    is_subject_to_runoff: bool
     name: str  # The name of the contest
 
     winners: dict[str, int]  # list of all the winners
@@ -51,6 +54,8 @@ class Contest:
 
     diluted_margin: float  # The smallest diluted margin in this contest
     margins: dict[str, dict]  # dict of the margins for this contest
+    # Threshold pairs for runoff-subject contests (real candidate vs aggregate __not_X)
+    runoff_pairs: list[dict]
 
     def __init__(self, name: str, contest_info_dict: dict[str, int]):
         """
@@ -70,6 +75,9 @@ class Contest:
         self.num_winners = contest_info_dict["numWinners"]
         self.votes_allowed = contest_info_dict["votesAllowed"]
         self.pending_ballots = contest_info_dict.get("pendingBallots") or 0
+        self.is_subject_to_runoff = bool(
+            contest_info_dict.get("isSubjectToRunoff", False)
+        )
 
         self.candidates = {}
 
@@ -77,10 +85,25 @@ class Contest:
         self.losers = {}
 
         for cand in contest_info_dict:
-            if cand in ["ballots", "numWinners", "votesAllowed", "pendingBallots"]:
+            if cand in [
+                "ballots",
+                "numWinners",
+                "votesAllowed",
+                "pendingBallots",
+                "isSubjectToRunoff",
+            ]:
                 continue
 
             self.candidates[cand] = contest_info_dict[cand]
+
+        valid_votes = sum(self.candidates.values())
+        if self.is_subject_to_runoff:
+            top_votes = max(self.candidates.values())
+            # No-majority case (incl. exact 50/50): treat as 2-winner internally so
+            # the margin-population loop below promotes the runner-up into winners
+            # and produces R's pairwise margins against every non-advancing candidate.
+            if top_votes <= valid_votes - top_votes:
+                self.num_winners = 2
 
         """
         Initialize a dictionary of diluted margin info:
@@ -118,10 +141,7 @@ class Contest:
             reverse=True,
         )
 
-        v_wl = 0
-
         for i, choice in enumerate(cand_vec):
-            v_wl += choice[1]
             if i < self.num_winners:
                 self.winners[choice[0]] = choice[1]
 
@@ -131,13 +151,13 @@ class Contest:
         for loser in self.losers:
             self.margins["losers"][loser] = {
                 "p_l": self.losers[loser] / self.ballots,
-                "s_l": self.losers[loser] / v_wl,
+                "s_l": self.losers[loser] / valid_votes,
             }
 
         min_margin = self.ballots
 
         for winner in self.winners:
-            s_w = self.winners[winner] / v_wl
+            s_w = self.winners[winner] / valid_votes
 
             swl = {}
             for loser in self.losers:
@@ -158,6 +178,32 @@ class Contest:
             self.diluted_margin = float(min_margin) / self.ballots
         else:
             self.diluted_margin = -1.0
+
+        self.runoff_pairs = []
+        if self.is_subject_to_runoff:
+            for w_id, w_votes in self.winners.items():
+                not_id = f"__not_{w_id}"
+                not_votes = valid_votes - w_votes
+                if w_votes > not_votes:
+                    # Majority case for this winner: assert W > not-W.
+                    self.runoff_pairs.append(
+                        {
+                            "winner_id": w_id,
+                            "winner_votes": w_votes,
+                            "loser_id": not_id,
+                            "loser_votes": not_votes,
+                        }
+                    )
+                else:
+                    # No-majority case for this winner: assert not-W > W.
+                    self.runoff_pairs.append(
+                        {
+                            "winner_id": not_id,
+                            "winner_votes": not_votes,
+                            "loser_id": w_id,
+                            "loser_votes": w_votes,
+                        }
+                    )
 
     def __repr__(self) -> str:
         """
