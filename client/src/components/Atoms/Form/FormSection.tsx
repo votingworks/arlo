@@ -11,6 +11,7 @@ export const Section = styled.div`
 
 export const FormSectionDescription = styled.div`
   margin: 10px 0;
+  max-width: 540px;
 `
 
 interface IProps {

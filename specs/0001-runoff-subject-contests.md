@@ -179,8 +179,8 @@ The `__not_` prefix is purely an ID-naming convention — correctness comes from
 - Disable the checkbox (and force its value to `false`) when `numWinners != 1`. Add a short helper line in that disabled state explaining why, e.g. _"Only available for single-winner contests."_ This keeps the constraint discoverable rather than hidden.
 - When the checkbox is on, display a short contextual line under it describing what the audit will verify, derived from the candidate vote inputs already on the same form:
   - Compute `totalValid = sum(numVotes for each choice)` and `leaderShare = max(numVotes) / totalValid`. Recompute on blur of any candidate-vote input, and only when every choice row has both a name and a vote total filled in.
-  - If `leaderShare > 0.5` (strict majority, per Ga. Code § 21-2-501): `"Audit will verify {leader.name} received a majority."`
-  - Otherwise: `"Audit will verify {leader.name} and {runner_up.name} are the correct top two and that neither received a majority."`
+  - If `leaderShare > 0.5` (strict majority, per Ga. Code § 21-2-501): `"Reported results: {leader.name} received a majority, no runoff required."`
+  - Otherwise: `"Reported results: {leader.name} and {runner_up.name} are the top two vote-getters and neither received a majority, runoff required."`
   - Blank before the first successful computation.
 - Add `isSubjectToRunoff: Yup.boolean()` to [schema.ts](../client/src/components/AuditAdmin/Setup/Contests/schema.ts).
 
@@ -246,8 +246,8 @@ The audit admin's CSV report ([server/api/reports.py:400](../server/api/reports.
 4. **Manual end-to-end** (frontend dev server + backend):
    - Create a new audit, state=Georgia, type=Batch Comparison.
    - Confirm the new checkbox appears on the contest form for Georgia batch comparison audits. It should not appear for other states or non-batch-comparison audit types. When `numWinners != 1`, it should be disabled with a helper line explaining the constraint.
-   - Configure a contest with 4 candidates, `numWinners=1`, reported tallies summing such that the leader is at 40%. Check the box. Contextual line should read e.g. _"Audit will verify Alice and Bob are the correct top two and that neither received a majority."_ Submit — succeed.
-   - Without unchecking the box, change one candidate's votes so the leader is now at 55%. Contextual line should flip to _"Audit will verify Alice received a majority."_ Submit — also succeed.
+   - Configure a contest with 4 candidates, `numWinners=1`, reported tallies summing such that the leader is at 40%. Check the box. Contextual line should read e.g. _"Reported results: Alice and Bob are the top two vote-getters and neither received a majority, runoff required."_ Submit — succeed.
+   - Without unchecking the box, change one candidate's votes so the leader is now at 55%. Contextual line should flip to _"Reported results: Alice received a majority, no runoff required."_ Submit — also succeed.
    - Upload batch tallies and launch the audit.
    - Run a round, enter audit-board results consistent with the reported tallies, confirm the round closes successfully and the displayed p-value covers all assertions.
    - **Download the audit report CSV** and verify the new "Runoff Outcome" column reads `"No majority — runoff required"` or `"Majority confirmed"` depending on the reported tallies.

@@ -52,6 +52,7 @@ const contestsSchema = (auditType: IAuditSettings['auditType']) =>
               .typeError('Must be a number')
               .integer('Must be an integer')
               .min(0, 'Must be a positive number'),
+            isSubjectToRunoff: Yup.boolean(),
             jurisdictionIds: Yup.array()
               .required('Select at least one jurisdiction')
               .of(Yup.string()),

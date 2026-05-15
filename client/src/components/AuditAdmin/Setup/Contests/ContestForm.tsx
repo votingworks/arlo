@@ -43,8 +43,9 @@ import { testNumber } from '../../../utilities'
 import { isObjectEmpty } from '../../../../utils/objects'
 import useStandardizedContests from '../../../useStandardizedContests'
 import { ErrorLabel } from '../../../Atoms/Form/_helpers'
-import { partition } from '../../../../utils/array'
-import { AuditType } from '../../../useAuditSettings'
+import { partition, sortBy } from '../../../../utils/array'
+import { sum } from '../../../../utils/number'
+import { AuditType, IAuditSettings } from '../../../useAuditSettings'
 import { parse as parseNumber } from '../../../../utils/number-schema'
 
 const CustomMenuItem = styled.li`
@@ -171,6 +172,7 @@ interface IProps {
   electionId: string
   isTargeted: boolean
   auditType: AuditType
+  electionState: IAuditSettings['state']
   goToPrevStage: () => void
   goToNextStage: () => void
 }
@@ -192,6 +194,7 @@ export interface IContestValues {
   choices: IChoiceValues[]
   totalBallotsCast?: string
   pendingBallots?: string
+  isSubjectToRunoff?: boolean
   jurisdictionIds: string[]
 }
 
@@ -205,7 +208,25 @@ const contestToValues = (contest: IContest): IContestValues => ({
   })),
   totalBallotsCast: contest.totalBallotsCast?.toString(),
   pendingBallots: contest.pendingBallots?.toString() || '',
+  isSubjectToRunoff: contest.isSubjectToRunoff ?? false,
 })
+
+const computeRunoffPreview = (choices: IChoiceValues[]): string => {
+  if (!choices.every(c => c.name && c.numVotes !== '')) return ''
+  const parsed = choices.map(c => ({
+    name: c.name,
+    votes: parseNumber(c.numVotes) || 0,
+  }))
+  const totalValid = sum(parsed.map(c => c.votes))
+  if (totalValid <= 0) return ''
+  const sorted = sortBy(parsed, c => -c.votes)
+  const leader = sorted[0]
+  if (leader.votes > totalValid - leader.votes) {
+    return `Reported results: ${leader.name} received a majority, no runoff required.`
+  }
+  const runnerUp = sorted[1]
+  return `Reported results: ${leader.name} and ${runnerUp.name} are the top two vote-getters and neither received a majority, runoff required.`
+}
 
 const contestFromValues = (contest: IContestValues): IContest => ({
   ...contest,
@@ -219,6 +240,10 @@ const contestFromValues = (contest: IContestValues): IContest => ({
     numVotes: parseNumber(choice.numVotes),
   })),
   pendingBallots: parseNumber(contest.pendingBallots),
+  // Only include when true; the API defaults missing values for batch-comparison
+  // to false and non-batch-comparison schemas will reject
+  isSubjectToRunoff:
+    contest.numWinners === '1' && contest.isSubjectToRunoff ? true : undefined,
 })
 
 const ContestForm: React.FC<IProps> = ({
@@ -227,6 +252,7 @@ const ContestForm: React.FC<IProps> = ({
   goToPrevStage,
   goToNextStage,
   auditType,
+  electionState,
 }) => {
   const contestValues: IContestValues[] = [
     {
@@ -238,6 +264,7 @@ const ContestForm: React.FC<IProps> = ({
       votesAllowed: '1',
       jurisdictionIds: [],
       pendingBallots: '',
+      isSubjectToRunoff: false,
       choices: [
         {
           id: '',
@@ -268,6 +295,8 @@ const ContestForm: React.FC<IProps> = ({
     !contestsQuery.isSuccess
   )
     return null // Still loading
+
+  const showRunoffOption = isBatchComparison && electionState === 'GA'
 
   const contests = contestsQuery.data
   const [formContests, restContests] = partition(
@@ -340,6 +369,14 @@ const ContestForm: React.FC<IProps> = ({
                       value: j.id,
                       checked: contest.jurisdictionIds.indexOf(j.id) > -1,
                     }))
+                    const isRunoffEligible = contest.numWinners === '1'
+                    const shouldShowRunoffPreview =
+                      showRunoffOption &&
+                      isRunoffEligible &&
+                      !!contest.isSubjectToRunoff
+                    const runoffPreview = shouldShowRunoffPreview
+                      ? computeRunoffPreview(contest.choices)
+                      : ''
                     return (
                       /* eslint-disable react/no-array-index-key */
                       <Card
@@ -520,6 +557,35 @@ const ContestForm: React.FC<IProps> = ({
                               name={`contests[${i}].pendingBallots`}
                               component={FormField}
                             />
+                          </FormSection>
+                        )}
+                        {showRunoffOption && (
+                          <FormSection label="Runoff Law">
+                            <Checkbox
+                              checked={
+                                isRunoffEligible && !!contest.isSubjectToRunoff
+                              }
+                              disabled={!isRunoffEligible}
+                              label="Subject to runoff law"
+                              onChange={e =>
+                                setFieldValue(
+                                  `contests[${i}].isSubjectToRunoff`,
+                                  (e.target as HTMLInputElement).checked
+                                )
+                              }
+                            />
+                            {!isRunoffEligible && (
+                              <FormSectionDescription>
+                                Only available for single-winner contests.
+                              </FormSectionDescription>
+                            )}
+                            {isRunoffEligible &&
+                              contest.isSubjectToRunoff &&
+                              runoffPreview && (
+                                <FormSectionDescription>
+                                  {runoffPreview}
+                                </FormSectionDescription>
+                              )}
                           </FormSection>
                         )}
                         {!isHybrid && (
