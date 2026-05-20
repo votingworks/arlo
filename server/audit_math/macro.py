@@ -27,21 +27,6 @@ class BatchError(TypedDict):
     weighted_error: Decimal
 
 
-def add_aggregate_tallies(contest: Contest, batch_results: BatchResults) -> None:
-    """
-    For runoff-subject contests, augments a single batch's per-contest tally
-    dict with `__not_<X>` aggregate entries (one per entry in `contest.winners`),
-    where each aggregate's batch tally is `sum_of_real_candidates_in_batch −
-    X_votes_in_batch`. Idempotent. No-op if the contest isn't runoff-subject.
-    """
-    if not contest.is_subject_to_runoff:
-        return
-    contest_batch = batch_results[contest.name]
-    real_total = sum(contest_batch.get(c, 0) for c in contest.candidates)
-    for w_id in contest.winners:
-        contest_batch[f"__not_{w_id}"] = real_total - contest_batch.get(w_id, 0)
-
-
 def compute_unauditable_ballots(
     batch_results: dict[BatchKey, BatchResults],
     contest: Contest,
@@ -93,15 +78,15 @@ def compute_error(
     Outputs:
         the maximum across-contest relative overstatement for batch p
     """
-    add_aggregate_tallies(contest, batch_results)
-    add_aggregate_tallies(contest, sampled_results)
 
-    def error_for_pair(winner: str, loser: str, V_wl: int) -> BatchError | None:
+    def error_for_candidate_pair(winner: str, loser: str) -> BatchError | None:
         v_wp = batch_results[contest.name][winner]
         v_lp = batch_results[contest.name][loser]
 
         a_wp = sampled_results[contest.name][winner]
         a_lp = sampled_results[contest.name][loser]
+
+        V_wl = contest.candidates[winner] - contest.candidates[loser]
 
         # Conservatively assume that any pending ballots would be tallied as
         # votes for the loser, reducing the reported margin.
@@ -118,22 +103,78 @@ def compute_error(
         weighted_error = Decimal(error) / Decimal(V_wl) if V_wl > 0 else Decimal("inf")
         return BatchError(counted_as=error, weighted_error=weighted_error)
 
-    maybe_errors = [
-        error_for_pair(
-            winner, loser, contest.candidates[winner] - contest.candidates[loser]
+    def error_for_threshold(winner: str) -> BatchError | None:
+        valid_votes = sum(contest.candidates.values())
+        w_total = contest.candidates[winner]
+        not_w_total = valid_votes - w_total
+
+        batch_total = sum(
+            batch_results[contest.name].get(c, 0) for c in contest.candidates
         )
+        sampled_total = sum(
+            sampled_results[contest.name].get(c, 0) for c in contest.candidates
+        )
+
+        w_batch = batch_results[contest.name][winner]
+        w_sampled = sampled_results[contest.name][winner]
+
+        if w_total > not_w_total:
+            # If the winner is above the majority threshold, we are checking that
+            # the winner received more votes than all other candidates combined.
+            # This is modeled as a candidate pair where the "loser" is the aggregate
+            # of all other candidates.
+            v_wp = w_batch
+            v_lp = batch_total - w_batch
+            a_wp = w_sampled
+            a_lp = sampled_total - w_sampled
+            # V_w is the number of votes for the winner minus the number of votes for all other candidates,
+            # which is equivalent to 2 * votes for winner - total votes
+            V_wl = 2 * w_total - valid_votes
+        else:
+            # Else, we are checking that the other candidates received more votes than the winner
+            # This is modeled as a candidate pair where the "winner" is the aggregate of all other
+            # candidates and the "loser" is the winner.
+            v_wp = batch_total - w_batch
+            v_lp = w_batch
+            a_wp = sampled_total - w_sampled
+            a_lp = w_sampled
+            # V_w is the number of votes for all other candidates minus the number of votes for the winner,
+            # which is equivalent to total votes - 2 * votes for winner
+            V_wl = valid_votes - 2 * w_total
+
+        # Conservatively assume that any pending ballots would be tallied as
+        # votes for the loser, reducing the reported margin.
+        V_wl -= contest.pending_ballots
+
+        # Conservatively assume that any unauditable ballots would be tallied as
+        # votes for the loser, reducing the reported margin.
+        V_wl -= unauditable_ballots
+
+        error = (v_wp - v_lp) - (a_wp - a_lp)
+        if error == 0:
+            return None
+
+        weighted_error = Decimal(error) / Decimal(V_wl) if V_wl > 0 else Decimal("inf")
+        return BatchError(counted_as=error, weighted_error=weighted_error)
+
+    maybe_candidate_pair_errors = [
+        error_for_candidate_pair(winner, loser)
         for winner in contest.margins["winners"]
         for loser in contest.margins["losers"]
     ]
-    maybe_errors += [
-        error_for_pair(
-            p["winner_id"],
-            p["loser_id"],
-            p["winner_votes"] - p["loser_votes"],
-        )
-        for p in contest.runoff_pairs
+    errors: list[BatchError] = [
+        error for error in maybe_candidate_pair_errors if error is not None
     ]
-    errors: list[BatchError] = [error for error in maybe_errors if error is not None]
+
+    if contest.is_subject_to_runoff:
+        maybe_threshold_errors = [
+            error_for_threshold(winner) for winner in contest.margins["winners"]
+        ]
+        threshold_errors: list[BatchError] = [
+            error for error in maybe_threshold_errors if error is not None
+        ]
+        errors += threshold_errors
+
     if len(errors) == 0:
         return None
     return max(errors, key=lambda error: error["weighted_error"])
@@ -168,13 +209,48 @@ def compute_max_error(
     if contest.name not in batch_results:
         return Decimal(0.0)
 
-    add_aggregate_tallies(contest, batch_results)
-
-    def max_error_for_pair(winner: str, loser: str, V_wl: int) -> Decimal:
+    def max_error_for_candidate_pair(winner: str, loser: str) -> Decimal:
         v_wp = batch_results[contest.name][winner]
         v_lp = batch_results[contest.name][loser]
 
         b_cp = batch_results[contest.name]["ballots"]
+
+        V_wl = contest.candidates[winner] - contest.candidates[loser]
+
+        # Conservatively assume that any pending ballots would be tallied as
+        # votes for the loser, reducing the reported margin.
+        V_wl -= contest.pending_ballots
+
+        # Conservatively assume that any unauditable ballots would be tallied as
+        # votes for the loser, reducing the reported margin.
+        V_wl -= unauditable_ballots
+
+        if V_wl <= 0:
+            return Decimal("inf")
+
+        return Decimal((v_wp - v_lp) + b_cp) / Decimal(V_wl)
+
+    def max_error_for_threshold(winner: str) -> Decimal:
+        valid_votes = sum(contest.candidates.values())
+        w_total = contest.candidates[winner]
+        not_w_total = valid_votes - w_total
+
+        batch_total = sum(
+            batch_results[contest.name].get(c, 0) for c in contest.candidates
+        )
+        w_batch = batch_results[contest.name][winner]
+        b_cp = batch_results[contest.name]["ballots"]
+
+        if w_total > not_w_total:
+            # Majority threshold: winner vs aggregate of all other candidates.
+            v_wp = w_batch
+            v_lp = batch_total - w_batch
+            V_wl = 2 * w_total - valid_votes
+        else:
+            # No-majority threshold: aggregate of all other candidates vs winner.
+            v_wp = batch_total - w_batch
+            v_lp = w_batch
+            V_wl = valid_votes - 2 * w_total
 
         # Conservatively assume that any pending ballots would be tallied as
         # votes for the loser, reducing the reported margin.
@@ -192,22 +268,15 @@ def compute_max_error(
     margins = contest.margins
     for winner in margins["winners"]:
         for loser in margins["losers"]:
-            u_pwl = max_error_for_pair(
-                winner, loser, contest.candidates[winner] - contest.candidates[loser]
-            )
-            if u_pwl == Decimal("inf"):
-                return Decimal("inf")
+            u_pwl = max_error_for_candidate_pair(winner, loser)
             if u_pwl > error:
                 error = u_pwl
 
-    for p in contest.runoff_pairs:
-        u_pwl = max_error_for_pair(
-            p["winner_id"],
-            p["loser_id"],
-            p["winner_votes"] - p["loser_votes"],
-        )
-        if u_pwl > error:
-            error = u_pwl
+    if contest.is_subject_to_runoff:
+        for winner in margins["winners"]:
+            u_pwl = max_error_for_threshold(winner)
+            if u_pwl > error:
+                error = u_pwl
 
     return error
 

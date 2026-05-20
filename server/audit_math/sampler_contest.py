@@ -54,8 +54,6 @@ class Contest:
 
     diluted_margin: float  # The smallest diluted margin in this contest
     margins: dict[str, dict]  # dict of the margins for this contest
-    # Threshold pairs for runoff-subject contests (real candidate vs aggregate __not_X)
-    runoff_pairs: list[dict]
 
     def __init__(self, name: str, contest_info_dict: dict[str, int]):
         """
@@ -178,32 +176,6 @@ class Contest:
             self.diluted_margin = float(min_margin) / self.ballots
         else:
             self.diluted_margin = -1.0
-
-        self.runoff_pairs = []
-        if self.is_subject_to_runoff:
-            for w_id, w_votes in self.winners.items():
-                not_id = f"__not_{w_id}"
-                not_votes = valid_votes - w_votes
-                if w_votes > not_votes:
-                    # Majority case for this winner: assert W > not-W.
-                    self.runoff_pairs.append(
-                        {
-                            "winner_id": w_id,
-                            "winner_votes": w_votes,
-                            "loser_id": not_id,
-                            "loser_votes": not_votes,
-                        }
-                    )
-                else:
-                    # No-majority case for this winner: assert not-W > W.
-                    self.runoff_pairs.append(
-                        {
-                            "winner_id": not_id,
-                            "winner_votes": not_votes,
-                            "loser_id": w_id,
-                            "loser_votes": w_votes,
-                        }
-                    )
 
     def __repr__(self) -> str:
         """

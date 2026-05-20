@@ -1266,3 +1266,18 @@ def test_runoff_discrepancy_flips_majority():
     )
 
     assert not terminated, "Audit should NOT clear when discrepancies flip majority"
+
+
+def test_runoff_exact_tie_threshold_returns_infinite_max_error():
+    # Exact 50/50 reported: the threshold pair has V_wl = 0, so the threshold
+    # leg of compute_max_error must short-circuit to Decimal("inf") (which
+    # propagates to U=inf, forcing a full hand recount).
+    contest, batches = _runoff_fixtures(
+        {"alice": 50, "bob": 30, "carla": 15, "dan": 5}, num_batches=1
+    )
+
+    max_err = macro.compute_max_error(
+        batches["Batch 0"], contest, unauditable_ballots=0
+    )
+
+    assert max_err == Decimal("inf")

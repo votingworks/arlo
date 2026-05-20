@@ -246,7 +246,7 @@ true_dms = {
 }
 
 
-def test_runoff_no_majority_pairs():
+def test_runoff_no_majority_promotes_runner_up():
     contest = Contest(
         "runoff_no_majority",
         {
@@ -267,24 +267,8 @@ def test_runoff_no_majority_pairs():
     assert contest.winners == {"alice": 40, "bob": 35}
     assert contest.losers == {"carla": 15, "dan": 10}
 
-    # Exactly two threshold pairs: not_W > W and not_R > R.
-    assert contest.runoff_pairs == [
-        {
-            "winner_id": "__not_alice",
-            "winner_votes": 60,
-            "loser_id": "alice",
-            "loser_votes": 40,
-        },
-        {
-            "winner_id": "__not_bob",
-            "winner_votes": 65,
-            "loser_id": "bob",
-            "loser_votes": 35,
-        },
-    ]
 
-
-def test_runoff_majority_pairs():
+def test_runoff_majority_keeps_single_winner():
     contest = Contest(
         "runoff_majority",
         {
@@ -303,31 +287,3 @@ def test_runoff_majority_pairs():
     assert contest.num_winners == 1
     assert contest.winners == {"alice": 55}
     assert contest.losers == {"bob": 25, "carla": 15, "dan": 5}
-
-    # One threshold pair: W > not_W.
-    assert contest.runoff_pairs == [
-        {
-            "winner_id": "alice",
-            "winner_votes": 55,
-            "loser_id": "__not_alice",
-            "loser_votes": 45,
-        },
-    ]
-
-
-def test_runoff_flag_off_leaves_pairs_empty():
-    contest = Contest(
-        "no_flag",
-        {
-            "alice": 40,
-            "bob": 35,
-            "carla": 25,
-            "ballots": 100,
-            "numWinners": 1,
-            "votesAllowed": 1,
-        },
-    )
-
-    assert contest.is_subject_to_runoff is False
-    assert contest.num_winners == 1
-    assert contest.runoff_pairs == []
