@@ -445,15 +445,19 @@ const ContestForm: React.FC<IProps> = ({
                                   (choice: IChoiceValues, j: number) => (
                                     /* eslint-disable react/no-array-index-key */
                                     <React.Fragment key={j}>
-                                      <InputFieldRow>
-                                        <InputLabel>
+                                      <InputFieldRow
+                                        style={
+                                          j === 0 ? {} : { marginTop: '15px' }
+                                        }
+                                      >
+                                        <InputLabel style={{ marginBottom: 0 }}>
                                           Name of Candidate/Choice {j + 1}
                                           <Field
                                             name={`contests[${i}].choices[${j}].name`}
                                             component={FlexField}
                                           />
                                         </InputLabel>
-                                        <InputLabel>
+                                        <InputLabel style={{ marginBottom: 0 }}>
                                           Votes for Candidate/Choice {j + 1}
                                           <Field
                                             name={`contests[${i}].choices[${j}].numVotes`}
