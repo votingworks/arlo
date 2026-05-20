@@ -7,7 +7,7 @@ from flask.testing import FlaskClient
 from ..helpers import *
 from ...database import db_session
 from ...models import *
-from ...api.contests import JSONDict, should_reprocess_batch_tallies
+from ...api.contests import JSONDict
 from ...auth import UserType
 
 
@@ -468,27 +468,6 @@ def test_audit_board_contests_list_order(
     assert contests[0]["choices"][1]["name"] == db_choices[1].name
 
 
-def test_should_reprocess_batch_tallies_treats_missing_runoff_flag_as_false():
-    # serialize_contest emits isSubjectToRunoff for batch-comparison contests;
-    # the client conditionally omits it when false. Normalization must treat
-    # "missing" and "False" as equivalent so a no-op save doesn't trigger an
-    # unnecessary batch-tallies reprocess.
-    choice = {"id": "c1", "name": "candidate 1", "numVotes": 60}
-    base_contest = {
-        "id": "contest-1",
-        "name": "Contest 1",
-        "isTargeted": True,
-        "choices": [choice],
-        "numWinners": 1,
-        "votesAllowed": 1,
-        "jurisdictionIds": ["j1"],
-    }
-    previous = {**base_contest, "isSubjectToRunoff": False}
-    new_without = {**base_contest}
-
-    assert not should_reprocess_batch_tallies([previous], [new_without])
-
-
 def test_runoff_flag_rejected_for_non_batch_comparison(
     client: FlaskClient,
     org_id: str,
@@ -498,7 +477,7 @@ def test_runoff_flag_rejected_for_non_batch_comparison(
     expected_error = {
         "errors": [
             {
-                "message": "Runoff-subject contests are only supported for batch comparison audits",
+                "message": "isSubjectToRunoff is only supported for batch comparison audits",
                 "errorType": "Bad Request",
             }
         ]

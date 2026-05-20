@@ -282,12 +282,16 @@ def validate_contests(contests: list[JSONDict], election: Election):
             continue
         if election.audit_type != AuditType.BATCH_COMPARISON:
             raise BadRequest(
-                "Runoff-subject contests are only supported for batch comparison audits"
+                "isSubjectToRunoff is only supported for batch comparison audits"
             )
         if contest["numWinners"] != 1:
-            raise BadRequest("Runoff-subject contests must have num_winners=1")
+            raise BadRequest(
+                "isSubjectToRunoff can only be true for contests with num_winners=1"
+            )
         if len(contest["choices"]) < 3:
-            raise BadRequest("Runoff-subject contests must have at least 3 choices")
+            raise BadRequest(
+                "isSubjectToRunoff can only be true for contests with at least 3 choices"
+            )
 
 
 # In various audit types, we set different pieces of contest metadata from
@@ -333,10 +337,6 @@ def should_reprocess_batch_tallies(
         contest["choices"] = sorted(
             contest["choices"], key=lambda choice: str(choice["id"])
         )
-        # Client conditionally omits this when false; serialize_contest always
-        # emits it. Normalize missing → False so a no-op save doesn't look like
-        # a flag change.
-        contest.setdefault("isSubjectToRunoff", False)
         return contest
 
     return any(

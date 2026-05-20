@@ -67,7 +67,7 @@ def test_runoff_flag_rejects_num_winners_not_one(
     assert json.loads(rv.data) == {
         "errors": [
             {
-                "message": "Runoff-subject contests must have num_winners=1",
+                "message": "isSubjectToRunoff can only be true for contests with num_winners=1",
                 "errorType": "Bad Request",
             }
         ]
@@ -91,7 +91,7 @@ def test_runoff_flag_requires_three_or_more_choices(
     assert json.loads(rv.data) == {
         "errors": [
             {
-                "message": "Runoff-subject contests must have at least 3 choices",
+                "message": "isSubjectToRunoff can only be true for contests with at least 3 choices",
                 "errorType": "Bad Request",
             }
         ]

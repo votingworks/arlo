@@ -164,9 +164,9 @@ The `__not_` prefix is purely an ID-naming convention — correctness comes from
 
 1. `CONTEST_SCHEMA` ([contests.py:28](../server/api/contests.py#L28)): add `"isSubjectToRunoff": {"type": "boolean"}` to properties. Not required (defaults to false).
 2. `validate_contests` ([contests.py:237](../server/api/contests.py#L237)): add a check — for each contest with `isSubjectToRunoff == True`:
-   - Election audit type must be `BATCH_COMPARISON` → else `BadRequest("Runoff-subject contests are only supported for batch comparison audits")`.
-   - `numWinners` must be `1` → else `BadRequest("Runoff-subject contests must have num_winners=1")`.
-   - At least 3 choices. With only 2 choices the contest is already a head-to-head race and the threshold pair degenerates to the head-to-head pair.
+   - Election audit type must be `BATCH_COMPARISON` → else `BadRequest("isSubjectToRunoff is only supported for batch comparison audits")`.
+   - `numWinners` must be `1` → else `BadRequest("isSubjectToRunoff can only be true for contests with num_winners=1")`.
+   - At least 3 choices → else `BadRequest("isSubjectToRunoff can only be true for contests with at least 3 choices")`. With only 2 choices the contest is already a head-to-head race and the threshold pair degenerates to the head-to-head pair.
 3. `serialize_contest` ([contests.py:127](../server/api/contests.py#L127)): include `"isSubjectToRunoff": contest.is_subject_to_runoff` only when `audit_type == BATCH_COMPARISON` (mirroring how `pendingBallots` is conditionally serialized at line 138).
 4. `deserialize_contest` ([contests.py:222](../server/api/contests.py#L222)): pass through `is_subject_to_runoff=contest.get("isSubjectToRunoff", False)`.
 
@@ -192,7 +192,7 @@ The audit admin's CSV report ([server/api/reports.py](../server/api/reports.py))
 - **Populate the cells** per contest:
   - **Runoff Law**:
     - `"Subject to runoff law"` if the contest's flag is set (matches the form checkbox label).
-    - `"Not subject to runoff law"` otherwise.
+    - `""` otherwise — leaving unflagged contests blank makes the flagged ones stand out visually.
   - **Reported Runoff Results** (based purely on the contest's reported choice tallies — independent of audit progress):
     - `"Majority received, no runoff required"` if the declared winner's reported tally is a strict majority of valid votes.
     - `"No majority, runoff required"` otherwise.

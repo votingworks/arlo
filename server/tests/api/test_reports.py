@@ -223,4 +223,4 @@ def test_contest_rows_runoff_columns(org_id: str):
     ]
 
     unflagged_row = next(row for row in rows[2:] if row[0] == "Unflagged Contest")
-    assert unflagged_row[-2:] == ["Not subject to runoff law", ""]
+    assert unflagged_row[-2:] == ["", ""]

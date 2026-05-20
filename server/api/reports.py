@@ -336,7 +336,7 @@ def contest_rows(election: Election):
                     ),
                 ]
             else:
-                row += ["Not subject to runoff law", ""]
+                row += ["", ""]
 
         rows.append(row)
     return rows

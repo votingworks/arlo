@@ -217,18 +217,21 @@ const computeRunoffPreview = (choices: IChoiceValues[]): string => {
     name: c.name,
     votes: parseNumber(c.numVotes) || 0,
   }))
-  const totalValid = sum(parsed.map(c => c.votes))
-  if (totalValid <= 0) return ''
+  const totalVotes = sum(parsed.map(c => c.votes))
+  if (totalVotes <= 0) return ''
   const sorted = sortBy(parsed, c => -c.votes)
   const leader = sorted[0]
-  if (leader.votes > totalValid - leader.votes) {
+  if (leader.votes > totalVotes - leader.votes) {
     return `Reported results: ${leader.name} received a majority, no runoff required.`
   }
   const runnerUp = sorted[1]
   return `Reported results: ${leader.name} and ${runnerUp.name} are the top two vote-getters and neither received a majority, runoff required.`
 }
 
-const contestFromValues = (contest: IContestValues): IContest => ({
+const contestFromValues = (
+  contest: IContestValues,
+  auditType: AuditType
+): IContest => ({
   ...contest,
   id: contest.id || uuidv4(), // preserve given id if present, generate new one if empty string
   totalBallotsCast: parseNumber(contest.totalBallotsCast),
@@ -240,10 +243,10 @@ const contestFromValues = (contest: IContestValues): IContest => ({
     numVotes: parseNumber(choice.numVotes),
   })),
   pendingBallots: parseNumber(contest.pendingBallots),
-  // Only include when true; the API defaults missing values for batch-comparison
-  // to false and non-batch-comparison schemas will reject
   isSubjectToRunoff:
-    contest.numWinners === '1' && contest.isSubjectToRunoff ? true : undefined,
+    auditType === 'BATCH_COMPARISON'
+      ? contest.numWinners === '1' && !!contest.isSubjectToRunoff
+      : undefined,
 })
 
 const ContestForm: React.FC<IProps> = ({
@@ -329,7 +332,9 @@ const ContestForm: React.FC<IProps> = ({
         }))
       : values.contests
     await updateContestsMutation.mutateAsync(
-      contestsToUpdate.map(contestFromValues).concat(restContests)
+      contestsToUpdate
+        .map(c => contestFromValues(c, auditType))
+        .concat(restContests)
     )
     goToNextStage()
   }
