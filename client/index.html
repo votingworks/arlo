@@ -10,8 +10,8 @@
     <script type="text/javascript">
       // Inject environment variables from the Flask backend by rendering this
       // HTML page as a template.
-      window._arlo_flask_env = '{{ flask_env }}'
-      window._arlo_sentry_dsn = '{{ sentry_dsn }}'
+      window._arlo_flask_env = '{{ flask_env | e }}'
+      window._arlo_sentry_dsn = '{{ sentry_dsn | e }}'
     </script>
   </head>
   <body>
