@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { H2, Button, H4, Checkbox, HTMLSelect } from '@blueprintjs/core'
 import {
   useQueryClient,
@@ -212,13 +212,21 @@ const useBatchInventorySignOff = (
 
 const SelectSystemStep: React.FC<{
   systemTypeQueries: ISystemTypeQueries
+  defaultSystemType?: CvrFileType
   nextStep: () => void
-}> = ({ systemTypeQueries, nextStep }) => {
+}> = ({ systemTypeQueries, defaultSystemType, nextStep }) => {
+  const systemType = systemTypeQueries.systemType.data
+  const setSystemTypeMutate = systemTypeQueries.setSystemType.mutate
+
+  useEffect(() => {
+    if (systemType === null && defaultSystemType) {
+      setSystemTypeMutate(defaultSystemType)
+    }
+  }, [systemType, defaultSystemType, setSystemTypeMutate])
+
   if (!systemTypeQueries.systemType.isSuccess) {
     return null
   }
-
-  const systemType = systemTypeQueries.systemType.data
 
   const setSystemType = async (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newSystemType = event.target.value as CvrFileType
@@ -236,7 +244,9 @@ const SelectSystemStep: React.FC<{
             value={systemType || undefined}
           >
             {!systemType && <option value={undefined}></option>}
-            <option value={CvrFileType.DOMINION}>Dominion</option>
+            <option value={CvrFileType.DOMINION}>
+              Liberty Vote (Dominion)
+            </option>
             <option value={CvrFileType.ESS}>ES&S</option>
             <option value={CvrFileType.ESS_MD}>ES&S (MD)</option>
             <option value={CvrFileType.HART}>Hart</option>
@@ -573,6 +583,7 @@ const BatchInventorySteps: React.FC<{
                 return (
                   <SelectSystemStep
                     systemTypeQueries={systemTypeQueries}
+                    defaultSystemType={batchInventoryConfig.defaultSystemType}
                     nextStep={() => setCurrentStep('Upload Election Results')}
                   />
                 )
