@@ -244,3 +244,46 @@ true_dms = {
     "test9": -1,
     "test10": 0.2,
 }
+
+
+def test_runoff_no_majority_promotes_runner_up():
+    contest = Contest(
+        "runoff_no_majority",
+        {
+            "alice": 40,
+            "bob": 35,
+            "carla": 15,
+            "dan": 10,
+            "ballots": 100,
+            "numWinners": 1,
+            "votesAllowed": 1,
+            "isSubjectToRunoff": True,
+        },
+    )
+
+    # Runner-up promoted into winners so the existing pairwise math validates R
+    # against every non-advancing candidate.
+    assert contest.num_winners == 2
+    assert contest.winners == {"alice": 40, "bob": 35}
+    assert contest.losers == {"carla": 15, "dan": 10}
+
+
+def test_runoff_majority_keeps_single_winner():
+    contest = Contest(
+        "runoff_majority",
+        {
+            "alice": 55,
+            "bob": 25,
+            "carla": 15,
+            "dan": 5,
+            "ballots": 100,
+            "numWinners": 1,
+            "votesAllowed": 1,
+            "isSubjectToRunoff": True,
+        },
+    )
+
+    # Majority case: num_winners stays 1, no runner-up promotion.
+    assert contest.num_winners == 1
+    assert contest.winners == {"alice": 55}
+    assert contest.losers == {"bob": 25, "carla": 15, "dan": 5}

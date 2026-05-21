@@ -77,6 +77,7 @@ const renderContests = (props: Partial<IContestsProps> = {}) => {
         <Contests
           electionId="1"
           auditType="HYBRID"
+          electionState={null}
           isTargeted
           goToNextStage={goToNextStage}
           goToPrevStage={goToPrevStage}

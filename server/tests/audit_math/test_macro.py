@@ -1126,3 +1126,158 @@ def test_unauditable_ballots(snapshot):
             computed_p_without_unauditable_ballots=computed_p_without_unauditable_ballots,
         )
     )
+
+
+def _runoff_fixtures(
+    per_batch_tallies: dict[str, int],
+    num_batches: int = 100,
+    is_subject_to_runoff: bool = True,
+):
+    """Build a Contest + reported batches for a 4-candidate runoff-subject test.
+
+    per_batch_tallies: dict like {"alice": 40, "bob": 35, "carla": 15, "dan": 10}.
+    Reported tallies are these values times num_batches. Each batch contributes
+    the same per-batch tallies.
+    """
+    ballots_per_batch = sum(per_batch_tallies.values())
+    info_dict = {
+        candidate: votes * num_batches for candidate, votes in per_batch_tallies.items()
+    }
+    info_dict.update(
+        {
+            "ballots": ballots_per_batch * num_batches,
+            "numWinners": 1,
+            "votesAllowed": 1,
+            "isSubjectToRunoff": is_subject_to_runoff,
+        }
+    )
+    contest = Contest("runoff_contest", info_dict)
+
+    batches = {
+        f"Batch {i}": {
+            "runoff_contest": {**per_batch_tallies, "ballots": ballots_per_batch}
+        }
+        for i in range(num_batches)
+    }
+    return contest, batches
+
+
+def _discrepancy_free_sample_minus_one(batches):
+    """Builds a sample dict + ticket-numbers dict covering every batch except 'Batch 0'.
+
+    Mirrors reported tallies exactly (no discrepancies). Leaving one batch
+    unsampled exercises the per-batch risk math instead of the full-recount
+    early-return.
+    """
+    sample = {
+        batch_key: {"runoff_contest": {**batch_results["runoff_contest"]}}
+        for batch_key, batch_results in batches.items()
+        if batch_key != "Batch 0"
+    }
+    sample_ticket_numbers = {str(i): f"Batch {i}" for i in range(1, len(batches))}
+    return sample, sample_ticket_numbers
+
+
+def test_runoff_no_majority_happy_path():
+    # Reported 40/35/15/10 (no majority): flag promotes Bob into winners, so
+    # the existing pairwise math validates Alice/Bob vs Carla/Dan, and the
+    # threshold pairs (__not_alice > alice, __not_bob > bob) cover the
+    # majority claim. Discrepancy-free sample clears the audit.
+    contest, batches = _runoff_fixtures(
+        {"alice": 40, "bob": 35, "carla": 15, "dan": 10}
+    )
+    sample, sample_ticket_numbers = _discrepancy_free_sample_minus_one(batches)
+
+    computed_p, terminated = macro.compute_risk(
+        RISK_LIMIT, contest, batches, sample, sample_ticket_numbers, []
+    )
+
+    assert terminated, f"Audit should clear with zero discrepancies, p={computed_p}"
+
+
+def test_runoff_majority_happy_path():
+    # Reported 55/25/15/5 (clean majority): num_winners stays 1, threshold pair
+    # is alice > __not_alice (V_wl = 1000). Existing pairwise pairs and the
+    # threshold pair both clear with a discrepancy-free sample.
+    contest, batches = _runoff_fixtures({"alice": 55, "bob": 25, "carla": 15, "dan": 5})
+    sample, sample_ticket_numbers = _discrepancy_free_sample_minus_one(batches)
+
+    computed_p, terminated = macro.compute_risk(
+        RISK_LIMIT, contest, batches, sample, sample_ticket_numbers, []
+    )
+
+    assert terminated, f"Audit should clear with zero discrepancies, p={computed_p}"
+
+
+def test_runoff_threshold_dominates_sample_size():
+    # Reported 48/25/15/12: leader is below 50%, threshold pair (__not_alice 52
+    # vs alice 48) has V_wl=400 — much tighter than the pairwise alice/carla
+    # (V_wl=3300) or alice/dan (V_wl=3600). With the flag on, the threshold
+    # pair dominates and sample size is materially larger than the flag-off
+    # baseline.
+    per_batch = {"alice": 48, "bob": 25, "carla": 15, "dan": 12}
+
+    contest_flag_on, batches_flag_on = _runoff_fixtures(per_batch)
+    # Multi-jurisdiction case: not every batch has this contest's tallies.
+    batches_flag_on["Other-contest batch"] = {
+        "other_contest": {"x": 50, "y": 50, "ballots": 100},
+    }
+
+    contest_flag_off, batches_flag_off = _runoff_fixtures(
+        per_batch, is_subject_to_runoff=False
+    )
+
+    size_flag_on = macro.get_sample_sizes(
+        RISK_LIMIT, contest_flag_on, batches_flag_on, {}, {}, []
+    )
+    size_flag_off = macro.get_sample_sizes(
+        RISK_LIMIT, contest_flag_off, batches_flag_off, {}, {}, []
+    )
+
+    assert size_flag_on > size_flag_off, (
+        f"Threshold pair should dominate: flag-on={size_flag_on} "
+        f"flag-off={size_flag_off}"
+    )
+
+
+def test_runoff_discrepancy_flips_majority():
+    # Reported 51/30/15/4: alice just clears 50%. Threshold pair is alice 5100
+    # vs __not_alice 4900 (V_wl=200). Sample includes discrepancies where
+    # alice loses 2 votes per batch to bob — scaled up, this would put alice
+    # below 50%. Risk should not clear.
+    contest, batches = _runoff_fixtures({"alice": 51, "bob": 30, "carla": 15, "dan": 4})
+
+    sample = {}
+    sample_ticket_numbers = {}
+    for i in range(50):
+        sample[f"Batch {i}"] = {
+            "runoff_contest": {
+                "alice": 49,  # 2 fewer than reported
+                "bob": 32,  # 2 more than reported
+                "carla": 15,
+                "dan": 4,
+                "ballots": 100,
+            }
+        }
+        sample_ticket_numbers[str(i)] = f"Batch {i}"
+
+    _, terminated = macro.compute_risk(
+        RISK_LIMIT, contest, batches, sample, sample_ticket_numbers, []
+    )
+
+    assert not terminated, "Audit should NOT clear when discrepancies flip majority"
+
+
+def test_runoff_exact_tie_threshold_returns_infinite_max_error():
+    # Exact 50/50 reported: the threshold pair has V_wl = 0, so the threshold
+    # leg of compute_max_error must short-circuit to Decimal("inf") (which
+    # propagates to U=inf, forcing a full hand recount).
+    contest, batches = _runoff_fixtures(
+        {"alice": 50, "bob": 30, "carla": 15, "dan": 5}, num_batches=1
+    )
+
+    max_err = macro.compute_max_error(
+        batches["Batch 0"], contest, unauditable_ballots=0
+    )
+
+    assert max_err == Decimal("inf")

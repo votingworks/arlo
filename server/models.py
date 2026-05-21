@@ -486,6 +486,14 @@ class Contest(BaseModel):
     # the losing candidates).
     pending_ballots = Column(Integer)
 
+    # When True, this contest is governed by majority-or-runoff law: a
+    # candidate wins outright if they receive a strict majority of valid
+    # votes, otherwise the top two advance to a runoff. The audit verifies
+    # the reported majority claim (and the runner-up's standing, in the
+    # no-majority case). Only valid for batch comparison audits with
+    # num_winners == 1.
+    is_subject_to_runoff = Column(Boolean, nullable=False, server_default="false")
+
     choices = relationship(
         "ContestChoice",
         back_populates="contest",

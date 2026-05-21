@@ -35,6 +35,7 @@ export interface IContest {
   jurisdictionIds: string[]
   cvrChoiceNameConsistencyError?: ICvrChoiceNameConsistencyError
   pendingBallots?: number | null
+  isSubjectToRunoff?: boolean
 }
 
 export enum Interpretation {

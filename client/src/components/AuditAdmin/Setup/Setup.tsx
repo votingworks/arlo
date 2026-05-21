@@ -119,6 +119,7 @@ const Setup: React.FC<ISetupProps> = ({
                   electionId={electionId}
                   isTargeted
                   auditType={auditType}
+                  electionState={auditSettings.state}
                   goToPrevStage={goToPrevStage}
                   goToNextStage={goToNextStage}
                 />
@@ -130,6 +131,7 @@ const Setup: React.FC<ISetupProps> = ({
                   electionId={electionId}
                   isTargeted={false}
                   auditType={auditType}
+                  electionState={auditSettings.state}
                   goToPrevStage={goToPrevStage}
                   goToNextStage={goToNextStage}
                 />
