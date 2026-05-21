@@ -1,8 +1,10 @@
 import { useAuthDataContext } from './UserContext'
+import { CvrFileType } from './useCSV'
 import { assert } from './utilities'
 
 export interface BatchInventoryConfig {
   showBallotManifest: boolean
+  defaultSystemType?: CvrFileType
 }
 
 const BATCH_INVENTORY_CONFIGS: {
@@ -11,13 +13,14 @@ const BATCH_INVENTORY_CONFIGS: {
   // Georgia
   'b216ad0d-1481-44e4-a2c1-95da40175084': {
     showBallotManifest: true,
+    defaultSystemType: CvrFileType.DOMINION,
   },
   // Nevada
   'b6f34a14-1cb2-4d44-8f29-b4fe04fd2932': {
     showBallotManifest: false,
   },
   // Pennsylvania - CVR Upload
-  '82d9b42b-b21e-4ff6-a884-14a97da2f2f4' : {
+  '82d9b42b-b21e-4ff6-a884-14a97da2f2f4': {
     showBallotManifest: false,
   },
   // Rhode Island
