@@ -30,7 +30,7 @@ exports[`Audit Setup > Contests > renders empty opportunistic state correctly 1`
           </h3>
           <div>
             <div
-              class="sc-iwsKbI bncGzX"
+              class="sc-iwsKbI jeNrVx"
             >
               Enter the name of the contest that will drive the audit.
             </div>
@@ -59,7 +59,7 @@ exports[`Audit Setup > Contests > renders empty opportunistic state correctly 1`
             </label>
           </div>
           <div
-            class="sc-iwsKbI bncGzX"
+            class="sc-iwsKbI jeNrVx"
           >
             Enter the number of winners for the contest.
           </div>
@@ -84,7 +84,7 @@ exports[`Audit Setup > Contests > renders empty opportunistic state correctly 1`
             </div>
           </label>
           <div
-            class="sc-iwsKbI bncGzX"
+            class="sc-iwsKbI jeNrVx"
           >
             Number of selections the voter can make in the contest.
           </div>
@@ -118,7 +118,7 @@ exports[`Audit Setup > Contests > renders empty opportunistic state correctly 1`
             Candidates/Choices & Vote Totals
           </h3>
           <div
-            class="sc-iwsKbI bncGzX"
+            class="sc-iwsKbI jeNrVx"
           >
             Enter the name of each candidate choice that appears on the ballot for this contest.
           </div>
@@ -130,6 +130,7 @@ exports[`Audit Setup > Contests > renders empty opportunistic state correctly 1`
             >
               <label
                 class="bp3-label sc-eXEjpC hSzFPc"
+                style="margin-bottom: 0px;"
               >
                 Name of Candidate/Choice 
                 1
@@ -150,6 +151,7 @@ exports[`Audit Setup > Contests > renders empty opportunistic state correctly 1`
               </label>
               <label
                 class="bp3-label sc-eXEjpC hSzFPc"
+                style="margin-bottom: 0px;"
               >
                 Votes for Candidate/Choice 
                 1
@@ -171,9 +173,11 @@ exports[`Audit Setup > Contests > renders empty opportunistic state correctly 1`
             </div>
             <div
               class="sc-esjQYD fijUfG"
+              style="margin-top: 15px;"
             >
               <label
                 class="bp3-label sc-eXEjpC hSzFPc"
+                style="margin-bottom: 0px;"
               >
                 Name of Candidate/Choice 
                 2
@@ -194,6 +198,7 @@ exports[`Audit Setup > Contests > renders empty opportunistic state correctly 1`
               </label>
               <label
                 class="bp3-label sc-eXEjpC hSzFPc"
+                style="margin-bottom: 0px;"
               >
                 Votes for Candidate/Choice 
                 2
@@ -229,7 +234,7 @@ exports[`Audit Setup > Contests > renders empty opportunistic state correctly 1`
             Total Ballot Cards Cast
           </h3>
           <div
-            class="sc-iwsKbI bncGzX"
+            class="sc-iwsKbI jeNrVx"
           >
             Enter the overall number of ballot cards cast in jurisdictions containing this contest.
           </div>
@@ -266,7 +271,7 @@ exports[`Audit Setup > Contests > renders empty opportunistic state correctly 1`
             Contest Universe
           </h3>
           <div
-            class="sc-iwsKbI bncGzX"
+            class="sc-iwsKbI jeNrVx"
           >
             Select the jurisdictions where this contest appeared on the ballot.
           </div>
@@ -432,7 +437,7 @@ exports[`Audit Setup > Contests > renders empty targeted state correctly 1`] = `
           </h3>
           <div>
             <div
-              class="sc-iwsKbI bncGzX"
+              class="sc-iwsKbI jeNrVx"
             >
               Enter the name of the contest that will drive the audit.
             </div>
@@ -461,7 +466,7 @@ exports[`Audit Setup > Contests > renders empty targeted state correctly 1`] = `
             </label>
           </div>
           <div
-            class="sc-iwsKbI bncGzX"
+            class="sc-iwsKbI jeNrVx"
           >
             Enter the number of winners for the contest.
           </div>
@@ -486,7 +491,7 @@ exports[`Audit Setup > Contests > renders empty targeted state correctly 1`] = `
             </div>
           </label>
           <div
-            class="sc-iwsKbI bncGzX"
+            class="sc-iwsKbI jeNrVx"
           >
             Number of selections the voter can make in the contest.
           </div>
@@ -520,7 +525,7 @@ exports[`Audit Setup > Contests > renders empty targeted state correctly 1`] = `
             Candidates/Choices & Vote Totals
           </h3>
           <div
-            class="sc-iwsKbI bncGzX"
+            class="sc-iwsKbI jeNrVx"
           >
             Enter the name of each candidate choice that appears on the ballot for this contest.
           </div>
@@ -532,6 +537,7 @@ exports[`Audit Setup > Contests > renders empty targeted state correctly 1`] = `
             >
               <label
                 class="bp3-label sc-eXEjpC hSzFPc"
+                style="margin-bottom: 0px;"
               >
                 Name of Candidate/Choice 
                 1
@@ -552,6 +558,7 @@ exports[`Audit Setup > Contests > renders empty targeted state correctly 1`] = `
               </label>
               <label
                 class="bp3-label sc-eXEjpC hSzFPc"
+                style="margin-bottom: 0px;"
               >
                 Votes for Candidate/Choice 
                 1
@@ -573,9 +580,11 @@ exports[`Audit Setup > Contests > renders empty targeted state correctly 1`] = `
             </div>
             <div
               class="sc-esjQYD fijUfG"
+              style="margin-top: 15px;"
             >
               <label
                 class="bp3-label sc-eXEjpC hSzFPc"
+                style="margin-bottom: 0px;"
               >
                 Name of Candidate/Choice 
                 2
@@ -596,6 +605,7 @@ exports[`Audit Setup > Contests > renders empty targeted state correctly 1`] = `
               </label>
               <label
                 class="bp3-label sc-eXEjpC hSzFPc"
+                style="margin-bottom: 0px;"
               >
                 Votes for Candidate/Choice 
                 2
@@ -631,7 +641,7 @@ exports[`Audit Setup > Contests > renders empty targeted state correctly 1`] = `
             Total Ballot Cards Cast
           </h3>
           <div
-            class="sc-iwsKbI bncGzX"
+            class="sc-iwsKbI jeNrVx"
           >
             Enter the overall number of ballot cards cast in jurisdictions containing this contest.
           </div>
@@ -668,7 +678,7 @@ exports[`Audit Setup > Contests > renders empty targeted state correctly 1`] = `
             Contest Universe
           </h3>
           <div
-            class="sc-iwsKbI bncGzX"
+            class="sc-iwsKbI jeNrVx"
           >
             Select the jurisdictions where this contest appeared on the ballot.
           </div>
@@ -834,7 +844,7 @@ exports[`Audit Setup > Contests > renders filled opportunistic state correctly 1
           </h3>
           <div>
             <div
-              class="sc-iwsKbI bncGzX"
+              class="sc-iwsKbI jeNrVx"
             >
               Enter the name of the contest that will drive the audit.
             </div>
@@ -863,7 +873,7 @@ exports[`Audit Setup > Contests > renders filled opportunistic state correctly 1
             </label>
           </div>
           <div
-            class="sc-iwsKbI bncGzX"
+            class="sc-iwsKbI jeNrVx"
           >
             Enter the number of winners for the contest.
           </div>
@@ -888,7 +898,7 @@ exports[`Audit Setup > Contests > renders filled opportunistic state correctly 1
             </div>
           </label>
           <div
-            class="sc-iwsKbI bncGzX"
+            class="sc-iwsKbI jeNrVx"
           >
             Number of selections the voter can make in the contest.
           </div>
@@ -922,7 +932,7 @@ exports[`Audit Setup > Contests > renders filled opportunistic state correctly 1
             Candidates/Choices & Vote Totals
           </h3>
           <div
-            class="sc-iwsKbI bncGzX"
+            class="sc-iwsKbI jeNrVx"
           >
             Enter the name of each candidate choice that appears on the ballot for this contest.
           </div>
@@ -934,6 +944,7 @@ exports[`Audit Setup > Contests > renders filled opportunistic state correctly 1
             >
               <label
                 class="bp3-label sc-eXEjpC hSzFPc"
+                style="margin-bottom: 0px;"
               >
                 Name of Candidate/Choice 
                 1
@@ -954,6 +965,7 @@ exports[`Audit Setup > Contests > renders filled opportunistic state correctly 1
               </label>
               <label
                 class="bp3-label sc-eXEjpC hSzFPc"
+                style="margin-bottom: 0px;"
               >
                 Votes for Candidate/Choice 
                 1
@@ -975,9 +987,11 @@ exports[`Audit Setup > Contests > renders filled opportunistic state correctly 1
             </div>
             <div
               class="sc-esjQYD fijUfG"
+              style="margin-top: 15px;"
             >
               <label
                 class="bp3-label sc-eXEjpC hSzFPc"
+                style="margin-bottom: 0px;"
               >
                 Name of Candidate/Choice 
                 2
@@ -998,6 +1012,7 @@ exports[`Audit Setup > Contests > renders filled opportunistic state correctly 1
               </label>
               <label
                 class="bp3-label sc-eXEjpC hSzFPc"
+                style="margin-bottom: 0px;"
               >
                 Votes for Candidate/Choice 
                 2
@@ -1033,7 +1048,7 @@ exports[`Audit Setup > Contests > renders filled opportunistic state correctly 1
             Total Ballot Cards Cast
           </h3>
           <div
-            class="sc-iwsKbI bncGzX"
+            class="sc-iwsKbI jeNrVx"
           >
             Enter the overall number of ballot cards cast in jurisdictions containing this contest.
           </div>
@@ -1070,7 +1085,7 @@ exports[`Audit Setup > Contests > renders filled opportunistic state correctly 1
             Contest Universe
           </h3>
           <div
-            class="sc-iwsKbI bncGzX"
+            class="sc-iwsKbI jeNrVx"
           >
             Select the jurisdictions where this contest appeared on the ballot.
           </div>
@@ -1236,7 +1251,7 @@ exports[`Audit Setup > Contests > renders filled targeted state correctly 1`] = 
           </h3>
           <div>
             <div
-              class="sc-iwsKbI bncGzX"
+              class="sc-iwsKbI jeNrVx"
             >
               Enter the name of the contest that will drive the audit.
             </div>
@@ -1265,7 +1280,7 @@ exports[`Audit Setup > Contests > renders filled targeted state correctly 1`] = 
             </label>
           </div>
           <div
-            class="sc-iwsKbI bncGzX"
+            class="sc-iwsKbI jeNrVx"
           >
             Enter the number of winners for the contest.
           </div>
@@ -1290,7 +1305,7 @@ exports[`Audit Setup > Contests > renders filled targeted state correctly 1`] = 
             </div>
           </label>
           <div
-            class="sc-iwsKbI bncGzX"
+            class="sc-iwsKbI jeNrVx"
           >
             Number of selections the voter can make in the contest.
           </div>
@@ -1324,7 +1339,7 @@ exports[`Audit Setup > Contests > renders filled targeted state correctly 1`] = 
             Candidates/Choices & Vote Totals
           </h3>
           <div
-            class="sc-iwsKbI bncGzX"
+            class="sc-iwsKbI jeNrVx"
           >
             Enter the name of each candidate choice that appears on the ballot for this contest.
           </div>
@@ -1336,6 +1351,7 @@ exports[`Audit Setup > Contests > renders filled targeted state correctly 1`] = 
             >
               <label
                 class="bp3-label sc-eXEjpC hSzFPc"
+                style="margin-bottom: 0px;"
               >
                 Name of Candidate/Choice 
                 1
@@ -1356,6 +1372,7 @@ exports[`Audit Setup > Contests > renders filled targeted state correctly 1`] = 
               </label>
               <label
                 class="bp3-label sc-eXEjpC hSzFPc"
+                style="margin-bottom: 0px;"
               >
                 Votes for Candidate/Choice 
                 1
@@ -1377,9 +1394,11 @@ exports[`Audit Setup > Contests > renders filled targeted state correctly 1`] = 
             </div>
             <div
               class="sc-esjQYD fijUfG"
+              style="margin-top: 15px;"
             >
               <label
                 class="bp3-label sc-eXEjpC hSzFPc"
+                style="margin-bottom: 0px;"
               >
                 Name of Candidate/Choice 
                 2
@@ -1400,6 +1419,7 @@ exports[`Audit Setup > Contests > renders filled targeted state correctly 1`] = 
               </label>
               <label
                 class="bp3-label sc-eXEjpC hSzFPc"
+                style="margin-bottom: 0px;"
               >
                 Votes for Candidate/Choice 
                 2
@@ -1435,7 +1455,7 @@ exports[`Audit Setup > Contests > renders filled targeted state correctly 1`] = 
             Total Ballot Cards Cast
           </h3>
           <div
-            class="sc-iwsKbI bncGzX"
+            class="sc-iwsKbI jeNrVx"
           >
             Enter the overall number of ballot cards cast in jurisdictions containing this contest.
           </div>
@@ -1472,7 +1492,7 @@ exports[`Audit Setup > Contests > renders filled targeted state correctly 1`] = 
             Contest Universe
           </h3>
           <div
-            class="sc-iwsKbI bncGzX"
+            class="sc-iwsKbI jeNrVx"
           >
             Select the jurisdictions where this contest appeared on the ballot.
           </div>

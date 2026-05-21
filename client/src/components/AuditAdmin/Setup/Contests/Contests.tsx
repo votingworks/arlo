@@ -7,6 +7,7 @@ import { IAuditSettings } from '../../../useAuditSettings'
 export interface IContestsProps {
   electionId: string
   auditType: IAuditSettings['auditType']
+  electionState: IAuditSettings['state']
   isTargeted: boolean
   goToNextStage: () => void
   goToPrevStage: () => void
