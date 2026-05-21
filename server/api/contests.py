@@ -37,6 +37,7 @@ CONTEST_SCHEMA = {
         "pendingBallots": {
             "anyOf": [{"type": "integer", "minimum": 0}, {"type": "null"}]
         },
+        "isSubjectToRunoff": {"type": "boolean"},
         "jurisdictionIds": {
             "type": "array",
             "items": {"type": "string"},
@@ -101,6 +102,7 @@ BALLOT_COMPARISON_CONTEST_SCHEMA = {
         "isTargeted": {"type": "boolean"},
         "numWinners": {"type": "integer", "minimum": 1},
         "jurisdictionIds": {"type": "array", "items": {"type": "string"}},
+        "isSubjectToRunoff": {"type": "boolean"},
     },
     "additionalProperties": False,
     "required": ["id", "name", "isTargeted", "numWinners", "jurisdictionIds"],
@@ -137,6 +139,7 @@ def serialize_contest(contest: Contest) -> JSONDict:
 
     if contest.election.audit_type == AuditType.BATCH_COMPARISON:
         serialized_contest["pendingBallots"] = contest.pending_ballots
+        serialized_contest["isSubjectToRunoff"] = contest.is_subject_to_runoff
 
     # Validate CVR choice names across jurisdictions in ballot comparison audits. Load error
     # details, if any, onto the contest object.
@@ -229,6 +232,7 @@ def deserialize_contest(contest: JSONDict, election_id: str) -> Contest:
         num_winners=contest.get("numWinners", None),
         votes_allowed=contest.get("votesAllowed", None),
         pending_ballots=contest.get("pendingBallots", None),
+        is_subject_to_runoff=contest.get("isSubjectToRunoff", False),
         jurisdictions=jurisdictions,
     )
 
@@ -272,6 +276,22 @@ def validate_contests(contests: list[JSONDict], election: Election):
                     f"Too many votes cast in contest: {contest['name']}"
                     f" ({total_votes} votes, {total_allowed_votes} allowed)"
                 )
+
+    for contest in contests:
+        if not contest.get("isSubjectToRunoff", False):
+            continue
+        if election.audit_type != AuditType.BATCH_COMPARISON:
+            raise BadRequest(
+                "isSubjectToRunoff is only supported for batch comparison audits"
+            )
+        if contest["numWinners"] != 1:
+            raise BadRequest(
+                "isSubjectToRunoff can only be true for contests with num_winners=1"
+            )
+        if len(contest["choices"]) < 3:
+            raise BadRequest(
+                "isSubjectToRunoff can only be true for contests with at least 3 choices"
+            )
 
 
 # In various audit types, we set different pieces of contest metadata from

@@ -19,6 +19,7 @@ const renderContests = (props: Partial<IContestsProps> = {}) => {
         <Contests
           electionId="1"
           auditType="BALLOT_COMPARISON"
+          electionState={null}
           isTargeted
           goToNextStage={goToNextStage}
           goToPrevStage={goToPrevStage}

@@ -29,6 +29,7 @@ const renderContests = (props: Partial<IContestsProps> = {}) => {
         <Contests
           electionId="1"
           auditType="BALLOT_POLLING"
+          electionState={null}
           isTargeted
           goToNextStage={goToNextStage}
           goToPrevStage={goToPrevStage}
@@ -511,6 +512,7 @@ describe('Audit Setup > Contests', () => {
         numWinners: 1,
         votesAllowed: 1,
         pendingBallots: null,
+        isSubjectToRunoff: false,
       },
       {
         id: 'contest-id-2',
@@ -524,6 +526,7 @@ describe('Audit Setup > Contests', () => {
         numWinners: 1,
         votesAllowed: 1,
         pendingBallots: null,
+        isSubjectToRunoff: false,
       },
     ]
     const expectedCalls = [
@@ -591,6 +594,7 @@ describe('Audit Setup > Contests', () => {
       ...contestMocks.filledTargeted[0],
       totalBallotsCast: undefined,
       pendingBallots: numPendingBallots,
+      isSubjectToRunoff: false,
     }
     const expectedCalls = [
       aaApiCalls.getContests(contestMocks.empty),

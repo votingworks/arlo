@@ -161,7 +161,7 @@ exports[`AA setup flow > renders sidebar when authenticated on /setup 1`] = `
             >
               <div>
                 <div
-                  class="sc-gqjmRU fOytwc"
+                  class="sc-gqjmRU jqRxta"
                 >
                   Click "Browse" to choose the appropriate file from your computer. This file should be a comma-separated list of all the jurisdictions participating in the audit, plus email addresses for audit administrators in each participating jurisdiction.
                 </div>
