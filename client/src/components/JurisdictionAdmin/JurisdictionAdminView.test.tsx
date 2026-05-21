@@ -247,7 +247,7 @@ describe('JA setup', () => {
       await screen.findByText('Audit Setup')
       const fileTypeSelect = screen.getByLabelText(/CVR File Type:/)
       within(fileTypeSelect).getByRole('option', {
-        name: 'Dominion',
+        name: 'Liberty Vote (Dominion)',
         selected: true,
       })
       userEvent.selectOptions(

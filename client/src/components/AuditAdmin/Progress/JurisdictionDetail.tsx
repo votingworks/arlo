@@ -198,7 +198,9 @@ const CvrsFileUpload = ({
               style={{ width: '195px', marginLeft: '10px' }}
             >
               <option></option>
-              <option value={CvrFileType.DOMINION}>Dominion</option>
+              <option value={CvrFileType.DOMINION}>
+                Liberty Vote (Dominion)
+              </option>
               <option value={CvrFileType.CLEARBALLOT}>ClearBallot</option>
               <option value={CvrFileType.ESS}>ES&amp;S</option>
               <option value={CvrFileType.HART}>Hart</option>
