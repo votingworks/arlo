@@ -109,7 +109,9 @@ const CSVFile: React.FC<IProps> = ({
                     disabled={!enabled || !(isEditing || !file)}
                     onChange={e => setFieldValue('cvrFileType', e.target.value)}
                   >
-                    <option value={CvrFileType.DOMINION}>Dominion</option>
+                    <option value={CvrFileType.DOMINION}>
+                      Liberty Vote (Dominion)
+                    </option>
                     <option value={CvrFileType.CLEARBALLOT}>ClearBallot</option>
                     <option value={CvrFileType.ESS}>ES&amp;S</option>
                     <option value={CvrFileType.HART}>Hart</option>

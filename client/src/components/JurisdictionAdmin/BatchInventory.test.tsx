@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import React from 'react'
 import { screen, within, waitFor } from '@testing-library/react'
 import { QueryClientProvider } from 'react-query'
@@ -16,11 +16,12 @@ import {
   getMockFormDataForFileUpload,
   getMockJsonDataForUploadComplete,
 } from '../_mocks'
+import { useBatchInventoryFeatureFlag } from '../useFeatureFlag'
 
 vi.mock(import('axios'))
 vi.mock(import('../useFeatureFlag'), async importActual => ({
   ...(await importActual()),
-  useBatchInventoryFeatureFlag: vi.fn(() => ({ showBallotManifest: true })),
+  useBatchInventoryFeatureFlag: vi.fn(),
 }))
 
 const testCvrFile = new File([''], 'test-cvr.csv', {
@@ -176,6 +177,62 @@ const expectToBeOnStep = async (name: string) => {
 // returns to the batch inventory flow after leaving on a certain step, they
 // will be returned to that step based on the saved data from the previous step.
 describe('BatchInventory', () => {
+  beforeEach(() => {
+    vi.mocked(useBatchInventoryFeatureFlag).mockReturnValue({
+      showBallotManifest: true,
+    })
+  })
+
+  it('auto-selects the configured default system type on first visit', async () => {
+    vi.mocked(useBatchInventoryFeatureFlag).mockReturnValue({
+      showBallotManifest: true,
+      defaultSystemType: CvrFileType.DOMINION,
+    })
+
+    const expectedCalls = [
+      apiCalls.getSystemType(null),
+      apiCalls.getCvr(fileInfoMocks.empty),
+      apiCalls.getTabulatorStatus(fileInfoMocks.empty),
+      apiCalls.getSignOff(null),
+      // useEffect persists the configured default on mount
+      apiCalls.putSystemType(CvrFileType.DOMINION),
+      // The mutation invalidates all batch-inventory queries, triggering refetches.
+      // The cvr and tabulator-status refetches then fire their onFileChange
+      // handlers, which re-invalidate downstream queries.
+      apiCalls.getSystemType(CvrFileType.DOMINION),
+      apiCalls.getCvr(fileInfoMocks.empty),
+      apiCalls.getTabulatorStatus(fileInfoMocks.empty),
+      apiCalls.getSignOff(null),
+      apiCalls.getTabulatorStatus(fileInfoMocks.empty),
+      apiCalls.getSignOff(null),
+      apiCalls.getSignOff(null),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      render()
+      await expectToBeOnStep('Select System Type')
+
+      const continueButton = screen.getByRole('button', { name: /Continue/ })
+      await waitFor(() => expect(continueButton).toBeEnabled())
+      expect(screen.getByRole('combobox')).toHaveValue(CvrFileType.DOMINION)
+    })
+  })
+
+  it('does not auto-select a system type when no default is configured', async () => {
+    const expectedCalls = [
+      apiCalls.getSystemType(null),
+      apiCalls.getCvr(fileInfoMocks.empty),
+      apiCalls.getTabulatorStatus(fileInfoMocks.empty),
+      apiCalls.getSignOff(null),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      render()
+      await expectToBeOnStep('Select System Type')
+
+      expect(screen.getByRole('button', { name: /Continue/ })).toBeDisabled()
+      expect(screen.getByRole('combobox')).toHaveValue('')
+    })
+  })
+
   it('continues to Upload Election Results step', async () => {
     const expectedCalls = [
       apiCalls.getSystemType(CvrFileType.DOMINION),
