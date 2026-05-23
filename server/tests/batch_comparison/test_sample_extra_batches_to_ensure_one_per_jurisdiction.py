@@ -1,7 +1,6 @@
 import pytest
 from flask.testing import FlaskClient
 
-from ...database import db_session
 from ...models import *
 from ..helpers import *
 
@@ -10,14 +9,8 @@ from ..helpers import *
 def org_id(client: FlaskClient, request) -> str:
     # Allow specifying a custom test org via @pytest.mark.parametrize to toggle relevant feature
     # flags
-    org_id = str(request.param)
-    org = Organization.query.get(org_id)
-    if not org:
-        org = Organization(id=org_id, name=org_id)
-        db_session.add(org)
-        add_admin_to_org(org_id, DEFAULT_AA_EMAIL)
-        db_session.commit()
-    return org_id
+    org_id: str = str(request.param)  # pyright: ignore[reportUnknownMemberType,reportUnknownArgumentType]
+    return get_or_create_org(org_id)
 
 
 @pytest.fixture

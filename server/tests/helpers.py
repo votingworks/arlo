@@ -116,6 +116,29 @@ def add_admin_to_org(org_id: str, user_email: str):
     return audit_admin.id
 
 
+def get_or_create_org(org_id: str, user_email: str = DEFAULT_AA_EMAIL) -> str:
+    """Get or create an organization, handling race conditions in concurrent tests.
+
+    With pytest-xdist, multiple workers can try to create the same org simultaneously.
+    This function is idempotent and retries if another worker creates the org first.
+    """
+    for attempt in range(3):
+        if Organization.query.get(org_id):  # pyright: ignore[reportUnknownMemberType]
+            return org_id
+
+        org: Organization = Organization(id=org_id, name=org_id)  # pyright: ignore[reportCallIssue]
+        db_session.add(org)  # pyright: ignore[reportUnknownMemberType]
+        try:
+            _ = add_admin_to_org(org.id, user_email)
+            db_session.commit()  # pyright: ignore[reportUnknownMemberType]
+            return org_id
+        except IntegrityError:
+            db_session.rollback()  # pyright: ignore[reportUnknownMemberType]
+            if attempt == 2:
+                raise
+    raise RuntimeError("unreachable")  # pragma: no cover
+
+
 def create_jurisdiction_admin(jurisdiction_id: str, user_email: str) -> str:
     jurisdiction_admin = create_user(user_email)
     db_session.add(jurisdiction_admin)
