@@ -1170,7 +1170,7 @@ def test_ja_ballot_retrieval_list_round_1(
     )
     assert rv.status_code == 200
     assert (
-        scrub_datetime(rv.headers["Content-Disposition"])
+        scrub_filename_datetime(rv.headers["Content-Disposition"])
         == 'attachment; filename="ballot-retrieval-J1-Test-Audit-test-ja-ballot-retrieval-list-round-1-DATETIME.csv"'
     )
 
@@ -1198,7 +1198,7 @@ def test_ja_ballot_retrieval_list_round_2(
     )
     assert rv.status_code == 200
     assert (
-        scrub_datetime(rv.headers["Content-Disposition"])
+        scrub_filename_datetime(rv.headers["Content-Disposition"])
         == 'attachment; filename="ballot-retrieval-J1-Test-Audit-test-ja-ballot-retrieval-list-round-2-DATETIME.csv"'
     )
 
