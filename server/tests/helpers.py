@@ -292,6 +292,8 @@ DATETIME_REGEX = re.compile(
     r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}.\d{6})?(\+\d\d:\d\d)?"
 )
 
+FILENAME_DATETIME_REGEX = re.compile(r"\d{4}-\d{2}-\d{2}T\d{4}Z")
+
 TEST_JURISDICTION_ADMIN_EMAIL_REGEX = re.compile(
     r"(jurisdiction\.admin|j3)-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}@example\.com"
 )
@@ -299,6 +301,10 @@ TEST_JURISDICTION_ADMIN_EMAIL_REGEX = re.compile(
 
 def scrub_datetime(string: str) -> str:
     return re.sub(DATETIME_REGEX, "DATETIME", string)
+
+
+def scrub_filename_datetime(string: str) -> str:
+    return re.sub(FILENAME_DATETIME_REGEX, "DATETIME", string)
 
 
 def scrub_test_jurisdiction_admin_email_uuid(string: str) -> str:

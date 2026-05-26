@@ -10,14 +10,14 @@ clean_name_re = re.compile(r"[^a-zA-Z0-9]+")
 
 def election_timestamp_name(election: Election) -> str:
     election_name = re.sub(clean_name_re, "-", str(election.audit_name))
-    now = datetime.now(timezone.utc).isoformat(timespec="minutes")
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H%MZ")
     return f"{election_name}-{now}"
 
 
 def jurisdiction_timestamp_name(election: Election, jurisdiction: Jurisdiction) -> str:
     election_name = re.sub(clean_name_re, "-", str(election.audit_name))
     jurisdiction_name = re.sub(clean_name_re, "-", str(jurisdiction.name))
-    now = datetime.now(timezone.utc).isoformat(timespec="minutes")
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H%MZ")
     return f"{jurisdiction_name}-{election_name}-{now}"
 
 

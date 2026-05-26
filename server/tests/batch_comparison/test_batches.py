@@ -95,7 +95,7 @@ def test_batch_retrieval_list_round_1(
     )
     assert rv.status_code == 200
     assert (
-        scrub_datetime(rv.headers["Content-Disposition"])
+        scrub_filename_datetime(rv.headers["Content-Disposition"])
         == 'attachment; filename="batch-retrieval-J1-Test-Audit-test-batch-retrieval-list-round-1-DATETIME.csv"'
     )
     retrieval_list = rv.data.decode("utf-8").replace("\r\n", "\n")

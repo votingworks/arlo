@@ -29,7 +29,7 @@ def test_audit_admin_report(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/report")
     assert (
-        scrub_datetime(rv.headers["Content-Disposition"])
+        scrub_filename_datetime(rv.headers["Content-Disposition"])
         == 'attachment; filename="audit-report-Test-Audit-test-audit-admin-report-DATETIME.csv"'
     )
     assert_match_report(rv.data, snapshot)
@@ -44,7 +44,7 @@ def test_audit_admin_report_round_2(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/report")
     assert (
-        scrub_datetime(rv.headers["Content-Disposition"])
+        scrub_filename_datetime(rv.headers["Content-Disposition"])
         == 'attachment; filename="audit-report-Test-Audit-test-audit-admin-report-round-2-DATETIME.csv"'
     )
     assert_match_report(rv.data, snapshot)
@@ -75,7 +75,7 @@ def test_jurisdiction_admin_report(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/report"
     )
     assert (
-        scrub_datetime(rv.headers["Content-Disposition"])
+        scrub_filename_datetime(rv.headers["Content-Disposition"])
         == 'attachment; filename="audit-report-J1-Test-Audit-test-jurisdiction-admin-report-DATETIME.csv"'
     )
     assert_match_report(rv.data, snapshot)
