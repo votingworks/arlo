@@ -9,8 +9,11 @@ from ..helpers import *
 def org_id(client: FlaskClient, request) -> str:
     # Allow specifying a custom test org via @pytest.mark.parametrize to toggle relevant feature
     # flags
-    org_id: str = str(request.param)  # pyright: ignore[reportUnknownMemberType,reportUnknownArgumentType]
-    return get_or_create_org(org_id)
+    org_id = str(request.param)
+    org = Organization.query.get(org_id)
+    if not org:
+        create_org(org_id)
+    return org_id
 
 
 @pytest.fixture
