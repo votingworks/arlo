@@ -22,7 +22,6 @@ from ..util.file import (
     serialize_file_processing,
 )
 from ..util.csv_download import election_timestamp_name, clean_name_re
-from ..util.isoformat import isoformat
 from ..worker.tasks import background_task, create_background_task, UserError
 from .. import config
 
@@ -47,7 +46,7 @@ def start_candidate_totals_bundle_generation(election: Election):
     # Create a File record that will be populated by the background task
     bundle.file = File(
         id=str(uuid.uuid4()),
-        name=f"candidate_totals_{isoformat(datetime.now(timezone.utc))}.zip",
+        name="",
         storage_path="",  # Will be set by background task
         uploaded_at=datetime.now(timezone.utc),
     )
@@ -91,7 +90,7 @@ def start_manifests_bundle_generation(election: Election):
     # Create a File record that will be populated by the background task
     bundle.file = File(
         id=str(uuid.uuid4()),
-        name=f"manifests_{isoformat(datetime.now(timezone.utc))}.zip",
+        name="",
         storage_path="",  # Will be set by background task
         uploaded_at=datetime.now(timezone.utc),
     )
@@ -290,7 +289,7 @@ def generate_batch_files_bundle(election_id: str, bundle_id: str, bundle_type: s
         hash_value = hash_obj.hexdigest()
 
         # Step 5: Create hash file
-        hash_filename = f"{inner_zip_filename}.sha256sum"
+        hash_filename = f"{base_name}-{bundle_type}-sha256-hash.txt"
         hash_path = os.path.join(temp_dir, hash_filename)
 
         with open(hash_path, "w") as f:
@@ -318,6 +317,7 @@ def generate_batch_files_bundle(election_id: str, bundle_id: str, bundle_type: s
         storage_path = _upload_bundle_file(outer_zip_path, outer_filename, election_id)
 
         # Step 8: Update the File record with the storage path
+        bundle.file.name = outer_filename
         bundle.file.storage_path = storage_path
         db_session.commit()
 
