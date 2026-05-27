@@ -116,6 +116,15 @@ def add_admin_to_org(org_id: str, user_email: str):
     return audit_admin.id
 
 
+def create_org(org_id: str, user_email: str = DEFAULT_AA_EMAIL) -> None:
+    try:
+        with db_session.begin_nested():
+            db_session.add(Organization(id=org_id, name=org_id))
+        add_admin_to_org(org_id, user_email)
+    except IntegrityError:
+        pass
+
+
 def create_jurisdiction_admin(jurisdiction_id: str, user_email: str) -> str:
     jurisdiction_admin = create_user(user_email)
     db_session.add(jurisdiction_admin)

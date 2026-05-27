@@ -1,7 +1,6 @@
 import pytest
 from flask.testing import FlaskClient
 
-from ...database import db_session
 from ...models import *
 from ..helpers import *
 
@@ -13,10 +12,7 @@ def org_id(client: FlaskClient, request) -> str:
     org_id = str(request.param)
     org = Organization.query.get(org_id)
     if not org:
-        org = Organization(id=org_id, name=org_id)
-        db_session.add(org)
-        add_admin_to_org(org_id, DEFAULT_AA_EMAIL)
-        db_session.commit()
+        create_org(org_id)
     return org_id
 
 
