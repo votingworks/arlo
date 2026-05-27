@@ -2181,6 +2181,47 @@ def test_batch_inventory_hart_cvr_upload(
     )
 
 
+def test_batch_inventory_hart_cvr_upload_collapses_whitespace_in_names(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_id: str,
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type",
+        {"systemType": CvrFileType.HART},
+    )
+    assert_ok(rv)
+
+    def with_whitespace(cvr_xml: str) -> str:
+        return cvr_xml.replace("Contest 1", "Contest \n 1").replace(
+            "Choice 1-1", "Choice   1-1"
+        )
+
+    hart_cvrs = [
+        with_whitespace(build_hart_cvr("BATCH1", "1", "1-1-1", "1,0,0,0,0")),
+        with_whitespace(build_hart_cvr("BATCH1", "2", "1-1-2", "0,1,0,0,0")),
+    ]
+    hart_zip = zip_hart_cvrs(hart_cvrs)
+
+    rv = upload_batch_inventory_cvr(
+        client, hart_zip, election_id, jurisdiction_ids[0], "application/zip"
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/batch-tallies"
+    )
+    batch_tallies = rv.data.decode("utf-8")
+    assert batch_tallies == (
+        "Batch Name,Choice 1-1,Choice 1-2,Write-In\r\nBATCH1,1,1,0\r\n"
+    )
+
+
 def test_batch_inventory_hart_cvr_upload_multi_contest(
     client: FlaskClient,
     election_id: str,
