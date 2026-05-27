@@ -121,12 +121,16 @@ def items_list_to_dict(items):
     }
 
 
+def collapse_whitespace(name: str) -> str:
+    return re.sub(r"\s+", " ", name).strip()
+
+
 def validate_choice_name_and_get_choice_id(
     contest: Contest, choice_name: str
 ) -> str | None:
     choice_id = None
     for choice in contest.choices:
-        if choice.name == choice_name:
+        if collapse_whitespace(choice.name) == collapse_whitespace(choice_name):
             choice_id = choice.id
             break
         # handle capitalization mismatches for the write in column
@@ -609,9 +613,12 @@ def process_batch_inventory_cvr_file(
             )  # Tabulator ID is not present in Hart CVRs
 
             ballot_count_by_batch[batch_key] += 1
-            contest_results = parse_contest_results(cvr_xml)
+            contest_results = {
+                collapse_whitespace(contest_name): choice_names
+                for contest_name, choice_names in parse_contest_results(cvr_xml).items()
+            }
             for contest in contests:
-                choices = contest_results.get(contest.name, set())
+                choices = contest_results.get(collapse_whitespace(contest.name), set())
                 validated_choice_ids = []
                 for choice_name in choices:
                     validated_choice_id = validate_choice_name_and_get_choice_id(
