@@ -54,15 +54,7 @@ To use Arlo, we recommend following our user documentation, which can be found h
 
 Arlo is open-source software ([AGPL v3.0](https://github.com/votingworks/arlo/blob/master/LICENSE)), meaning you are free to use it, modify it, and redistribute those modifications as you'd like, provided that, when you redistribute your modifications, you share them in the same open way. Because Arlo is open-source, anyone can review it or run their own copy, thus ensuring that, when used in a real audit, it is performing according to specification.
 
-Like any open-source software, Arlo welcomes suggested changes in the form of pull requests on GitHub. If you're interested in getting a change merged into Arlo, please consider the following:
-
-- test coverage is mandatory. We won't merge code without it.
-
-- significant / risky changes may take some time to review, and are not likely to be merged unless they've been discussed first. The stability of Arlo is a prime concern. A good way to start a conversation around a large change is by opening up a ticket.
-
-- we really want to know about anything that gets in the way of installing and using Arlo. Please file tickets, suggest changes to our installation instructions, etc.
-
-Before submitting a pull request, please review our [Contribution Guidelines](./docs/contribution-guidelines.md).
+View our contribution guidelines [here](https://github.com/votingworks/contribution-guidelines).
 
 ### Quick start guide
 
