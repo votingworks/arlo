@@ -64,5 +64,5 @@ J2,Batch 3,500,Round 1: 0.368061935896261076,Yes,candidate 1: 500; candidate 2: 
 J2,Batch 6,250,Round 1: EXTRA,Yes,candidate 1: 200; candidate 2: 150; candidate 3: 150,,,,support@example.org,"Combined Batch - Sampled, Extra, Unsampled"\r
 J1,"Combined Batch - Extra, Unsampled",600,,Yes,candidate 1: 600; candidate 2: 300; candidate 3: 300,candidate 1: 600; candidate 2: 300; candidate 3: 300,,,support@example.org,"Combines Batch 1, Batch 7"\r
 J2,"Combined Batch - Sampled, Extra, Unsampled",1250,,Yes,candidate 1: 1200; candidate 2: 650; candidate 3: 650,candidate 1: 1200; candidate 2: 650; candidate 3: 650,,,support@example.org,"Combines Batch 1, Batch 3, Batch 6"\r
-Totals,,950,,,candidate 1: 1900; candidate 2: 1000; candidate 3: 1000,candidate 1: 1900; candidate 2: 1000; candidate 3: 1000,,\r
+Totals,,1950,,,candidate 1: 1900; candidate 2: 1000; candidate 3: 1000,candidate 1: 1900; candidate 2: 1000; candidate 3: 1000,,\r
 """
