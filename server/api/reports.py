@@ -1138,8 +1138,16 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
                 f"Combines {', '.join(sub_batch.name for sub_batch in sorted(sub_batches, key=lambda batch: batch.name))}",
             ]
             rows.append(combined_batch_row)
-
-    totals_row = ["Totals", "", sum(batch.num_ballots for batch in batches)]
+    total_ballots = sum(
+        batch.num_ballots for batch in batches if batch.id not in combined_sub_batch_ids
+    )
+    if has_combined_batches:
+        total_ballots += sum(
+            sub_batch.num_ballots
+            for combined_batch in combined_batches
+            for sub_batch in combined_batch["sub_batches"]
+        )
+    totals_row = ["Totals", "", total_ballots]
     totals_row += ["" for _ in contests]  # Ticket number cols - not relevant to totals
     totals_row += [""]  # Audited flag - not relevant to totals
     for contest in contests:
