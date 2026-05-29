@@ -315,6 +315,11 @@ def record_batch_results(
             Batch.jurisdiction_id == jurisdiction.id,
             Batch.id != batch.id,
         )
+        BatchResultTallySheet.query.filter(
+            BatchResultTallySheet.batch_id.in_(
+                non_representative_sub_batches.with_entities(Batch.id)
+            )
+        ).delete(synchronize_session="fetch")
         for sub_batch in non_representative_sub_batches:
             sub_batch.result_tally_sheets = [
                 BatchResultTallySheet(
