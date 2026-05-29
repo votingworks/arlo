@@ -315,6 +315,7 @@ def record_batch_results(
             Batch.jurisdiction_id == jurisdiction.id,
             Batch.id != batch.id,
         )
+        # Delete existing sub batch tallies if any
         BatchResultTallySheet.query.filter(
             BatchResultTallySheet.batch_id.in_(
                 non_representative_sub_batches.with_entities(Batch.id)
