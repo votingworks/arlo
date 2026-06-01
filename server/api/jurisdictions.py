@@ -6,7 +6,7 @@ import uuid
 import datetime
 import math
 from flask import jsonify, request
-from sqlalchemy import func
+from sqlalchemy import distinct, func, tuple_
 from sqlalchemy.orm import joinedload
 from werkzeug.exceptions import Conflict, BadRequest
 
@@ -454,7 +454,16 @@ def batch_round_status(election: Election, round: Round) -> dict[str, JSONDict]:
         .join(Batch)
         .group_by(Batch.jurisdiction_id)
         .values(
-            Batch.jurisdiction_id, func.count(SampledBatchDraw.ticket_number.distinct())
+            Batch.jurisdiction_id,
+            func.count(
+                distinct(
+                    tuple_(
+                        SampledBatchDraw.batch_id,
+                        SampledBatchDraw.contest_id,
+                        SampledBatchDraw.ticket_number,
+                    )
+                )
+            ),
         )
     )
     audited_sample_count_by_jurisdiction = dict(
@@ -464,7 +473,16 @@ def batch_round_status(election: Election, round: Round) -> dict[str, JSONDict]:
         .group_by(Batch.jurisdiction_id)
         .having(func.count(BatchResultTallySheet.id) > 0)
         .values(
-            Batch.jurisdiction_id, func.count(SampledBatchDraw.ticket_number.distinct())
+            Batch.jurisdiction_id,
+            func.count(
+                distinct(
+                    tuple_(
+                        SampledBatchDraw.batch_id,
+                        SampledBatchDraw.contest_id,
+                        SampledBatchDraw.ticket_number,
+                    )
+                )
+            ),
         )
     )
 

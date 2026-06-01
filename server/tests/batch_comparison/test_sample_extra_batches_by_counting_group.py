@@ -419,6 +419,16 @@ def test_sample_extra_batches_min_percentage_of_jurisdiction_ballots_selected(
     )  # Must be selected to hit the 2% selection threshold.
     # Also satisfies the BMD group expectation so we test that explicitly in another test.
 
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    assert rv.status_code == 200
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    j1_status = next(j for j in jurisdictions if j["id"] == jurisdiction_ids[0])[
+        "currentRoundStatus"
+    ]
+    assert j1_status["numSamples"] == len(j1_batch_names)
+    assert j1_status["numUnique"] == len(j1_batch_names)
+
 
 @pytest.mark.parametrize(
     "org_id",
