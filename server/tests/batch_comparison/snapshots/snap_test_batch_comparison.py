@@ -78,7 +78,7 @@ J1,Batch 6,100,Round 1: 0.899217854763070950,Yes,candidate 1: 100; candidate 2: 
 J1,Batch 8,100,Round 1: 0.9723790677174592551,Yes,candidate 1: 100; candidate 2: 50; candidate 3: 50,candidate 1: 100; candidate 2: 50; candidate 3: 50,,,support@example.org,\r
 J2,Batch 3,500,"Round 1: 0.368061935896261076, 0.733615858338543383",Yes,candidate 1: 500; candidate 2: 250; candidate 3: 250,candidate 1: 500; candidate 2: 250; candidate 3: 250,,,support@example.org,\r
 J1,Combined Batch,1500,,Yes,candidate 1: 1500; candidate 2: 750; candidate 3: 750,candidate 1: 1500; candidate 2: 745; candidate 3: 755,candidate 2: +5; candidate 3: -5,5,support@example.org,"Combines Batch 1, Batch 2, Batch 3"\r
-Totals,,2200,,,candidate 1: 2700; candidate 2: 1350; candidate 3: 1350,candidate 1: 2700; candidate 2: 1345; candidate 3: 1355,,\r
+Totals,,2700,,,candidate 1: 2700; candidate 2: 1350; candidate 3: 1350,candidate 1: 2700; candidate 2: 1345; candidate 3: 1355,,\r
 """
 
 snapshots["test_batch_comparison_pending_ballots 1"] = [
@@ -260,12 +260,6 @@ snapshots["test_batch_comparison_round_2 9"] = {
     "numUniqueAudited": 1,
     "status": "COMPLETE",
 }
-
-snapshots["test_batch_comparison_sample_preview 1"] = [
-    {"name": "J1", "numSamples": 5, "numUnique": 5},
-    {"name": "J2", "numSamples": 2, "numUnique": 1},
-    {"name": "J3", "numSamples": 0, "numUnique": 0},
-]
 
 snapshots["test_batch_comparison_sample_size 1"] = [
     {"key": "macro", "prob": None, "size": 7}

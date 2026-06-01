@@ -1020,7 +1020,15 @@ def test_batch_comparison_combined_batches(
         ]
     }
 
-    # Audit the combined batch
+    # Make two requests: a first put request without discrepancies, and a second
+    # with them added, so we can test that the combined batch tallies can be updated
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/{combined_batch['id']}/results",
+        [{"name": "Tally Sheet #1", "results": reported_tallies}],
+    )
+    assert_ok(rv)
+
     candidate_2_discrepancy = 5
     candidate_3_discrepancy = -5
     rv = put_json(
