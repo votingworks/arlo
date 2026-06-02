@@ -1070,6 +1070,24 @@ def test_batch_comparison_combined_batches(
         )
         assert_ok(rv)
 
+    # Before any jurisdiction finalizes its results, discrepancies are hidden,
+    # so the audit report shows combined batches with no reported or audited
+    # votes.
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/report")
+    assert rv.status_code == 200
+    combined_batch_line = next(
+        line
+        for line in rv.data.decode("utf-8").splitlines()
+        if line.startswith("J1,Combined Batch,")
+    )
+    assert ",No," in combined_batch_line
+    assert "candidate" not in combined_batch_line
+    assert combined_batch_line.endswith('"Combines Batch 1, Batch 2, Batch 3"')
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+
     # Finalize the results
     rv = post_json(
         client,
