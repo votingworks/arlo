@@ -125,6 +125,22 @@ def pretty_batch_ticket_numbers(
     ]
 
 
+def pretty_combined_batch_ticket_numbers(
+    sub_batches: list[Batch], round_id_to_num: dict[str, int], contests: list[Contest]
+) -> list[str]:
+    ticket_numbers_for_contests = []
+    for contest in contests:
+        sub_batch_ticket_numbers = []
+        for sub_batch in sorted(sub_batches, key=lambda batch: batch.name):
+            ticket_numbers = pretty_batch_ticket_numbers_for_contest(
+                sub_batch, round_id_to_num, contest.id
+            )
+            if ticket_numbers:
+                sub_batch_ticket_numbers.append(f"{ticket_numbers} ({sub_batch.name})")
+        ticket_numbers_for_contests.append("; ".join(sub_batch_ticket_numbers))
+    return ticket_numbers_for_contests
+
+
 # (contest_id, interpretation, selected_choice_names, comment, is_overvote, has_invalid_write_in)
 InterpretationTuple = tuple[str, str, list[str], str, bool, bool]
 
@@ -1061,7 +1077,9 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
                 representative_batch.jurisdiction.name,
                 representative_batch.combined_batch_name,
                 sum(batch.num_ballots for batch in sub_batches),
-                "",  # Ticket number cols - not relevant to combined batches
+                *pretty_combined_batch_ticket_numbers(
+                    sub_batches, round_id_to_num, contests
+                ),
             ]
             if not show_discrepancies_by_jurisdiction[
                 representative_batch.jurisdiction.id
