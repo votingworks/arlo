@@ -9,15 +9,31 @@ import Breadcrumbs from './Breadcrumbs'
 import { Column, Row } from './shared'
 import H2Title from '../Atoms/H2Title'
 
-const HeadingContainer = styled.div`
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 20px;
+`
+
+const Header = styled.div`
   display: flex;
   width: 100%;
   justify-content: space-between;
-  margin: 10px 0 20px 0;
+  align-items: center;
+  gap: 10px;
 
   @media (max-width: 480px) {
     flex-direction: column;
+    align-items: flex-start;
   }
+`
+
+const AuditInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
 `
 
 const prettyAuditType = (auditType: IElection['auditType']) =>
@@ -47,27 +63,18 @@ const Audit = ({
   } = election.data
 
   return (
-    <div
-      style={{
-        width: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        marginTop: '20px',
-      }}
-    >
+    <Container>
       <Row>
-        <Breadcrumbs>
-          <Link to={`/support/orgs/${organization.id}`}>
-            {organization.name}
-          </Link>
-        </Breadcrumbs>
-      </Row>
-      <Row>
-        <HeadingContainer>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <Header>
+          <AuditInfo>
+            <Breadcrumbs>
+              <Link to={`/support/orgs/${organization.id}`}>
+                {organization.name}
+              </Link>
+            </Breadcrumbs>
             <H1 style={{ marginBottom: 0 }}>{auditName}</H1>
             <Tag large>{prettyAuditType(auditType)}</Tag>
-          </div>
+          </AuditInfo>
           <AnchorButton
             href={`/api/support/elections/${id}/login`}
             icon="log-in"
@@ -75,7 +82,7 @@ const Audit = ({
           >
             Log in as audit admin
           </AnchorButton>
-        </HeadingContainer>
+        </Header>
       </Row>
       <Row>
         <Column>
@@ -112,7 +119,7 @@ const Audit = ({
           </div>
         </Column>
       </Row>
-    </div>
+    </Container>
   )
 }
 
