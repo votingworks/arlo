@@ -1,4 +1,5 @@
 import io
+import re
 import csv
 from typing import cast as typing_cast
 from collections import defaultdict, Counter
@@ -201,6 +202,15 @@ def pretty_cvr_interpretation(
         for choice_id, interpretation in cvrs_by_choice.items()
         if interpretation == "1"
     )
+
+
+def natural_sort_key(name: str) -> list:
+    # Mirror the human_sort Postgres function used to order batches in queries,
+    # so e.g. "Batch 2" sorts before "Batch 10".
+    return [
+        int(chunk) if chunk.isdigit() else chunk.lower()
+        for chunk in re.split(r"(\d+)", name)
+    ]
 
 
 def add_sign(value: int) -> str:
@@ -890,7 +900,7 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction | None = 
 
 
 def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = None):
-    rows = [heading("SAMPLED BATCHES")]
+    header_rows = [heading("SAMPLED BATCHES")]
 
     batches_query = (
         Batch.query.join(SampledBatchDraw)
@@ -967,7 +977,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
     ]
     if has_combined_batches:
         column_headers.append("Combined Batch")
-    rows.append(column_headers)
+    header_rows.append(column_headers)
 
     total_reported_results: dict = {
         contest.id: {choice.id: 0 for choice in contest.choices} for contest in contests
@@ -980,10 +990,15 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
         show_batch_comparison_discrepancies_by_jurisdiction(election)
     )
 
+    # Each entry is (min_round_num, row). We sort by min_round_num below so the
+    # rows (including combined batches) follow the same ordering as the batches
+    # query: round number, then jurisdiction name, then batch name.
+    sampled_batch_rows = []
     for batch in batches:
         if batch.id in combined_sub_batch_ids:
             continue
 
+        min_round_num = min(round_id_to_num[draw.round_id] for draw in batch.draws)
         row = [
             batch.jurisdiction.name,
             batch.name,
@@ -993,7 +1008,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
         if not show_discrepancies_by_jurisdiction[batch.jurisdiction.id]:
             row += [pretty_boolean(False)]
             row += [""] * (len(result_columns) + 1)
-            rows.append(row)
+            sampled_batch_rows.append((min_round_num, row))
             continue
 
         is_audited = batch.id in audit_results_by_batch
@@ -1066,12 +1081,17 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
         if has_combined_batches:
             row.append("")
 
-        rows.append(row)
+        sampled_batch_rows.append((min_round_num, row))
 
     if has_combined_batches:
         for combined_batch in combined_batches:
             representative_batch = combined_batch["representative_batch"]
             sub_batches = combined_batch["sub_batches"]
+            min_round_num = min(
+                round_id_to_num[draw.round_id]
+                for sub_batch in sub_batches
+                for draw in sub_batch.draws
+            )
             combines_description = f"Combines {', '.join(sub_batch.name for sub_batch in sorted(sub_batches, key=lambda batch: batch.name))}"
             combined_batch_row = [
                 representative_batch.jurisdiction.name,
@@ -1087,7 +1107,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
                 combined_batch_row += [pretty_boolean(False)]
                 combined_batch_row += [""] * (len(result_columns) + 1)
                 combined_batch_row += [combines_description]
-                rows.append(combined_batch_row)
+                sampled_batch_rows.append((min_round_num, combined_batch_row))
                 continue
 
             is_audited = representative_batch.id in audit_results_by_batch
@@ -1167,7 +1187,17 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
                 construct_batch_last_edited_by_string(representative_batch),
                 combines_description,
             ]
-            rows.append(combined_batch_row)
+            sampled_batch_rows.append((min_round_num, combined_batch_row))
+
+    sampled_batch_rows.sort(
+        key=lambda min_round_num_and_row: (
+            min_round_num_and_row[0],  # Round number
+            min_round_num_and_row[1][0],  # Jurisdiction Name
+            natural_sort_key(min_round_num_and_row[1][1]),  # Batch Name
+        )
+    )
+    sorted_rows = [row for _, row in sampled_batch_rows]
+
     total_ballots = sum(
         batch.num_ballots for batch in batches if batch.id not in combined_sub_batch_ids
     )
@@ -1196,8 +1226,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
             "",  # change in margin not calculated for totals
         ]
     totals_row += ""  # last edited col
-    rows.append(totals_row)
-    return rows
+    return header_rows + sorted_rows + [totals_row]
 
 
 @api.route("/election/<election_id>/report", methods=["GET"])
