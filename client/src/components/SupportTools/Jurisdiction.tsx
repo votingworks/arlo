@@ -12,7 +12,7 @@ import {
   MenuItem,
   Menu,
 } from '@blueprintjs/core'
-import { MultiSelect } from '@blueprintjs/select'
+import { MultiSelect, renderFilteredItems } from '@blueprintjs/select'
 import { useForm, Controller } from 'react-hook-form'
 import {
   useJurisdiction,
@@ -217,20 +217,22 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
                               value.filter((id: string) => id !== item.id)
                             )
                           }}
-                          itemListRenderer={({
-                            filteredItems,
-                            itemsParentRef,
-                            renderItem,
-                          }) => (
+                          itemListRenderer={itemListProps => (
                             <Menu
                               ulRef={
-                                itemsParentRef as (
+                                itemListProps.itemsParentRef as (
                                   ref: HTMLUListElement | null
                                 ) => void
                               }
                               style={{ maxHeight: 350, overflowY: 'auto' }}
                             >
-                              {filteredItems.map(renderItem)}
+                              {renderFilteredItems(
+                                itemListProps,
+                                <MenuItem
+                                  disabled
+                                  text="No matching batches."
+                                />
+                              )}
                             </Menu>
                           )}
                           itemRenderer={(item, { handleClick, modifiers }) => (
