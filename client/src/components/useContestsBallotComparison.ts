@@ -26,11 +26,11 @@ const putContests = async (
   electionId: string,
   newContests: INewContest[]
 ): Promise<boolean> =>
-  !!api(`/election/${electionId}/contest`, {
+  !!(await api(`/election/${electionId}/contest`, {
     method: 'PUT',
     body: JSON.stringify(newContests),
     headers: { 'Content-Type': 'application/json' },
-  })
+  }))
 
 const useContestsBallotComparison = (
   electionId: string
