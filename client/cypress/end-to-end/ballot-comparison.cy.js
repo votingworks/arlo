@@ -94,8 +94,6 @@ describe('Ballot Comparison Test Cases', () => {
     cy.findByText('Save & Next').click()
     cy.findAndCloseToast('Must have at least one targeted contest')
 
-    cy.findByText('Back').click()
-
     // select targeted contest
     cy.get('input[type="checkbox"]')
       .first()
