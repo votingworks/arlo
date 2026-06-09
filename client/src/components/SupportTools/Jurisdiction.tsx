@@ -10,6 +10,7 @@ import {
   Intent,
   Card,
   MenuItem,
+  Menu,
 } from '@blueprintjs/core'
 import { MultiSelect } from '@blueprintjs/select'
 import { useForm, Controller } from 'react-hook-form'
@@ -216,6 +217,22 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
                               value.filter((id: string) => id !== item.id)
                             )
                           }}
+                          itemListRenderer={({
+                            filteredItems,
+                            itemsParentRef,
+                            renderItem,
+                          }) => (
+                            <Menu
+                              ulRef={
+                                itemsParentRef as (
+                                  ref: HTMLUListElement | null
+                                ) => void
+                              }
+                              style={{ maxHeight: 350, overflowY: 'auto' }}
+                            >
+                              {filteredItems.map(renderItem)}
+                            </Menu>
+                          )}
                           itemRenderer={(item, { handleClick, modifiers }) => (
                             <MenuItem
                               key={item.id}
@@ -231,7 +248,7 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
                               .toLowerCase()
                               .includes(query.toLowerCase())
                           }
-                          placeholder="Select batches..."
+                          placeholder="Search by batch name..."
                           resetOnSelect
                           fill
                           popoverProps={{ minimal: true }}

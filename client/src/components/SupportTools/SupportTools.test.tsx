@@ -1257,7 +1257,7 @@ describe('Support Tools', () => {
         screen.getByLabelText('Combined Batch Name:'),
         'Combined Batch 1'
       )
-      userEvent.click(screen.getByPlaceholderText('Select batches...'))
+      userEvent.click(screen.getByPlaceholderText('Search by batch name...'))
 
       // Find the dropdown menu - use the popover content container
       const popover = (await screen.findByText('Batch 3')).closest(
