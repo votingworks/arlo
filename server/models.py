@@ -436,6 +436,12 @@ class Batch(BaseModel):
         cascade="all, delete-orphan",
         passive_deletes=True,
     )
+    extra_draws = relationship(
+        "ExtraBatchDraw",
+        uselist=True,
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
     result_tally_sheets = relationship(
         "BatchResultTallySheet",
         uselist=True,
@@ -942,9 +948,19 @@ class SampledBatchDraw(BaseModel):
     )
 
 
-# (Experimental) To we add extra batches on top of the sample, give them a
-# special ticket number to flag them.
-EXTRA_TICKET_NUMBER = "EXTRA"
+class ExtraBatchDraw(BaseModel):
+    batch_id = Column(
+        String(200),
+        ForeignKey("batch.id", ondelete="cascade"),
+        nullable=False,
+    )
+    batch = relationship("Batch")
+
+    round_id = Column(
+        String(200), ForeignKey("round.id", ondelete="cascade"), nullable=False
+    )
+
+    __table_args__ = (PrimaryKeyConstraint("batch_id", "round_id"),)
 
 
 # In a batch comparison audit, audit boards will record votes on tally sheets.
