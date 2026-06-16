@@ -519,7 +519,6 @@ def round_rows(election: Election):
                 .join(Jurisdiction)
                 .filter_by(election_id=election.id)
                 .filter(SampledBatchDraw.round_id == round.id)
-                .filter(SampledBatchDraw.ticket_number != EXTRA_TICKET_NUMBER)
                 .all()
             )
             sampled_batch_ids = {batch.id for batch in sampled_batches}
