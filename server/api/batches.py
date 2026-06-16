@@ -5,7 +5,7 @@ import uuid
 from flask import jsonify, request, session
 from werkzeug.exceptions import BadRequest, Conflict
 from sqlalchemy.orm import Query, joinedload
-from sqlalchemy import func
+from sqlalchemy import func, or_
 
 from . import api
 from ..auth import get_loggedin_user, get_support_user, restrict_access, UserType
@@ -46,14 +46,21 @@ def replace_combined_batches_with_representative_batches(
 
 
 def already_audited_batches(jurisdiction: Jurisdiction, round: Round) -> Query:
-    query: Query = (
+    sampled_in_prior_rounds = (
         Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
         .join(SampledBatchDraw)
         .join(Round)
         .filter(Round.round_num < round.round_num)
         .with_entities(Batch.id)
-        .subquery()
     )
+    extra_in_prior_rounds = (
+        Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
+        .join(ExtraBatchDraw)
+        .join(Round)
+        .filter(Round.round_num < round.round_num)
+        .with_entities(Batch.id)
+    )
+    query: Query = sampled_in_prior_rounds.union(extra_in_prior_rounds).subquery()
     return query
 
 
@@ -67,8 +74,12 @@ def get_batch_retrieval_list(
 ):
     batches = (
         Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
-        .join(SampledBatchDraw)
-        .filter_by(round_id=round.id)
+        .filter(
+            or_(
+                Batch.draws.any(SampledBatchDraw.round_id == round.id),
+                Batch.extra_draws.any(ExtraBatchDraw.round_id == round.id),
+            )
+        )
         .filter(Batch.id.notin_(already_audited_batches(jurisdiction, round)))
         .group_by(Batch.id)
         .order_by(func.human_sort(Batch.name))
@@ -139,8 +150,12 @@ def list_batches_for_jurisdiction(
 ):
     batches = (
         Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
-        .join(SampledBatchDraw)
-        .filter_by(round_id=round.id)
+        .filter(
+            or_(
+                Batch.draws.any(SampledBatchDraw.round_id == round.id),
+                Batch.extra_draws.any(ExtraBatchDraw.round_id == round.id),
+            )
+        )
         .filter(Batch.id.notin_(already_audited_batches(jurisdiction, round)))
         .order_by(func.human_sort(Batch.name))
         .options(
@@ -366,8 +381,12 @@ def finalize_batch_results(
 
     num_batches_without_results = (
         Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
-        .join(SampledBatchDraw)
-        .filter_by(round_id=round.id)
+        .filter(
+            or_(
+                Batch.draws.any(SampledBatchDraw.round_id == round.id),
+                Batch.extra_draws.any(ExtraBatchDraw.round_id == round.id),
+            )
+        )
         .outerjoin(BatchResultTallySheet)
         .group_by(Batch.id)
         .having(func.count(BatchResultTallySheet.batch_id) == 0)

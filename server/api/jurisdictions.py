@@ -501,6 +501,22 @@ def batch_round_status(election: Election, round: Round) -> dict[str, JSONDict]:
         .values(Batch.jurisdiction_id, func.count(Batch.id.distinct()))
     )
 
+    extra_batch_count_by_jurisdiction = dict(
+        Batch.query.join(ExtraBatchDraw)
+        .filter(ExtraBatchDraw.round_id == round.id)
+        .group_by(Batch.jurisdiction_id)
+        .values(Batch.jurisdiction_id, func.count(Batch.id))
+    )
+
+    audited_extra_batch_count_by_jurisdiction = dict(
+        Batch.query.join(ExtraBatchDraw)
+        .filter(ExtraBatchDraw.round_id == round.id)
+        .join(BatchResultTallySheet)
+        .group_by(Batch.jurisdiction_id)
+        .having(func.count(BatchResultTallySheet.id) > 0)
+        .values(Batch.jurisdiction_id, func.count(Batch.id.distinct()))
+    )
+
     finalized_jurisdiction_ids = {
         jurisdiction_id
         for (jurisdiction_id,) in BatchResultsFinalized.query.filter_by(
@@ -509,16 +525,24 @@ def batch_round_status(election: Election, round: Round) -> dict[str, JSONDict]:
     }
 
     def num_samples(jurisdiction_id: str) -> int:
-        return sample_count_by_jurisdiction.get(jurisdiction_id, 0)
+        return sample_count_by_jurisdiction.get(
+            jurisdiction_id, 0
+        ) + extra_batch_count_by_jurisdiction.get(jurisdiction_id, 0)
 
     def num_samples_audited(jurisdiction_id: str) -> int:
-        return audited_sample_count_by_jurisdiction.get(jurisdiction_id, 0)
+        return audited_sample_count_by_jurisdiction.get(
+            jurisdiction_id, 0
+        ) + audited_extra_batch_count_by_jurisdiction.get(jurisdiction_id, 0)
 
     def num_batches(jurisdiction_id: str) -> int:
-        return batch_count_by_jurisdiction.get(jurisdiction_id, 0)
+        return batch_count_by_jurisdiction.get(
+            jurisdiction_id, 0
+        ) + extra_batch_count_by_jurisdiction.get(jurisdiction_id, 0)
 
     def num_batches_audited(jurisdiction_id: str) -> int:
-        return audited_batch_count_by_jurisdiction.get(jurisdiction_id, 0)
+        return audited_batch_count_by_jurisdiction.get(
+            jurisdiction_id, 0
+        ) + audited_extra_batch_count_by_jurisdiction.get(jurisdiction_id, 0)
 
     # NOT_STARTED = the jurisdiction hasn’t audited any batches yet
     # IN_PROGRESS = the jurisdiction is auditing batches

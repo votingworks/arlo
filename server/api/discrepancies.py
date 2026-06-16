@@ -74,6 +74,12 @@ def get_batch_comparison_discrepancies_by_jurisdiction(
         .join(Jurisdiction)
         .with_entities(Jurisdiction.name, Batch.name)
         .all()
+    ) | set(
+        ExtraBatchDraw.query.filter_by(round_id=round_id)
+        .join(Batch)
+        .join(Jurisdiction)
+        .with_entities(Jurisdiction.name, Batch.name)
+        .all()
     )
 
     jurisdiction_name_to_id = dict(
