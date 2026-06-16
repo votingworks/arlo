@@ -3,7 +3,7 @@ from datetime import datetime
 from flask import jsonify, request
 from jsonschema import validate
 from werkzeug.exceptions import BadRequest, Conflict
-from sqlalchemy import and_, func, not_
+from sqlalchemy import and_, func, not_, or_
 
 
 from . import api
@@ -64,11 +64,11 @@ def is_round_ready_to_finish(election: Election, round: Round) -> bool:
         num_jurisdictions_not_finalized: int = (
             Jurisdiction.query.filter_by(election_id=election.id)
             .filter(
-                Jurisdiction.id.in_(
-                    SampledBatchDraw.query.filter_by(round_id=round.id)
-                    .join(Batch)
-                    .with_entities(Batch.jurisdiction_id)
-                    .subquery()
+                Jurisdiction.batches.any(
+                    or_(
+                        Batch.draws.any(SampledBatchDraw.round_id == round.id),
+                        Batch.extra_draws.any(ExtraBatchDraw.round_id == round.id),
+                    )
                 )
             )
             .filter(
@@ -195,8 +195,6 @@ def count_audited_votes(election: Election, round: Round):
                     BatchResult.tally_sheet_id.in_(
                         BatchResultTallySheet.query.join(Batch)
                         .join(SampledBatchDraw)
-                        # Special case: don't include extra sampled batches
-                        .filter(SampledBatchDraw.ticket_number != EXTRA_TICKET_NUMBER)
                         .filter_by(round_id=round.id)
                         .with_entities(BatchResultTallySheet.id)
                         .subquery()
@@ -356,8 +354,10 @@ def draw_sample_batches(
     round: Round,
     contest_sample_sizes: list[tuple[Contest, SampleSize]],
 ):
-    sample = compute_sample_batches(election, round.round_num, contest_sample_sizes)
-    for batch_draw in sample:
+    rla_sample_batches, extra_batches = compute_sample_batches(
+        election, round.round_num, contest_sample_sizes
+    )
+    for batch_draw in rla_sample_batches:
         sampled_batch_draw = SampledBatchDraw(
             batch_id=batch_draw["batch_id"],
             round_id=round.id,
@@ -365,6 +365,13 @@ def draw_sample_batches(
             ticket_number=batch_draw["ticket_number"],
         )
         db_session.add(sampled_batch_draw)
+
+    for extra_batch in extra_batches:
+        round_extra_batch = ExtraBatchDraw(
+            round_id=round.id,
+            batch_id=extra_batch["batch_id"],
+        )
+        db_session.add(round_extra_batch)
 
 
 def draw_sample_ballots(

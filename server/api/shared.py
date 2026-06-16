@@ -1,7 +1,7 @@
 from collections import defaultdict
 import random
 from typing import TypedDict
-from sqlalchemy import and_, func, literal
+from sqlalchemy import and_, func, literal, or_
 from sqlalchemy.orm import joinedload, load_only
 
 
@@ -103,17 +103,18 @@ class CombinedBatch(TypedDict):
 
 def combined_batch_representative(sub_batches: list[Batch]) -> Batch:
     assert len(sub_batches) > 0
-    sampled_sub_batches = [sub_batch for sub_batch in sub_batches if sub_batch.draws]
     # Prioritize RLA sampled sub-batches (if there are any) over extra sampled
     # batches. That way, the results from this combined batch will be included
     # in places where we filter out extra sampled batches.
-    sampled_non_extra_sub_batches = [
-        sub_batch
-        for sub_batch in sampled_sub_batches
-        if list(sub_batch.draws)[0].ticket_number != EXTRA_TICKET_NUMBER
+    rla_sampled_sub_batches = [
+        sub_batch for sub_batch in sub_batches if sub_batch.draws
+    ]
+    extra_sub_batches = [
+        sub_batch for sub_batch in sub_batches if sub_batch.extra_draws
     ]
     return sorted(
-        sampled_non_extra_sub_batches or sampled_sub_batches, key=lambda batch: batch.id
+        rla_sampled_sub_batches or extra_sub_batches,
+        key=lambda batch: batch.id,
     )[0]
 
 
@@ -148,15 +149,30 @@ def combined_batch_keys(election_id: str) -> list[set[sampler.BatchKey]]:
 def sampled_batch_results(
     contest: Contest, include_non_rla_batches=False
 ) -> BatchTallies:
-    results_by_batch_and_choice = (
-        Batch.query.filter(
+    sampled_batch_ids = Batch.id.in_(
+        Batch.query.join(Jurisdiction)
+        .filter(Jurisdiction.election_id == contest.election_id)
+        .join(SampledBatchDraw)
+        .values(Batch.id)
+    )
+    # Don't include non-RLA batches (extra batches that don't count toward risk
+    # measurement) unless explicitly requested, e.g., for discrepancy and audit
+    # reports
+    if include_non_rla_batches:
+        batch_filter = or_(
+            sampled_batch_ids,
             Batch.id.in_(
                 Batch.query.join(Jurisdiction)
                 .filter(Jurisdiction.election_id == contest.election_id)
-                .join(SampledBatchDraw)
+                .join(ExtraBatchDraw)
                 .values(Batch.id)
-            )
+            ),
         )
+    else:
+        batch_filter = sampled_batch_ids
+
+    results_by_batch_and_choice = (
+        Batch.query.filter(batch_filter)
         .join(Jurisdiction)
         .join(Jurisdiction.contests)
         .filter(Contest.id == contest.id)
@@ -213,23 +229,6 @@ def sampled_batch_results(
                 if sub_batch_key in results:
                     results[sub_batch_key] = representative_results
 
-    # Don't include non-RLA batches unless explicitly requested, e.g., for discrepancy
-    # and audit reports
-    if not include_non_rla_batches:
-        extra_batch_keys = set(
-            SampledBatchDraw.query.filter_by(
-                contest_id=contest.id, ticket_number=EXTRA_TICKET_NUMBER
-            )
-            .join(Batch)
-            .join(Jurisdiction)
-            .values(Jurisdiction.name, Batch.name)
-        )
-        results = {
-            batch_key: result
-            for batch_key, result in results.items()
-            if batch_key not in extra_batch_keys
-        }
-
     return results
 
 
@@ -238,13 +237,7 @@ def sampled_batches_by_ticket_number(contest: Contest) -> dict[str, sampler.Batc
         SampledBatchDraw.query.join(Batch)
         .join(Jurisdiction)
         .filter(Jurisdiction.election_id == contest.election_id)
-        # Don't include non-RLA batches
-        .filter(
-            and_(
-                SampledBatchDraw.contest_id == contest.id,
-                SampledBatchDraw.ticket_number != EXTRA_TICKET_NUMBER,
-            )
-        )
+        .filter(SampledBatchDraw.contest_id == contest.id)
         .order_by(SampledBatchDraw.ticket_number)
         .values(SampledBatchDraw.ticket_number, Jurisdiction.name, Batch.name)
     )
@@ -633,9 +626,12 @@ class BatchDraw(TypedDict):
     ticket_number: str
 
 
+class ExtraBatch(TypedDict):
+    batch_id: str
+
+
 def compute_sample_batches_for_contest(
     election: Election,
-    round_num: int,
     contest: Contest,
     contest_sample_size: SampleSize,
 ) -> list[BatchDraw]:
@@ -654,12 +650,8 @@ def compute_sample_batches_for_contest(
         Batch.query.join(Jurisdiction)
         .filter(Jurisdiction.election_id == contest.election_id)
         .join(SampledBatchDraw)
-        # Don't include non-RLA batches
-        .filter(
-            and_(
-                SampledBatchDraw.contest_id == contest.id,
-                SampledBatchDraw.ticket_number != EXTRA_TICKET_NUMBER,
-            )
+        .filter_by(
+            contest_id=contest.id,
         )
         .with_entities(Jurisdiction.name, Batch.name)
     )
@@ -681,12 +673,35 @@ def compute_sample_batches_for_contest(
         for ticket_number, batch_key in sample
     ]
 
-    # Experimental feature
-    # Add extra batches on top of the original sample that will be audited, but
-    # not counted in the final risk measurement.
+    return sample_batches
+
+
+# Add extra batches on top of the original sample that will be audited, to
+# meet state requirements. These will not be counted in the final risk measurement.
+def compute_extra_batches_for_round(
+    election: Election,
+    round_num: int,
+    sample_batches: list[BatchDraw],
+) -> list[ExtraBatch]:
+    # Create a mapping from batch keys used in the sampling back to batch ids
+    batches = (
+        Batch.query.join(Jurisdiction)
+        .filter(Jurisdiction.election_id == election.id)
+        .with_entities(Jurisdiction.name, Batch.name, Batch.id)
+    )
+    batch_key_to_id = {
+        (jurisdiction_name, batch_name): batch_id
+        for jurisdiction_name, batch_name, batch_id in batches
+    }
+    batch_id_to_key = {
+        batch_id: (jurisdiction_name, batch_name)
+        for jurisdiction_name, batch_name, batch_id in batches
+    }
+
+    extra_batches: list[ExtraBatch] = []
     if is_enabled_sample_extra_batches_by_counting_group(election) and round_num == 1:
         rand = random.Random(str(election.random_seed))
-        for jurisdiction in contest.jurisdictions:
+        for jurisdiction in election.jurisdictions:
             batch_key_to_num_ballots = {
                 (jurisdiction.name, batch.name): batch.num_ballots
                 for batch in jurisdiction.batches
@@ -711,9 +726,9 @@ def compute_sample_batches_for_contest(
                 in [CountingGroup.ABSENTEE_BY_MAIL, CountingGroup.PROVISIONAL]
             }
             sampled_batch_keys = {
-                batch_key
-                for _, batch_key in sample
-                if batch_key[0] == jurisdiction.name
+                batch_id_to_key[batch["batch_id"]]
+                for batch in sample_batches
+                if batch_id_to_key[batch["batch_id"]][0] == jurisdiction.name
             }
 
             extra_batch_keys = set()
@@ -724,11 +739,9 @@ def compute_sample_batches_for_contest(
             ):
                 extra_bmd_batch_key = rand.choice(sorted(bmd_batch_keys))
                 extra_batch_keys.add(extra_bmd_batch_key)
-                sample_batches.append(
-                    BatchDraw(
+                extra_batches.append(
+                    ExtraBatch(
                         batch_id=batch_key_to_id[extra_bmd_batch_key],
-                        contest_id=contest.id,
-                        ticket_number=EXTRA_TICKET_NUMBER,
                     )
                 )
             # If we didn't sample any HMPB batches, add one to the sample
@@ -738,11 +751,9 @@ def compute_sample_batches_for_contest(
             ):
                 extra_hmpb_batch_key = rand.choice(sorted(hmpb_batch_keys))
                 extra_batch_keys.add(extra_hmpb_batch_key)
-                sample_batches.append(
-                    BatchDraw(
+                extra_batches.append(
+                    ExtraBatch(
                         batch_id=batch_key_to_id[extra_hmpb_batch_key],
-                        contest_id=contest.id,
-                        ticket_number=EXTRA_TICKET_NUMBER,
                     )
                 )
 
@@ -773,21 +784,19 @@ def compute_sample_batches_for_contest(
                 )
                 extra_batch_key = rand.choice(sorted(remaining_batch_keys))
                 extra_batch_keys.add(extra_batch_key)
-                sample_batches.append(
-                    BatchDraw(
+                extra_batches.append(
+                    ExtraBatch(
                         batch_id=batch_key_to_id[extra_batch_key],
-                        contest_id=contest.id,
-                        ticket_number=EXTRA_TICKET_NUMBER,
                     )
                 )
 
     if is_enabled_sample_extra_batches_to_ensure_one_per_jurisdiction(election):
         rand = random.Random(str(election.random_seed))
-        for jurisdiction in contest.jurisdictions:
+        for jurisdiction in election.jurisdictions:
             sampled_batch_keys_from_jurisdiction = {
-                batch_key
-                for _, batch_key in sample
-                if batch_key[0] == jurisdiction.name
+                batch_id_to_key[batch["batch_id"]]
+                for batch in sample_batches
+                if batch_id_to_key[batch["batch_id"]][0] == jurisdiction.name
             }
             # If we didn't sample any batches from this jurisdiction, add one
             if len(sampled_batch_keys_from_jurisdiction) == 0:
@@ -796,30 +805,27 @@ def compute_sample_batches_for_contest(
                 }
                 if len(jurisdiction_batch_keys) > 0:
                     extra_batch_key = rand.choice(sorted(jurisdiction_batch_keys))
-                    sample_batches.append(
-                        BatchDraw(
+                    extra_batches.append(
+                        ExtraBatch(
                             batch_id=batch_key_to_id[extra_batch_key],
-                            contest_id=contest.id,
-                            ticket_number=EXTRA_TICKET_NUMBER,
                         )
                     )
 
-    return sample_batches
+    return extra_batches
 
 
 def compute_sample_batches(
     election: Election,
     round_num: int,
     contest_sample_sizes: list[tuple[Contest, SampleSize]],
-) -> list[BatchDraw]:
+) -> tuple[list[BatchDraw], list[ExtraBatch]]:
     sample_batches = [
         batch
         for contest, sample_size in contest_sample_sizes
-        for batch in compute_sample_batches_for_contest(
-            election, round_num, contest, sample_size
-        )
+        for batch in compute_sample_batches_for_contest(election, contest, sample_size)
     ]
-    return sample_batches
+    extra_batches = compute_extra_batches_for_round(election, round_num, sample_batches)
+    return sample_batches, extra_batches
 
 
 def compute_sample_ballots(
