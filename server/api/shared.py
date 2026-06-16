@@ -217,8 +217,16 @@ def sampled_batch_results(
     # and audit reports
     if not include_non_rla_batches:
         extra_batch_keys = set(
-            SampledBatchDraw.query.filter_by(
-                contest_id=contest.id, ticket_number=EXTRA_TICKET_NUMBER
+            SampledBatchDraw.query.filter_by(ticket_number=EXTRA_TICKET_NUMBER)
+            .join(Batch)
+            .join(Jurisdiction)
+            .filter(Jurisdiction.election_id == contest.election_id)
+            .values(Jurisdiction.name, Batch.name)
+        )
+        rla_sampled_batch_keys = set(
+            SampledBatchDraw.query.filter(
+                SampledBatchDraw.contest_id == contest.id,
+                SampledBatchDraw.ticket_number != EXTRA_TICKET_NUMBER,
             )
             .join(Batch)
             .join(Jurisdiction)
@@ -227,7 +235,7 @@ def sampled_batch_results(
         results = {
             batch_key: result
             for batch_key, result in results.items()
-            if batch_key not in extra_batch_keys
+            if batch_key not in (extra_batch_keys - rla_sampled_batch_keys)
         }
 
     return results
