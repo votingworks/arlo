@@ -763,3 +763,129 @@ def test_sample_extra_batches_with_combined_batches(
     # Check the audit report
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)
+
+
+@pytest.mark.parametrize(
+    "org_id",
+    ["TEST-ORG/sample-extra-batches-by-counting-group"],
+    indirect=True,
+)
+def test_sample_extra_batches_multi_contest(
+    client: FlaskClient,
+    org_id: str,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    election_settings,
+    manifests,
+):
+    # Two targeted contests where jurisdiction_ids[0] participates in both and
+    # jurisdiction_ids[1] is exclusive to Contest 1
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    contests = [
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Contest 1",
+            "isTargeted": True,
+            "choices": [
+                {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 5000},
+                {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 2500},
+                {"id": str(uuid.uuid4()), "name": "candidate 3", "numVotes": 2500},
+            ],
+            "numWinners": 1,
+            "votesAllowed": 2,
+            "jurisdictionIds": jurisdiction_ids[:2],
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Contest 2",
+            "isTargeted": True,
+            "choices": [
+                {"id": str(uuid.uuid4()), "name": "candidate 4", "numVotes": 2500},
+                {"id": str(uuid.uuid4()), "name": "candidate 5", "numVotes": 1250},
+            ],
+            "numWinners": 1,
+            "votesAllowed": 2,
+            "jurisdictionIds": [jurisdiction_ids[0]],
+        },
+    ]
+    rv = put_json(client, f"/api/election/{election_id}/contest", contests)
+    assert_ok(rv)
+
+    # Batch tallies. jurisdiction_ids[0] is in both contests;
+    # jurisdiction_ids[1] is in Contest 1 only.
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = upload_batch_tallies(
+        client,
+        io.BytesIO(
+            b"Batch Name,Contest 1 - candidate 1,Contest 1 - candidate 2,"
+            b"Contest 1 - candidate 3,Contest 2 - candidate 4,Contest 2 - candidate 5\n"
+            b"Batch 1,500,250,250,500,250\n"
+            b"Batch 2,500,250,250,500,250\n"
+            b"Batch 3,500,250,250,500,250\n"
+            b"Batch 4,500,250,250,500,250\n"
+            b"Batch 5,100,50,50,100,50\n"
+            b"Batch 6,100,50,50,100,50\n"
+            b"Batch 7,100,50,50,100,50\n"
+            b"Batch 8,100,50,50,100,50\n"
+            b"Batch 9,100,50,50,100,50\n"
+        ),
+        election_id,
+        jurisdiction_ids[0],
+    )
+    assert_ok(rv)
+    rv = upload_batch_tallies(
+        client,
+        io.BytesIO(
+            b"Batch Name,Contest 1 - candidate 1,Contest 1 - candidate 2,"
+            b"Contest 1 - candidate 3\n"
+            b"Batch 1,500,250,250\n"
+            b"Batch 2,500,250,250\n"
+            b"Batch 3,500,250,250\n"
+            b"Batch 4,500,250,250\n"
+            b"Batch 5,300,100,100\n"
+            b"Batch 6,200,150,150\n"
+        ),
+        election_id,
+        jurisdiction_ids[1],
+    )
+    assert_ok(rv)
+
+    # Start round 1, which triggers extra-batch selection
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
+    assert rv.status_code == 200
+    sample_size_options = json.loads(rv.data)["sampleSizes"]
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 1,
+            "sampleSizes": {
+                contest_id: options[0]
+                for contest_id, options in sample_size_options.items()
+            },
+        },
+    )
+    assert_ok(rv)
+    rv = client.get(f"/api/election/{election_id}/round")
+    round_1_id = json.loads(rv.data)["rounds"][0]["id"]
+
+    # jurisdiction_ids[0]'s regular sample covers either its HMPB batch or its
+    # BMD batch, so it needs one extra batch for counting-group coverage added
+    # for the round
+    extra_draws = (
+        SampledBatchDraw.query.join(Batch)
+        .filter(
+            Batch.jurisdiction_id == jurisdiction_ids[0],
+            SampledBatchDraw.round_id == round_1_id,
+            SampledBatchDraw.ticket_number == EXTRA_TICKET_NUMBER,
+        )
+        .all()
+    )
+    assert len(extra_draws) == 1, (
+        "expected one extra batch for the multi-contest jurisdiction, got "
+        f"{[(draw.batch_id, draw.contest_id) for draw in extra_draws]}"
+    )
+    assert len({draw.contest_id for draw in extra_draws}) == 1
