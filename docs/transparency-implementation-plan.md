@@ -212,7 +212,7 @@ At the end of Phase 5, the test generates a `reproducibility_bundle.json` that c
 
 ### A2. Official Export Scripts
 
-**Goal:** Standalone scripts (no Arlo source code required) that an election official runs against a live or test Arlo instance to export and hash artifacts at each phase. Output is a directory tree with artifacts and a signed JSON manifest ready for public posting.
+**Goal:** Standalone scripts (no Arlo source code required) that an election official runs against a live or test Arlo instance to export and hash artifacts at each phase. Output is a directory tree with artifacts and a signed JSON manifest ready for public posting. Public posting is how observers access the data — they have no Arlo instance access — so publishing each phase bundle to a stable public URL (e.g., a state elections website or GitHub release) is a required step in the workflow, not optional.
 
 **Location:** `scripts/transparency/`
 
@@ -410,13 +410,13 @@ generate_excerpt.py \
 ```
 
 - `--retrieval-list`: The retrieval list CSV downloaded from Arlo (columns: Tabulator, Batch Name, Ballot Number, Imprinted ID, Ticket Numbers, Status)
-- `--cvr`: The CVR file for this jurisdiction (Dominion, ESS, ClearBallot, or Hart format)
+- `--cvr`: The publicly-posted (anonymized) CVR file for this jurisdiction (Dominion, ESS, ClearBallot, or Hart format) — must be the version published before the seed, not a raw Arlo export
 - `--cvr-format`: CVR vendor format (determines column parsing)
 - `--output`: Output text file; if omitted, prints to stdout for piping to a printer
 
 #### Algorithm
 
-1. Parse the CVR file to build a lookup: `imprinted_id → {contest_name → interpretation}`. For Dominion format:
+1. Parse the publicly-posted (anonymized) CVR file to build a lookup: `imprinted_id → {contest_name → interpretation}`. For Dominion format:
    - Header row contains contest columns like `"Contest Name (Choice Name)"` after the first 8 fixed columns
    - For each ballot row, collect all (contest, choice) columns where the value is `1`
    - Group by contest name; if no choice has value `1`, record `NO VOTE` for that contest
@@ -425,7 +425,7 @@ generate_excerpt.py \
 3. For each sampled ballot, look up its imprinted ID in the CVR lookup
 4. Compute the display width: the longest contest name across all sampled ballots' styles
 5. For each ballot, output the `<><>` header, then each contest right-padded to the display width, followed by the interpretation
-6. Warn (but do not skip) if an imprinted ID from the retrieval list is not found in the CVR — this is itself a finding
+6. Warn (but do not skip) if an imprinted ID from the retrieval list is not found in the CVR — this may indicate the ballot was in a rare style redacted from the public CVR (see Q1); the jurisdiction must provide the CVR row for that ballot separately, and the gap is itself a finding to report
 
 #### Blind-audit note in the script header
 
