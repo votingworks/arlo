@@ -8,40 +8,39 @@ _Written 2026-06-20. Builds on `docs/transparency-report.md` and deep codebase r
 
 ### The software-independence problem
 
-The purpose of a risk-limiting audit is *software independence*: the ability to detect errors in the voting system — including its CVRs — without relying on the same software stack that produced them. The existing Track A (computer-verifying-computer) is necessary but not sufficient. Verifying the sample draw and p-value calculation independently is valuable, but it still leaves the most important link unchecked: **did the human audit boards correctly describe what they saw on the paper ballots, and did Arlo correctly record what the boards said?**
+The purpose of a risk-limiting audit is *software independence*: the ability to detect errors in the voting system — including its CVRs — without relying on the same software stack that produced them. Audit support software like Arlo helps us accomplish that, but it needs independent observers and verification. They check that the evidence is sufficient to support the audit conclusions. Do the manifests and CVRs match the reported results? Did the interpretations of the human audit boards and independent risk calculations match the Arlo reports?
 
-That link can only be checked by **human observers who are physically present during audit board sessions**, maintaining their own silent, independent record of each ballot interpretation. Their record is then compared — after the session, not during — against both the CVR and the Arlo audit report. This comparison can and should be doable entirely on paper, without any computer, so that the verification chain remains independent of every system controlled by the jurisdiction.
+It is important to have **human observers who are physically present during audit board sessions**, maintaining their own silent, independent record of ballot interpretations. Their record is then compared — after the session, not during — against the Arlo audit report. This comparison and verification chain should remain independent of every computer system and individual responsible for the initial reported results.
 
-**The blind-audit principle** is what makes this work: audit boards must interpret each ballot without seeing the CVR's interpretation. If anyone communicates the CVR result to the board — observers, officials, or a screen visible in the room — the board could be coached to match a fraudulent CVR instead of reading the paper. Observers must therefore be silent: recording what they hear, never reacting, never speaking to boards, never revealing whether a ballot looks like a discrepancy. Any intervention compromises the independence of the audit.
+**The blind-audit principle** is what makes this work: audit boards must interpret each ballot without seeing the voting system's interpretation. If anyone communicates the voting system's interpretation to the board — observers, officials, Arlo, or a screen visible in the room — the board could be coached to match a fraudulent CVR instead of reading the paper. Observers must be silent: recording what they hear, never reacting, never speaking to boards, never revealing whether a ballot looks like a discrepancy.
 
 ### Two classes of verification
 
 | Verification class | Who does it | When | Tools needed |
 |--------------------|------------|------|-------------|
 | **Mechanical** (sample draw, p-value) | Any observer with a computer | After artifacts are published | `replicate_sample.py`, `replicate_pvalue.py` |
-| **Human** (board vs. paper vs. CVR vs. Arlo record) | Observers physically present during audit | During each board session | Pre-generated transcript (paper), pen |
+| **Human** (board vs. paper vs. CVR vs. Arlo record) | Observers physically present during audit | During each board session | Redacted CVR and selection list, pen |
 
 Both classes are necessary. Neither is sufficient alone.
 
 ### How the human observer layer actually works
 
-Observers cannot write fast enough to transcribe what they hear, and they must not interfere with the board. What they can do is **follow along on a pre-generated transcript** and mark any deviation.
+Observers cannot write fast enough to transcribe what they hear, and they must not interfere with the board. What they can do is **follow along via an excerpt of selected ballots from the CVR** and mark any deviation.
 
-The transcript is produced by joining the retrieval list with the CVR: for each sampled ballot in physical retrieval order, it shows the ballot's imprinted ID and the voting system's recorded interpretation of each contest on that ballot. The observer holds this printout, listens as the board calls out each contest aloud (typically twice for double-checking), and marks any vote where what they hear differs from what is printed. In a zero-discrepancy audit, nothing gets marked. The format is right-justified by contest name so the eye can scan down a column of values quickly.
+The excerpt is produced by joining the retrieval list with the CVR: for each sampled ballot in physical retrieval order, it shows the ballot's imprinted ID and the voting system's recorded interpretation of each contest on that ballot. The observer holds this printout, listens as the board calls out each contest aloud (typically twice for double-checking), and marks any vote where what they hear differs from what is printed. In a zero-discrepancy audit, nothing gets marked. The format is right-justified by contest name so the eye can scan down a column of values quickly.
 
-The audit board **never sees the CVR** — in proper blind practice they have no access to it during the session. They examine only the physical paper ballot. The observer's transcript must likewise never be shown to the board; it would compromise the independence of the audit by revealing what the CVR says before the board states their own interpretation.
+The audit board **never sees the CVR** — in proper blind practice they have no access to it during the session. They examine only the physical paper ballot. The observer's excerpt must likewise never be shown to the board; it would compromise the independence of the audit by revealing what the CVR says before the board states their own interpretation.
 
 The observer's marked printout is then compared against the Arlo audit report's SAMPLED BALLOTS section. Discrepancies can be checked in two directions:
-1. **Observer marked ≠ transcript printed** → the board saw something different from the CVR (a real discrepancy, should appear in Arlo's discrepancy report)
+1. **Observer marked ≠ excerpt printed** → the board saw something different from the CVR (a discrepancy that should appear in Arlo's discrepancy report)
 2. **Observer's hearing ≠ Arlo's recorded audit result** → either the board misspoke, the observer mis-heard, or Arlo recorded something other than what the board said
 
 This final comparison can be done entirely on paper — no computer needed — which is what gives it independence from every system the jurisdiction controls.
 
 ### CVR anonymization
 
-Before any CVR is published, rare ballot styles (those with fewer than ~10 ballots in the jurisdiction) must be aggregated to prevent vote revelation — a voter with a unique combination of contest choices could be identified from their CVR row. See [loriinboulder/anonymize_cvr](https://github.com/loriinboulder/anonymize_cvr), which implements Colorado's requirement (C.R.S. 24-72-205.5) and the approach documented in [Branscomb et al., 2018](http://www.sos.state.co.us/pubs/rule_making/hearings/2018/20180309BranscombEtAl.pdf) (endorsed by McBurnett, Stark, Rivest et al.). Arlo does not currently apply this redaction; it is the jurisdiction's responsibility before publishing the CVR.
-
-The transcript generator uses the full (unredacted) CVR for sampled ballots, since the physical ballots are in hand and the comparison is to individual rows — not to the aggregated public CVR. The anonymized CVR is what goes on the public website; the per-ballot transcript is a derivative of the unredacted data used only during the audit session itself.
+Before any CVR is published, rare ballot styles (e.g. those with fewer than ~10 ballots in the jurisdiction) must be aggregated to prevent vote revelation — a voter with a unique combination of contest choices could be identified from their CVR row. See [Privacy violations in election results | Science Advances](https://www.science.org/doi/10.1126/sciadv.adt1512), along with
+[loriinboulder/anonymize_cvr](https://github.com/loriinboulder/anonymize_cvr), which implements Colorado's requirement (C.R.S. 24-72-205.5) and the approach documented in [Branscomb et al., 2018](http://www.sos.state.co.us/pubs/rule_making/hearings/2018/20180309BranscombEtAl.pdf) (endorsed by McBurnett, Stark, Rivest et al.). Arlo does not currently apply this redaction; it is the jurisdiction's responsibility before publishing the CVR.
 
 ### This plan has two tracks
 
@@ -70,7 +69,7 @@ Changes to Arlo's API and UI that make the Track A workflow easy for officials a
 | CVR Reveal sheet | Paper form used by observers *after* a session to compare their record against the CVR and Arlo report |
 | Blind audit | Audit boards never see the CVR at all — they interpret the paper ballot in isolation, then their interpretation is compared to the CVR by Arlo. This independence is what makes the audit meaningful: a board that sees the CVR could be coached to match a fraudulent one |
 | Rare style | A ballot style (combination of contest choices) appearing in fewer than ~10 ballots — must be aggregated in the public CVR to prevent vote revelation |
-| Observer transcript | Pre-generated printout joining retrieval list with CVR; observer follows along during the board session and marks deviations |
+| Observer excerpt | Pre-generated printout joining retrieval list with CVR; observer follows along during the board session and marks deviations |
 
 ---
 
@@ -370,11 +369,11 @@ All checks passed. The reported p-value is independently reproducible.
 
 ---
 
-### A5. Observer Transcript Generator
+### A5. Observer Excerpt Generator
 
-**Goal:** A script that joins the retrieval list with the CVR to produce a print-ready per-ballot transcript that observers bring into the audit room. The observer follows along as the board reads each contest aloud and marks any vote that differs from what is printed. No writing required — just listening and marking.
+**Goal:** A script that joins the retrieval list with the CVR to produce a print-ready per-ballot excerpt that observers bring into the audit room. The observer follows along as the board reads each contest aloud and marks any vote that differs from what is printed. No writing required — just listening and marking.
 
-**Location:** `scripts/transparency/observer/generate_transcript.py`
+**Location:** `scripts/transparency/observer/generate_excerpt.py`
 
 #### Format
 
@@ -403,11 +402,11 @@ The observer marks directly on this printout when they hear something different 
 #### Usage
 
 ```
-generate_transcript.py \
+generate_excerpt.py \
   --retrieval-list J1_round1_retrieval_list.csv \
   --cvr J1_cvrs.csv \
   --cvr-format dominion \
-  [--output transcript_J1_round1.txt]
+  [--output excerpt_J1_round1.txt]
 ```
 
 - `--retrieval-list`: The retrieval list CSV downloaded from Arlo (columns: Tabulator, Batch Name, Ballot Number, Imprinted ID, Ticket Numbers, Status)
@@ -430,10 +429,10 @@ generate_transcript.py \
 
 #### Blind-audit note in the script header
 
-The generated transcript includes a printed notice at the top:
+The generated excerpt includes a printed notice at the top:
 
 ```
-OBSERVER TRANSCRIPT — [Election Name] — [Jurisdiction] — Round [N]
+OBSERVER EXCERPT — [Election Name] — [Jurisdiction] — Round [N]
 Generated: [timestamp]  SHA-256: [hash of this file]
 
 IMPORTANT: This document shows what the voting system recorded for each ballot.
@@ -448,28 +447,28 @@ IMPORTANT: This document shows what the voting system recorded for each ballot.
   paper without any computer.
 ```
 
-The SHA-256 of the transcript file is printed so observers can confirm they have the same file as other observers and that it was generated from the published CVR.
+The SHA-256 of the excerpt file is printed so observers can confirm they have the same file as other observers and that it was generated from the published CVR.
 
 #### After the session: paper-based comparison
 
-No additional script is needed for the comparison step. An observer with a marked transcript does the following on paper:
+No additional script is needed for the comparison step. An observer with a marked excerpt does the following on paper:
 
 1. Print the SAMPLED BALLOTS section of the Arlo audit report
 2. For each ballot where you marked a deviation: find that ballot's row in the report
 3. Check the "Audit Result" column — does it match what you heard the board say?
-4. Check the "CVR Result" column — does it match what is printed on your transcript?
+4. Check the "CVR Result" column — does it match what is printed on your excerpt?
 5. Check the "Change in Margin" column — does the discrepancy score match the deviation you marked?
 
 Discrepancies between the observer's marks and the Arlo report are reported to the audit supervisor, not acted on unilaterally by the observer.
 
 #### Test coverage
 
-`server/tests/transparency/test_generate_transcript.py`:
+`server/tests/transparency/test_generate_excerpt.py`:
 - Use the existing `TEST_CVRS` fixture (Dominion format) and a synthetic retrieval list
 - Assert that every imprinted ID in the retrieval list appears in the output
 - Assert that contests are right-justified to the correct width
 - Assert that NO VOTE appears for undervotes
-- Assert that the transcript is in retrieval order (not CVR row order)
+- Assert that the excerpt is in retrieval order (not CVR row order)
 - Assert that the SHA-256 printed at the top matches `hashlib.sha256(output.encode()).hexdigest()`
 
 ---
@@ -710,7 +709,7 @@ Wire this into `generate_pre_seed_bundle()` and `generate_reproducibility_bundle
 Week 1-2:  A1 — Pytest transparency test suite (2-round, phase-by-phase)
 Week 3:    A2 — Official export scripts (export_phase.py, hash_and_sign.py)
 Week 4:    A3 — Observer mechanical verification (replicate_sample.py, replicate_pvalue.py)
-           A5 — Observer transcript generator (generate_transcript.py)
+           A5 — Observer excerpt generator (generate_excerpt.py)
 Week 5:    A4 — Tests for A3 and A5 scripts
 Week 6:    B1 — JSON audit report endpoint
 Week 7:    B2 — Opportunistic contest risk levels + universe ballot count
@@ -747,14 +746,12 @@ Week 11+:  B6 — UI transparency checklist (multi-week, involves React)
 
 ## Open Questions
 
-1. **CVR redaction:** Arlo does not redact rare-style ballots before export. For production, the pre-seed export script should warn if a jurisdiction's CVR has ballot styles appearing only once (potential vote revelation risk). Should Arlo compute and display a "redaction risk score" per CVR? Or just document the responsibility?
+1. **CVR redaction:** The timing and handling of redaction needs more attention. Ideally Arlo would do all necessary redaction up-front. Until then, jurisdictions need to do the redaction on their own. Jurisdictions also need to address what to do when a selected CVR row overlaps with a redaction.
 
 2. **Universe ordering:** The exact ordering of ballots in `compute_sample_ballots()` determines the sample. The observer script must replicate this precisely. Is the ordering stable and documented? (Currently it is deterministic but not explicitly specified.) Should it be formally documented as part of the audit protocol?
 
-3. **Opportunistic contest risk threshold:** When there are zero sampled ballots for an opportunistic contest, reporting 100% risk is technically correct but may be alarming. Should the UI explain this differently (e.g., "Not sampled — risk not calculated") or always use the mathematically correct 100%?
+3. **Opportunistic contest risk threshold:** When contests are not audited (either targeted or opportunitically) reporting 100% risk is technically correct but may be alarming. The UI should probably explain this by noting that risk for those contests needs to be addressed via another sort of auditing.
 
-4. **Auth for observer scripts:** The observer scripts need an Arlo session token. For testing, `FLASK_ENV=development` nOAuth accepts any email. For production, should Arlo add a read-only "observer" role with a long-lived API token for downloading public artifacts, rather than requiring a full audit-admin login?
+4. **Data access for observer scripts:** The observer scripts need access to the exported data. The proposed testing flow should include a design for how to do that, since observers and the public don't have access to the Arlo instance.
 
-5. **Transcript generation: official tool or observer tool?** The transcript generator uses the CVR — a file that, for rare styles, must be anonymized before public release. Should Arlo generate the observer transcript server-side (using the unredacted CVR) and make it available for download alongside the retrieval list? Or should it remain an observer-side tool that observers generate from the publicly-posted (anonymized) CVR? The latter preserves more software independence but requires observers to handle CVR parsing; the former is more convenient but means observers must trust Arlo's output.
-
-6. **Arlo UI and the blind audit:** Arlo's online audit board UI currently shows the audit board member what the CVR says alongside the ballot (or makes it easy to derive). This violates the blind-audit principle for online audits. Should the UI be audited for CVR leakage, and should the board data-entry screen be redesigned to show only the ballot image (if available) and the contest names — never the CVR interpretation?
+5. **Excerpt generation: official tool or observer tool?** The excerpt generator currently uses the CVR — a file that, for rare styles, must be anonymized before public release. The final approach will depend on the anonymization and data access choices noted above. Excerpt generation must come from an observer-side tool that observers generate from the publicly-posted (anonymized) CVR.
