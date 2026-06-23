@@ -12,22 +12,22 @@ The purpose of a risk-limiting audit is *software independence*: the ability to 
 
 It is important to have **human observers who are physically present during audit board sessions**, maintaining their own silent, independent record of ballot interpretations. Their record is then compared — after the session, not during — against the Arlo audit report. This comparison and verification chain should remain independent of every computer system and individual responsible for the initial reported results.
 
-**The blind-audit principle** is what makes this work: audit boards must interpret each ballot without seeing the voting system's interpretation. If anyone communicates the voting system's interpretation to the board — observers, officials, Arlo, or a screen visible in the room — the board could be coached to match a fraudulent CVR instead of reading the paper. Observers must be silent: recording what they hear, never reacting, never speaking to boards, never revealing whether a ballot looks like a discrepancy.
+**The blind-audit principle** is what makes this work: audit boards must interpret each ballot without seeing the voting system's interpretation. If anyone communicates the voting system's interpretation to the board — observers, officials, Arlo, or a screen visible in the room — the board's interpretations could be tainted. Observers must be silent: recording what they hear, never reacting, never speaking to boards, never revealing whether a ballot looks like a discrepancy.
 
 ### Two classes of verification
 
 | Verification class | Who does it | When | Tools needed |
 |--------------------|------------|------|-------------|
-| **Mechanical** (sample draw, p-value) | Any observer with a computer | After artifacts are published | `replicate_sample.py`, `replicate_pvalue.py` |
+| **Mechanical** (sample draw, risk level) | Any observer with a computer | After artifacts are published | `replicate_sample.py`, `replicate_risk_level.py` |
 | **Human** (board vs. paper vs. CVR vs. Arlo record) | Observers physically present during audit | During each board session | Redacted CVR and selection list, pen |
 
 Both classes are necessary. Neither is sufficient alone.
 
 ### How the human observer layer actually works
 
-Observers cannot write fast enough to transcribe what they hear, and they must not interfere with the board. What they can do is **follow along via an excerpt of selected ballots from the CVR** and mark any deviation.
+Observers cannot write fast enough to transcribe what they hear, and they must not interfere with the board. What they can do is **follow along via an excerpt of selected ballots from the CVR** and mark any discrepancy.
 
-The excerpt is produced by joining the retrieval list with the CVR: for each sampled ballot in physical retrieval order, it shows the ballot's imprinted ID and the voting system's recorded interpretation of each contest on that ballot. The observer holds this printout, listens as the board calls out each contest aloud (typically twice for double-checking), and marks any vote where what they hear differs from what is printed. In a zero-discrepancy audit, nothing gets marked. The format is right-justified by contest name so the eye can scan down a column of values quickly.
+The excerpt is produced by joining the retrieval list with the CVR: for each sampled ballot in physical retrieval order, it shows the ballot's imprinted ID and the voting system's recorded interpretation of each contest on that ballot. The observer holds this printout, listens as the board calls out each contest aloud (typically twice for double-checking), and notes any vote where what they hear differs from what is printed.The format is right-justified by contest name so the eye can scan down a column of values quickly.
 
 The audit board **never sees the CVR** — in proper blind practice they have no access to it during the session. They examine only the physical paper ballot. The observer's excerpt must likewise never be shown to the board; it would compromise the independence of the audit by revealing what the CVR says before the board states their own interpretation.
 
@@ -47,7 +47,7 @@ Before any CVR is published, rare ballot styles (e.g. those with fewer than ~10 
 **Track A — Observer Toolkit** (implement first, no Arlo changes required):
 Tests and scripts covering both verification classes: mechanical replication of every calculation, and paper-based tools for human observers to independently record and compare audit board interpretations.
 
-**Track B — Arlo Improvements** (implement after Track A proves what's needed):
+**Track B — Arlo Improvements**:
 Changes to Arlo's API and UI that make the Track A workflow easy for officials and observers to follow in production.
 
 ---
@@ -65,11 +65,10 @@ Changes to Arlo's API and UI that make the Track A workflow easy for officials a
 | Diluted margin | `margin_votes / total_universe_ballots` |
 | `counted_as` | Supersimple discrepancy score: −2,−1,0,+1,+2 |
 | SHA-256 bundle | ZIP with a companion `*-sha256-hash.txt` inside |
-| Observation sheet | Paper form used by observers *during* a board session to record what boards say — no CVR content |
-| CVR Reveal sheet | Paper form used by observers *after* a session to compare their record against the CVR and Arlo report |
-| Blind audit | Audit boards never see the CVR at all — they interpret the paper ballot in isolation, then their interpretation is compared to the CVR by Arlo. This independence is what makes the audit meaningful: a board that sees the CVR could be coached to match a fraudulent one |
+| CVR Excerpt | Excerpt of the selected ballots from the CVR used by observers to take notes during an auditing session |
+| Blind audit | Audit boards never see the CVR at all — they interpret the paper ballot in isolation, and their interpretation is compared to the CVR by both Arlo and the observers . This independence is crucial |
 | Rare style | A ballot style (combination of contest choices) appearing in fewer than ~10 ballots — must be aggregated in the public CVR to prevent vote revelation |
-| Observer excerpt | Pre-generated printout joining retrieval list with CVR; observer follows along during the board session and marks deviations |
+| Observer excerpt | Pre-generated printout joining retrieval list with CVR; observer follows along during the board session and marks discrepancys |
 
 ---
 
@@ -147,7 +146,7 @@ test_transparency_full_2_round_audit
 - `POST /election/<id>/round/current/finish`
 - `GET /election/<id>/report` → `audit_report_round1.txt`
 - `GET /election/<id>/discrepancy-report` → `discrepancy_report_round1.csv`
-- Parse the pseudo-CSV audit report: extract ROUNDS section rows, assert p-value and `is_complete` fields
+- Parse the pseudo-CSV audit report: extract ROUNDS section rows, assert risk level and `is_complete` fields
 - If audit not complete: proceed to Phase 4
 
 **Phase 4 — Round 2 setup**
@@ -210,9 +209,9 @@ At the end of Phase 5, the test generates a `reproducibility_bundle.json` that c
 
 ---
 
-### A2. Official Export Scripts
+### A2. Official Export Functions
 
-**Goal:** Standalone scripts (no Arlo source code required) that an election official runs against a live or test Arlo instance to export and hash artifacts at each phase. Output is a directory tree with artifacts and a signed JSON manifest ready for public posting. Public posting is how observers access the data — they have no Arlo instance access — so publishing each phase bundle to a stable public URL (e.g., a state elections website or GitHub release) is a required step in the workflow, not optional.
+**Goal:** Arlo scripts (standalone for now, eventually standard functions) to export and hash artifacts at each phase. Output is a directory tree with artifacts and a signed JSON manifest ready for public posting. Public posting is how observers access the data — they have no Arlo instance access — so publishing each phase bundle to a stable public URL (e.g., a state elections website) is a required step in the workflow, not optional.
 
 **Location:** `scripts/transparency/`
 
@@ -225,7 +224,7 @@ usage: export_phase.py --url ARLO_URL --election ELECTION_ID \
        --output-dir OUTPUT_DIR
 ```
 
-Authentication: reads a session token from `--token` or `ARLO_SESSION_TOKEN` env var (obtained by logging in via browser and copying the cookie).
+Authentication: reads a session token from `ARLO_SESSION_TOKEN` env var (obtained by logging in via browser and copying the cookie).
 
 **Behavior per phase:**
 
@@ -278,7 +277,7 @@ BEFORE entering the random seed.
 
 **Location:** `scripts/transparency/observer/`
 
-All scripts are standalone — they import only `consistent_sampler` (installable via `pip install consistent-sampler`) and standard library. No Arlo server code required.
+All scripts are standalone.  Arlo server library code reuse is fine.
 
 #### `observer/verify_manifests.py`
 
@@ -316,10 +315,10 @@ This is the core independent replication step. A successful match proves that th
 
 **Key implementation detail:** Arlo's `draw_sample` task in `server/api/rounds.py` calls `sampler.draw_sample()` from `server/audit_math/sampler.py`. The universe ordering is deterministic given the manifest. The observer script must replicate this ordering exactly. The code for this is in `server/audit_math/sampler.py` and `server/api/rounds.py` (`compute_sample_ballots`). Document the exact ordering in a comment in the observer script.
 
-#### `observer/replicate_pvalue.py`
+#### `observer/replicate_risk_level.py`
 
 ```
-usage: replicate_pvalue.py \
+usage: replicate_risk_level.py \
   --cvr FILE \                        # jurisdiction CVR CSVs (one or more)
   --audit-report FILE \               # official audit report (pseudo-CSV)
   --contest-name "Contest 1" \
@@ -335,7 +334,7 @@ usage: replicate_pvalue.py \
 4. Build `sampled_cvrs` dict: Imprinted ID → `{contest: {choice: count, "sampled": 1}}`
 5. Build `cvrs` dict (all CVR ballots): same structure
 6. Call `server.audit_math.supersimple.compute_risk(risk_limit, contest, cvrs, sampled_cvrs)` → `(p_value, is_complete)`
-7. Compare computed p-value against the value in the ROUNDS section of the audit report
+7. Compare computed risk level against the value in the ROUNDS section of the audit report
 8. Also call `supersimple.compute_discrepancies()` and compare `counted_as` values against the SAMPLED BALLOTS section
 
 **Note:** This script imports from `server.audit_math` — it requires a copy of the Arlo source. A fully standalone version would re-implement `supersimple.py`'s `nMin` and `compute_risk()` in ~50 lines, which is a good future step.
@@ -360,44 +359,44 @@ Round: 1
 [PASS] Sample draw replicated (45 ballots match official retrieval list)
 [PASS] CVR results in audit report match CVR file
 [PASS] Discrepancy scores match (0 type-2, 1 type-1, 44 type-0)
-[PASS] P-value replicated: computed=0.38, reported=0.38
+[PASS] risk level replicated: computed=0.38, reported=0.38
       Risk limit (10%) NOT MET — round 2 required.
 
 === Summary ===
-All checks passed. The reported p-value is independently reproducible.
+All checks passed. The reported risk level is independently reproducible.
 ```
 
 ---
 
 ### A5. Observer Excerpt Generator
 
-**Goal:** A script that joins the retrieval list with the CVR to produce a print-ready per-ballot excerpt that observers bring into the audit room. The observer follows along as the board reads each contest aloud and marks any vote that differs from what is printed. No writing required — just listening and marking.
+**Goal:** A script that joins the retrieval list with the CVR to produce a print-ready per-ballot excerpt that observers bring into the audit room. The observer follows along as the board reads each contest aloud and documents any vote they hear that differs from what is printed.
 
 **Location:** `scripts/transparency/observer/generate_excerpt.py`
 
 #### Format
 
-The format matches `neal_ignore/rightJustifiedBallotList.pdf` — the reference implementation for a zero-discrepancy audit. Each ballot is separated by a header line containing the imprinted ID bracketed by `<><><><><><><><><>` decorations (visually unambiguous, impossible to confuse with text). Contest names are right-justified in a fixed-width column; the CVR interpretation is printed immediately to the right.
+The format makes following along easy. Each ballot is separated by a header line containing the imprinted ID bracketed by `<><><><><><><><><>` decorations. Contest names are right-justified in a fixed-width column; the CVR interpretation is printed immediately to the right.
 
 ```
-<><><><><><><><><>  104-19-48  <><><><><><><><><>
-                   Presidential Electors  Kamala D. Harris / Tim Walz
-  Representative to the US Congress - District 7  Brittany Pettersen
-                             Amendment G  Yes/For
-                             Amendment H  Yes/For
-                             Amendment K  NO VOTE
-                         Proposition 127  No/Against
+<><><><><><><><><><><><><><><><><>><><><><><><>  104-19-48  <><><><><><><><><>
+                           Presidential Electors _ Kamala D. Harris / Tim Walz
+  Representative to the US Congress - District 7 _ Brittany Pettersen
+                                     Amendment G _ Yes/For
+                                     Amendment H _ Yes/For
+                                     Amendment K _ NO VOTE
+                                 Proposition 127 _ No/Against
 
-<><><><><><><><><>  105-55-20  <><><><><><><><><>
-                   Presidential Electors  Donald J. Trump / JD Vance
-  Representative to the US Congress - District 7  Sergei Matveyuk
-                        District Attorney  NO VOTE
-                             Amendment G  No/Against
+<><><><><><><><><><><><><><><><><><><><><><><>   105-55-20  <><><><><><><><><>
+                           Presidential Electors _ Donald J. Trump / JD Vance
+  Representative to the US Congress - District 7 _ Sergei Matveyuk
+                               District Attorney _ NO VOTE
+                                     Amendment G _ No/Against
 ```
 
 Ballots appear in physical retrieval order (by tabulator, batch, ballot position within batch) to match the sequence in which the board will handle them. Each ballot shows all contests on its ballot style — not just the targeted audit contests — because the board reads every race. Undervotes appear as `NO VOTE`, not as a blank, to make them explicit and audible.
 
-The observer marks directly on this printout when they hear something different from what is printed. In a zero-discrepancy audit, nothing gets marked.
+The observer writes directly on this printout when they hear something different from what is printed. In a zero-discrepancy audit, nothing gets marked.
 
 #### Usage
 
@@ -424,7 +423,7 @@ generate_excerpt.py \
 2. Parse the retrieval list to get sampled ballots in order (sort by Tabulator, Batch Name, Ballot Number)
 3. For each sampled ballot, look up its imprinted ID in the CVR lookup
 4. Compute the display width: the longest contest name across all sampled ballots' styles
-5. For each ballot, output the `<><>` header, then each contest right-padded to the display width, followed by the interpretation
+5. For each ballot, output the `<><>` header, then each contest name right-padded to the display width, followed by an underscore "_" followed by the interpretation
 6. Warn (but do not skip) if an imprinted ID from the retrieval list is not found in the CVR — this may indicate the ballot was in a rare style redacted from the public CVR (see Q1); the jurisdiction must provide the CVR row for that ballot separately, and the gap is itself a finding to report
 
 #### Blind-audit note in the script header
@@ -439,25 +438,24 @@ IMPORTANT: This document shows what the voting system recorded for each ballot.
 - DO NOT show this document to the audit board.
 - DO NOT communicate with the audit board during the session.
 - Audit boards must form their own interpretation of each ballot WITHOUT
-  seeing or hearing the CVR. This is what makes the audit independent.
-- Follow along silently. Mark any vote where you hear something different
-  from what is printed. In a zero-discrepancy audit, nothing gets marked.
+  seeing or hearing the CVR. This improves audit integrity.
+- Follow along silently. Note any vote where you hear something different
+  from what is printed.
 - After the session, compare your marked discrepancies against the Arlo
-  audit report (SAMPLED BALLOTS section). You may do this comparison on
-  paper without any computer.
+  audit report (SAMPLED BALLOTS section).
 ```
 
-The SHA-256 of the excerpt file is printed so observers can confirm they have the same file as other observers and that it was generated from the published CVR.
+The SHA-256 hash of the excerpt file is printed so observers can confirm they have the same file as other observers and that it was generated from the published CVR.
 
 #### After the session: paper-based comparison
 
 No additional script is needed for the comparison step. An observer with a marked excerpt does the following on paper:
 
-1. Print the SAMPLED BALLOTS section of the Arlo audit report
-2. For each ballot where you marked a deviation: find that ballot's row in the report
+1. Review the SAMPLED BALLOTS section of the Arlo audit report
+2. For each ballot where you marked a discrepancy: find that ballot's row in the report
 3. Check the "Audit Result" column — does it match what you heard the board say?
 4. Check the "CVR Result" column — does it match what is printed on your excerpt?
-5. Check the "Change in Margin" column — does the discrepancy score match the deviation you marked?
+5. Check the "Change in Margin" column — does the discrepancy score match the discrepancy you marked?
 
 Discrepancies between the observer's marks and the Arlo report are reported to the audit supervisor, not acted on unilaterally by the observer.
 
@@ -485,11 +483,11 @@ Three test files:
 - Run `replicate_sample.py` main function with seed + manifest
 - Assert output matches retrieved list exactly
 
-`test_replicate_pvalue.py`:
+`test_replicate_risk_level.py`:
 - After `round_1_id` fixture finishes and round is completed
 - Export audit report via API
-- Run `replicate_pvalue.py` with that report + CVR
-- Assert computed p-value matches `round_contest.end_p_value` in DB
+- Run `replicate_risk_level.py` with that report + CVR
+- Assert computed risk level matches `round_contest.end_p_value` in DB
 
 `test_end_to_end_verify.py`:
 - Drives a full 2-round audit using fixtures
@@ -511,6 +509,8 @@ Ordered by priority. Each item names the server files to change and the API surf
 **Problem:** `GET /election/<id>/report` returns pseudo-CSV with `######## SECTION ########` headers. It is not parseable by standard CSV tools. There is no JSON or HTML alternative.
 
 **Change:** Add `GET /election/<id>/report.json` (or add `Accept: application/json` content negotiation to the existing endpoint).
+
+Note this may be worth implementing before some of Track A is implemented.
 
 **Response shape:**
 ```json
@@ -560,13 +560,13 @@ Ordered by priority. Each item names the server files to change and the API surf
 
 ### B2. Opportunistic Contest Risk Levels (High Priority)
 
-**Problem:** Opportunistic contests receive no p-value at all. A contest with zero sampled ballots has a formal risk of 100%, but this is not reported anywhere — neither in the API response nor in the audit report.
+**Problem:** Evidence is generated for opportunistic contests, but risk reduction is not quantified.
 
 **Change 1:** In `calculate_risk_measurements()` (`server/api/rounds.py`), for opportunistic contests compute and store `end_p_value` even if it is 1.0 (or the value from the supersimple formula with zero sampled ballots).
 
 **Change 2:** Add a `universe_ballot_count` field per contest to the sample sizes response (`server/api/sample_sizes.py`) — the count of ballots in the sampling universe for that contest. This is the denominator for the diluted margin.
 
-**Change 3:** In the audit report (both CSV and new JSON), include opportunistic contest p-values with a note: `"Risk limit not met — no ballots sampled for this contest (formal risk: 100%)"` for zero-sample contests.
+**Change 3:** In the audit report (both CSV and new JSON), include opportunistic contest risk levels.
 
 **Files:** `server/api/rounds.py` (`calculate_risk_measurements`), `server/api/sample_sizes.py`, `server/api/reports.py`.
 
@@ -672,30 +672,15 @@ The "Mark as published" button records a `published_at` timestamp in the DB (new
 
 ---
 
-### B7. Reproducibility Bundle (Medium Priority)
+### B8. Timestamping Support (Lower Priority)
 
-**Problem:** There is no single artifact that, together with the published CSVs, lets an observer replay the entire audit.
-
-**Change:** Add `GET /election/<id>/reproducibility-bundle` after the audit is complete. Returns a ZIP containing:
-- `reproducibility_bundle.json` (see A1.3 above)
-- `README.md` with instructions for running `observer/end_to_end_verify.py`
-- A copy of `scripts/transparency/observer/` (the verification scripts themselves)
-
-This makes the reproducibility bundle self-contained: an observer downloads one ZIP and can verify everything.
-
-**Files:** New `server/api/reproducibility_bundle.py`.
-
----
-
-### B8. RFC 3161 Timestamping Support (Lower Priority)
-
-**Problem:** "Published at" timestamps are self-asserted. RFC 3161 trusted timestamps from a free TSA (e.g., freetsa.org) provide cryptographic proof of publication time, binding the artifact hash to a trusted time source.
+**Problem:** It is crucial that the data to be audited be committed to before the dice roll, so independent timestamps that can be publicly trusted and verified are important. Exact approach TBD.
 
 **Change:** Add a `timestamp_artifact(file_bytes, filename)` utility in `server/util/timestamp.py` that:
 1. Computes SHA-256 of the bytes
-2. Posts to a configured RFC 3161 TSA (`ARLO_TSA_URL`)
-3. Returns the DER-encoded timestamp token
-4. Stores it alongside the artifact (locally or in S3)
+2. Posts to a suitable, reliable trusted timestamp source (`ARLO_TIMESTAMP_SERVICE`)
+3. Returns the timestamp evidence
+4. Stores it alongside the artifact
 
 Wire this into `generate_pre_seed_bundle()` and `generate_reproducibility_bundle()`.
 
@@ -708,7 +693,7 @@ Wire this into `generate_pre_seed_bundle()` and `generate_reproducibility_bundle
 ```
 Week 1-2:  A1 — Pytest transparency test suite (2-round, phase-by-phase)
 Week 3:    A2 — Official export scripts (export_phase.py, hash_and_sign.py)
-Week 4:    A3 — Observer mechanical verification (replicate_sample.py, replicate_pvalue.py)
+Week 4:    A3 — Observer mechanical verification (replicate_sample.py, replicate_risk_level.py)
            A5 — Observer excerpt generator (generate_excerpt.py)
 Week 5:    A4 — Tests for A3 and A5 scripts
 Week 6:    B1 — JSON audit report endpoint
@@ -717,8 +702,7 @@ Week 8:    B3 — Sampler inputs artifact
 Week 9:    B4 — Pre-seed hash-index JSON endpoint
 Week 10:   B5 — Per-jurisdiction phase exports
 Week 11+:  B6 — UI transparency checklist (multi-week, involves React)
-           B7 — Reproducibility bundle
-           B8 — RFC 3161 timestamping
+           B8 — Timestamping
 ```
 
 ---
@@ -729,7 +713,7 @@ Week 11+:  B6 — UI transparency checklist (multi-week, involves React)
 |-------|------|-------|
 | Sample drawing | `server/api/rounds.py` `draw_sample()` | Background task; calls `compute_sample_ballots()` |
 | Sampler math | `server/audit_math/sampler.py` | Wraps `consistent_sampler` |
-| P-value computation | `server/audit_math/supersimple.py` | `compute_risk()`, `compute_discrepancies()` |
+| risk level computation | `server/audit_math/supersimple.py` | `compute_risk()`, `compute_discrepancies()` |
 | Discrepancy scores | `server/audit_math/supersimple.py` `compute_discrepancies()` | Returns `counted_as` per ballot |
 | Audit report | `server/api/reports.py` | `election_report()`, `sampled_ballots_rows()` |
 | Sample sizes | `server/api/sample_sizes.py` | Returns options for each round |
