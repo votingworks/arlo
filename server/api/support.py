@@ -638,6 +638,7 @@ def list_jurisdiction_batches(jurisdiction_id: str):
         return dict(
             id=batch.id,
             name=batch.name,
+            required=batch.required,
         )
 
     return jsonify(

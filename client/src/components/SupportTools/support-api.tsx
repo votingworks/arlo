@@ -83,6 +83,7 @@ export interface IAuditBoard {
 export interface IBatch {
   id: string
   name: string
+  required: boolean
 }
 
 export interface ICombinedBatch {
@@ -341,6 +342,32 @@ export const useDeleteCombinedBatch = () => {
   const queryClient = useQueryClient()
 
   return useMutation(deleteCombinedBatch, {
+    onSuccess: (_data, variables) =>
+      queryClient.invalidateQueries([
+        'jurisdiction',
+        variables.jurisdictionId,
+        'batches',
+      ]),
+  })
+}
+
+export const useSetRequiredBatches = () => {
+  const setRequiredBatches = async ({
+    jurisdictionId,
+    batchIds,
+  }: {
+    jurisdictionId: string
+    batchIds: string[]
+  }) =>
+    fetchApi(`/api/support/jurisdictions/${jurisdictionId}/required-batches`, {
+      method: 'PUT',
+      body: JSON.stringify({ batchIds }),
+      headers: { 'Content-Type': 'application/json' },
+    })
+
+  const queryClient = useQueryClient()
+
+  return useMutation(setRequiredBatches, {
     onSuccess: (_data, variables) =>
       queryClient.invalidateQueries([
         'jurisdiction',

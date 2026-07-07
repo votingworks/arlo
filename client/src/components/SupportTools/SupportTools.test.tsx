@@ -142,10 +142,10 @@ const mockJurisdictionBatches: {
   combinedBatches: ICombinedBatch[]
 } = {
   batches: [
-    { id: 'batch-id-1', name: 'Batch 1' },
-    { id: 'batch-id-2', name: 'Batch 2' },
-    { id: 'batch-id-3', name: 'Batch 3' },
-    { id: 'batch-id-4', name: 'Batch 4' },
+    { id: 'batch-id-1', name: 'Batch 1', required: false },
+    { id: 'batch-id-2', name: 'Batch 2', required: false },
+    { id: 'batch-id-3', name: 'Batch 3', required: false },
+    { id: 'batch-id-4', name: 'Batch 4', required: false },
   ],
   combinedBatches: [],
 }
@@ -1236,10 +1236,12 @@ describe('Support Tools', () => {
               {
                 id: 'batch-id-1',
                 name: 'Batch 1',
+                required: false,
               },
               {
                 id: 'batch-id-2',
                 name: 'Batch 2',
+                required: false,
               },
             ],
           },
