@@ -20,10 +20,10 @@ def is_enabled_sample_extra_batches_to_ensure_one_per_jurisdiction(election: Ele
     ]
 
 
-def is_enabled_specific_batch_inclusion(election: Election):
+def is_enabled_required_batches(election: Election):
     return election.organization_id in [
         "d563f551-0d7a-4a89-aa45-2f60147d0337",  # Maryland
-        "TEST-ORG/specific-batch-inclusion",  # For tests
+        "TEST-ORG/required-batches",  # For tests
     ]
 
 

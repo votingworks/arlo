@@ -430,7 +430,7 @@ class Batch(BaseModel):
     # those batches together by labeling them with a combined batch name.
     combined_batch_name = Column(String(200))
 
-    # For batch comparison audits with specific batch inclusion enabled,
+    # For batch comparison audits with required batches enabled,
     # users can flag batches to be guaranteed inclusion in the audit sample,
     # though they will only count towards the RLA if randomly sampled as well.
     required = Column(Boolean, nullable=False, server_default="false")

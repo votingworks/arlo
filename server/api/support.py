@@ -16,7 +16,7 @@ from server.util.csv_download import csv_response
 from . import api
 from ..models import *
 from ..database import db_session
-from ..feature_flags import is_enabled_specific_batch_inclusion
+from ..feature_flags import is_enabled_required_batches
 from ..auth import (
     restrict_access_support,
     set_loggedin_user,
@@ -683,8 +683,8 @@ def set_required_batches(jurisdiction_id: str):
         raise Conflict(
             "Required batches are only supported for batch comparison audits"
         )
-    if not is_enabled_specific_batch_inclusion(election):
-        raise Conflict("Specific batch inclusion is not enabled for this organization")
+    if not is_enabled_required_batches(election):
+        raise Conflict("Required batches are not enabled for this organization")
     if get_current_round(election) is not None:
         raise Conflict(
             "Batches cannot be marked as required after the audit has launched"

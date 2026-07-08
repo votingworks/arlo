@@ -20,7 +20,7 @@ from .cvrs import cvr_contests_metadata, hybrid_contest_choice_vote_counts
 from ..feature_flags import (
     is_enabled_sample_extra_batches_by_counting_group,
     is_enabled_sample_extra_batches_to_ensure_one_per_jurisdiction,
-    is_enabled_specific_batch_inclusion,
+    is_enabled_required_batches,
 )
 
 
@@ -826,7 +826,7 @@ def compute_extra_batches_for_round(
                     )
                 )
 
-    if is_enabled_specific_batch_inclusion(election) and round_num == 1:
+    if is_enabled_required_batches(election) and round_num == 1:
         sampled_batch_ids = {batch["batch_id"] for batch in sampled_batches}
         for jurisdiction in jurisdictions:
             representative_contest_id = jurisdiction_id_to_contest_id[jurisdiction.id]
