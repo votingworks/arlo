@@ -77,6 +77,7 @@ def test_support_combined_batches(
         dict(
             id=batch.id,
             name=batch.name,
+            required=batch.required,
         )
         for batch in all_batches
     ]
@@ -109,14 +110,17 @@ def test_support_combined_batches(
                 dict(
                     id=sampled_batches[0]["id"],
                     name=sampled_batches[0]["name"],
+                    required=False,
                 ),
                 dict(
                     id=sampled_batches[1]["id"],
                     name=sampled_batches[1]["name"],
+                    required=False,
                 ),
                 dict(
                     id=unsampled_batches[0].id,
                     name=unsampled_batches[0].name,
+                    required=False,
                 ),
             ],
         )
@@ -191,10 +195,12 @@ def test_support_combined_batches(
                 dict(
                     id=sampled_batches[2]["id"],
                     name=sampled_batches[2]["name"],
+                    required=False,
                 ),
                 dict(
                     id=unsampled_batches[1].id,
                     name=unsampled_batches[1].name,
+                    required=False,
                 ),
             ],
         )

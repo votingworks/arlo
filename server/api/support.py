@@ -16,6 +16,7 @@ from server.util.csv_download import csv_response
 from . import api
 from ..models import *
 from ..database import db_session
+from ..feature_flags import is_enabled_required_batches
 from ..auth import (
     restrict_access_support,
     set_loggedin_user,
@@ -637,6 +638,7 @@ def list_jurisdiction_batches(jurisdiction_id: str):
         return dict(
             id=batch.id,
             name=batch.name,
+            required=batch.required,
         )
 
     return jsonify(
@@ -656,6 +658,52 @@ def list_jurisdiction_batches(jurisdiction_id: str):
             )
         ],
     )
+
+
+REQUIRED_BATCHES_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "batchIds": {"type": "array", "items": {"type": "string"}},
+    },
+    "additionalProperties": False,
+    "required": ["batchIds"],
+}
+
+
+@api.route(
+    "/support/jurisdictions/<jurisdiction_id>/required-batches",
+    methods=["PUT"],
+)
+@restrict_access_support
+def set_required_batches(jurisdiction_id: str):
+    jurisdiction = get_or_404(Jurisdiction, jurisdiction_id)
+    election = jurisdiction.election
+
+    if election.audit_type != AuditType.BATCH_COMPARISON:
+        raise Conflict(
+            "Required batches are only supported for batch comparison audits"
+        )
+    if not is_enabled_required_batches(election):
+        raise Conflict("Required batches are not enabled for this organization")
+    if get_current_round(election) is not None:
+        raise Conflict(
+            "Batches cannot be marked as required after the audit has launched"
+        )
+
+    body = safe_get_json_dict(request)
+    validate(body, REQUIRED_BATCHES_SCHEMA)
+    required_batch_ids = set(body["batchIds"])
+
+    jurisdiction_batches = Batch.query.filter_by(jurisdiction_id=jurisdiction.id).all()
+    if not required_batch_ids.issubset({batch.id for batch in jurisdiction_batches}):
+        raise BadRequest("Invalid batch ids")
+
+    for batch in jurisdiction_batches:
+        batch.required = batch.id in required_batch_ids
+
+    db_session.commit()
+
+    return jsonify(status="ok")
 
 
 COMBINED_BATCH_SCHEMA = {

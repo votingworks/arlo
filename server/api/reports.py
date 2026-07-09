@@ -942,6 +942,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
     combined_batches = group_combined_batches(combined_sub_batches)
     combined_sub_batch_ids = {batch.id for batch in combined_sub_batches}
     has_combined_batches = len(combined_batches) > 0
+    has_required_batches = any(batch.required for batch in batches)
 
     contests = list(
         election.contests if jurisdiction is None else jurisdiction.contests
@@ -968,6 +969,8 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
     ]
     if has_combined_batches:
         column_headers.append("Combined Batch")
+    if has_required_batches:
+        column_headers.append("Precinct Audit Batch")
     header_rows.append(column_headers)
 
     total_reported_results: dict = {
@@ -987,6 +990,16 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
         sub_batches = combined_batch["sub_batches"]
         combines_description = f"Combines {', '.join(sub_batch.name for sub_batch in sorted(sub_batches, key=lambda batch: batch.name))}"
         representative_batch = combined_batch["representative_batch"]
+        required_sub_batch_names = [
+            sub_batch.name
+            for sub_batch in sorted(sub_batches, key=lambda batch: batch.name)
+            if sub_batch.required
+        ]
+        required_label = (
+            f"Yes ({', '.join(required_sub_batch_names)})"
+            if required_sub_batch_names
+            else ""
+        )
         combined_batch_row = [
             representative_batch.jurisdiction.name,
             representative_batch.combined_batch_name,
@@ -999,6 +1012,8 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
             combined_batch_row += [pretty_boolean(False)]
             combined_batch_row += [""] * (len(result_columns) + 1)
             combined_batch_row += [combines_description]
+            if has_required_batches:
+                combined_batch_row.append(required_label)
             sampled_batch_rows.append(combined_batch_row)
             return
 
@@ -1078,6 +1093,8 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
             construct_batch_last_edited_by_string(representative_batch),
             combines_description,
         ]
+        if has_required_batches:
+            combined_batch_row.append(required_label)
         sampled_batch_rows.append(combined_batch_row)
 
     seen_combined_batch_names: set[str] = set()
@@ -1105,6 +1122,10 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
         if not show_discrepancies_by_jurisdiction[batch.jurisdiction.id]:
             row += [pretty_boolean(False)]
             row += [""] * (len(result_columns) + 1)
+            if has_combined_batches:
+                row.append("")
+            if has_required_batches:
+                row.append("Yes" if batch.required else "")
             sampled_batch_rows.append(row)
             continue
 
@@ -1177,6 +1198,8 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
         row += [construct_batch_last_edited_by_string(batch)]
         if has_combined_batches:
             row.append("")
+        if has_required_batches:
+            row.append("Yes" if batch.required else "")
 
         sampled_batch_rows.append(row)
 

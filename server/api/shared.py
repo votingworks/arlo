@@ -20,6 +20,7 @@ from .cvrs import cvr_contests_metadata, hybrid_contest_choice_vote_counts
 from ..feature_flags import (
     is_enabled_sample_extra_batches_by_counting_group,
     is_enabled_sample_extra_batches_to_ensure_one_per_jurisdiction,
+    is_enabled_required_batches,
 )
 
 
@@ -825,17 +826,34 @@ def compute_extra_batches_for_round(
                     )
                 )
 
+    if is_enabled_required_batches(election) and round_num == 1:
+        sampled_batch_ids = {batch["batch_id"] for batch in sampled_batches}
+        for jurisdiction in jurisdictions:
+            representative_contest_id = jurisdiction_id_to_contest_id[jurisdiction.id]
+            for batch in jurisdiction.batches:
+                # If a required batch was already sampled, it will be audited
+                # and count towards the risk measurement, so we don't need to
+                # add it as an extra batch
+                if batch.required and batch.id not in sampled_batch_ids:
+                    extra_batches.append(
+                        BatchDraw(
+                            batch_id=batch.id,
+                            contest_id=representative_contest_id,
+                            ticket_number=EXTRA_TICKET_NUMBER,
+                        )
+                    )
+
     if is_enabled_sample_extra_batches_to_ensure_one_per_jurisdiction(election):
         rand = random.Random(str(election.random_seed))
         for jurisdiction in jurisdictions:
             representative_contest_id = jurisdiction_id_to_contest_id[jurisdiction.id]
-            sampled_batch_keys_from_jurisdiction = {
+            selected_batch_keys_from_jurisdiction = {
                 batch_id_to_key[batch["batch_id"]]
-                for batch in sampled_batches
+                for batch in sampled_batches + extra_batches
                 if batch_id_to_key[batch["batch_id"]][0] == jurisdiction.name
             }
-            # If we didn't sample any batches from this jurisdiction, add one
-            if len(sampled_batch_keys_from_jurisdiction) == 0:
+            # If we didn't select any batches from this jurisdiction, add one
+            if len(selected_batch_keys_from_jurisdiction) == 0:
                 jurisdiction_batch_keys = {
                     (jurisdiction.name, batch.name) for batch in jurisdiction.batches
                 }
