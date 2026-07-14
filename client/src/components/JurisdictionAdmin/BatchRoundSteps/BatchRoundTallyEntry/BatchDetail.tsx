@@ -27,10 +27,16 @@ import { sum } from '../../../../utils/number'
 
 const BatchName = styled(H4)`
   &.${Classes.HEADING} {
-    // Match the height of the batch search bar such that the batch name and search bar are
-    // vertically middle aligned
+    /* Match the height of the batch search bar such that the batch name and search bar are
+       vertically middle aligned */
     line-height: 30px;
   }
+`
+
+const BatchNameRow = styled.div`
+  align-items: flex-start;
+  display: flex;
+  justify-content: space-between;
 `
 
 interface ITabsWrapperProps {
@@ -39,9 +45,14 @@ interface ITabsWrapperProps {
 
 // More on why this is needed can be found below, where it's used
 const TabsWrapper = styled.div<ITabsWrapperProps>`
+  .${Classes.TAB_LIST} {
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+
   .${Classes.TAB_INDICATOR_WRAPPER} {
-    transition-duration: ${({ isAnimationEnabled = true }) =>
-      !isAnimationEnabled ? '0ms' : undefined};
+    transition-duration: ${({ isAnimationEnabled }) =>
+      isAnimationEnabled === false ? '0ms' : undefined};
   }
 `
 
@@ -75,16 +86,21 @@ const BatchResultTallySheetTable = styled(HTMLTable).attrs({
     vertical-align: middle;
   }
 
-  // Hide arrows/spinners from number inputs
-  // Reference: https://www.w3schools.com/howto/howto_css_hide_arrow_number.asp
-  // Chrome, Edge, Safari
+  /*
+   * Hide arrows/spinners from number inputs
+   * Reference: https://www.w3schools.com/howto/howto_css_hide_arrow_number.asp
+   * Chrome, Edge, Safari
+   */
   &.${Classes.HTML_TABLE} input::-webkit-inner-spin-button,
   &.${Classes.HTML_TABLE} input::-webkit-outer-spin-button {
+    /* stylelint-disable-next-line property-no-vendor-prefix */
     -webkit-appearance: none;
     margin: 0;
   }
-  // Firefox
+
+  /* Firefox */
   &.${Classes.HTML_TABLE} input[type='number'] {
+    /* stylelint-disable-next-line property-no-vendor-prefix */
     -moz-appearance: textfield;
   }
 `
@@ -312,7 +328,19 @@ const BatchDetail: React.FC<IBatchDetailProps> = ({
 
   return (
     <Detail>
-      <BatchName>{batch.name}</BatchName>
+      <BatchNameRow>
+        <BatchName>{batch.name}</BatchName>
+        {sheets.length > 1 && (
+          <AddSheetButton
+            disabled={areResultsFinalized || isEditing || isRemovingSheet}
+            icon="add"
+            minimal
+            onClick={addSheet}
+          >
+            Add Sheet
+          </AddSheetButton>
+        )}
+      </BatchNameRow>
 
       {/* When editing one of multiple sheets, BatchResultTallySheet renders its own tab bar with
         a sheet name form input replacing the selected tab, so we hide this main tab bar */}
@@ -334,17 +362,6 @@ const BatchDetail: React.FC<IBatchDetailProps> = ({
                 {tab.name}
               </Tab>
             ))}
-            <Tabs.Expander />
-            {sheets.length > 1 && (
-              <AddSheetButton
-                disabled={areResultsFinalized || isRemovingSheet}
-                icon="add"
-                minimal
-                onClick={addSheet}
-              >
-                Add Sheet
-              </AddSheetButton>
-            )}
           </Tabs>
         </TabsWrapper>
       )}
@@ -465,40 +482,38 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
         // A special tab bar with a sheet name form input replacing the selected tab, rendered here
         // instead of in the parent component so that we can create a separate react-hook-form form
         // per sheet (sharing the form across sheets requires diligent resetting)
-        <Tabs id={batch.name} selectedTabId={selectedTabId}>
-          {tabs.map(tab =>
-            selectedTabId === tab.id ? (
-              <input
-                aria-label="Sheet Name"
-                // Should be fine accessibility-wise, having read and considered the accessibility
-                // warning under
-                // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#autofocus, since
-                // we're auto-focusing after a relevant user action and the input is clearly
-                // labeled
-                // eslint-disable-next-line jsx-a11y/no-autofocus
-                autoFocus={isSelectedSheetNewAndUnsaved}
-                className={classnames(
-                  Classes.INPUT,
-                  errors.name && Classes.INTENT_DANGER
-                )}
-                key={tab.id}
-                name="name"
-                readOnly={isSubmitting}
-                ref={register({
-                  required: true,
-                })}
-              />
-            ) : (
-              <Tab disabled id={tab.id} key={tab.id}>
-                {tab.name}
-              </Tab>
-            )
-          )}
-          <Tabs.Expander />
-          <AddSheetButton disabled icon="add" minimal>
-            Add Sheet
-          </AddSheetButton>
-        </Tabs>
+        <TabsWrapper>
+          <Tabs id={batch.name} selectedTabId={selectedTabId}>
+            {tabs.map(tab =>
+              selectedTabId === tab.id ? (
+                <input
+                  aria-label="Sheet Name"
+                  // Should be fine accessibility-wise, having read and considered the accessibility
+                  // warning under
+                  // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#autofocus, since
+                  // we're auto-focusing after a relevant user action and the input is clearly
+                  // labeled
+                  // eslint-disable-next-line jsx-a11y/no-autofocus
+                  autoFocus={isSelectedSheetNewAndUnsaved}
+                  className={classnames(
+                    Classes.INPUT,
+                    errors.name && Classes.INTENT_DANGER
+                  )}
+                  key={tab.id}
+                  name="name"
+                  readOnly={isSubmitting}
+                  ref={register({
+                    required: true,
+                  })}
+                />
+              ) : (
+                <Tab disabled id={tab.id} key={tab.id}>
+                  {tab.name}
+                </Tab>
+              )
+            )}
+          </Tabs>
+        </TabsWrapper>
       )}
 
       <div
