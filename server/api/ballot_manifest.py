@@ -178,7 +178,7 @@ def process_ballot_manifest_file(
                         f'Invalid value for column "Container", row {row_index + 2}: "{counting_group}". Use the Batch Audit File Preparation Tool to create your ballot manifest, or correct this value to one of the following: {", ".join(counting_group_allowlist)}.'
                     )
 
-            if row[NUMBER_OF_BALLOTS] < 1:
+            if row[NUMBER_OF_BALLOTS] == 0:
                 rows_without_ballots.append(row_index + 2)
                 continue
 
@@ -195,14 +195,14 @@ def process_ballot_manifest_file(
             num_batches += 1
             num_ballots += batch.num_ballots
 
+        manifest_file.close()
+
         if len(rows_without_ballots) > 0:
             num_rows = len(rows_without_ballots)
             displayed_rows = ", ".join(str(row) for row in rows_without_ballots)
             raise CSVParseError(
-                f'Found {num_rows} {"batch" if num_rows == 1 else "batches"} with 0 ballots in column "Number of Ballots" ({pluralize("row", num_rows)} {displayed_rows}). Batches with 0 ballots cannot be audited. Please remove {"this row" if num_rows == 1 else "these rows"} from the CSV.'
+                f'Found {num_rows} {"batch" if num_rows == 1 else "batches"} with 0 ballots in column "Number of Ballots" ({pluralize("row", num_rows)} {displayed_rows}). Batches must have at least 1 ballot. Please remove {"this row" if num_rows == 1 else "these rows"} from the CSV.'
             )
-
-        manifest_file.close()
 
         jurisdiction.manifest_num_ballots = num_ballots
         jurisdiction.manifest_num_batches = num_batches

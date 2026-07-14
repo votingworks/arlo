@@ -271,9 +271,14 @@ def validate_and_parse_values(
 
         if column.value_type is CSVValueType.NUMBER:
             try:
-                return locale.atoi(value)
+                number = locale.atoi(value)
             except ValueError:
                 raise CSVParseError(f"Expected a number in {where}. Got: {value}.")
+            if number < 0:
+                raise CSVParseError(
+                    f"Expected a number greater than or equal to 0 in {where}. Got: {value}."
+                )
+            return number
 
         if column.value_type is CSVValueType.EMAIL:
             if not EMAIL_REGEX.match(value):

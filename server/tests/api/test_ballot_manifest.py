@@ -327,22 +327,19 @@ def test_ballot_manifest_upload_zero_ballot_batches(
     for manifest, expected_error in [
         (
             b"Batch Name,Number of Ballots\nBatch 1,0\nBatch 2,23\n",
-            'Found 1 batch with 0 ballots in column "Number of Ballots" (row 2).'
-            " Batches with 0 ballots cannot be audited."
-            " Please remove this row from the CSV.",
+            'Found 1 batch with 0 ballots in column "Number of Ballots" (row 2). Batches must have at least 1 ballot. Please remove this row from the CSV.',
         ),
         (
-            b"Batch Name,Number of Ballots\nBatch 1,0\nBatch 2,-2\nBatch 3,5\n",
-            'Found 2 batches with 0 ballots in column "Number of Ballots" (rows 2, 3).'
-            " Batches with 0 ballots cannot be audited."
-            " Please remove these rows from the CSV.",
+            b"Batch Name,Number of Ballots\nBatch 1,0\nBatch 2,0\nBatch 3,5\n",
+            'Found 2 batches with 0 ballots in column "Number of Ballots" (rows 2, 3). Batches must have at least 1 ballot. Please remove these rows from the CSV.',
+        ),
+        (
+            b"Batch Name,Number of Ballots\nBatch 1,5\nBatch 2,-2\n",
+            "Expected a number greater than or equal to 0 in column Number of Ballots, row 3. Got: -2.",
         ),
         (
             f"Batch Name,Number of Ballots\n{zero_ballot_rows}\n".encode(),
-            'Found 12 batches with 0 ballots in column "Number of Ballots"'
-            " (rows 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)."
-            " Batches with 0 ballots cannot be audited."
-            " Please remove these rows from the CSV.",
+            'Found 12 batches with 0 ballots in column "Number of Ballots" (rows 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13). Batches must have at least 1 ballot. Please remove these rows from the CSV.',
         ),
     ]:
         rv = upload_ballot_manifest(
