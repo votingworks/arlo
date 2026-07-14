@@ -14,7 +14,7 @@ def test_ballot_manifest_upload(
     )
     rv = upload_ballot_manifest(
         client,
-        io.BytesIO(b"Batch Name,Number of Ballots\n1,23\n12,100\n6,0\n"),
+        io.BytesIO(b"Batch Name,Number of Ballots\n1,23\n12,100\n6,7\n"),
         election_id,
         jurisdiction_ids[0],
     )
@@ -41,14 +41,14 @@ def test_ballot_manifest_upload(
 
     jurisdiction = Jurisdiction.query.get(jurisdiction_ids[0])
     assert jurisdiction.manifest_num_batches == 3
-    assert jurisdiction.manifest_num_ballots == 123
+    assert jurisdiction.manifest_num_ballots == 130
     assert len(jurisdiction.batches) == 3
     assert jurisdiction.batches[0].name == "1"
     assert jurisdiction.batches[0].num_ballots == 23
     assert jurisdiction.batches[1].name == "12"
     assert jurisdiction.batches[1].num_ballots == 100
     assert jurisdiction.batches[2].name == "6"
-    assert jurisdiction.batches[2].num_ballots == 0
+    assert jurisdiction.batches[2].num_ballots == 7
 
 
 def test_ballot_manifest_clear(
@@ -92,7 +92,7 @@ def test_ballot_manifest_replace_as_audit_admin(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = upload_ballot_manifest(
         client,
-        io.BytesIO(b"Batch Name,Number of Ballots\n1,23\n12,100\n6,0,,\n"),
+        io.BytesIO(b"Batch Name,Number of Ballots\n1,23\n12,100\n6,7,,\n"),
         election_id,
         jurisdiction_ids[0],
     )
@@ -314,6 +314,60 @@ def test_ballot_manifest_upload_invalid_num_ballots(
             },
         },
     )
+
+
+def test_ballot_manifest_upload_zero_ballot_batches(
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+
+    zero_ballot_rows = "\n".join(f"Batch {i},0" for i in range(1, 13))
+    for manifest, expected_error in [
+        (
+            b"Batch Name,Number of Ballots\nBatch 1,0\nBatch 2,23\n",
+            'Found 1 batch with 0 ballots in column "Number of Ballots" (row 2).'
+            " Batches with 0 ballots cannot be audited."
+            " Please remove this row from the CSV.",
+        ),
+        (
+            b"Batch Name,Number of Ballots\nBatch 1,0\nBatch 2,-2\nBatch 3,5\n",
+            'Found 2 batches with 0 ballots in column "Number of Ballots" (rows 2, 3).'
+            " Batches with 0 ballots cannot be audited."
+            " Please remove these rows from the CSV.",
+        ),
+        (
+            f"Batch Name,Number of Ballots\n{zero_ballot_rows}\n".encode(),
+            'Found 12 batches with 0 ballots in column "Number of Ballots"'
+            " (rows 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)."
+            " Batches with 0 ballots cannot be audited."
+            " Please remove these rows from the CSV.",
+        ),
+    ]:
+        rv = upload_ballot_manifest(
+            client, io.BytesIO(manifest), election_id, jurisdiction_ids[0]
+        )
+        assert_ok(rv)
+
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
+        )
+        compare_json(
+            json.loads(rv.data),
+            {
+                "file": {
+                    "name": asserts_startswith("manifest"),
+                    "uploadedAt": assert_is_date,
+                },
+                "processing": {
+                    "status": ProcessingStatus.ERRORED,
+                    "startedAt": assert_is_date,
+                    "completedAt": assert_is_date,
+                    "error": expected_error,
+                },
+            },
+        )
 
 
 def test_ballot_manifest_upload_duplicate_batch_name(

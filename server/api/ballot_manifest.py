@@ -33,6 +33,7 @@ from ..util.csv_parse import (
     CSVValueType,
     CSVColumnType,
     parse_csv,
+    pluralize,
 )
 from ..audit_math.suite import HybridPair
 from . import contests
@@ -158,6 +159,7 @@ def process_ballot_manifest_file(
 
         num_batches = 0
         num_ballots = 0
+        rows_without_ballots: list[int] = []
 
         for row_index, row in enumerate(manifest_csv):
             # For the "sample extra batches by counting group" feature, we
@@ -176,6 +178,10 @@ def process_ballot_manifest_file(
                         f'Invalid value for column "Container", row {row_index + 2}: "{counting_group}". Use the Batch Audit File Preparation Tool to create your ballot manifest, or correct this value to one of the following: {", ".join(counting_group_allowlist)}.'
                     )
 
+            if row[NUMBER_OF_BALLOTS] < 1:
+                rows_without_ballots.append(row_index + 2)
+                continue
+
             batch = Batch(
                 id=str(uuid.uuid4()),
                 name=row[BATCH_NAME],
@@ -188,6 +194,13 @@ def process_ballot_manifest_file(
             db_session.add(batch)
             num_batches += 1
             num_ballots += batch.num_ballots
+
+        if len(rows_without_ballots) > 0:
+            num_rows = len(rows_without_ballots)
+            displayed_rows = ", ".join(str(row) for row in rows_without_ballots)
+            raise CSVParseError(
+                f'Found {num_rows} {"batch" if num_rows == 1 else "batches"} with 0 ballots in column "Number of Ballots" ({pluralize("row", num_rows)} {displayed_rows}). Batches with 0 ballots cannot be audited. Please remove {"this row" if num_rows == 1 else "these rows"} from the CSV.'
+            )
 
         manifest_file.close()
 
