@@ -199,6 +199,20 @@ def test_parse_csv_bad_number():
     )
 
 
+def test_parse_csv_negative_number():
+    with pytest.raises(CSVParseError) as error:
+        list(
+            parse_csv(
+                ("Batch Name,Number of Ballots\n1,-2"),
+                BALLOT_MANIFEST_COLUMNS,
+            )
+        )
+    assert (
+        str(error.value)
+        == "Expected a number greater than or equal to 0 in column Number of Ballots, row 2. Got: -2."
+    )
+
+
 def test_parse_csv_bad_email():
     bad_emails = ["not an email", "a@b", "@b.com", "@", "a@.com"]
     for bad_email in bad_emails:
