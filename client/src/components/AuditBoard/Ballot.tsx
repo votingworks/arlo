@@ -173,6 +173,11 @@ const Ballot: React.FC<IProps> = ({
       Confirm the Ballot Selections
       <br />
       <ConfirmationModalSubTitle>
+        {ballot.batch.tabulator && (
+          <>
+            Tabulator <b>{ballot.batch.tabulator}</b> ·{' '}
+          </>
+        )}
         Batch <b>{ballot.batch.name}</b> · Ballot Number{' '}
         <b>{ballot.position}</b>
       </ConfirmationModalSubTitle>
