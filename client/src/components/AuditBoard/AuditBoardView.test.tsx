@@ -286,7 +286,7 @@ describe('AuditBoardView', () => {
         const dialog = (
           await screen.findByRole('heading', {
             name:
-              'Confirm the Ballot Selections Batch 0003-04-Precinct 19 (Jonesboro Fire Department) · Ballot Number 2112',
+              'Confirm the Ballot Selections Tabulator 11 · Batch 0003-04-Precinct 19 (Jonesboro Fire Department) · Ballot Number 2112',
           })
         ).closest('.bp3-dialog')! as HTMLElement
         expect(within(dialog).getAllByText('Ballot Not Found').length).toBe(1)
@@ -338,7 +338,7 @@ describe('AuditBoardView', () => {
         const dialog = (
           await screen.findByRole('heading', {
             name:
-              'Confirm the Ballot Selections Batch 0003-04-Precinct 19 (Jonesboro Fire Department) · Ballot Number 2112',
+              'Confirm the Ballot Selections Tabulator 11 · Batch 0003-04-Precinct 19 (Jonesboro Fire Department) · Ballot Number 2112',
           })
         ).closest('.bp3-dialog')! as HTMLElement
         within(dialog).getByText('Contest 1')
@@ -424,7 +424,7 @@ describe('AuditBoardView', () => {
         const dialog = (
           await screen.findByRole('heading', {
             name:
-              'Confirm the Ballot Selections Batch 0003-04-Precinct 19 (Jonesboro Fire Department) · Ballot Number 2112',
+              'Confirm the Ballot Selections Tabulator 11 · Batch 0003-04-Precinct 19 (Jonesboro Fire Department) · Ballot Number 2112',
           })
         ).closest('.bp3-dialog')! as HTMLElement
         within(dialog).getByText('Contest 1')
@@ -484,7 +484,7 @@ describe('AuditBoardView', () => {
         const dialog = (
           await screen.findByRole('heading', {
             name:
-              'Confirm the Ballot Selections Batch 0003-04-Precinct 19 (Jonesboro Fire Department) · Ballot Number 2112',
+              'Confirm the Ballot Selections Tabulator 11 · Batch 0003-04-Precinct 19 (Jonesboro Fire Department) · Ballot Number 2112',
           })
         ).closest('.bp3-dialog')! as HTMLElement
         within(dialog).getByText('Contest 1')
@@ -553,7 +553,7 @@ describe('AuditBoardView', () => {
         const dialog = (
           await screen.findByRole('heading', {
             name:
-              'Confirm the Ballot Selections Batch 0003-04-Precinct 19 (Jonesboro Fire Department) · Ballot Number 2112',
+              'Confirm the Ballot Selections Tabulator 11 · Batch 0003-04-Precinct 19 (Jonesboro Fire Department) · Ballot Number 2112',
           })
         ).closest('.bp3-dialog')! as HTMLElement
         within(dialog).getByText('Ballot Not Found')
@@ -601,7 +601,7 @@ describe('AuditBoardView', () => {
         const dialog1 = (
           await screen.findByRole('heading', {
             name:
-              'Confirm the Ballot Selections Batch 0003-04-Precinct 19 (Jonesboro Fire Department) · Ballot Number 2112',
+              'Confirm the Ballot Selections Tabulator 11 · Batch 0003-04-Precinct 19 (Jonesboro Fire Department) · Ballot Number 2112',
           })
         ).closest('.bp3-dialog')! as HTMLElement
         userEvent.click(
@@ -625,7 +625,7 @@ describe('AuditBoardView', () => {
         const dialog2 = (
           await screen.findByRole('heading', {
             name:
-              'Confirm the Ballot Selections Batch 0003-04-Precinct 19 (Jonesboro Fire Department) · Ballot Number 2112',
+              'Confirm the Ballot Selections Tabulator 11 · Batch 0003-04-Precinct 19 (Jonesboro Fire Department) · Ballot Number 2112',
           })
         ).closest('.bp3-dialog')! as HTMLElement
         within(dialog2).getByText('Ballot Not Found')
@@ -749,7 +749,7 @@ describe('AuditBoardView', () => {
         const confirmationDialog = (
           await screen.findByRole('heading', {
             name:
-              'Confirm the Ballot Selections Batch 0003-04-Precinct 19 (Jonesboro Fire Department) · Ballot Number 2112',
+              'Confirm the Ballot Selections Tabulator 11 · Batch 0003-04-Precinct 19 (Jonesboro Fire Department) · Ballot Number 2112',
           })
         ).closest('.bp3-dialog')! as HTMLElement
         expect(
