@@ -242,7 +242,9 @@ def test_list_activities_logins(
     # Log in an audit admin
     with patch.object(auth0_aa, "authorize_access_token", return_value=None):
         mock_response = Mock()
-        mock_response.json = MagicMock(return_value={"email": DEFAULT_AA_EMAIL})
+        mock_response.json = MagicMock(
+            return_value={"email": DEFAULT_AA_EMAIL, "email_verified": True}
+        )
         with patch.object(auth0_aa, "get", return_value=mock_response):
             rv = client.get("/auth/auditadmin/callback?code=foobar")
             assert rv.status_code == 302
