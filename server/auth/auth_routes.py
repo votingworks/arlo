@@ -196,6 +196,7 @@ def support_login_callback():
     if (
         userinfo
         and userinfo["email"]
+        and userinfo.get("email_verified") is True
         and userinfo["email"].split("@")[-1] in config.SUPPORT_EMAIL_DOMAINS
     ):
         set_support_user(session, userinfo["email"])
@@ -218,7 +219,7 @@ def auditadmin_login_callback():
     resp = auth0_aa.get("userinfo")
     userinfo = resp.json()
 
-    if userinfo and userinfo["email"]:
+    if userinfo and userinfo["email"] and userinfo.get("email_verified") is True:
         user = User.query.filter_by(email=userinfo["email"]).first()
         if user and len(user.audit_administrations) > 0:
             set_loggedin_user(session, UserType.AUDIT_ADMIN, userinfo["email"])

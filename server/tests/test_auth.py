@@ -157,7 +157,9 @@ def test_support_callback(
 ):
     with patch.object(auth0_sa, "authorize_access_token", return_value=None):
         mock_response = Mock()
-        mock_response.json = MagicMock(return_value={"email": SA_EMAIL})
+        mock_response.json = MagicMock(
+            return_value={"email": SA_EMAIL, "email_verified": True}
+        )
         with patch.object(auth0_sa, "get", return_value=mock_response):
             rv = client.get("/auth/support/callback?code=foobar")
             assert rv.status_code == 302
@@ -183,7 +185,14 @@ def test_support_callback_rejected(
     client: FlaskClient,
     org_id: str,
 ):
-    bad_user_infos: list[JSONDict | None] = [None, {}, {"email": AA_EMAIL}]
+    bad_user_infos: list[JSONDict | None] = [
+        None,
+        {},
+        {"email": AA_EMAIL},
+        {"email": AA_EMAIL, "email_verified": False},
+        {"email": AA_EMAIL, "email_verified": None},
+        {"email": SA_EMAIL, "email_verified": False},
+    ]
     for bad_user_info in bad_user_infos:
         with patch.object(auth0_sa, "authorize_access_token", return_value=None):
             mock_response = Mock()
@@ -207,7 +216,9 @@ def test_support_callback_multiple_allowed_domains(
     config.SUPPORT_EMAIL_DOMAINS = ["voting.works", "example.gov"]
     with patch.object(auth0_sa, "authorize_access_token", return_value=None):
         mock_response = Mock()
-        mock_response.json = MagicMock(return_value={"email": "sa@example.gov"})
+        mock_response.json = MagicMock(
+            return_value={"email": "sa@example.gov", "email_verified": True}
+        )
         with patch.object(auth0_sa, "get", return_value=mock_response):
             rv = client.get("/auth/support/callback?code=foobar")
             assert rv.status_code == 302
@@ -226,7 +237,9 @@ def test_auditadmin_start(client: FlaskClient):
 def test_auditadmin_callback(client: FlaskClient, aa_email: str):
     with patch.object(auth0_aa, "authorize_access_token", return_value=None):
         mock_response = Mock()
-        mock_response.json = MagicMock(return_value={"email": aa_email})
+        mock_response.json = MagicMock(
+            return_value={"email": aa_email, "email_verified": True}
+        )
         with patch.object(auth0_aa, "get", return_value=mock_response):
             rv = client.get("/auth/auditadmin/callback?code=foobar")
             assert rv.status_code == 302
@@ -247,6 +260,32 @@ def test_auditadmin_callback(client: FlaskClient, aa_email: str):
 
             assert auth0_aa.authorize_access_token.called
             assert auth0_aa.get.called
+
+
+def test_auditadmin_callback_rejected_unverified_email(
+    client: FlaskClient, aa_email: str
+):
+    bad_user_infos: list[JSONDict | None] = [
+        None,
+        {},
+        {"email": aa_email},
+        {"email": aa_email, "email_verified": False},
+        {"email": aa_email, "email_verified": None},
+    ]
+    for bad_user_info in bad_user_infos:
+        with patch.object(auth0_aa, "authorize_access_token", return_value=None):
+            mock_response = Mock()
+            mock_response.json = MagicMock(return_value=bad_user_info)
+            with patch.object(auth0_aa, "get", return_value=mock_response):
+                rv = client.get("/auth/auditadmin/callback?code=foobar")
+                assert rv.status_code == 302
+                assert urlparse(rv.location).path == "/"
+
+                with client.session_transaction() as session:  # type: ignore
+                    assert session.get("_user") is None
+
+                assert auth0_aa.authorize_access_token.called
+                assert auth0_aa.get.called
 
 
 def parse_login_code(text: str):

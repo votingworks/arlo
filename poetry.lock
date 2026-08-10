@@ -1406,7 +1406,7 @@ Flask = "^3.1.2"
 type = "git"
 url = "https://github.com/votingworks/nOAuth.git"
 reference = "main"
-resolved_reference = "01ebe1ae50704050df5b23cb0c3f705170bb4719"
+resolved_reference = "542245905c0024977a2d2ef08309b606a7ae98c8"
 
 [[package]]
 name = "nodejs-wheel-binaries"
