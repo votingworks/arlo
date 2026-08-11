@@ -6,6 +6,7 @@ from werkzeug.exceptions import (
     Unauthorized,
     InternalServerError,
     Forbidden,
+    RequestEntityTooLarge,
 )
 
 from .app import app
@@ -48,6 +49,22 @@ def handle_403(error):
     return (
         jsonify(errors=[{"message": error.description, "errorType": "Forbidden"}]),
         Forbidden.code,
+    )
+
+
+@app.errorhandler(RequestEntityTooLarge)
+def handle_413(error):
+    max_size_gb = round(app.config["MAX_CONTENT_LENGTH"] / 1024**3, 2)
+    return (
+        jsonify(
+            errors=[
+                {
+                    "message": f"Upload cannot be larger than {max_size_gb:g} GB",
+                    "errorType": "Request Entity Too Large",
+                }
+            ]
+        ),
+        RequestEntityTooLarge.code,
     )
 
 
