@@ -1,12 +1,20 @@
 import math
+import os
+import re
 from typing import Any
 
-from werkzeug.exceptions import Conflict, BadRequest
+from werkzeug.exceptions import Conflict, BadRequest, NotFound
 from flask import jsonify, request
 
 
 from . import api
-from ..auth.auth_helpers import allow_public_access, allow_any_logged_in_user_access
+from ..auth.auth_helpers import (
+    UserType,
+    allow_public_access,
+    allow_any_logged_in_user_access,
+    check_access,
+    find_or_404,
+)
 from ..audit_math import bravo, sampler_contest, supersimple
 from ..util.jsonschema import validate
 from ..models import *
@@ -151,6 +159,41 @@ def compute_batch_comparison_sample_size(
     return min(sample_size, contest.ballots)
 
 
+# Matches the storage keys issued by get_file_upload_url:
+# audits/<election_id>[/jurisdictions/<jurisdiction_id>]/<file_name>
+UPLOAD_STORAGE_KEY_PATTERN = re.compile(
+    r"^audits/(?P<election_id>[^/]+)"  # required electionId
+    r"(?:/jurisdictions/(?P<jurisdiction_id>[^/]+))?"  # optional jurisdictionId
+    r"/[^/]+$"  # required filename
+)
+
+
+def validate_and_authorize_storage_key(unvalidated_storage_key: str):
+    key_match = UPLOAD_STORAGE_KEY_PATTERN.match(unvalidated_storage_key)
+    # Detect if a key filename is "." or ".." e.g.
+    # audits/E1/jurisdictions/J1/.. really points at audits/E1/jurisdictions
+    key_hides_its_real_path = (
+        os.path.normpath(unvalidated_storage_key) != unvalidated_storage_key
+    )
+    if key_match is None or key_hides_its_real_path:
+        raise BadRequest("Invalid storage path")
+
+    election: Election = get_or_404(Election, key_match["election_id"])
+    if election.deleted_at is not None:
+        raise NotFound(f"Election {key_match['election_id']} not found")
+
+    jurisdiction_id = key_match["jurisdiction_id"]
+    if jurisdiction_id is None:
+        check_access([UserType.AUDIT_ADMIN], election)
+    else:
+        jurisdiction: Jurisdiction = find_or_404(
+            Jurisdiction.query.filter_by(id=jurisdiction_id, election_id=election.id)
+        )
+        check_access(
+            [UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN], election, jurisdiction
+        )
+
+
 @api.route(
     "/file-upload",
     methods=["POST"],
@@ -164,6 +207,7 @@ def upload_file_to_local_filesystem():
     if file is None:
         raise BadRequest("Missing required form parameter 'file'")
 
+    validate_and_authorize_storage_key(storage_key)
     store_file(
         file.stream,
         storage_key,
