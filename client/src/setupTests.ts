@@ -5,10 +5,9 @@ import { afterEach, expect } from 'vitest'
 import { cleanup } from '@testing-library/react'
 import * as testingLibraryMatchers from '@testing-library/jest-dom/matchers'
 import 'vitest-canvas-mock'
-import 'pdf-visual-diff'
-import { comparePdfToSnapshot } from 'pdf-visual-diff/lib/compare-pdf-to-snapshot'
-import { CompareImagesOpts } from 'pdf-visual-diff/lib/compare-images'
-import { CompareOptions } from 'pdf-visual-diff/lib/compare'
+import { comparePdfToSnapshot, CompareOptions } from 'pdf-visual-diff'
+// eslint-disable-next-line import/no-extraneous-dependencies
+import * as napiCanvas from '@napi-rs/canvas'
 
 expect.extend(testingLibraryMatchers)
 
@@ -37,15 +36,36 @@ expect.extend({
     const currentDirectory = dirname(testPath)
     const snapshotName = currentTestName?.split(' ').join('_')
 
-    const pass = await comparePdfToSnapshot(
-      pdf,
-      currentDirectory,
-      snapshotName,
-      options as Partial<CompareImagesOpts>
-    )
-    return {
-      pass,
-      message: () => 'Does not match with snapshot.',
+    // pdf-visual-diff renders PDFs via pdfjs-dist onto @napi-rs/canvas, but
+    // pdfjs reads Path2D/DOMMatrix/ImageData from the global scope, where
+    // vitest-canvas-mock has installed mocks that @napi-rs/canvas can't
+    // consume. Swap in the real implementations for the comparison.
+    const mockCanvasGlobals = {
+      Path2D: window.Path2D,
+      DOMMatrix: window.DOMMatrix,
+      ImageData: window.ImageData,
+    }
+    const napiCanvasGlobals = {
+      Path2D: napiCanvas.Path2D,
+      DOMMatrix: napiCanvas.DOMMatrix,
+      ImageData: napiCanvas.ImageData,
+    }
+    Object.assign(globalThis, napiCanvasGlobals)
+    Object.assign(window, napiCanvasGlobals)
+    try {
+      const pass = await comparePdfToSnapshot(
+        pdf,
+        currentDirectory,
+        snapshotName,
+        options
+      )
+      return {
+        pass,
+        message: () => 'Does not match with snapshot.',
+      }
+    } finally {
+      Object.assign(globalThis, mockCanvasGlobals)
+      Object.assign(window, mockCanvasGlobals)
     }
   },
 })
