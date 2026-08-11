@@ -731,3 +731,28 @@ def test_public_file_upload_error(client: FlaskClient):
             }
         ]
     }
+
+
+def test_public_file_upload_too_large(client: FlaskClient):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    original_max_size = client.application.config["MAX_CONTENT_LENGTH"]
+    client.application.config["MAX_CONTENT_LENGTH"] = 1000
+    try:
+        rv = client.post(
+            "/api/file-upload",
+            data={
+                "file": (
+                    io.BytesIO(b"x" * 2000),
+                    "too_large.csv",
+                ),
+                "key": "audits/election-id/too_large.csv",
+            },
+        )
+        assert rv.status_code == 413
+        response = json.loads(rv.data)
+        assert response["errors"][0]["errorType"] == "Request Entity Too Large"
+        assert response["errors"][0]["message"].startswith(
+            "Upload cannot be larger than"
+        )
+    finally:
+        client.application.config["MAX_CONTENT_LENGTH"] = original_max_size
