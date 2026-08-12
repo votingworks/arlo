@@ -8,6 +8,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from .config import (
     FLASK_ENV,
     HTTP_ORIGIN,
+    MAX_UPLOAD_FILE_SIZE_BYTES,
     STATIC_FOLDER,
 )
 from .database import init_db, db_session, engine
@@ -26,6 +27,7 @@ if FLASK_ENV not in ["development", "test"]:
 app = Flask("arlo", static_folder=None, template_folder=STATIC_FOLDER)
 app.wsgi_app = ProxyFix(app.wsgi_app)  # type: ignore
 app.testing = FLASK_ENV == "test"
+app.config["MAX_CONTENT_LENGTH"] = MAX_UPLOAD_FILE_SIZE_BYTES
 Talisman(
     app,
     force_https_permanent=True,

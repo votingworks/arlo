@@ -329,17 +329,22 @@ def test_validate_and_get_standard_file_upload_request_params_errors(mock_reques
 
 
 def test_get_full_storage_path():
+    original_storage_path = config.FILE_UPLOAD_STORAGE_PATH
     config.FILE_UPLOAD_STORAGE_PATH = "/test/storage/path"
     assert (
         get_full_storage_path("test_dir/test_file.csv")
         == "/test/storage/path/test_dir/test_file.csv"
     )
 
+    with pytest.raises(BadRequest, match="Invalid storage path"):
+        _ = get_full_storage_path("../escaped.csv")
+
     config.FILE_UPLOAD_STORAGE_PATH = "s3://test_bucket"
     assert (
         get_full_storage_path("test_dir/test_file.csv")
         == "s3://test_bucket/test_dir/test_file.csv"
     )
+    config.FILE_UPLOAD_STORAGE_PATH = original_storage_path
 
 
 def test_read_zip_filenames():

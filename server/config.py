@@ -141,6 +141,11 @@ FILE_UPLOAD_STORAGE_PATH = read_env_var(
     "ARLO_FILE_UPLOAD_STORAGE_PATH",
     env_defaults=dict(development="/tmp/arlo", test="/tmp/arlo-test"),
 )
+# Cap the size of a single upload request. Defaults to 5 GB to match the limit
+# S3 imposes on single POST uploads.
+MAX_UPLOAD_FILE_SIZE_BYTES = int(
+    read_env_var("ARLO_MAX_UPLOAD_FILE_SIZE_BYTES", default=str(5 * 1024**3))
+)
 # If using S3, AWS credentials are required as well
 AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_DEFAULT_REGION = (
     (

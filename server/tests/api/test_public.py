@@ -554,46 +554,123 @@ def test_public_compute_sample_sizes(client: FlaskClient, snapshot):
         snapshot.assert_match(response, test_case["description"])
 
 
-def test_public_file_upload(client: FlaskClient):
-    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+def upload_to_key(client: FlaskClient, key: str):
+    return client.post(
+        "/api/file-upload",
+        data={"file": (io.BytesIO(b"a file"), "random.csv"), "key": key},
+    )
+
+
+def test_public_file_upload(
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
+):
+    original_storage_path = config.FILE_UPLOAD_STORAGE_PATH
     with tempfile.TemporaryDirectory() as temp_dir:
         config.FILE_UPLOAD_STORAGE_PATH = temp_dir
-        rv = client.post(
-            "/api/file-upload",
-            data={
-                "file": (
-                    io.BytesIO(b"hello, I am a file"),
-                    "random.txt",
-                ),
-                "key": "test_dir/random.txt",
-            },
-        )
-        assert_ok(rv)
-        with open(f"{temp_dir}/test_dir/random.txt", "rb") as stored_file:
-            assert stored_file.read() == b"hello, I am a file"
+        try:
+            set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+            election_key = f"audits/{election_id}/random.csv"
+            assert_ok(upload_to_key(client, election_key))
+            with open(f"{temp_dir}/{election_key}", "rb") as stored_file:
+                assert stored_file.read() == b"a file"
+
+            set_logged_in_user(
+                client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+            )
+            jurisdiction_key = (
+                f"audits/{election_id}/jurisdictions/{jurisdiction_ids[0]}/random.csv"
+            )
+            assert_ok(upload_to_key(client, jurisdiction_key))
+            with open(f"{temp_dir}/{jurisdiction_key}", "rb") as stored_file:
+                assert stored_file.read() == b"a file"
+        finally:
+            config.FILE_UPLOAD_STORAGE_PATH = original_storage_path
 
 
-def test_public_file_upload_path_traversal(client: FlaskClient):
-    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.post(
-        "/api/file-upload",
-        data={
-            "file": (
-                io.BytesIO(b"hello, I am a file"),
-                "random.txt",
-            ),
-            "key": "../test_dir/random.txt",
-        },
+def test_public_file_upload_forbidden(
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str], org_id: str
+):
+    election_key = f"audits/{election_id}/random.csv"
+    jurisdiction_key = (
+        f"audits/{election_id}/jurisdictions/{jurisdiction_ids[0]}/random.csv"
     )
-    assert rv.status_code == 400
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "errorType": "Bad Request",
-                "message": "Invalid storage path",
-            }
-        ]
-    }
+    ja_email = default_ja_email(election_id)
+    create_org_and_admin("Other Org", "other-admin@example.com")
+
+    forbidden_cases = [
+        # (user_type, user_key, storage_key, expected_message)
+        (
+            UserType.AUDIT_BOARD,
+            "fake-audit-board-id",
+            jurisdiction_key,
+            "Access forbidden for user type audit_board",
+        ),
+        # Jurisdiction admins can't upload election-level files...
+        (
+            UserType.JURISDICTION_ADMIN,
+            ja_email,
+            election_key,
+            "Access forbidden for user type jurisdiction_admin",
+        ),
+        # ...nor upload to a jurisdiction they don't administer
+        (
+            UserType.JURISDICTION_ADMIN,
+            ja_email,
+            f"audits/{election_id}/jurisdictions/{jurisdiction_ids[2]}/random.csv",
+            f"{ja_email} does not have access to jurisdiction {jurisdiction_ids[2]}",
+        ),
+        (
+            UserType.AUDIT_ADMIN,
+            "other-admin@example.com",
+            jurisdiction_key,
+            f"other-admin@example.com does not have access to organization {org_id}",
+        ),
+    ]
+    for user_type, user_key, storage_key, expected_message in forbidden_cases:
+        set_logged_in_user(client, user_type, user_key)
+        rv = upload_to_key(client, storage_key)
+        assert rv.status_code == 403, storage_key
+        assert json.loads(rv.data) == {
+            "errors": [{"errorType": "Forbidden", "message": expected_message}]
+        }, storage_key
+
+
+def test_public_file_upload_not_found(client: FlaskClient, election_id: str):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+
+    rv = upload_to_key(client, "audits/not-a-real-election-id/random.csv")
+    assert rv.status_code == 404
+
+    rv = upload_to_key(
+        client,
+        f"audits/{election_id}/jurisdictions/not-a-real-jurisdiction-id/random.csv",
+    )
+    assert rv.status_code == 404
+
+    Election.query.get(election_id).deleted_at = datetime.now(timezone.utc)
+    db_session.commit()
+    rv = upload_to_key(client, f"audits/{election_id}/random.csv")
+    assert rv.status_code == 404
+
+
+def test_public_file_upload_invalid_key(
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    invalid_keys = [
+        "test_dir/random.csv",  # not under audits/
+        f"audits/{election_id}/",  # missing file name
+        f"audits/{election_id}/nested/random.csv",  # unrecognized subfolder
+        f"audits/{election_id}/..",  # points at the audits folder
+        f"audits/{election_id}/jurisdictions/{jurisdiction_ids[0]}/..",  # points at the jurisdictions folder
+        "../test_dir/random.txt",  # path traversal above the storage root
+    ]
+    for invalid_key in invalid_keys:
+        rv = upload_to_key(client, invalid_key)
+        assert rv.status_code == 400, invalid_key
+        assert json.loads(rv.data) == {
+            "errors": [{"errorType": "Bad Request", "message": "Invalid storage path"}]
+        }, invalid_key
 
 
 def test_public_file_upload_unauthorized(client: FlaskClient):
@@ -654,3 +731,28 @@ def test_public_file_upload_error(client: FlaskClient):
             }
         ]
     }
+
+
+def test_public_file_upload_too_large(client: FlaskClient):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    original_max_size = client.application.config["MAX_CONTENT_LENGTH"]
+    client.application.config["MAX_CONTENT_LENGTH"] = 1000
+    try:
+        rv = client.post(
+            "/api/file-upload",
+            data={
+                "file": (
+                    io.BytesIO(b"x" * 2000),
+                    "too_large.csv",
+                ),
+                "key": "audits/election-id/too_large.csv",
+            },
+        )
+        assert rv.status_code == 413
+        response = json.loads(rv.data)
+        assert response["errors"][0]["errorType"] == "Request Entity Too Large"
+        assert response["errors"][0]["message"].startswith(
+            "Upload cannot be larger than"
+        )
+    finally:
+        client.application.config["MAX_CONTENT_LENGTH"] = original_max_size

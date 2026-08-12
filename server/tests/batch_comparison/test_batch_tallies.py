@@ -304,7 +304,7 @@ def test_batch_tallies_upload_bad_csv(
                 io.BytesIO(b"not a CSV file"),
                 "random.txt",
             ),
-            "key": "test_dir/random.txt",
+            "key": f"{get_jurisdiction_folder_path(election_id, jurisdiction_ids[0])}/random.txt",
         },
     )
     assert_ok(rv)
