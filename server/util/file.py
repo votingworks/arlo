@@ -14,7 +14,7 @@ from flask import Request
 
 from .. import config
 from ..models import *
-from ..worker.tasks import serialize_background_task
+from ..worker.tasks import UserError, serialize_background_task
 from ..util.isoformat import isoformat
 from ..util.jsonschema import JSONDict
 from ..util.csv_parse import is_filetype_csv_mimetype
@@ -125,24 +125,36 @@ def zip_files(files: Mapping[str, IO[bytes]]) -> IO[bytes]:
 
 def read_zip_filenames(zip_file: BinaryIO) -> list[str]:
     with ZipFile(zip_file, "r") as zip_archive:
-        return [
+        file_names = [
             entry_name
             for entry_name in zip_archive.namelist()
             # ZIP files created on Macs include a hidden __MACOSX folder
             if not entry_name.startswith("__") and not entry_name.startswith(".")
         ]
+        for file_name in file_names:
+            normalized = os.path.normpath(file_name)
+            # Guarantee the path name is within the zip file
+            if os.path.isabs(normalized) or normalized.startswith(".."):
+                raise UserError(f"Invalid file name in ZIP file: {file_name}")
+        return file_names
 
 
 # Extracts the contents of the provided zip file to the specified directory and returns the list of
 # extracted file names
 def unzip_files(zip_file: BinaryIO, directory_to_extract_to: str) -> list[str]:
     with ZipFile(zip_file, "r") as zip_archive:
-        zip_archive.extractall(directory_to_extract_to)
-        return [
-            entry_name
+        extracted_file_names = [
+            os.path.relpath(
+                zip_archive.extract(entry_name, directory_to_extract_to),
+                directory_to_extract_to,
+            )
             for entry_name in zip_archive.namelist()
+        ]
+        return [
+            file_name
+            for file_name in extracted_file_names
             # ZIP files created on Macs include a hidden __MACOSX folder
-            if not entry_name.startswith("__") and not entry_name.startswith(".")
+            if not file_name.startswith("__") and not file_name.startswith(".")
         ]
 
 
