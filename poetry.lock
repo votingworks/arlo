@@ -37,7 +37,7 @@ scipy = "*"
 [package.source]
 type = "git"
 url = "https://github.com/filipzz/athena.git"
-reference = "v0.8.3"
+reference = "9e07d15aff2098231c23024c68419bfe02796471"
 resolved_reference = "9e07d15aff2098231c23024c68419bfe02796471"
 
 [[package]]
@@ -469,7 +469,7 @@ develop = false
 [package.source]
 type = "git"
 url = "https://github.com/votingworks/consistent_sampler.git"
-reference = "master"
+reference = "46f6f0a6761adc7172e2c3e844bee359e6bd11bf"
 resolved_reference = "46f6f0a6761adc7172e2c3e844bee359e6bd11bf"
 
 [[package]]
@@ -2026,7 +2026,7 @@ typing = "*"
 [package.source]
 type = "git"
 url = "https://github.com/gwexploratoryaudits/r2b2.git"
-reference = "HEAD"
+reference = "43479256a349c5ffea061d1b8dcc8fac5d9a64de"
 resolved_reference = "43479256a349c5ffea061d1b8dcc8fac5d9a64de"
 
 [[package]]
@@ -3033,4 +3033,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.11"
-content-hash = "6a7f57754f3df76e3423da53a25d85a56f979951810f0b8a5db66824224c2a72"
+content-hash = "4660e3a8b2a7b9c4fd850df53d0c41d0123a7326287b757782b36ab206cf1797"
