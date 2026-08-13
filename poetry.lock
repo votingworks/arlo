@@ -1389,7 +1389,7 @@ Flask = "^3.1.2"
 [package.source]
 type = "git"
 url = "https://github.com/votingworks/nOAuth.git"
-reference = "main"
+reference = "542245905c0024977a2d2ef08309b606a7ae98c8"
 resolved_reference = "542245905c0024977a2d2ef08309b606a7ae98c8"
 
 [[package]]
@@ -3017,4 +3017,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.11"
-content-hash = "f186ab3f3e6c03cd4adf2ef3a31d85298b7bcd2d19f3f8961b559b3fafae9841"
+content-hash = "15cd4792d80933bd5e3c7260a3570812a677fecb3c92e600f128a3fe932e6eaa"
