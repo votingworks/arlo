@@ -686,22 +686,6 @@ cffi = {version = ">=2.0.0", markers = "platform_python_implementation != \"PyPy
 ssh = ["bcrypt (>=3.1.5)"]
 
 [[package]]
-name = "cryptorandom"
-version = "0.3"
-description = "Pseudorandom number generator and random sampling using cryptographic hash functions"
-optional = false
-python-versions = "*"
-groups = ["main"]
-files = [
-    {file = "cryptorandom-0.3-py3-none-any.whl", hash = "sha256:65e2ab47c58196a9bd705dcc91a4fe496ade04f928fa653960e46e7251472b20"},
-    {file = "cryptorandom-0.3.tar.gz", hash = "sha256:8e1ba42a964335d169e0958baed174330f6883003577576e2131ddbd5203ff07"},
-]
-
-[package.dependencies]
-numpy = ">=1.20"
-scipy = ">=1.6"
-
-[[package]]
 name = "cycler"
 version = "0.12.1"
 description = "Composable style cycles"
@@ -3033,4 +3017,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.11"
-content-hash = "4660e3a8b2a7b9c4fd850df53d0c41d0123a7326287b757782b36ab206cf1797"
+content-hash = "f186ab3f3e6c03cd4adf2ef3a31d85298b7bcd2d19f3f8961b559b3fafae9841"
