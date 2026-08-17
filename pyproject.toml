@@ -10,7 +10,6 @@ python = "^3.11"
 alembic = "^1.4.3"
 Authlib = "^1.6.12"
 chardet = "^3.0.4"
-cryptorandom = "^0.3"
 Flask = "^3.1.3"
 flask-talisman = "^1.1.0"
 jsonschema = "^3.2.0"
@@ -23,13 +22,13 @@ typing-extensions = "^4.1.0"
 auth0-python = "^3.16.2"
 gunicorn = "^23.0.0"
 sentry-sdk = { version = "^2.36.0", extras = ["flask"] }
-athena = { git = "https://github.com/filipzz/athena.git", rev = "v0.8.3" }
+athena = { git = "https://github.com/filipzz/athena.git", rev = "9e07d15aff2098231c23024c68419bfe02796471" } # v0.8.3
 psycopg2-binary = "^2.9.9"
-consistent-sampler = { git = "https://github.com/votingworks/consistent_sampler.git", rev = "master" }
+consistent-sampler = { git = "https://github.com/votingworks/consistent_sampler.git", rev = "46f6f0a6761adc7172e2c3e844bee359e6bd11bf" }
 scipy = "~1.11.0"
 Flask-SeaSurf = "^2.0.0"
 boto3 = "^1.20.8"
-r2b2 = { git = "https://github.com/gwexploratoryaudits/r2b2.git" }
+r2b2 = { git = "https://github.com/gwexploratoryaudits/r2b2.git", rev = "43479256a349c5ffea061d1b8dcc8fac5d9a64de" }
 MarkupSafe = "3.0.2"
 jinja2 = "3.1.6"
 itsdangerous = "2.2.0"
@@ -46,7 +45,7 @@ snapshottest = "^0.6.0"
 pytest-alembic = "^0.2.5"
 pytest-xdist = "^2.3.0"
 sqlalchemy-stubs = "^0.3"
-noauth = { git = "https://github.com/votingworks/nOAuth.git", rev = "main" }
+noauth = { git = "https://github.com/votingworks/nOAuth.git", rev = "542245905c0024977a2d2ef08309b606a7ae98c8" }
 ruff = "^0.12.12"
 watchdog = "^6.0.0"
 types-chardet = "^5.0.4.6"

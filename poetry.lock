@@ -37,7 +37,7 @@ scipy = "*"
 [package.source]
 type = "git"
 url = "https://github.com/filipzz/athena.git"
-reference = "v0.8.3"
+reference = "9e07d15aff2098231c23024c68419bfe02796471"
 resolved_reference = "9e07d15aff2098231c23024c68419bfe02796471"
 
 [[package]]
@@ -469,7 +469,7 @@ develop = false
 [package.source]
 type = "git"
 url = "https://github.com/votingworks/consistent_sampler.git"
-reference = "master"
+reference = "46f6f0a6761adc7172e2c3e844bee359e6bd11bf"
 resolved_reference = "46f6f0a6761adc7172e2c3e844bee359e6bd11bf"
 
 [[package]]
@@ -684,22 +684,6 @@ cffi = {version = ">=2.0.0", markers = "platform_python_implementation != \"PyPy
 
 [package.extras]
 ssh = ["bcrypt (>=3.1.5)"]
-
-[[package]]
-name = "cryptorandom"
-version = "0.3"
-description = "Pseudorandom number generator and random sampling using cryptographic hash functions"
-optional = false
-python-versions = "*"
-groups = ["main"]
-files = [
-    {file = "cryptorandom-0.3-py3-none-any.whl", hash = "sha256:65e2ab47c58196a9bd705dcc91a4fe496ade04f928fa653960e46e7251472b20"},
-    {file = "cryptorandom-0.3.tar.gz", hash = "sha256:8e1ba42a964335d169e0958baed174330f6883003577576e2131ddbd5203ff07"},
-]
-
-[package.dependencies]
-numpy = ">=1.20"
-scipy = ">=1.6"
 
 [[package]]
 name = "cycler"
@@ -1405,7 +1389,7 @@ Flask = "^3.1.2"
 [package.source]
 type = "git"
 url = "https://github.com/votingworks/nOAuth.git"
-reference = "main"
+reference = "542245905c0024977a2d2ef08309b606a7ae98c8"
 resolved_reference = "542245905c0024977a2d2ef08309b606a7ae98c8"
 
 [[package]]
@@ -2026,7 +2010,7 @@ typing = "*"
 [package.source]
 type = "git"
 url = "https://github.com/gwexploratoryaudits/r2b2.git"
-reference = "HEAD"
+reference = "43479256a349c5ffea061d1b8dcc8fac5d9a64de"
 resolved_reference = "43479256a349c5ffea061d1b8dcc8fac5d9a64de"
 
 [[package]]
@@ -3033,4 +3017,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.11"
-content-hash = "6a7f57754f3df76e3423da53a25d85a56f979951810f0b8a5db66824224c2a72"
+content-hash = "15cd4792d80933bd5e3c7260a3570812a677fecb3c92e600f128a3fe932e6eaa"
