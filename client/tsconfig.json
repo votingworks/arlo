@@ -14,9 +14,9 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "incremental": true,
-    "declaration": true,
-    "emitDeclarationOnly": true,
-    "outDir": "dist",
+    "noEmit": true,
+    // Cypress loads cypress.config.ts via ts-node, which requires rootDir
+    "rootDir": ".",
     "types": ["node", "@testing-library/jest-dom"],
     "jsx": "preserve"
   },
