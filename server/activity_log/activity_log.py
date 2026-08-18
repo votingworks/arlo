@@ -78,7 +78,7 @@ class RecordResults(JurisdictionActivity):
 
 @dataclass
 class FinalizeBatchResults(JurisdictionActivity):
-    pass
+    num_batches_with_discrepancies: int
 
 
 @dataclass
