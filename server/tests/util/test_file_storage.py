@@ -5,6 +5,7 @@ import shutil
 import tempfile
 import io
 from unittest.mock import patch
+from zipfile import ZipFile
 from werkzeug.exceptions import BadRequest
 import pytest
 
@@ -19,10 +20,12 @@ from ...util.file import (
     retrieve_file_to_buffer,
     store_file,
     get_file_upload_url,
+    unzip_files,
     validate_and_get_standard_file_upload_request_params,
     timestamp_filename,
     zip_files,
 )
+from ...worker.tasks import UserError
 from ... import config
 
 
@@ -350,3 +353,63 @@ def test_get_full_storage_path():
 def test_read_zip_filenames():
     zip = zip_files({"a": io.BytesIO(b"hello"), "b": io.BytesIO(b"world")})
     assert read_zip_filenames(io.BytesIO(zip.read())) == ["a", "b"]
+
+
+def build_zip(entries: dict[str, bytes]) -> io.BytesIO:
+    zip_stream = io.BytesIO()
+    with ZipFile(zip_stream, "w") as zip_archive:
+        for entry_name, contents in entries.items():
+            zip_archive.writestr(entry_name, contents)
+    _ = zip_stream.seek(0)
+    return zip_stream
+
+
+def test_read_zip_filenames_rejects_path_traversal_names():
+    zip_stream = build_zip({"a.csv": b"a", "nested/b.csv": b"b"})
+    assert read_zip_filenames(zip_stream) == ["a.csv", "nested/b.csv"]
+
+    for bad_name in ["/etc/passwd", "a/../../evil.csv"]:
+        zip_stream = build_zip({"a.csv": b"a", bad_name: b"bad"})
+        with pytest.raises(UserError, match="Invalid file name in ZIP file"):
+            _ = read_zip_filenames(zip_stream)
+
+
+def test_unzip_files():
+    with tempfile.TemporaryDirectory() as directory:
+        zip_stream = build_zip(
+            {
+                "cvr.csv": b"cvr",
+                "nested/ballots.csv": b"ballots",
+                "__MACOSX/junk": b"junk",
+                ".hidden": b"hidden",
+            }
+        )
+        file_names = unzip_files(zip_stream, directory)
+        assert sorted(file_names) == ["cvr.csv", "nested/ballots.csv"]
+        for file_name in file_names:
+            assert os.path.isfile(os.path.join(directory, file_name))
+
+
+def test_unzip_files_sanitizes_path_traversal_names():
+    with tempfile.TemporaryDirectory() as directory:
+        zip_stream = build_zip(
+            {
+                "/etc/passwd": b"absolute",
+                "../../outside.csv": b"relative",
+                "a/../../evil.csv": b"nested relative",
+                "cvr.csv": b"cvr",
+            }
+        )
+        file_names = unzip_files(zip_stream, directory)
+        assert sorted(file_names) == [
+            "a/evil.csv",
+            "cvr.csv",
+            "etc/passwd",
+            "outside.csv",
+        ]
+        for file_name in file_names:
+            full_path = os.path.realpath(os.path.join(directory, file_name))
+            assert os.path.isfile(full_path)
+            assert os.path.commonpath(
+                [full_path, os.path.realpath(directory)]
+            ) == os.path.realpath(directory)
