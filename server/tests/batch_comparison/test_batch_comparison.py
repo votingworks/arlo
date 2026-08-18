@@ -329,6 +329,25 @@ def test_batch_comparison_round_2(
     )
     assert_ok(rv)
 
+    organization_id = Election.query.get(election_id).organization_id
+
+    def latest_finalize_record() -> ActivityLogRecord:
+        record = (
+            ActivityLogRecord.query.filter_by(
+                organization_id=organization_id, activity_name="FinalizeBatchResults"
+            )
+            .order_by(ActivityLogRecord.timestamp.desc())
+            .first()
+        )
+        assert record is not None
+        return record
+
+    finalize_record = latest_finalize_record()
+    assert finalize_record.info["jurisdiction_id"] == jurisdiction_ids[0]
+    assert finalize_record.info["num_batches_with_discrepancies"] == len(
+        expected_discrepancies_j1
+    )
+
     # Check jurisdiction status after finalizing results
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
@@ -417,6 +436,12 @@ def test_batch_comparison_round_2(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches/finalize",
     )
     assert_ok(rv)
+
+    finalize_record = latest_finalize_record()
+    assert finalize_record.info["jurisdiction_id"] == jurisdiction_ids[1]
+    assert finalize_record.info["num_batches_with_discrepancies"] == len(
+        expected_discrepancies_j2
+    )
 
     # Check jurisdiction status after recording results
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
