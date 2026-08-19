@@ -283,8 +283,17 @@ def slack_message(activity: activity_log.Activity):
         )
 
     if isinstance(activity, activity_log.FinalizeBatchResults):
+        num_discrepancies = activity.num_batches_with_discrepancies
+        discrepancy_status = (
+            f"{num_discrepancies} batch{'es' if num_discrepancies > 1 else ''} with discrepancies"
+            if num_discrepancies > 0
+            else "no discrepancies"
+        )
+        discrepancy_emoji = (
+            ":warning:" if num_discrepancies > 0 else ":white_check_mark:"
+        )
         return dict(
-            text=f"Finalized batch results for {activity.jurisdiction_name}",
+            text=f"Finalized batch results for {activity.jurisdiction_name} ({discrepancy_status})",
             blocks=[
                 dict(
                     type="section",
@@ -292,6 +301,15 @@ def slack_message(activity: activity_log.Activity):
                         type="mrkdwn",
                         text=f"*Finalized batch results for {activity.jurisdiction_name}*",
                     ),
+                ),
+                dict(
+                    type="context",
+                    elements=[
+                        dict(
+                            type="mrkdwn",
+                            text=f"{discrepancy_emoji} {discrepancy_status.capitalize()}",
+                        )
+                    ],
                 ),
                 dict(
                     type="context",
