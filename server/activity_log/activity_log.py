@@ -19,6 +19,7 @@ class ActivityBase:
     user_type: str | None = None
     user_key: str | None = None
     support_user_email: str | None = None
+    state: str | None = None
 
 
 @dataclass
@@ -103,6 +104,7 @@ def activity_base(election: Election) -> ActivityBase:
         user_type=user_type,
         user_key=user_key,
         support_user_email=support_user_email,
+        state=election.state or election.organization.default_state,
     )
 
 

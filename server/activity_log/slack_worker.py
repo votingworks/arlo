@@ -4,19 +4,38 @@ from urllib.parse import urljoin
 import requests
 
 from .. import config
-from ..models import ActivityLogRecord
+from ..models import ActivityLogRecord, USState
 from ..auth.auth_helpers import UserType
 from ..database import db_session
 from . import activity_log
 from ..sentry import configure_sentry
 
 
+STATE_FLAG_EMOJIS = {
+    state.value: f":flag-{state.name.lower()}:"
+    for state in [
+        USState.California,
+        USState.Georgia,
+        USState.Maryland,
+        USState.Michigan,
+        USState.Nevada,
+        USState.Pennsylvania,
+        USState.RhodeIsland,
+        USState.Texas,
+        USState.Virginia,
+    ]
+}
+
+
 def slack_message(activity: activity_log.Activity):
     base = activity.base
     org_link = urljoin(config.HTTP_ORIGIN, f"/support/orgs/{base.organization_id}")
+    flag_emoji = (
+        STATE_FLAG_EMOJIS.get(base.state, ":flag-us:") if base.state else ":flag-us:"
+    )
     org_context = dict(
         type="mrkdwn",
-        text=f":flag-us: <{org_link}|{base.organization_name}>",
+        text=f"{flag_emoji} <{org_link}|{base.organization_name}>",
     )
     user_type = (
         {
