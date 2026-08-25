@@ -499,10 +499,12 @@ def test_multi_contest_batch_comparison_end_to_end(
         "Batch 1",
         "Batch 2",
         "Batch 3",
+        "Batch 4",
         "Batch 5",
         "Batch 6",
         "Batch 7",
-        "Batch 9",
+        "Batch 8",
+        "Batch 10",
     ]
 
     set_logged_in_user(
@@ -564,8 +566,10 @@ def test_multi_contest_batch_comparison_end_to_end(
         jurisdiction_1_batches[1]["id"]: [reported_results_for_batches_1_through_8],
         # Batch 3 (with no discrepancies)
         jurisdiction_1_batches[2]["id"]: [reported_results_for_batches_1_through_8],
+        # Batch 4 (with no discrepancies)
+        jurisdiction_1_batches[3]["id"]: [reported_results_for_batches_1_through_8],
         # Batch 5 (with no discrepancies)
-        jurisdiction_1_batches[3]["id"]: [
+        jurisdiction_1_batches[4]["id"]: [
             # Multiple tally sheets
             {
                 contest_1_choice_ids[0]: 25,
@@ -581,7 +585,7 @@ def test_multi_contest_batch_comparison_end_to_end(
             },
         ],
         # Batch 6 (with contest 1 discrepancy)
-        jurisdiction_1_batches[4]["id"]: [
+        jurisdiction_1_batches[5]["id"]: [
             {
                 contest_1_choice_ids[0]: 49,
                 contest_1_choice_ids[1]: 1,
@@ -590,7 +594,7 @@ def test_multi_contest_batch_comparison_end_to_end(
             }
         ],
         # Batch 7 (with contest 2 discrepancy)
-        jurisdiction_1_batches[5]["id"]: [
+        jurisdiction_1_batches[6]["id"]: [
             {
                 contest_1_choice_ids[0]: 50,
                 contest_1_choice_ids[1]: 0,
@@ -598,11 +602,13 @@ def test_multi_contest_batch_comparison_end_to_end(
                 contest_2_choice_ids[1]: 1,
             }
         ],
-        # Batch 9 (with contest 1 and contest 2 discrepancies)
-        jurisdiction_1_batches[6]["id"]: [
+        # Batch 8 (with no discrepancies)
+        jurisdiction_1_batches[7]["id"]: [reported_results_for_batches_1_through_8],
+        # Batch 10 (with contest 1 and contest 2 discrepancies)
+        jurisdiction_1_batches[8]["id"]: [
             {
-                contest_1_choice_ids[0]: 52,
-                contest_1_choice_ids[1]: 0,
+                contest_1_choice_ids[0]: 2,
+                contest_1_choice_ids[1]: 48,
                 contest_2_choice_ids[0]: 26,
                 contest_2_choice_ids[1]: 24,
             }
@@ -749,10 +755,12 @@ def test_multi_contest_batch_comparison_round_2(
         "Batch 1",
         "Batch 2",
         "Batch 3",
+        "Batch 4",
         "Batch 5",
         "Batch 6",
         "Batch 7",
-        "Batch 9",
+        "Batch 8",
+        "Batch 10",
     ]
 
     set_logged_in_user(
@@ -799,16 +807,8 @@ def test_multi_contest_batch_comparison_round_2(
     jurisdiction_1_batch_results = {
         # Batch 1 (with no discrepancies)
         jurisdiction_1_batches[0]["id"]: [reported_results_for_batches_1_through_8],
-        # Batch 2 (with no discrepancies)
-        jurisdiction_1_batches[1]["id"]: [reported_results_for_batches_1_through_8],
-        # Batch 3 (with no discrepancies)
-        jurisdiction_1_batches[2]["id"]: [reported_results_for_batches_1_through_8],
-        # Batch 5 (with no discrepancies)
-        jurisdiction_1_batches[3]["id"]: [reported_results_for_batches_1_through_8],
-        # Batch 6 (with no discrepancies)
-        jurisdiction_1_batches[4]["id"]: [reported_results_for_batches_1_through_8],
-        # Batch 7 (with large contest 1 discrepancy)
-        jurisdiction_1_batches[5]["id"]: [
+        # Batch 2 (with large contest 1 discrepancy)
+        jurisdiction_1_batches[1]["id"]: [
             {
                 contest_1_choice_ids[0]: 0,
                 contest_1_choice_ids[1]: 75,
@@ -816,11 +816,23 @@ def test_multi_contest_batch_comparison_round_2(
                 contest_2_choice_ids[1]: 0,
             }
         ],
-        # Batch 9 (with no discrepancies)
-        jurisdiction_1_batches[6]["id"]: [
+        # Batch 3 (with no discrepancies)
+        jurisdiction_1_batches[2]["id"]: [reported_results_for_batches_1_through_8],
+        # Batch 4 (with no discrepancies)
+        jurisdiction_1_batches[3]["id"]: [reported_results_for_batches_1_through_8],
+        # Batch 5 (with no discrepancies)
+        jurisdiction_1_batches[4]["id"]: [reported_results_for_batches_1_through_8],
+        # Batch 6 (with no discrepancies)
+        jurisdiction_1_batches[5]["id"]: [reported_results_for_batches_1_through_8],
+        # Batch 7 (with no discrepancies)
+        jurisdiction_1_batches[6]["id"]: [reported_results_for_batches_1_through_8],
+        # Batch 8 (with no discrepancies)
+        jurisdiction_1_batches[7]["id"]: [reported_results_for_batches_1_through_8],
+        # Batch 10 (with no discrepancies)
+        jurisdiction_1_batches[8]["id"]: [
             {
-                contest_1_choice_ids[0]: 50,
-                contest_1_choice_ids[1]: 0,
+                contest_1_choice_ids[0]: 0,
+                contest_1_choice_ids[1]: 50,
                 contest_2_choice_ids[0]: 25,
                 contest_2_choice_ids[1]: 25,
             }
@@ -892,19 +904,19 @@ def test_multi_contest_batch_comparison_round_2(
     discrepancies = json.loads(rv.data)
 
     assert (
-        discrepancies[jurisdiction_ids[0]]["Batch 7"][contest_ids[0]]["reportedVotes"][
+        discrepancies[jurisdiction_ids[0]]["Batch 2"][contest_ids[0]]["reportedVotes"][
             contest_1_choice_ids[0]
         ]
         == 50
     )
     assert (
-        discrepancies[jurisdiction_ids[0]]["Batch 7"][contest_ids[0]]["auditedVotes"][
+        discrepancies[jurisdiction_ids[0]]["Batch 2"][contest_ids[0]]["auditedVotes"][
             contest_1_choice_ids[0]
         ]
         == 0
     )
     assert (
-        discrepancies[jurisdiction_ids[0]]["Batch 7"][contest_ids[0]]["discrepancies"][
+        discrepancies[jurisdiction_ids[0]]["Batch 2"][contest_ids[0]]["discrepancies"][
             contest_1_choice_ids[0]
         ]
         == 50
@@ -967,7 +979,7 @@ def test_multi_contest_batch_comparison_round_2(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/batches"
     )
     jurisdiction_1_batches = json.loads(rv.data)["batches"]
-    assert [batch["name"] for batch in jurisdiction_1_batches] == ["Batch 8"]
+    assert [batch["name"] for batch in jurisdiction_1_batches] == []
 
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -991,23 +1003,11 @@ def test_multi_contest_batch_comparison_round_2(
     # Enter batch results
     #
 
-    # Enter jurisdiction 1 batch results
+    # Enter jurisdiction 1 batch results (nothing to enter, just need to finalize)
 
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-
-    jurisdiction_1_batch_results = {
-        # Batch 8 (with no discrepancies)
-        jurisdiction_1_batches[0]["id"]: [reported_results_for_batches_1_through_8],
-    }
-
-    for batch_id, results in jurisdiction_1_batch_results.items():
-        rv = put_batch_results(
-            client, election_id, jurisdiction_ids[0], round_2_id, batch_id, results
-        )
-        assert_ok(rv)
-
     rv = post_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/batches/finalize",

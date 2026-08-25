@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2015",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -13,24 +9,17 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
+    "resolvePackageJsonExports": false,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "incremental": true,
-    "declaration": true,
-    "emitDeclarationOnly": true,
-    "outDir": "dist",
-    "types": [
-      "node",
-      "@testing-library/jest-dom"
-    ],
+    "noEmit": true,
+    // Cypress loads cypress.config.ts via ts-node, which requires rootDir
+    "rootDir": ".",
+    "types": ["node", "@testing-library/jest-dom"],
     "jsx": "preserve"
   },
-  "include": [
-    "src",
-  ],
-  "exclude": [
-    "**/node_modules",
-    "**/.*/"
-  ]
+  "include": ["src"],
+  "exclude": ["**/node_modules", "**/.*/"]
 }
