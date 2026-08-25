@@ -1,3 +1,5 @@
+.PHONY: install lint test build
+
 install:
 	yarn install
 

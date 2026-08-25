@@ -15,7 +15,7 @@
         "remotePort": 3000
       }
     ],
-    "typescript.tsdk": "client/node_modules/typescript/lib",
+    "typescript.tsdk": "client/node_modules/@typescript/old/lib",
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true,
     "[python]": {

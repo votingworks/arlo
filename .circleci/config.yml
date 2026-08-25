@@ -99,9 +99,17 @@ jobs:
             sudo apt-get update
             sudo apt-get install graphicsmagick
       - run:
+          name: lint client
+          command: |
+            make -C client lint
+      - run:
           name: test client
           command: |
             make -C client test
+      - run:
+          name: build client
+          command: |
+            make -C client build
       - store_test_results:
           path: client/test_results
 
