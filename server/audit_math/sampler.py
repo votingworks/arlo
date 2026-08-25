@@ -122,6 +122,9 @@ def draw_ppeb_sample(
     if U == 0:
         return []
 
+    # Sort batch keys so that the sampling is independent of the uploaded file's ordering
+    batch_keys = sorted(batch_results.keys())
+
     # Map each batch to its weighted probability of being picked
     unauditable_ballots = macro.compute_unauditable_ballots(batch_results, contest)
     weighted_errors = [
@@ -129,7 +132,7 @@ def draw_ppeb_sample(
             macro.compute_max_error(batch_results[batch], contest, unauditable_ballots)
             / U
         )
-        for batch in batch_results
+        for batch in batch_keys
     ]
 
     num_previously_sampled_batches = len(previously_sampled_batch_keys)
@@ -152,7 +155,7 @@ def draw_ppeb_sample(
                 # back to a tuple
                 tuple(sampled_batch_key)
                 for sampled_batch_key in generator.choice(
-                    list(batch_results.keys()),
+                    batch_keys,
                     num_previously_sampled_batches + sample_size,
                     p=weighted_errors,
                     replace=True,

@@ -172,7 +172,10 @@ describe('Batch Comparison', () => {
     }
 
     auditBatch('Batch 3', { vader: 600, palpatine: 400 })
+    auditBatch('Batch 4', { vader: 1000, palpatine: 200 })
     auditBatch('Batch 5', { vader: 3000, palpatine: 0 })
+    auditBatch('Batch 8', { vader: 600, palpatine: 400 })
+    auditBatch('Batch 9', { vader: 1000, palpatine: 200 })
     cy.logout()
 
     cy.loginJurisdictionAdmin(jurisdictionAdmin)
