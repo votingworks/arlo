@@ -111,11 +111,15 @@ def api_me():
                 }
                 for jurisdiction in db_user.jurisdictions
                 if jurisdiction.election.deleted_at is None
+                and jurisdiction.election.organization.archived_at is None
             ],
         )
     elif user_type == UserType.AUDIT_BOARD:
         audit_board = AuditBoard.query.get(user_key)
-        if audit_board.jurisdiction.election.deleted_at is None:
+        if (
+            audit_board.jurisdiction.election.deleted_at is None
+            and audit_board.jurisdiction.election.organization.archived_at is None
+        ):
             user = dict(
                 type=user_type,
                 id=audit_board.id,
@@ -134,7 +138,10 @@ def api_me():
             clear_loggedin_user(session)
         else:
             jurisdiction = tally_entry_user.jurisdiction
-            if jurisdiction.election.deleted_at is None:
+            if (
+                jurisdiction.election.deleted_at is None
+                and jurisdiction.election.organization.archived_at is None
+            ):
                 # Tally entry users get a reponse from /api/me before their login
                 # code is confirmed by the JA. Thus, it's important to make sure
                 # that we only return data that they are allowed to see during the
@@ -221,7 +228,10 @@ def auditadmin_login_callback():
 
     if userinfo and userinfo["email"] and userinfo.get("email_verified") is True:
         user = User.query.filter_by(email=userinfo["email"]).first()
-        if user and len(user.audit_administrations) > 0:
+        if user and any(
+            administration.organization.archived_at is None
+            for administration in user.audit_administrations
+        ):
             set_loggedin_user(session, UserType.AUDIT_ADMIN, userinfo["email"])
 
     return redirect("/")
