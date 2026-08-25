@@ -132,7 +132,11 @@ def list_organizations():
     organizations = Organization.query.order_by(Organization.name).all()
     return jsonify(
         [
-            dict(id=organization.id, name=organization.name)
+            dict(
+                id=organization.id,
+                name=organization.name,
+                archivedAt=isoformat(organization.archived_at),
+            )
             for organization in organizations
         ]
     )
@@ -228,6 +232,7 @@ def get_organization(organization_id: str):
         id=organization.id,
         name=organization.name,
         defaultState=organization.default_state,
+        archivedAt=isoformat(organization.archived_at),
         elections=[
             dict(
                 id=election.id,
@@ -262,6 +267,24 @@ def delete_organization(organization_id: str):
         )
 
     db_session.delete(organization)
+    db_session.commit()
+    return jsonify(status="ok")
+
+
+@api.route("/support/organizations/<organization_id>/archive", methods=["POST"])
+@restrict_access_support
+def archive_organization(organization_id: str):
+    organization = get_or_404(Organization, organization_id)
+    organization.archived_at = datetime.now(timezone.utc)
+    db_session.commit()
+    return jsonify(status="ok")
+
+
+@api.route("/support/organizations/<organization_id>/unarchive", methods=["POST"])
+@restrict_access_support
+def unarchive_organization(organization_id: str):
+    organization = get_or_404(Organization, organization_id)
+    organization.archived_at = None
     db_session.commit()
     return jsonify(status="ok")
 
