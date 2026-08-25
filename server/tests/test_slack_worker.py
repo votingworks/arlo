@@ -235,6 +235,7 @@ def test_slack_worker_message_format(snapshot):
                 base,
                 jurisdiction_id="test_jurisdiction_id",
                 jurisdiction_name="Test Jurisdiction",
+                num_batches_with_discrepancies=0,
             )
         )
     )
@@ -251,6 +252,69 @@ def test_slack_worker_message_format(snapshot):
             )
         )
     )
+
+
+def test_slack_worker_state_flag_emoji():
+    timestamp = datetime.fromisoformat("2021-05-19T18:31:13.576657+00:00")
+    base = activity_log.ActivityBase(
+        organization_id="test_org_id",
+        organization_name="Test Org",
+        election_id="test_election_id",
+        audit_name="Test Audit",
+        audit_type="BALLOT_COMPARISON",
+        user_type="audit_admin",
+        user_key="test_user@example.com",
+        support_user_email=None,
+    )
+
+    def message_json(base: activity_log.ActivityBase) -> str:
+        return json.dumps(
+            slack_worker.slack_message(activity_log.CreateAudit(timestamp, base))
+        )
+
+    assert ":flag-us:" in message_json(base)
+
+    base.state = "CA"
+    assert ":flag-california:" in message_json(base)
+    assert ":flag-us:" not in message_json(base)
+
+    base.state = "RI"
+    assert ":flag-rhodeisland:" in message_json(base)
+
+    # States without an uploaded emoji fall back to the US flag
+    base.state = "OH"
+    assert ":flag-us:" in message_json(base)
+
+
+def test_slack_worker_finalize_batch_results_discrepancies():
+    timestamp = datetime.fromisoformat("2021-05-19T18:31:13.576657+00:00")
+    base = activity_log.ActivityBase(
+        organization_id="test_org_id",
+        organization_name="Test Org",
+        election_id="test_election_id",
+        audit_name="Test Audit",
+        audit_type="BATCH_COMPARISON",
+        user_type="jurisdiction_admin",
+        user_key="test_user@example.com",
+        support_user_email=None,
+    )
+
+    def message_json(num_batches_with_discrepancies: int) -> str:
+        return json.dumps(
+            slack_worker.slack_message(
+                activity_log.FinalizeBatchResults(
+                    timestamp,
+                    base,
+                    jurisdiction_id="test_jurisdiction_id",
+                    jurisdiction_name="Test Jurisdiction",
+                    num_batches_with_discrepancies=num_batches_with_discrepancies,
+                )
+            )
+        )
+
+    assert ":white_check_mark: No discrepancies" in message_json(0)
+    assert ":warning: 1 batch with discrepancies" in message_json(1)
+    assert ":warning: 3 batches with discrepancies" in message_json(3)
 
 
 def test_slack_worker_truncate_long_error_messages():

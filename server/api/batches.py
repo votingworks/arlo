@@ -21,6 +21,7 @@ from ..activity_log.activity_log import (
     activity_base,
     record_activity,
 )
+from .discrepancies import get_batch_comparison_discrepancies_by_jurisdiction
 from ..util.get_json import safe_get_json_list
 
 
@@ -382,12 +383,19 @@ def finalize_batch_results(
         BatchResultsFinalized(jurisdiction_id=jurisdiction.id, round_id=round.id)
     )
 
+    discrepancies_by_jurisdiction = get_batch_comparison_discrepancies_by_jurisdiction(
+        election, round.id
+    )
+
     record_activity(
         FinalizeBatchResults(
             timestamp=datetime.now(timezone.utc),
             base=activity_base(election),
             jurisdiction_id=jurisdiction.id,
             jurisdiction_name=jurisdiction.name,
+            num_batches_with_discrepancies=len(
+                discrepancies_by_jurisdiction.get(jurisdiction.id, {})
+            ),
         )
     )
 
