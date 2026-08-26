@@ -288,6 +288,40 @@ def test_auditadmin_callback_rejected_unverified_email(
                 assert auth0_aa.get.called
 
 
+def test_auditadmin_callback_archived_org(
+    client: FlaskClient, org_id: str, aa_email: str
+):
+    organization = Organization.query.get(org_id)
+    organization.archived_at = datetime.now(timezone.utc)
+    db_session.commit()
+
+    def log_in():
+        with patch.object(auth0_aa, "authorize_access_token", return_value=None):
+            mock_response = Mock()
+            mock_response.json = MagicMock(
+                return_value={"email": aa_email, "email_verified": True}
+            )
+            with patch.object(auth0_aa, "get", return_value=mock_response):
+                return client.get("/auth/auditadmin/callback?code=foobar")
+
+    rv = log_in()
+    assert rv.status_code == 302
+    assert urlparse(rv.location).path == "/"
+
+    with client.session_transaction() as session:  # type: ignore
+        assert session.get("_user") is None
+
+    # A user in both an archived org and an active org can still log in
+    create_org_and_admin("Test Org test_auditadmin_callback_archived_org 2", aa_email)
+
+    rv = log_in()
+    assert rv.status_code == 302
+
+    with client.session_transaction() as session:  # type: ignore
+        assert session["_user"]["type"] == UserType.AUDIT_ADMIN
+        assert session["_user"]["key"] == aa_email
+
+
 def parse_login_code(text: str):
     code_match = re.search(r"Your verification code is: (\d\d\d\d\d\d)", text)
     assert code_match
@@ -1309,6 +1343,46 @@ def test_auth_me_audit_board(
         },
         "supportUser": None,
     }
+
+
+def archive_org(org_id: str):
+    organization = Organization.query.get(org_id)
+    organization.archived_at = datetime.now(timezone.utc)
+    db_session.commit()
+
+
+def test_auth_me_jurisdiction_admin_archived_org(
+    client: FlaskClient, org_id: str, ja_email: str
+):
+    archive_org(org_id)
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, ja_email)
+    rv = client.get("/api/me")
+    assert json.loads(rv.data) == {
+        "user": {
+            "type": UserType.JURISDICTION_ADMIN,
+            "email": ja_email,
+            "jurisdictions": [],
+        },
+        "supportUser": None,
+    }
+
+
+def test_auth_me_audit_board_archived_org(
+    client: FlaskClient, org_id: str, audit_board_id: str
+):
+    archive_org(org_id)
+    set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
+    rv = client.get("/api/me")
+    assert json.loads(rv.data) == {"user": None, "supportUser": None}
+
+
+def test_auth_me_tally_entry_archived_org(
+    client: FlaskClient, org_id: str, tally_entry_user_id: str
+):
+    archive_org(org_id)
+    set_logged_in_user(client, UserType.TALLY_ENTRY, tally_entry_user_id)
+    rv = client.get("/api/me")
+    assert json.loads(rv.data) == {"user": None, "supportUser": None}
 
 
 def test_auth_me_not_logged_in(client: FlaskClient):
