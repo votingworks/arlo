@@ -8,6 +8,10 @@ export interface IOrganizationBase {
   name: string
 }
 
+export interface IOrganizationListItem extends IOrganizationBase {
+  archivedAt: string | null
+}
+
 export interface IOrganization extends IOrganizationBase {
   defaultState: string | null
   elections: IElection[]
@@ -16,6 +20,7 @@ export interface IOrganization extends IOrganizationBase {
 
 export interface IOrganizationForSupport extends IOrganizationBase {
   defaultState: string | null
+  archivedAt: string | null
   elections: IElectionForSupport[]
   auditAdmins: IAuditAdmin[]
 }
@@ -97,7 +102,7 @@ export const useActiveElections = () =>
   )
 
 export const useOrganizations = () =>
-  useQuery<IOrganizationBase[], Error>(['organizations'], () =>
+  useQuery<IOrganizationListItem[], Error>(['organizations'], () =>
     fetchApi('/api/support/organizations')
   )
 
@@ -155,6 +160,32 @@ export const useDeleteOrganization = (organizationId: string) => {
       queryClient.resetQueries(['organizations'], { exact: true })
       history.push('/support')
     },
+  })
+}
+
+export const useArchiveOrganization = (organizationId: string) => {
+  const archiveOrganization = async () =>
+    fetchApi(`/api/support/organizations/${organizationId}/archive`, {
+      method: 'POST',
+    })
+
+  const queryClient = useQueryClient()
+
+  return useMutation(archiveOrganization, {
+    onSuccess: () => queryClient.invalidateQueries(['organizations']),
+  })
+}
+
+export const useUnarchiveOrganization = (organizationId: string) => {
+  const unarchiveOrganization = async () =>
+    fetchApi(`/api/support/organizations/${organizationId}/unarchive`, {
+      method: 'POST',
+    })
+
+  const queryClient = useQueryClient()
+
+  return useMutation(unarchiveOrganization, {
+    onSuccess: () => queryClient.invalidateQueries(['organizations']),
   })
 }
 

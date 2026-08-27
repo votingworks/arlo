@@ -55,6 +55,7 @@ const mockJurisdictionBase: IJurisdictionBase = {
 const mockOrganization: IOrganizationForSupport = {
   ...mockOrganizationBase,
   defaultState: null,
+  archivedAt: null,
   elections: [
     mockElectionForSupport,
     {

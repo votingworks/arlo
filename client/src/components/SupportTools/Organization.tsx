@@ -17,6 +17,8 @@ import {
   IAuditAdmin,
   useDeleteOrganization,
   useUpdateOrganization,
+  useArchiveOrganization,
+  useUnarchiveOrganization,
   useRemoveAuditAdmin,
   useDeleteElection,
   IElectionBase,
@@ -33,6 +35,8 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
   const removeAuditAdmin = useRemoveAuditAdmin(organizationId)
   const deleteOrganization = useDeleteOrganization(organizationId)
   const updateOrganization = useUpdateOrganization(organizationId)
+  const archiveOrganization = useArchiveOrganization(organizationId)
+  const unarchiveOrganization = useUnarchiveOrganization(organizationId)
   const deleteElection = useDeleteElection()
   const { confirm, confirmProps } = useConfirm()
 
@@ -59,7 +63,13 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
     }
   }
 
-  const { name, defaultState, elections, auditAdmins } = organization.data
+  const {
+    name,
+    defaultState,
+    archivedAt,
+    elections,
+    auditAdmins,
+  } = organization.data
 
   const sortedElections = sortBy(elections, a =>
     new Date(a.createdAt).getTime()
@@ -84,6 +94,28 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
       onYesClick: async () => {
         await deleteOrganization.mutateAsync()
         toast.success(`Deleted organization ${name}`)
+      },
+    })
+
+  const onClickArchiveOrg = () =>
+    confirm({
+      title: 'Confirm',
+      description: `Are you sure you want to archive organization ${name}? Its users will no longer be able to access their audits.`,
+      yesButtonLabel: 'Archive',
+      onYesClick: async () => {
+        await archiveOrganization.mutateAsync()
+        toast.success(`Archived organization ${name}`)
+      },
+    })
+
+  const onClickUnarchiveOrg = () =>
+    confirm({
+      title: 'Confirm',
+      description: `Are you sure you want to unarchive organization ${name}?`,
+      yesButtonLabel: 'Unarchive',
+      onYesClick: async () => {
+        await unarchiveOrganization.mutateAsync()
+        toast.success(`Unarchived organization ${name}`)
       },
     })
 
@@ -171,6 +203,15 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
           <Button icon="edit" minimal onClick={onClickEditOrg}>
             Edit
           </Button>
+          {archivedAt === null ? (
+            <Button icon="archive" minimal onClick={onClickArchiveOrg}>
+              Archive
+            </Button>
+          ) : (
+            <Button icon="unarchive" minimal onClick={onClickUnarchiveOrg}>
+              Unarchive
+            </Button>
+          )}
           <Button
             icon="delete"
             intent={Intent.DANGER}
@@ -181,9 +222,16 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
           </Button>
         </div>
       </div>
-      <Tag large style={{ alignSelf: 'flex-start' }}>
-        {`Default State: ${defaultState ? states[defaultState] : 'None'}`}
-      </Tag>
+      <div style={{ display: 'flex', gap: '10px' }}>
+        {archivedAt !== null && (
+          <Tag large intent={Intent.WARNING}>
+            Archived
+          </Tag>
+        )}
+        <Tag large>
+          {`Default State: ${defaultState ? states[defaultState] : 'None'}`}
+        </Tag>
+      </div>
       <Row>
         <Column>
           <H2>Audits</H2>
