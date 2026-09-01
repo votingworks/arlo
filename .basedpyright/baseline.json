@@ -4450,32 +4450,40 @@
             {
                 "code": "reportUnknownMemberType",
                 "range": {
-                    "startColumn": 19,
-                    "endColumn": 25,
+                    "startColumn": 12,
+                    "endColumn": 18,
                     "lineCount": 1
                 }
             },
             {
                 "code": "reportUnknownArgumentType",
                 "range": {
-                    "startColumn": 19,
-                    "endColumn": 74,
+                    "startColumn": 12,
+                    "endColumn": 41,
+                    "lineCount": 2
+                }
+            },
+            {
+                "code": "reportUnknownMemberType",
+                "range": {
+                    "startColumn": 42,
+                    "endColumn": 57,
                     "lineCount": 1
                 }
             },
             {
                 "code": "reportUnknownVariableType",
                 "range": {
-                    "startColumn": 49,
-                    "endColumn": 52,
+                    "startColumn": 16,
+                    "endColumn": 19,
                     "lineCount": 1
                 }
             },
             {
                 "code": "reportUnknownMemberType",
                 "range": {
-                    "startColumn": 56,
-                    "endColumn": 74,
+                    "startColumn": 23,
+                    "endColumn": 41,
                     "lineCount": 1
                 }
             },
@@ -56384,6 +56392,30 @@
                 "range": {
                     "startColumn": 4,
                     "endColumn": 80,
+                    "lineCount": 1
+                }
+            },
+            {
+                "code": "reportUnknownVariableType",
+                "range": {
+                    "startColumn": 4,
+                    "endColumn": 16,
+                    "lineCount": 1
+                }
+            },
+            {
+                "code": "reportUnknownMemberType",
+                "range": {
+                    "startColumn": 19,
+                    "endColumn": 41,
+                    "lineCount": 1
+                }
+            },
+            {
+                "code": "reportUnknownMemberType",
+                "range": {
+                    "startColumn": 4,
+                    "endColumn": 21,
                     "lineCount": 1
                 }
             },
