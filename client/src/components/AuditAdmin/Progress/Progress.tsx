@@ -2,7 +2,7 @@
 import React, { useState, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { Column, Cell, TableInstance, SortingRule } from 'react-table'
+import { Column, Cell, TableInstance, SortingRule, SortByFn } from 'react-table'
 import { Button, Switch, Icon, AnchorButton, Spinner } from '@blueprintjs/core'
 import H2Title from '../../Atoms/H2Title'
 import {
@@ -54,6 +54,34 @@ const formatNumber = ({ value }: { value: number | null }) =>
 const totalFooter = <T extends object>(headerName: string) => (
   info: TableInstance<T>
 ) => sum(info.rows.map(row => row.values[headerName])).toLocaleString()
+
+// Sorts rows with a discrepancy first, then zeros, then empty rows, so
+// discrepancies aren't buried below the zeros/empty on either sort direction.
+const sortDiscrepanciesFirst: SortByFn<IJurisdiction> = (
+  rowA,
+  rowB,
+  columnId,
+  desc
+) => {
+  const a: number | null = rowA.values[columnId]
+  const b: number | null = rowB.values[columnId]
+
+  // react-table negates the comparator's result when sorting descending, so
+  // this is the value to return to keep row A below row B in both directions
+  const aBelowB = desc ? -1 : 1
+
+  if (a === b) return 0
+
+  // Empty rows stay at the very bottom
+  if (a === null) return aBelowB
+  if (b === null) return -aBelowB
+
+  // Zeros stay below all discrepancies
+  if (a === 0) return aBelowB
+  if (b === 0) return -aBelowB
+
+  return a - b
+}
 
 // We count the number of batch-contest pairs with discrepancies, not the number
 // of batches with discrepancies.
@@ -303,6 +331,7 @@ const Progress: React.FC<IProgressProps> = ({
           numBallots !== null && expectedBallotManifestNumBallots !== null
             ? numBallots - expectedBallotManifestNumBallots
             : null,
+        sortType: sortDiscrepanciesFirst,
         Cell: formatNumber,
       })
     }
