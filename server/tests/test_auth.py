@@ -291,35 +291,28 @@ def test_auditadmin_callback_rejected_unverified_email(
 def test_auditadmin_callback_archived_org(
     client: FlaskClient, org_id: str, aa_email: str
 ):
+    # Audit admins whose orgs are all archived can still log in, matching
+    # jurisdiction admin behavior - they just won't see any organizations
     organization = Organization.query.get(org_id)
     organization.archived_at = datetime.now(timezone.utc)
     db_session.commit()
 
-    def log_in():
-        with patch.object(auth0_aa, "authorize_access_token", return_value=None):
-            mock_response = Mock()
-            mock_response.json = MagicMock(
-                return_value={"email": aa_email, "email_verified": True}
-            )
-            with patch.object(auth0_aa, "get", return_value=mock_response):
-                return client.get("/auth/auditadmin/callback?code=foobar")
+    with patch.object(auth0_aa, "authorize_access_token", return_value=None):
+        mock_response = Mock()
+        mock_response.json = MagicMock(
+            return_value={"email": aa_email, "email_verified": True}
+        )
+        with patch.object(auth0_aa, "get", return_value=mock_response):
+            rv = client.get("/auth/auditadmin/callback?code=foobar")
+            assert rv.status_code == 302
 
-    rv = log_in()
-    assert rv.status_code == 302
-    assert urlparse(rv.location).path == "/"
+            with client.session_transaction() as session:  # type: ignore
+                assert session["_user"]["type"] == UserType.AUDIT_ADMIN
+                assert session["_user"]["key"] == aa_email
 
-    with client.session_transaction() as session:  # type: ignore
-        assert session.get("_user") is None
-
-    # A user in both an archived org and an active org can still log in
-    create_org_and_admin("Test Org test_auditadmin_callback_archived_org 2", aa_email)
-
-    rv = log_in()
-    assert rv.status_code == 302
-
-    with client.session_transaction() as session:  # type: ignore
-        assert session["_user"]["type"] == UserType.AUDIT_ADMIN
-        assert session["_user"]["key"] == aa_email
+    user = User.query.filter_by(email=aa_email).one()
+    rv = client.get(f"/api/audit_admins/{user.id}/organizations")
+    assert json.loads(rv.data) == []
 
 
 def parse_login_code(text: str):

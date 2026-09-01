@@ -49608,32 +49608,16 @@
             {
                 "code": "reportUnknownMemberType",
                 "range": {
-                    "startColumn": 12,
-                    "endColumn": 39,
+                    "startColumn": 24,
+                    "endColumn": 50,
                     "lineCount": 1
                 }
             },
             {
-                "code": "reportUnknownMemberType",
+                "code": "reportUnknownArgumentType",
                 "range": {
-                    "startColumn": 12,
-                    "endColumn": 51,
-                    "lineCount": 1
-                }
-            },
-            {
-                "code": "reportUnknownVariableType",
-                "range": {
-                    "startColumn": 16,
-                    "endColumn": 30,
-                    "lineCount": 1
-                }
-            },
-            {
-                "code": "reportUnknownMemberType",
-                "range": {
-                    "startColumn": 34,
-                    "endColumn": 60,
+                    "startColumn": 24,
+                    "endColumn": 50,
                     "lineCount": 1
                 }
             },
@@ -129182,10 +129166,50 @@
                 }
             },
             {
-                "code": "reportUnusedCallResult",
+                "code": "reportUnknownVariableType",
                 "range": {
                     "startColumn": 4,
-                    "endColumn": 86,
+                    "endColumn": 8,
+                    "lineCount": 1
+                }
+            },
+            {
+                "code": "reportUnknownMemberType",
+                "range": {
+                    "startColumn": 11,
+                    "endColumn": 31,
+                    "lineCount": 1
+                }
+            },
+            {
+                "code": "reportUnknownMemberType",
+                "range": {
+                    "startColumn": 11,
+                    "endColumn": 51,
+                    "lineCount": 1
+                }
+            },
+            {
+                "code": "reportUnknownMemberType",
+                "range": {
+                    "startColumn": 41,
+                    "endColumn": 48,
+                    "lineCount": 1
+                }
+            },
+            {
+                "code": "reportAny",
+                "range": {
+                    "startColumn": 22,
+                    "endColumn": 29,
+                    "lineCount": 1
+                }
+            },
+            {
+                "code": "reportAny",
+                "range": {
+                    "startColumn": 22,
+                    "endColumn": 29,
                     "lineCount": 1
                 }
             },

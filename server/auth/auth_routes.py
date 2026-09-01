@@ -228,10 +228,7 @@ def auditadmin_login_callback():
 
     if userinfo and userinfo["email"] and userinfo.get("email_verified") is True:
         user = User.query.filter_by(email=userinfo["email"]).first()
-        if user and any(
-            administration.organization.archived_at is None
-            for administration in user.audit_administrations
-        ):
+        if user and len(user.audit_administrations) > 0:
             set_loggedin_user(session, UserType.AUDIT_ADMIN, userinfo["email"])
 
     return redirect("/")
