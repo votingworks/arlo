@@ -162,6 +162,19 @@ def test_list_activities_wrong_org(
     assert rv.status_code == 403
 
 
+def test_list_activities_archived_org(
+    client: FlaskClient,
+    org_id: str,
+):
+    organization = Organization.query.get(org_id)
+    organization.archived_at = datetime.now(timezone.utc)
+    db_session.commit()
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/organizations/{org_id}/activities")
+    assert rv.status_code == 403
+
+
 def test_list_activities_wrong_user_type(
     client: FlaskClient, org_id: str, election_id: str
 ):

@@ -261,6 +261,20 @@ describe('Home screen', () => {
     })
   })
 
+  it('shows a message for audit admins with no organizations', async () => {
+    const expectedCalls = [aaApiCalls.getUser, aaApiCalls.getOrganizations([])]
+    await withMockFetch(expectedCalls, async () => {
+      renderView('/')
+      await screen.findByRole('heading', { name: 'All Audits' })
+      screen.getByText(
+        'You do not have access to any organizations. Contact your Arlo administrator for access.'
+      )
+      expect(
+        screen.queryByRole('heading', { name: 'New Audit' })
+      ).not.toBeInTheDocument()
+    })
+  })
+
   it('shows a list of audits and create audit form for audit admins with multiple orgs', async () => {
     const expectedCalls = [
       aaApiCalls.getUser,

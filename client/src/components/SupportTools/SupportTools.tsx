@@ -18,6 +18,7 @@ import Jurisdiction from './Jurisdiction'
 import { AuditStatusTag, Row } from './shared'
 import { FilterInput } from '../Atoms/Table'
 import H2Title from '../Atoms/H2Title'
+import LinkButton from '../Atoms/LinkButton'
 
 const SupportToolsOuterColumn = styled.div`
   display: flex;
@@ -53,6 +54,18 @@ const SupportTools: React.FC = () => {
                 </div>
                 <div style={{ flex: '0 0 25%' }}>
                   <Tools />
+                </div>
+              </Row>
+            </SupportToolsOuterColumn>
+          </Route>
+          <Route exact path="/support/archived-orgs">
+            <SupportToolsOuterColumn>
+              <Row>
+                <H1>Support Tools</H1>
+              </Row>
+              <Row>
+                <div style={{ flex: '0 0 25%' }}>
+                  <Organizations archived />
                 </div>
               </Row>
             </SupportToolsOuterColumn>
@@ -112,7 +125,7 @@ const ActiveAudits = () => {
   )
 }
 
-const Organizations = () => {
+const Organizations = ({ archived = false }: { archived?: boolean }) => {
   const organizations = useOrganizations()
   const [filterText, setFilterText] = useState<string>('')
 
@@ -120,7 +133,7 @@ const Organizations = () => {
 
   return (
     <>
-      <H2Title>Organizations</H2Title>
+      <H2Title>{archived ? 'Archived Organizations' : 'Organizations'}</H2Title>
       <FilterInput
         onChange={setFilterText}
         placeholder="Filter organizations..."
@@ -128,6 +141,7 @@ const Organizations = () => {
       />
       <List style={{ marginTop: '20px' }}>
         {organizations.data
+          .filter(org => Boolean(org.archivedAt) === archived)
           .filter(org =>
             org.name
               .toLocaleLowerCase()
@@ -145,10 +159,6 @@ const Organizations = () => {
     </>
   )
 }
-
-const DownloadUsersButton = styled(AnchorButton)`
-  margin-bottom: 10px;
-`
 
 const Tools = () => {
   const createOrganization = useCreateOrganization()
@@ -210,14 +220,19 @@ const Tools = () => {
               </p>
             }
           >
-            <DownloadUsersButton
+            <AnchorButton
               icon="download"
               intent="none"
               href="/api/support/organizations/users"
             >
               Download User List
-            </DownloadUsersButton>
+            </AnchorButton>
           </Tooltip>
+        </div>
+        <div>
+          <LinkButton icon="archive" to="/support/archived-orgs">
+            View Archived Organizations
+          </LinkButton>
         </div>
       </div>
     </>

@@ -16,6 +16,7 @@ import AuthDataProvider from '../UserContext'
 import { supportApiCalls } from '../_mocks'
 import {
   IOrganizationBase,
+  IOrganizationListItem,
   IElection,
   IJurisdictionBase,
   IJurisdiction,
@@ -30,6 +31,11 @@ import {
 const mockOrganizationBase: IOrganizationBase = {
   id: 'organization-id-1',
   name: 'Organization 1',
+}
+
+const mockOrganizationListItem: IOrganizationListItem = {
+  ...mockOrganizationBase,
+  archivedAt: null,
 }
 
 const mockElectionBase: IElectionBase = {
@@ -55,6 +61,7 @@ const mockJurisdictionBase: IJurisdictionBase = {
 const mockOrganization: IOrganizationForSupport = {
   ...mockOrganizationBase,
   defaultState: null,
+  archivedAt: null,
   elections: [
     mockElectionForSupport,
     {
@@ -151,7 +158,7 @@ const mockJurisdictionBatches: {
 }
 
 const apiCalls = {
-  getOrganizations: (response: IOrganizationBase[]) => ({
+  getOrganizations: (response: IOrganizationListItem[]) => ({
     url: '/api/support/organizations',
     response,
   }),
@@ -185,6 +192,16 @@ const apiCalls = {
   deleteOrganization: {
     url: '/api/support/organizations/organization-id-1',
     options: { method: 'DELETE' },
+    response: { status: 'ok' },
+  },
+  archiveOrganization: {
+    url: '/api/support/organizations/organization-id-1/archive',
+    options: { method: 'POST' },
+    response: { status: 'ok' },
+  },
+  unarchiveOrganization: {
+    url: '/api/support/organizations/organization-id-1/unarchive',
+    options: { method: 'POST' },
     response: { status: 'ok' },
   },
   deleteElection: {
@@ -320,8 +337,8 @@ describe('Support Tools', () => {
     const expectedCalls = [
       supportApiCalls.getUser,
       apiCalls.getOrganizations([
-        mockOrganizationBase,
-        { id: 'organization-id-2', name: 'Organization 2' },
+        mockOrganizationListItem,
+        { id: 'organization-id-2', name: 'Organization 2', archivedAt: null },
       ]),
       apiCalls.getActiveElections([]),
       apiCalls.getOrganization(mockOrganization),
@@ -359,7 +376,11 @@ describe('Support Tools', () => {
       apiCalls.getActiveElections([]),
       apiCalls.postOrganization,
       apiCalls.getOrganizations([
-        { id: 'new-organization-id', name: 'New Organization' },
+        {
+          id: 'new-organization-id',
+          name: 'New Organization',
+          archivedAt: null,
+        },
       ]),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -796,6 +817,144 @@ describe('Support Tools', () => {
       expect(history.location.pathname).toEqual(
         '/support/orgs/organization-id-1'
       )
+    })
+  })
+
+  it('home screen hides archived orgs, which are listed on a separate page', async () => {
+    const expectedCalls = [
+      supportApiCalls.getUser,
+      apiCalls.getOrganizations([
+        mockOrganizationListItem,
+        {
+          id: 'organization-id-2',
+          name: 'Organization 2',
+          archivedAt: '2022-03-08T21:03:35.487Z',
+        },
+      ]),
+      apiCalls.getActiveElections([]),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { history } = renderRoute('/support')
+
+      await screen.findByRole('heading', { name: 'Organizations' })
+      screen.getByRole('link', { name: 'Organization 1' })
+      expect(
+        screen.queryByRole('link', { name: 'Organization 2' })
+      ).not.toBeInTheDocument()
+
+      userEvent.click(
+        screen.getByRole('button', {
+          name: 'archive View Archived Organizations',
+        })
+      )
+
+      await screen.findByRole('heading', { name: 'Archived Organizations' })
+      expect(history.location.pathname).toEqual('/support/archived-orgs')
+      screen.getByRole('link', { name: 'Organization 2' })
+      expect(
+        screen.queryByRole('link', { name: 'Organization 1' })
+      ).not.toBeInTheDocument()
+    })
+  })
+
+  it('org screen has a button to archive the org', async () => {
+    const expectedCalls = [
+      supportApiCalls.getUser,
+      apiCalls.getOrganization(mockOrganization),
+      apiCalls.archiveOrganization,
+      apiCalls.getOrganization({
+        ...mockOrganization,
+        archivedAt: '2022-03-08T21:03:35.487Z',
+      }),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderRoute('/support/orgs/organization-id-1')
+
+      await screen.findByRole('heading', { name: 'Organization 1' })
+      expect(screen.queryByText('Archived')).not.toBeInTheDocument()
+
+      userEvent.click(screen.getByRole('button', { name: 'archive Archive' }))
+
+      // Confirm dialog should open
+      const dialog = (
+        await screen.findByRole('heading', {
+          name: /Confirm/,
+        })
+      ).closest('.bp3-dialog')! as HTMLElement
+      within(dialog).getByText(
+        'Are you sure you want to archive organization Organization 1?' +
+          ' Its users will no longer be able to access their audits.'
+      )
+      userEvent.click(within(dialog).getByRole('button', { name: 'Archive' }))
+
+      await findAndCloseToast('Archived organization Organization 1')
+
+      await screen.findByText('Archived')
+      screen.getByRole('button', { name: 'unarchive Unarchive' })
+    })
+  })
+
+  it('org screen has a button to unarchive an archived org', async () => {
+    const expectedCalls = [
+      supportApiCalls.getUser,
+      apiCalls.getOrganization({
+        ...mockOrganization,
+        archivedAt: '2022-03-08T21:03:35.487Z',
+      }),
+      apiCalls.unarchiveOrganization,
+      apiCalls.getOrganization(mockOrganization),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderRoute('/support/orgs/organization-id-1')
+
+      await screen.findByRole('heading', { name: 'Organization 1' })
+      screen.getByText('Archived')
+
+      userEvent.click(
+        screen.getByRole('button', { name: 'unarchive Unarchive' })
+      )
+
+      // Confirm dialog should open
+      const dialog = (
+        await screen.findByRole('heading', {
+          name: /Confirm/,
+        })
+      ).closest('.bp3-dialog')! as HTMLElement
+      within(dialog).getByText(
+        'Are you sure you want to unarchive organization Organization 1?'
+      )
+      userEvent.click(within(dialog).getByRole('button', { name: 'Unarchive' }))
+
+      await findAndCloseToast('Unarchived organization Organization 1')
+
+      await waitFor(() =>
+        expect(screen.queryByText('Archived')).not.toBeInTheDocument()
+      )
+      screen.getByRole('button', { name: 'archive Archive' })
+    })
+  })
+
+  it('org screen handles error on archive org', async () => {
+    const expectedCalls = [
+      supportApiCalls.getUser,
+      apiCalls.getOrganization(mockOrganization),
+      serverError('archiveOrganization', apiCalls.archiveOrganization),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderRoute('/support/orgs/organization-id-1')
+
+      await screen.findByRole('heading', { name: 'Organization 1' })
+
+      userEvent.click(screen.getByRole('button', { name: 'archive Archive' }))
+
+      const dialog = (
+        await screen.findByRole('heading', {
+          name: /Confirm/,
+        })
+      ).closest('.bp3-dialog')! as HTMLElement
+      userEvent.click(within(dialog).getByRole('button', { name: 'Archive' }))
+
+      await findAndCloseToast('something went wrong: archiveOrganization')
     })
   })
 

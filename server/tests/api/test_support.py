@@ -21,7 +21,11 @@ def test_support_list_organizations(client: FlaskClient, org_id: str):
     # This will load orgs from all tests, so we can't check its exact length/value
     assert len(orgs) >= 1
     org = next(org for org in orgs if org["id"] == org_id)
-    assert org == {"id": org_id, "name": "Test Org test_support_list_organizations"}
+    assert org == {
+        "id": org_id,
+        "name": "Test Org test_support_list_organizations",
+        "archivedAt": None,
+    }
 
 
 def test_support_create_organization(client: FlaskClient):
@@ -60,6 +64,7 @@ def test_support_get_organization(client: FlaskClient, org_id: str, election_id:
             "id": org_id,
             "name": "Test Org test_support_get_organization",
             "defaultState": None,
+            "archivedAt": None,
             "elections": [
                 {
                     "id": election_id,
@@ -96,6 +101,7 @@ def test_support_get_organization_round(
             "id": org_id,
             "name": "Test Org test_support_get_organization_round",
             "defaultState": None,
+            "archivedAt": None,
             "elections": [
                 {
                     "id": election_id,
@@ -151,6 +157,60 @@ def test_support_delete_organization(client: FlaskClient):
     assert json.loads(rv.data) == []
 
     assert Election.query.get(election_id) is None
+
+
+def test_support_archive_organization(client: FlaskClient):
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
+    org_id, aa_id = create_org_and_admin(
+        "Test Archive Org", "admin-archive@example.com"
+    )
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, "admin-archive@example.com")
+    election_id = create_election(client, organization_id=org_id)
+
+    # Unlike delete, archiving is allowed for an org with audits
+    rv = client.post(f"/api/support/organizations/{org_id}/archive")
+    assert_ok(rv)
+
+    rv = client.get(f"/api/support/organizations/{org_id}")
+    assert_is_date(json.loads(rv.data)["archivedAt"])
+
+    rv = client.get("/api/support/organizations")
+    org = next(org for org in json.loads(rv.data) if org["id"] == org_id)
+    assert_is_date(org["archivedAt"])
+
+    # Audit admins can't see the org anymore
+    rv = client.get(f"/api/audit_admins/{aa_id}/organizations")
+    assert json.loads(rv.data) == []
+
+    # Nor access its audits
+    rv = client.get(f"/api/election/{election_id}/settings")
+    assert rv.status_code == 404
+
+    # Nor create new audits in it
+    rv = post_json(
+        client,
+        "/api/election",
+        {
+            "auditName": "Test Audit Archived Org",
+            "auditType": "BALLOT_POLLING",
+            "auditMathType": "BRAVO",
+            "organizationId": org_id,
+        },
+    )
+    assert rv.status_code == 404
+
+    # Unarchiving restores access
+    rv = client.post(f"/api/support/organizations/{org_id}/unarchive")
+    assert_ok(rv)
+
+    rv = client.get(f"/api/support/organizations/{org_id}")
+    assert json.loads(rv.data)["archivedAt"] is None
+
+    rv = client.get(f"/api/audit_admins/{aa_id}/organizations")
+    assert len(json.loads(rv.data)) == 1
+
+    rv = client.get(f"/api/election/{election_id}/settings")
+    assert rv.status_code == 200
 
 
 def test_support_update_organization(client: FlaskClient, org_id: str):
