@@ -331,6 +331,17 @@ const AuditAdminHomeScreen = ({ user }: { user: IAuditAdmin }) => {
 
   if (!organizations.isSuccess) return null
 
+  if (organizations.data.length === 0)
+    return (
+      <Wrapper>
+        <H1>All Audits</H1>
+        <p style={{ marginTop: '30px' }}>
+          You do not have access to any organizations. Contact your Arlo
+          administrator for access.
+        </p>
+      </Wrapper>
+    )
+
   return (
     <Wrapper>
       <H1>All Audits</H1>

@@ -43,7 +43,10 @@ def list_activities(organization_id: str):
     if (
         not user
         or user_type != UserType.AUDIT_ADMIN
-        or not any(org.id == organization_id for org in user.organizations)
+        or not any(
+            org.id == organization_id and org.archived_at is None
+            for org in user.organizations
+        )
     ):
         return Forbidden()
 

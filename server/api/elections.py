@@ -159,5 +159,6 @@ def list_organizations_and_elections(audit_admin_id: str):
                 ],
             }
             for org in user.organizations
+            if org.archived_at is None
         ]
     )

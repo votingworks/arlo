@@ -123,6 +123,11 @@ def check_access(
     if user_type not in user_types:
         raise Forbidden(f"Access forbidden for user type {user_type}")
 
+    # Elections in archived orgs are hidden from everyone except support users
+    organization = Organization.query.get(election.organization_id)
+    if organization is not None and organization.archived_at is not None:
+        raise NotFound(f"Election {election.id} not found")
+
     # Check that the user has access to the resource they are requesting
     if user_type == UserType.AUDIT_ADMIN:
         user = User.query.filter_by(email=user_key).one()

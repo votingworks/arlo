@@ -110,6 +110,9 @@ class Organization(BaseModel):
     name = Column(String(200), nullable=False, unique=True)
     # Default setting for US state for this org's audits
     default_state = Column(String(100))
+    # When a support user archives an org, we keep it and its audits in the
+    # database, but flag it so that we can hide it and restrict access
+    archived_at = Column(UTCDateTime)
 
     elections = relationship(
         "Election",
