@@ -228,6 +228,81 @@ describe('Progress screen', () => {
     })
   })
 
+  it('sorts difference from expected ballots with discrepancies first, then zeros, then empty rows', async () => {
+    const expectedCalls = getDefaultExpectedCalls()
+    await withMockFetch(expectedCalls, async () => {
+      const numBallots = jurisdictionMocks.allManifests[0].ballotManifest!
+        .numBallots!
+      render({
+        jurisdictions: [
+          {
+            ...jurisdictionMocks.allManifests[0],
+            name: 'Zero',
+            expectedBallotManifestNumBallots: numBallots,
+          },
+          {
+            ...jurisdictionMocks.allManifests[1],
+            name: 'Surplus',
+            expectedBallotManifestNumBallots: numBallots - 10,
+          },
+          {
+            ...jurisdictionMocks.allManifests[2],
+            name: 'Deficit',
+            expectedBallotManifestNumBallots: numBallots + 20,
+          },
+          {
+            ...jurisdictionMocks.noManifests[0],
+            name: 'No Manifest',
+            expectedBallotManifestNumBallots: 30,
+          },
+          {
+            ...jurisdictionMocks.allManifests[1],
+            name: 'No Expected',
+            expectedBallotManifestNumBallots: null,
+          },
+        ],
+      })
+
+      await screen.findByRole('heading', { name: 'Audit Progress' })
+
+      const differenceHeader = screen.getByRole('columnheader', {
+        name: 'Difference From Expected Ballots',
+      })
+
+      const expectRowOrder = (discrepancyRows: [string, string][]) => {
+        const rows = screen.getAllByRole('row')
+        discrepancyRows.forEach(([name, difference], i) => {
+          const cells = within(rows[i + 1]).getAllByRole('cell')
+          expect(cells[0]).toHaveTextContent(name)
+          expect(cells[4]).toHaveTextContent(difference)
+        })
+        // The two empty rows tie, so their relative order isn't guaranteed
+        const emptyRows = [4, 5].map(i => within(rows[i]).getAllByRole('cell'))
+        expect(emptyRows.map(cells => cells[0].textContent).sort()).toEqual([
+          'No Expected',
+          'No Manifest',
+        ])
+        emptyRows.forEach(cells => expect(cells[4]).toBeEmptyDOMElement())
+      }
+
+      // Ascending: discrepancies in signed order, then zeros, then empty rows
+      userEvent.click(differenceHeader)
+      expectRowOrder([
+        ['Deficit', '-20'],
+        ['Surplus', '10'],
+        ['Zero', '0'],
+      ])
+
+      // Descending: discrepancies flip, zeros and empty rows stay at the bottom
+      userEvent.click(differenceHeader)
+      expectRowOrder([
+        ['Surplus', '10'],
+        ['Deficit', '-20'],
+        ['Zero', '0'],
+      ])
+    })
+  })
+
   it('shows round status for ballot polling', async () => {
     const expectedCalls = getDefaultExpectedCalls()
     await withMockFetch(expectedCalls, async () => {
