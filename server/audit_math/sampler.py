@@ -1,5 +1,6 @@
 # Handles generating sample sizes and taking samples
 from typing import cast, Any
+import numpy as np
 from numpy.random import default_rng
 import consistent_sampler
 
@@ -89,6 +90,19 @@ def ppeb_weights(
     ]
 
 
+def draw_ppeb_positions(seed: str, weights: list[float], num_draws: int) -> list[int]:
+    # Convert seed into something numpy can use
+    int_seed = int(consistent_sampler.sha256_hex(seed), 16)  # type: ignore
+    generator = default_rng(int_seed)
+    # Mirror numpy's Generator.choice(p=weights) step for step so the batches
+    # drawn are identical to what it produced.
+    # https://github.com/numpy/numpy/blob/v1.26.4/numpy/random/_generator.pyx#L841-L846
+    cdf = np.cumsum(weights)
+    cdf /= cdf[-1]
+    uniforms = generator.random(num_draws)
+    return [int(index) for index in cdf.searchsorted(uniforms, side="right")]
+
+
 def full_hand_tally_batch_keys(
     previously_sampled_batch_keys: list[BatchKey],
     batch_results: dict[BatchKey, dict[str, dict[str, int]]],
@@ -175,10 +189,6 @@ def draw_ppeb_sample(
 
     assert batch_results, "Must have batch-level results to use MACRO"
 
-    # Convert seed into something numpy can use
-    int_seed = int(consistent_sampler.sha256_hex(seed), 16)  # type: ignore
-    generator = default_rng(int_seed)
-
     # Sort batch keys so that the sampling is independent of the uploaded file's ordering
     batch_keys = sorted(batch_results.keys())
 
@@ -196,20 +206,12 @@ def draw_ppeb_sample(
         full_hand_tally_batch_keys(previously_sampled_batch_keys, batch_results)
         if is_full_hand_tally_needed
         # Otherwise, sample as usual
-        else cast(
-            list[BatchKey],
-            (
-                # For some reason, NumPy converts the tuple to a list in sampling, so we convert
-                # back to a tuple
-                tuple(sampled_batch_key)
-                for sampled_batch_key in generator.choice(
-                    batch_keys,
-                    num_previously_sampled_batches + sample_size,
-                    p=weighted_errors,
-                    replace=True,
-                )
-            ),
-        )
+        else [
+            batch_keys[index]
+            for index in draw_ppeb_positions(
+                seed, weighted_errors, cumulative_sample_size
+            )
+        ]
     )
 
     return assign_ticket_numbers(seed, sampled_batch_keys_including_previously_sampled)[
