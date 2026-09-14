@@ -69,6 +69,26 @@ def draw_sample(
     )
 
 
+def ppeb_weights(
+    contest: Contest,
+    batch_results: dict[BatchKey, dict[str, dict[str, int]]],
+    batch_keys: list[BatchKey],
+) -> list[float]:
+    U = macro.compute_U(batch_results, contest)
+    if U == 0:
+        return [0.0] * len(batch_keys)
+
+    # Map each batch to its weighted probability of being picked
+    unauditable_ballots = macro.compute_unauditable_ballots(batch_results, contest)
+    return [
+        float(
+            macro.compute_max_error(batch_results[batch], contest, unauditable_ballots)
+            / U
+        )
+        for batch in batch_keys
+    ]
+
+
 def assign_ticket_numbers(
     seed: str, batch_keys: list[BatchKey]
 ) -> list[tuple[Any, BatchKey]]:
@@ -148,24 +168,13 @@ def draw_ppeb_sample(
     int_seed = int(consistent_sampler.sha256_hex(seed), 16)  # type: ignore
     generator = default_rng(int_seed)
 
-    U = macro.compute_U(batch_results, contest)
-
-    # Should only be possible if the specified contest isn't in any batches
-    if U == 0:
-        return []
-
     # Sort batch keys so that the sampling is independent of the uploaded file's ordering
     batch_keys = sorted(batch_results.keys())
 
-    # Map each batch to its weighted probability of being picked
-    unauditable_ballots = macro.compute_unauditable_ballots(batch_results, contest)
-    weighted_errors = [
-        float(
-            macro.compute_max_error(batch_results[batch], contest, unauditable_ballots)
-            / U
-        )
-        for batch in batch_keys
-    ]
+    weighted_errors = ppeb_weights(contest, batch_results, batch_keys)
+    # Should only be possible if the specified contest isn't in any batches
+    if not any(weighted_errors):
+        return []
 
     num_previously_sampled_batches = len(previously_sampled_batch_keys)
     cumulative_sample_size = num_previously_sampled_batches + sample_size
