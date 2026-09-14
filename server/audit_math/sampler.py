@@ -69,6 +69,38 @@ def draw_sample(
     )
 
 
+def assign_ticket_numbers(
+    seed: str, batch_keys: list[BatchKey]
+) -> list[tuple[Any, BatchKey]]:
+    # Map seen batches to counts
+    counts: dict[Any, int] = {}
+    tickets: dict[Any, list[str]] = {}
+
+    batch_keys_with_ticket_numbers: list[tuple[Any, BatchKey]] = []
+
+    for batch_key in batch_keys:
+        count = counts.get(batch_key, 0) + 1
+
+        ticket = (
+            consistent_sampler.first_fraction(batch_key, seed)  # type: ignore
+            if count == 1
+            else consistent_sampler.next_fraction(tickets.get(batch_key)[-1])  # type: ignore
+        )
+
+        # Trim the ticket number
+        ticket = consistent_sampler.trim(ticket, 18)  # type: ignore
+
+        batch_keys_with_ticket_numbers.append((ticket, batch_key))
+        counts[batch_key] = count
+
+        if batch_key in tickets:
+            tickets[batch_key].append(ticket)
+        else:
+            tickets[batch_key] = [ticket]
+
+    return batch_keys_with_ticket_numbers
+
+
 def draw_ppeb_sample(
     seed: str,
     contest: Contest,
@@ -164,38 +196,6 @@ def draw_ppeb_sample(
         )
     )
 
-    # Now create "ticket numbers" for each item in the sample
-
-    # Map seen batches to counts
-    counts: dict[Any, int] = {}
-    tickets: dict[Any, list[str]] = {}
-
-    sampled_batch_keys_including_previously_sampled_with_ticket_numbers: list[
-        tuple[Any, BatchKey]
-    ] = []
-
-    for batch_key in sampled_batch_keys_including_previously_sampled:
-        count = counts.get(batch_key, 0) + 1
-
-        ticket = (
-            consistent_sampler.first_fraction(batch_key, seed)  # type: ignore
-            if count == 1
-            else consistent_sampler.next_fraction(tickets.get(batch_key)[-1])  # type: ignore
-        )
-
-        # Trim the ticket number
-        ticket = consistent_sampler.trim(ticket, 18)  # type: ignore
-
-        sampled_batch_keys_including_previously_sampled_with_ticket_numbers.append(
-            (ticket, batch_key)
-        )
-        counts[batch_key] = count
-
-        if batch_key in tickets:
-            tickets[batch_key].append(ticket)
-        else:
-            tickets[batch_key] = [ticket]
-
-    return sampled_batch_keys_including_previously_sampled_with_ticket_numbers[
+    return assign_ticket_numbers(seed, sampled_batch_keys_including_previously_sampled)[
         num_previously_sampled_batches:
     ]
