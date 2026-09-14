@@ -89,6 +89,17 @@ def ppeb_weights(
     ]
 
 
+def full_hand_tally_batch_keys(
+    previously_sampled_batch_keys: list[BatchKey],
+    batch_results: dict[BatchKey, dict[str, dict[str, int]]],
+) -> list[BatchKey]:
+    # When the cumulative sample size indicates that a full hand tally is needed, ensure
+    # that we draw all batches, minus batches already audited in previous rounds
+    return previously_sampled_batch_keys + sorted(
+        list(batch_results.keys() - previously_sampled_batch_keys)
+    )
+
+
 def assign_ticket_numbers(
     seed: str, batch_keys: list[BatchKey]
 ) -> list[tuple[Any, BatchKey]]:
@@ -181,12 +192,7 @@ def draw_ppeb_sample(
     is_full_hand_tally_needed = cumulative_sample_size >= len(batch_results)
 
     sampled_batch_keys_including_previously_sampled: list[BatchKey] = (
-        (
-            previously_sampled_batch_keys
-            # When the cumulative sample size indicates that a full hand tally is needed, ensure
-            # that we draw all batches, minus batches already audited in previous rounds
-            + sorted(list(batch_results.keys() - previously_sampled_batch_keys))
-        )
+        full_hand_tally_batch_keys(previously_sampled_batch_keys, batch_results)
         if is_full_hand_tally_needed
         # Otherwise, sample as usual
         else cast(
