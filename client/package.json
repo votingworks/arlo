@@ -148,7 +148,7 @@
     "stylelint-config-styled-components": "^0.1.1",
     "stylelint-processor-styled-components": "^1.10.0",
     "typescript": "npm:@typescript/typescript6@6.0.2",
-    "vitest": "^4.0.4",
+    "vitest": "^4.1.11",
     "vitest-canvas-mock": "^0.3.3"
   }
 }
