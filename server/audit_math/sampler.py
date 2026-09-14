@@ -90,17 +90,36 @@ def ppeb_weights(
     ]
 
 
-def draw_ppeb_positions(seed: str, weights: list[float], num_draws: int) -> list[int]:
+def draw_ppeb_positions(
+    seed: str, weights: list[float], sample_size: int
+) -> tuple[np.ndarray, np.ndarray]:
     # Convert seed into something numpy can use
     int_seed = int(consistent_sampler.sha256_hex(seed), 16)  # type: ignore
     generator = default_rng(int_seed)
     # Mirror numpy's Generator.choice(p=weights) step for step so the batches
     # drawn are identical to what it produced.
     # https://github.com/numpy/numpy/blob/v1.26.4/numpy/random/_generator.pyx#L841-L846
+    #
+    # cdf is the running total of probabilities, used to determine which batch
+    # each random draw falls into, giving each batch a range.
+    # The intuition is that cdf[i] - cdf[i-1] is the probability of selecting
+    # batch i, aside from when i=0, then it is just cdf[0].
     cdf = np.cumsum(weights)
     cdf /= cdf[-1]
-    uniforms = generator.random(num_draws)
-    return [int(index) for index in cdf.searchsorted(uniforms, side="right")]
+    # Pull the draws. Each draw is represented by a random number in [0, 1)
+    random_draws = generator.random(sample_size)
+    # Each random number maps to the batch whose range it falls in
+    sampled_batch_indexes = cdf.searchsorted(random_draws, side="right")
+    # For each sampled batch, find the start of its range. This is used to
+    # compute the offset of the random number into the batch's range.
+    sampled_range_starts = [
+        cdf[index - 1] if index > 0 else 0.0 for index in sampled_batch_indexes
+    ]
+    # A draw's offset is how far into its batch's range the random number fell,
+    # which is required in the nesting step to determine whether the child
+    # contest can reuse the parent draw or needs to redirect it.
+    offsets = random_draws - np.array(sampled_range_starts)
+    return sampled_batch_indexes, offsets
 
 
 def full_hand_tally_batch_keys(
@@ -201,17 +220,19 @@ def draw_ppeb_sample(
     cumulative_sample_size = num_previously_sampled_batches + sample_size
     is_full_hand_tally_needed = cumulative_sample_size >= len(batch_results)
 
-    sampled_batch_keys_including_previously_sampled: list[BatchKey] = (
-        full_hand_tally_batch_keys(previously_sampled_batch_keys, batch_results)
-        if is_full_hand_tally_needed
+    sampled_batch_keys_including_previously_sampled: list[BatchKey]
+    if is_full_hand_tally_needed:
+        sampled_batch_keys_including_previously_sampled = full_hand_tally_batch_keys(
+            previously_sampled_batch_keys, batch_results
+        )
+    else:
         # Otherwise, sample as usual
-        else [
-            batch_keys[index]
-            for index in draw_ppeb_positions(
-                seed, weighted_errors, cumulative_sample_size
-            )
+        batch_indexes, _ = draw_ppeb_positions(
+            seed, weighted_errors, cumulative_sample_size
+        )
+        sampled_batch_keys_including_previously_sampled = [
+            batch_keys[index] for index in batch_indexes
         ]
-    )
 
     return assign_ticket_numbers(seed, sampled_batch_keys_including_previously_sampled)[
         num_previously_sampled_batches:
