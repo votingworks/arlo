@@ -122,6 +122,92 @@ def draw_ppeb_positions(
     return sampled_batch_indexes, offsets
 
 
+def selection_probabilities(weights: list[float]) -> np.ndarray:
+    # Normalized exactly as draw_ppeb_positions normalizes its cumulative
+    # vector, so an offset from one contest's draw can be compared against
+    # another contest's selection probabilities
+    cdf = np.cumsum(weights)
+    cdf /= cdf[-1]
+    return np.diff(cdf, prepend=0.0)
+
+
+def nest_ppeb_positions(
+    parent_batch_indexes: np.ndarray,
+    parent_offsets: np.ndarray,
+    parent_weights: list[float],
+    child_weights: list[float],
+) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Derives a child contest's PPEB draws from a parent contest's, so that the
+    child reuses the parent's batches as often as possible while every batch
+    keeps exactly its own selection probability for the child.
+
+    This relies on one fact about offsets: a draw's offset is equally likely to
+    fall anywhere in its batch's range, from 0 up to the batch's selection
+    probability.
+
+    Each parent draw becomes one child draw. Suppose the two contests have
+    these selection probabilities:
+
+                    parent    child
+        Batch 1       0.50     0.30
+        Batch 2       0.30     0.30
+        Batch 3       0.20     0.40
+
+    - Parent draws Batch 2 at offset 0.17. That fits under the child's 0.30,
+      so the child reuses Batch 2, keeping the same offset.
+    - Parent draws Batch 3. Its offset is always under 0.20, so the child
+      always reuses Batch 3. But that alone selects Batch 3 for the child only
+      20% of the time, and it needs 40%.
+    - Parent draws Batch 1 at offset 0.42. That doesn't fit under 0.30, so
+      the draw "falls through" and is redirected to a batch where the child's
+      probability exceeds the parent's, in proportion to that excess
+      (max(0, child - parent), here 0.20 for Batch 3 and 0 elsewhere). Batch 1
+      falls through 20% of the time, exactly the 20% Batch 3 was short.
+
+    In general, reuse gives each batch min(parent, child); the total
+    fall-through probability equals the total excess because both vectors sum
+    to 1; and redirecting in proportion to excess tops each batch up to exactly
+    its child probability. Each child draw depends only on its own parent
+    draw, so the child's draws remain independent of one another.
+    """
+    parent_p = selection_probabilities(parent_weights)
+    child_p = selection_probabilities(child_weights)
+    excess = np.maximum(0.0, child_p - parent_p)
+    cumulative_excess = np.cumsum(excess)
+    base_excess = np.concatenate(([0.0], cumulative_excess[:-1]))
+    total_excess = cumulative_excess[-1]
+
+    child_batch_indexes = []
+    child_offsets = []
+    for batch_index, offset in zip(parent_batch_indexes, parent_offsets):
+        if offset < child_p[batch_index] or total_excess == 0:
+            child_batch_indexes.append(batch_index)
+            child_offsets.append(offset)
+            continue
+        # Given that the draw fell through, its offset is uniform on
+        # [child_p, parent_p), so rescaling it onto [0, total_excess) picks the
+        # redirect target without drawing any new randomness
+        redirect_p = (
+            (offset - child_p[batch_index])
+            / (parent_p[batch_index] - child_p[batch_index])
+            * total_excess
+        )
+        target = min(
+            int(cumulative_excess.searchsorted(redirect_p, side="right")),
+            len(excess) - 1,
+        )
+        # Place the redirected offset in [parent_p, child_p) of the target
+        # batch. Reused draws of that batch have offsets in [0, parent_p), so
+        # together the child's offsets stay uniform on [0, child_p) and the
+        # child can in turn be a parent.
+        child_batch_indexes.append(target)
+        child_offsets.append(parent_p[target] + redirect_p - base_excess[target])
+    return np.array(child_batch_indexes, dtype=int), np.array(
+        child_offsets, dtype=float
+    )
+
+
 def full_hand_tally_batch_keys(
     previously_sampled_batch_keys: list[BatchKey],
     batch_results: dict[BatchKey, dict[str, dict[str, int]]],
