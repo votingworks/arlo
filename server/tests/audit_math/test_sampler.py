@@ -235,6 +235,104 @@ def test_draw_macro_contest_not_in_any_batches(macro_batches):
         )
 
 
+NESTED_PARENT_WEIGHTS = [0.40, 0.30, 0.15, 0.15]
+NESTED_CHILD_WEIGHTS = [0.30, 0.20, 0.25, 0.25]
+
+
+def test_draw_nested_ppeb_positions():
+    child_sampled_batch_indexes, child_offsets = sampler.draw_nested_ppeb_positions(
+        parent_sampled_batch_indexes=[0, 2, 0, 1],
+        parent_offsets=[0.12, 0.07, 0.33, 0.27],
+        parent_weights=NESTED_PARENT_WEIGHTS,
+        child_weights=NESTED_CHILD_WEIGHTS,
+    )
+    # Batch 1 at 0.12 and Batch 3 at 0.07 fit under the child's weight and are
+    # reused. Batch 1 at 0.33 overshoots the child's 0.30 by 0.03, i.e. 0.3 of
+    # the parent's 0.10 overshoot, so redirect_p is 0.3 * 0.20 = 0.06, which
+    # lands in Batch 3's excess range, at offset 0.15 + 0.06. Batch 2 at 0.27
+    # overshoots by 0.07, i.e. 0.7 of the parent's 0.10 overshoot, so redirect_p
+    # is 0.14, which lands 0.04 into Batch 4's excess range, at offset 0.15 +
+    # 0.04.
+    assert child_sampled_batch_indexes == [0, 2, 2, 3]
+    assert child_offsets == pytest.approx([0.12, 0.07, 0.21, 0.19])
+
+
+def batch_frequencies(sampled_batch_indexes: list[int], num_batches: int):
+    return [
+        sampled_batch_indexes.count(batch_index) / len(sampled_batch_indexes)
+        for batch_index in range(num_batches)
+    ]
+
+
+def test_draw_nested_ppeb_positions_preserves_selection_probabilities():
+    # The child has no weight in the first batch and the parent has none in the
+    # last, so the child can only reach the last batch by falling through
+    parent_weights = [0.30, 0.25, 0.20, 0.15, 0.10, 0.00]
+    child_weights = [0.00, 0.20, 0.20, 0.25, 0.15, 0.20]
+    grandchild_weights = [0.10, 0.10, 0.30, 0.20, 0.20, 0.10]
+    sample_size = 100_000
+
+    parent = sampler.draw_ppeb_positions(SEED, parent_weights, sample_size)
+    child = sampler.draw_nested_ppeb_positions(*parent, parent_weights, child_weights)
+    grandchild = sampler.draw_nested_ppeb_positions(
+        *child, child_weights, grandchild_weights
+    )
+
+    for (sampled_batch_indexes, offsets), weights in [
+        (child, child_weights),
+        (grandchild, grandchild_weights),
+    ]:
+        assert len(sampled_batch_indexes) == len(offsets) == sample_size
+        assert batch_frequencies(sampled_batch_indexes, len(weights)) == pytest.approx(
+            weights, abs=0.01
+        )
+        assert all(
+            0 <= offset < weights[batch_index]
+            for batch_index, offset in zip(sampled_batch_indexes, offsets)
+        )
+
+    child_sampled_batch_indexes, _ = child
+    assert 0 not in child_sampled_batch_indexes
+    assert 5 in child_sampled_batch_indexes
+
+
+def test_draw_nested_ppeb_positions_reuses_min_of_parent_and_child():
+    parent_weights = [0.30, 0.25, 0.20, 0.15, 0.10, 0.00]
+    child_weights = [0.00, 0.20, 0.20, 0.25, 0.15, 0.20]
+    sample_size = 100_000
+
+    parent_sampled_batch_indexes, parent_offsets = sampler.draw_ppeb_positions(
+        SEED, parent_weights, sample_size
+    )
+    child_sampled_batch_indexes, _ = sampler.draw_nested_ppeb_positions(
+        parent_sampled_batch_indexes, parent_offsets, parent_weights, child_weights
+    )
+
+    reused = sum(
+        parent_batch_index == child_batch_index
+        for parent_batch_index, child_batch_index in zip(
+            parent_sampled_batch_indexes, child_sampled_batch_indexes
+        )
+    )
+    # A draw is reused with probability min(parent, child) for its batch, which
+    # is the most reuse any method could achieve
+    expected_reuse = sum(
+        min(parent_weight, child_weight)
+        for parent_weight, child_weight in zip(parent_weights, child_weights)
+    )
+    assert reused / sample_size == pytest.approx(expected_reuse, abs=0.01)
+
+
+def test_draw_nested_ppeb_positions_identical_weights_reuse_every_draw():
+    parent = sampler.draw_ppeb_positions(SEED, NESTED_PARENT_WEIGHTS, 1000)
+    assert (
+        sampler.draw_nested_ppeb_positions(
+            *parent, NESTED_PARENT_WEIGHTS, NESTED_PARENT_WEIGHTS
+        )
+        == parent
+    )
+
+
 def random_manifest():
     rand = random.Random(12345)
     return {
