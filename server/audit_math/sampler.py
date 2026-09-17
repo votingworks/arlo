@@ -1,5 +1,5 @@
 # Handles generating sample sizes and taking samples
-from typing import cast, Any
+from typing import cast, Any, TypedDict
 import numpy as np
 from numpy.random import default_rng
 import consistent_sampler
@@ -80,10 +80,13 @@ def ppeb_weights(
         return [0.0] * len(batch_keys)
 
     # Map each batch to its weighted probability of being picked
+    # Some batch keys may not be present for this contest, so we default to 0 for those
     unauditable_ballots = macro.compute_unauditable_ballots(batch_results, contest)
     return [
         float(
-            macro.compute_max_error(batch_results[batch], contest, unauditable_ballots)
+            macro.compute_max_error(
+                batch_results.get(batch, {}), contest, unauditable_ballots
+            )
             / U
         )
         for batch in batch_keys
@@ -253,6 +256,147 @@ def assign_ticket_numbers(
     return batch_keys_with_ticket_numbers
 
 
+class ContestSampleSpec(TypedDict):
+    contest: Contest
+    sample_size: int
+    previously_sampled_batch_keys: list[BatchKey]
+    batch_results: dict[BatchKey, dict[str, dict[str, int]]]
+    nested_under_contest_id: str | None
+
+
+def sorted_contest_ids_parents_first(
+    specs_by_id: dict[str, ContestSampleSpec],
+) -> list[str]:
+    ordered: list[str] = []
+    remaining = list(specs_by_id)
+    while remaining:
+        ready = [
+            contest_id
+            for contest_id in remaining
+            if specs_by_id[contest_id]["nested_under_contest_id"] is None
+            or specs_by_id[contest_id]["nested_under_contest_id"] in ordered
+        ]
+        assert ready, "Nested contests must not form a cycle"
+        ordered += ready
+        remaining = [contest_id for contest_id in remaining if contest_id not in ready]
+    return ordered
+
+
+def draw_nested_ppeb_samples(
+    seed: str, specs: list[ContestSampleSpec]
+) -> dict[str, list[tuple[Any, BatchKey]]]:
+    """
+    Draws every contest's PPEB sample at once so that a contest nested under
+    another reuses its parent's batches wherever possible. Each contest's
+    sample on its own is the same PPEB sample with replacement that
+    draw_ppeb_sample draws.
+
+    A child's draws are paired with its parent's by position: the child's kth
+    draw is derived from the parent's kth draw. So every root draws as many
+    positions as the largest sample among all contests, and each contest then
+    keeps only as many as its own sample size. A root's own sample is
+    unaffected by drawing extra positions, since a shorter draw from the same
+    seed is a prefix of a longer one.
+
+    Inputs:
+        seed  - the random seed to use in sampling
+        specs - one per contest being sampled:
+                {
+                    'contest': the sampler_contest Contest,
+                    'sample_size': number of batches to randomly draw,
+                    'previously_sampled_batch_keys': the keys (jurisdiction
+                        name, batch name) of batches sampled in previous rounds,
+                    'batch_results': the result of the election, per batch,
+                    'nested_under_contest_id': id of the contest to nest this
+                        one's sample under, or None to draw independently,
+                }
+
+    Outputs:
+        samples_by_contest_id - each contest's sample keyed by contest id:
+                  {
+                      'contest': [
+                          (
+                              '0.235789114', # ticket number
+                              (<jurisdiction name>, <batch name>),
+                          ),
+                          ...
+                      ],
+                      ...
+                  }
+    """
+    # the db sets contest.name to be a unique id
+    specs_by_id = {spec["contest"].name: spec for spec in specs}
+    # Create a master list of batch keys so all contests refer to consistent
+    # batches when using index positions. Sorting also makes the sampling
+    # independent of the uploaded file's batch ordering.
+    all_batch_keys = sorted({key for spec in specs for key in spec["batch_results"]})
+    weights_by_contest_id = {
+        contest_id: ppeb_weights(spec["contest"], spec["batch_results"], all_batch_keys)
+        for contest_id, spec in specs_by_id.items()
+    }
+
+    for contest_id, spec in specs_by_id.items():
+        parent_id = spec["nested_under_contest_id"]
+        assert parent_id is None or parent_id in specs_by_id, (
+            f"Contest {contest_id} is nested under {parent_id},"
+            " which is not being sampled"
+        )
+        assert any(weights_by_contest_id[contest_id]), (
+            f"Contest {contest_id} has no results in any batch, so there is nothing"
+            " to sample from"
+        )
+
+    cumulative_sample_sizes_by_contest_id = {
+        contest_id: len(spec["previously_sampled_batch_keys"]) + spec["sample_size"]
+        for contest_id, spec in specs_by_id.items()
+    }
+
+    # A child's kth draw is derived from its parent's kth draw, so every root
+    # draws enough positions for the largest sample of any contest since it
+    # theoretically could have the largest sample nested under it. We could have
+    # a smarter algorithm that only draws the necessary positions for each
+    # contest, but the draws are very cheap and this keeps the code simpler.
+    # A root's own sample only uses the first positions, which are the same
+    # ones it would draw alone.
+    max_cumulative_sample_size = max(cumulative_sample_sizes_by_contest_id.values())
+
+    draws_by_contest_id: dict[str, tuple[list[int], list[float]]] = {}
+    for contest_id in sorted_contest_ids_parents_first(specs_by_id):
+        parent_id = specs_by_id[contest_id]["nested_under_contest_id"]
+        if parent_id is None:
+            draws_by_contest_id[contest_id] = draw_ppeb_positions(
+                seed, weights_by_contest_id[contest_id], max_cumulative_sample_size
+            )
+        else:
+            draws_by_contest_id[contest_id] = draw_nested_ppeb_positions(
+                *draws_by_contest_id[parent_id],
+                weights_by_contest_id[parent_id],
+                weights_by_contest_id[contest_id],
+            )
+
+    samples_by_contest_id: dict[str, list[tuple[Any, BatchKey]]] = {}
+    for contest_id, spec in specs_by_id.items():
+        previously_sampled_batch_keys = spec["previously_sampled_batch_keys"]
+        cumulative_sample_size = cumulative_sample_sizes_by_contest_id[contest_id]
+        sampled_batch_keys_including_previously_sampled: list[BatchKey]
+        if cumulative_sample_size >= len(spec["batch_results"]):
+            sampled_batch_keys_including_previously_sampled = (
+                full_hand_tally_batch_keys(
+                    previously_sampled_batch_keys, spec["batch_results"]
+                )
+            )
+        else:
+            sampled_batch_indexes, _ = draws_by_contest_id[contest_id]
+            sampled_batch_keys_including_previously_sampled = [
+                all_batch_keys[index]
+                for index in sampled_batch_indexes[:cumulative_sample_size]
+            ]
+        samples_by_contest_id[contest_id] = assign_ticket_numbers(
+            seed, sampled_batch_keys_including_previously_sampled
+        )[len(previously_sampled_batch_keys) :]
+    return samples_by_contest_id
+
+
 def draw_ppeb_sample(
     seed: str,
     contest: Contest,
@@ -288,41 +432,22 @@ def draw_ppeb_sample(
                 [
                     (
                         '0.235789114', # ticket number
-                        (<batch>, <ballot number>), # id, here a tuple (batch, ballot)
+                        (<jurisdiction name>, <batch name>),
                     ),
                     ...
                 ]
     """
 
     assert batch_results, "Must have batch-level results to use MACRO"
-
-    # Sort batch keys so that the sampling is independent of the uploaded file's ordering
-    batch_keys = sorted(batch_results.keys())
-
-    weighted_errors = ppeb_weights(contest, batch_results, batch_keys)
-    assert any(weighted_errors), (
-        f"Contest {contest.name} has no results in any batch, so there is nothing"
-        " to sample from"
-    )
-
-    num_previously_sampled_batches = len(previously_sampled_batch_keys)
-    cumulative_sample_size = num_previously_sampled_batches + sample_size
-    is_full_hand_tally_needed = cumulative_sample_size >= len(batch_results)
-
-    sampled_batch_keys_including_previously_sampled: list[BatchKey]
-    if is_full_hand_tally_needed:
-        sampled_batch_keys_including_previously_sampled = full_hand_tally_batch_keys(
-            previously_sampled_batch_keys, batch_results
-        )
-    else:
-        # Otherwise, sample as usual
-        batch_indexes, _ = draw_ppeb_positions(
-            seed, weighted_errors, cumulative_sample_size
-        )
-        sampled_batch_keys_including_previously_sampled = [
-            batch_keys[index] for index in batch_indexes
-        ]
-
-    return assign_ticket_numbers(seed, sampled_batch_keys_including_previously_sampled)[
-        num_previously_sampled_batches:
-    ]
+    return draw_nested_ppeb_samples(
+        seed,
+        [
+            ContestSampleSpec(
+                contest=contest,
+                sample_size=sample_size,
+                previously_sampled_batch_keys=previously_sampled_batch_keys,
+                batch_results=batch_results,
+                nested_under_contest_id=None,
+            )
+        ],
+    )[contest.name]
