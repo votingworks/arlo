@@ -333,6 +333,164 @@ def test_draw_nested_ppeb_positions_identical_weights_reuse_every_draw():
     )
 
 
+BatchResults = dict[sampler.BatchKey, dict[str, dict[str, int]]]
+
+OTHER_CONTEST_INFO = {
+    "cand1": 400,
+    "cand2": 100,
+    "ballots": 500,
+    "numWinners": 1,
+    "votesAllowed": 1,
+}
+
+
+@pytest.fixture
+def other_contest() -> Contest:
+    return Contest(OTHER_CONTEST_NAME, OTHER_CONTEST_INFO)
+
+
+# The other contest is only in the first ten batches, like a contest that is
+# only on the ballot in some jurisdictions
+@pytest.fixture
+def other_contest_batches(macro_batches: BatchResults) -> BatchResults:
+    return {
+        batch_key: {OTHER_CONTEST_NAME: {"cand1": 40, "cand2": 10, "ballots": 50}}
+        for batch_key in macro_batches
+        if int(batch_key[1].split(" ")[-1]) < 10
+    }
+
+
+def nested_spec(
+    contest: Contest,
+    sample_size: int,
+    batch_results: BatchResults,
+    nested_under_contest_id: str | None = None,
+    previously_sampled_batch_keys: list[sampler.BatchKey] | None = None,
+) -> sampler.ContestSampleSpec:
+    return sampler.ContestSampleSpec(
+        contest=contest,
+        sample_size=sample_size,
+        previously_sampled_batch_keys=previously_sampled_batch_keys or [],
+        batch_results=batch_results,
+        nested_under_contest_id=nested_under_contest_id,
+    )
+
+
+def test_draw_nested_ppeb_samples_root_is_unchanged_by_children(
+    macro_batches: BatchResults,
+    macro_contest: Contest,
+    other_contest: Contest,
+    other_contest_batches: BatchResults,
+):
+    samples = sampler.draw_nested_ppeb_samples(
+        SEED,
+        [
+            nested_spec(macro_contest, 5, macro_batches),
+            # A child with a bigger sample than its parent
+            nested_spec(other_contest, 8, other_contest_batches, CONTEST_NAME),
+        ],
+    )
+    assert samples[CONTEST_NAME] == sampler.draw_ppeb_sample(
+        SEED, macro_contest, 5, [], macro_batches
+    )
+    assert len(samples[OTHER_CONTEST_NAME]) == 8
+    assert all(
+        batch_key in other_contest_batches
+        for _, batch_key in samples[OTHER_CONTEST_NAME]
+    )
+
+
+def test_draw_nested_ppeb_samples_child_continues_after_parent_finishes(
+    macro_batches: BatchResults,
+    macro_contest: Contest,
+    other_contest: Contest,
+    other_contest_batches: BatchResults,
+):
+    round_1 = sampler.draw_nested_ppeb_samples(
+        SEED,
+        [
+            nested_spec(macro_contest, 5, macro_batches),
+            nested_spec(other_contest, 4, other_contest_batches, CONTEST_NAME),
+        ],
+    )
+    # The parent met its risk limit, so it draws nothing new, but it still has
+    # to be passed so the child's draws can be derived from it
+    round_2 = sampler.draw_nested_ppeb_samples(
+        SEED,
+        [
+            nested_spec(
+                macro_contest,
+                0,
+                macro_batches,
+                previously_sampled_batch_keys=[k for _, k in round_1[CONTEST_NAME]],
+            ),
+            nested_spec(
+                other_contest,
+                3,
+                other_contest_batches,
+                CONTEST_NAME,
+                previously_sampled_batch_keys=[
+                    k for _, k in round_1[OTHER_CONTEST_NAME]
+                ],
+            ),
+        ],
+    )
+    assert round_2[CONTEST_NAME] == []
+    all_at_once = sampler.draw_nested_ppeb_samples(
+        SEED,
+        [
+            nested_spec(macro_contest, 5, macro_batches),
+            nested_spec(other_contest, 7, other_contest_batches, CONTEST_NAME),
+        ],
+    )
+    assert (
+        round_1[OTHER_CONTEST_NAME] + round_2[OTHER_CONTEST_NAME]
+        == all_at_once[OTHER_CONTEST_NAME]
+    )
+
+
+def test_draw_nested_ppeb_samples_full_hand_tally_is_per_contest(
+    macro_batches: BatchResults,
+    macro_contest: Contest,
+    other_contest: Contest,
+    other_contest_batches: BatchResults,
+):
+    samples = sampler.draw_nested_ppeb_samples(
+        SEED,
+        [
+            nested_spec(macro_contest, 5, macro_batches),
+            nested_spec(
+                other_contest,
+                len(other_contest_batches),
+                other_contest_batches,
+                CONTEST_NAME,
+            ),
+        ],
+    )
+    assert len(samples[CONTEST_NAME]) == 5
+    assert [k for _, k in samples[OTHER_CONTEST_NAME]] == sorted(other_contest_batches)
+
+
+def test_draw_nested_ppeb_samples_rejects_missing_parent_and_cycles(
+    macro_batches: BatchResults,
+    macro_contest: Contest,
+    other_contest: Contest,
+    other_contest_batches: BatchResults,
+):
+    with pytest.raises(AssertionError, match="not being sampled"):
+        _ = sampler.draw_nested_ppeb_samples(
+            SEED, [nested_spec(other_contest, 5, other_contest_batches, CONTEST_NAME)]
+        )
+    with pytest.raises(AssertionError, match="cycle"):
+        _ = sampler.draw_nested_ppeb_samples(
+            SEED,
+            [
+                nested_spec(macro_contest, 5, macro_batches, OTHER_CONTEST_NAME),
+                nested_spec(other_contest, 5, other_contest_batches, CONTEST_NAME),
+            ],
+        )
+
+
 def random_manifest():
     rand = random.Random(12345)
     return {
