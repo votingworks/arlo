@@ -225,14 +225,14 @@ def test_draw_macro_contest_not_in_any_batches(macro_batches):
     }
     other_contest = Contest(OTHER_CONTEST_NAME, info_dict)
 
-    sample = sampler.draw_ppeb_sample(
-        SEED,
-        other_contest,
-        10,
-        previously_sampled_batch_keys=[],
-        batch_results=macro_batches,
-    )
-    assert sample == []
+    with pytest.raises(AssertionError, match="has no results in any batch"):
+        _ = sampler.draw_ppeb_sample(
+            SEED,
+            other_contest,
+            10,
+            previously_sampled_batch_keys=[],
+            batch_results=macro_batches,
+        )
 
 
 def random_manifest():
