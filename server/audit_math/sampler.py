@@ -69,6 +69,69 @@ def draw_sample(
     )
 
 
+def ppeb_weights(
+    contest: Contest,
+    batch_results: dict[BatchKey, dict[str, dict[str, int]]],
+    batch_keys: list[BatchKey],
+) -> list[float]:
+    U = macro.compute_U(batch_results, contest)
+    if U == 0:
+        return [0.0] * len(batch_keys)
+
+    # Map each batch to its weighted probability of being picked
+    unauditable_ballots = macro.compute_unauditable_ballots(batch_results, contest)
+    return [
+        float(
+            macro.compute_max_error(batch_results[batch], contest, unauditable_ballots)
+            / U
+        )
+        for batch in batch_keys
+    ]
+
+
+def full_hand_tally_batch_keys(
+    previously_sampled_batch_keys: list[BatchKey],
+    batch_results: dict[BatchKey, dict[str, dict[str, int]]],
+) -> list[BatchKey]:
+    # When the cumulative sample size indicates that a full hand tally is needed, ensure
+    # that we draw all batches, minus batches already audited in previous rounds
+    return previously_sampled_batch_keys + sorted(
+        list(batch_results.keys() - previously_sampled_batch_keys)
+    )
+
+
+def assign_ticket_numbers(
+    seed: str, batch_keys: list[BatchKey]
+) -> list[tuple[Any, BatchKey]]:
+    # Map seen batches to counts
+    counts: dict[Any, int] = {}
+    tickets: dict[Any, list[str]] = {}
+
+    batch_keys_with_ticket_numbers: list[tuple[Any, BatchKey]] = []
+
+    for batch_key in batch_keys:
+        count = counts.get(batch_key, 0) + 1
+
+        ticket = (
+            consistent_sampler.first_fraction(batch_key, seed)  # type: ignore
+            if count == 1
+            else consistent_sampler.next_fraction(tickets.get(batch_key)[-1])  # type: ignore
+        )
+
+        # Trim the ticket number
+        ticket = consistent_sampler.trim(ticket, 18)  # type: ignore
+
+        batch_keys_with_ticket_numbers.append((ticket, batch_key))
+        counts[batch_key] = count
+
+        if batch_key in tickets:
+            tickets[batch_key].append(ticket)
+        else:
+            tickets[batch_key] = [ticket]
+
+    return batch_keys_with_ticket_numbers
+
+
 def draw_ppeb_sample(
     seed: str,
     contest: Contest,
@@ -116,36 +179,20 @@ def draw_ppeb_sample(
     int_seed = int(consistent_sampler.sha256_hex(seed), 16)  # type: ignore
     generator = default_rng(int_seed)
 
-    U = macro.compute_U(batch_results, contest)
-
-    # Should only be possible if the specified contest isn't in any batches
-    if U == 0:
-        return []
-
     # Sort batch keys so that the sampling is independent of the uploaded file's ordering
     batch_keys = sorted(batch_results.keys())
 
-    # Map each batch to its weighted probability of being picked
-    unauditable_ballots = macro.compute_unauditable_ballots(batch_results, contest)
-    weighted_errors = [
-        float(
-            macro.compute_max_error(batch_results[batch], contest, unauditable_ballots)
-            / U
-        )
-        for batch in batch_keys
-    ]
+    weighted_errors = ppeb_weights(contest, batch_results, batch_keys)
+    # Should only be possible if the specified contest isn't in any batches
+    if not any(weighted_errors):
+        return []
 
     num_previously_sampled_batches = len(previously_sampled_batch_keys)
     cumulative_sample_size = num_previously_sampled_batches + sample_size
     is_full_hand_tally_needed = cumulative_sample_size >= len(batch_results)
 
     sampled_batch_keys_including_previously_sampled: list[BatchKey] = (
-        (
-            previously_sampled_batch_keys
-            # When the cumulative sample size indicates that a full hand tally is needed, ensure
-            # that we draw all batches, minus batches already audited in previous rounds
-            + sorted(list(batch_results.keys() - previously_sampled_batch_keys))
-        )
+        full_hand_tally_batch_keys(previously_sampled_batch_keys, batch_results)
         if is_full_hand_tally_needed
         # Otherwise, sample as usual
         else cast(
@@ -164,38 +211,6 @@ def draw_ppeb_sample(
         )
     )
 
-    # Now create "ticket numbers" for each item in the sample
-
-    # Map seen batches to counts
-    counts: dict[Any, int] = {}
-    tickets: dict[Any, list[str]] = {}
-
-    sampled_batch_keys_including_previously_sampled_with_ticket_numbers: list[
-        tuple[Any, BatchKey]
-    ] = []
-
-    for batch_key in sampled_batch_keys_including_previously_sampled:
-        count = counts.get(batch_key, 0) + 1
-
-        ticket = (
-            consistent_sampler.first_fraction(batch_key, seed)  # type: ignore
-            if count == 1
-            else consistent_sampler.next_fraction(tickets.get(batch_key)[-1])  # type: ignore
-        )
-
-        # Trim the ticket number
-        ticket = consistent_sampler.trim(ticket, 18)  # type: ignore
-
-        sampled_batch_keys_including_previously_sampled_with_ticket_numbers.append(
-            (ticket, batch_key)
-        )
-        counts[batch_key] = count
-
-        if batch_key in tickets:
-            tickets[batch_key].append(ticket)
-        else:
-            tickets[batch_key] = [ticket]
-
-    return sampled_batch_keys_including_previously_sampled_with_ticket_numbers[
+    return assign_ticket_numbers(seed, sampled_batch_keys_including_previously_sampled)[
         num_previously_sampled_batches:
     ]
