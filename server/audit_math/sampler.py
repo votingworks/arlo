@@ -287,16 +287,17 @@ def draw_nested_ppeb_samples(
 ) -> dict[str, list[tuple[Any, BatchKey]]]:
     """
     Draws every contest's PPEB sample at once so that a contest nested under
-    another reuses its parent's batches wherever possible. Each contest's
-    sample on its own is the same PPEB sample with replacement that
-    draw_ppeb_sample draws.
+    another reuses its parent's batches wherever possible. Every contest's
+    sample, nested or not, still selects each batch with that contest's own
+    PPEB probability, and a contest with no parent draws the same sample it
+    would if it were sampled alone.
 
     A child's draws are paired with its parent's by position: the child's kth
-    draw is derived from the parent's kth draw. So every root draws as many
-    positions as the largest sample among all contests, and each contest then
-    keeps only as many as its own sample size. A root's own sample is
-    unaffected by drawing extra positions, since a shorter draw from the same
-    seed is a prefix of a longer one.
+    draw is derived from the parent's kth draw. So every root, meaning a
+    contest with no parent, draws as many positions as the largest sample
+    among all contests, and each contest then keeps only as many as its own
+    sample size. A root's own sample is unaffected by drawing extra positions,
+    since a shorter draw from the same seed is a prefix of a longer one.
 
     Inputs:
         seed  - the random seed to use in sampling
