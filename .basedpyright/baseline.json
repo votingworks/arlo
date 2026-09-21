@@ -81480,8 +81480,8 @@
             {
                 "code": "reportUnknownArgumentType",
                 "range": {
-                    "startColumn": 22,
-                    "endColumn": 35,
+                    "startColumn": 26,
+                    "endColumn": 39,
                     "lineCount": 1
                 }
             },

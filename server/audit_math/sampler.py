@@ -183,9 +183,10 @@ def draw_ppeb_sample(
     batch_keys = sorted(batch_results.keys())
 
     weighted_errors = ppeb_weights(contest, batch_results, batch_keys)
-    # Should only be possible if the specified contest isn't in any batches
-    if not any(weighted_errors):
-        return []
+    assert any(weighted_errors), (
+        f"Contest {contest.name} has no results in any batch, so there is nothing"
+        " to sample from"
+    )
 
     num_previously_sampled_batches = len(previously_sampled_batch_keys)
     cumulative_sample_size = num_previously_sampled_batches + sample_size
