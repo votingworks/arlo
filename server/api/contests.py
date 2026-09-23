@@ -296,6 +296,39 @@ def validate_contests(contests: list[JSONDict], election: Election):
                 "isSubjectToRunoff can only be true for contests with at least 3 choices"
             )
 
+    validate_nesting(contests, election)
+
+
+def validate_nesting(contests: list[JSONDict], election: Election):
+    contests_by_id = {contest["id"]: contest for contest in contests}
+    for contest in contests:
+        parent_id = contest.get("nestedUnderContestId")
+        if parent_id is None:
+            continue
+        if election.audit_type != AuditType.BATCH_COMPARISON:
+            raise BadRequest(
+                "nestedUnderContestId is only supported for batch comparison audits"
+            )
+        if parent_id not in contests_by_id:
+            raise BadRequest(
+                f"Contest {contest['name']} is nested under a contest that doesn't exist"
+            )
+        if not contest["isTargeted"] or not contests_by_id[parent_id]["isTargeted"]:
+            raise BadRequest(
+                f"Contest {contest['name']} and the contest it is nested under must both"
+                " be targeted"
+            )
+
+    # Check if there are any cycles in the nesting of contests
+    for contest in contests:
+        visited: set[str] = set()
+        current = contest
+        while current.get("nestedUnderContestId") is not None:
+            if current["id"] in visited:
+                raise BadRequest("Nested contests must not form a cycle")
+            visited.add(current["id"])
+            current = contests_by_id[current["nestedUnderContestId"]]
+
 
 # In various audit types, we set different pieces of contest metadata from
 # different underlying data sources (e.g. manifest or CVR files). Whenever a
