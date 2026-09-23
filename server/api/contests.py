@@ -38,6 +38,7 @@ CONTEST_SCHEMA = {
             "anyOf": [{"type": "integer", "minimum": 0}, {"type": "null"}]
         },
         "isSubjectToRunoff": {"type": "boolean"},
+        "nestedUnderContestId": {"anyOf": [{"type": "string"}, {"type": "null"}]},
         "jurisdictionIds": {
             "type": "array",
             "items": {"type": "string"},
@@ -140,6 +141,7 @@ def serialize_contest(contest: Contest) -> JSONDict:
     if contest.election.audit_type == AuditType.BATCH_COMPARISON:
         serialized_contest["pendingBallots"] = contest.pending_ballots
         serialized_contest["isSubjectToRunoff"] = contest.is_subject_to_runoff
+        serialized_contest["nestedUnderContestId"] = contest.nested_under_contest_id
 
     # Validate CVR choice names across jurisdictions in ballot comparison audits. Load error
     # details, if any, onto the contest object.
@@ -233,6 +235,7 @@ def deserialize_contest(contest: JSONDict, election_id: str) -> Contest:
         votes_allowed=contest.get("votesAllowed", None),
         pending_ballots=contest.get("pendingBallots", None),
         is_subject_to_runoff=contest.get("isSubjectToRunoff", False),
+        nested_under_contest_id=contest.get("nestedUnderContestId", None),
         jurisdictions=jurisdictions,
     )
 
@@ -333,6 +336,9 @@ def should_reprocess_batch_tallies(
         # We don't want to reprocess on jurisdiction changes, so we remove the
         # jursidictionIds
         del contest["jurisdictionIds"]
+        # Nesting only affects how batches are sampled, not the tallies, so drop
+        # it here when considering whether to reprocess batch tallies
+        contest.pop("nestedUnderContestId", None)
         # Sort choices to normalize
         contest["choices"] = sorted(
             contest["choices"], key=lambda choice: str(choice["id"])

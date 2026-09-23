@@ -14955,6 +14955,14 @@
                 "code": "reportCallIssue",
                 "range": {
                     "startColumn": 8,
+                    "endColumn": 31,
+                    "lineCount": 1
+                }
+            },
+            {
+                "code": "reportCallIssue",
+                "range": {
+                    "startColumn": 8,
                     "endColumn": 21,
                     "lineCount": 1
                 }
@@ -15132,6 +15140,14 @@
                 "range": {
                     "startColumn": 18,
                     "endColumn": 30,
+                    "lineCount": 1
+                }
+            },
+            {
+                "code": "reportUnknownMemberType",
+                "range": {
+                    "startColumn": 8,
+                    "endColumn": 19,
                     "lineCount": 1
                 }
             },
