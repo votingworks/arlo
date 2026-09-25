@@ -502,6 +502,18 @@ class Contest(BaseModel):
     # num_winners == 1.
     is_subject_to_runoff = Column(Boolean, nullable=False, server_default="false")
 
+    # In batch comparison audits, a contest can be nested under another contest
+    # so that its sample reuses the parent's sampled batches wherever possible.
+    # The constraint is deferred because contests are created in whatever order
+    # the client sends them, so we defer the constraint check until the end of
+    # the transaction. IDs are generated client-side.
+    nested_under_contest_id = Column(
+        String(200),
+        ForeignKey(
+            "contest.id", ondelete="set null", deferrable=True, initially="DEFERRED"
+        ),
+    )
+
     choices = relationship(
         "ContestChoice",
         back_populates="contest",
