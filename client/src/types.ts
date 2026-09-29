@@ -36,6 +36,7 @@ export interface IContest {
   cvrChoiceNameConsistencyError?: ICvrChoiceNameConsistencyError
   pendingBallots?: number | null
   isSubjectToRunoff?: boolean
+  nestedUnderContestId?: string | null
 }
 
 export enum Interpretation {

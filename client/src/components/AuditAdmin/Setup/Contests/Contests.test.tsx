@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import React from 'react'
-import { waitFor, render, screen } from '@testing-library/react'
+import { waitFor, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import uuidv4 from 'uuidv4'
 import { QueryClientProvider } from 'react-query'
@@ -39,6 +39,39 @@ const renderContests = (props: Partial<IContestsProps> = {}) => {
     ),
   }
 }
+
+const batchContests: Omit<IContest, 'totalBallotsCast'>[] = [
+  {
+    id: 'contest-id-1',
+    choices: [
+      { id: 'choice-id-1', name: 'Choice One', numVotes: 10 },
+      { id: 'choice-id-2', name: 'Choice Two', numVotes: 20 },
+    ],
+    isTargeted: true,
+    jurisdictionIds: ['jurisdiction-id-1'],
+    name: 'Contest One',
+    numWinners: 1,
+    votesAllowed: 1,
+    pendingBallots: null,
+    isSubjectToRunoff: false,
+    nestedUnderContestId: null,
+  },
+  {
+    id: 'contest-id-2',
+    choices: [
+      { id: 'choice-id-3', name: 'Choice Three', numVotes: 30 },
+      { id: 'choice-id-4', name: 'Choice Four', numVotes: 40 },
+    ],
+    isTargeted: true,
+    jurisdictionIds: ['jurisdiction-id-1', 'jurisdiction-id-2'],
+    name: 'Contest Two',
+    numWinners: 1,
+    votesAllowed: 1,
+    pendingBallots: null,
+    isSubjectToRunoff: false,
+    nestedUnderContestId: null,
+  },
+]
 
 describe('Audit Setup > Contests', () => {
   it('renders empty targeted state correctly', async () => {
@@ -499,42 +532,12 @@ describe('Audit Setup > Contests', () => {
       return uuids[uuidIndex] ?? 'missing-uuid-in-mock'
     })
 
-    const expectedContests: Omit<IContest, 'totalBallotsCast'>[] = [
-      {
-        id: 'contest-id-1',
-        choices: [
-          { id: 'choice-id-1', name: 'Choice One', numVotes: 10 },
-          { id: 'choice-id-2', name: 'Choice Two', numVotes: 20 },
-        ],
-        isTargeted: true,
-        jurisdictionIds: ['jurisdiction-id-1'],
-        name: 'Contest One',
-        numWinners: 1,
-        votesAllowed: 1,
-        pendingBallots: null,
-        isSubjectToRunoff: false,
-      },
-      {
-        id: 'contest-id-2',
-        choices: [
-          { id: 'choice-id-3', name: 'Choice Three', numVotes: 30 },
-          { id: 'choice-id-4', name: 'Choice Four', numVotes: 40 },
-        ],
-        isTargeted: true,
-        jurisdictionIds: ['jurisdiction-id-1', 'jurisdiction-id-2'],
-        name: 'Contest Two',
-        numWinners: 1,
-        votesAllowed: 1,
-        pendingBallots: null,
-        isSubjectToRunoff: false,
-      },
-    ]
     const expectedCalls = [
       aaApiCalls.getContests(contestMocks.empty),
       aaApiCalls.getJurisdictions,
       aaApiCalls.getStandardizedContests(null),
-      aaApiCalls.putContests(expectedContests),
-      aaApiCalls.getContests(expectedContests),
+      aaApiCalls.putContests(batchContests),
+      aaApiCalls.getContests(batchContests),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { goToNextStage } = renderContests({
@@ -595,6 +598,7 @@ describe('Audit Setup > Contests', () => {
       totalBallotsCast: undefined,
       pendingBallots: numPendingBallots,
       isSubjectToRunoff: false,
+      nestedUnderContestId: null,
     }
     const expectedCalls = [
       aaApiCalls.getContests(contestMocks.empty),
@@ -633,6 +637,109 @@ describe('Audit Setup > Contests', () => {
       await waitFor(() => {
         expect(goToNextStage).toHaveBeenCalledTimes(1)
       })
+    })
+  })
+
+  it('nests a contest under another for Georgia batch comparison audits', async () => {
+    const nestedContests = [
+      batchContests[0],
+      { ...batchContests[1], nestedUnderContestId: 'contest-id-1' },
+    ]
+    const expectedCalls = [
+      aaApiCalls.getContests(batchContests),
+      aaApiCalls.getJurisdictions,
+      aaApiCalls.getStandardizedContests(null),
+      aaApiCalls.putContests(nestedContests),
+      aaApiCalls.getContests(nestedContests),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { goToNextStage } = renderContests({
+        auditType: 'BATCH_COMPARISON',
+        electionState: 'GA',
+      })
+      await screen.findByText('Target Contests')
+
+      const optionLabels = (select: HTMLElement) =>
+        within(select)
+          .getAllByRole('option')
+          .map(option => option.textContent)
+
+      // Each contest can be nested under any contest but itself
+      const [select1, select2] = screen.getAllByLabelText(
+        /Maximize Batch Overlap With/
+      )
+      expect(optionLabels(select1)).toEqual(['None', 'Contest 2: Contest Two'])
+      expect(optionLabels(select2)).toEqual(['None', 'Contest 1: Contest One'])
+
+      userEvent.selectOptions(select2, 'contest-id-1')
+      await waitFor(() => {
+        expect(select2).toHaveValue('contest-id-1')
+        // Contest One can no longer be nested under Contest Two, since that
+        // would form a cycle
+        expect(optionLabels(select1)).toEqual(['None'])
+      })
+
+      userEvent.click(screen.getByRole('button', { name: /Save & Next/ }))
+      await waitFor(() => {
+        expect(goToNextStage).toHaveBeenCalledTimes(1)
+      })
+    })
+  })
+
+  it('clears nesting when the parent contest is removed', async () => {
+    const nestedContests = [
+      batchContests[0],
+      { ...batchContests[1], nestedUnderContestId: 'contest-id-1' },
+    ]
+    const expectedCalls = [
+      aaApiCalls.getContests(nestedContests),
+      aaApiCalls.getJurisdictions,
+      aaApiCalls.getStandardizedContests(null),
+      aaApiCalls.putContests([batchContests[1]]),
+      aaApiCalls.getContests([batchContests[1]]),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { goToNextStage } = renderContests({
+        auditType: 'BATCH_COMPARISON',
+        electionState: 'GA',
+      })
+      await screen.findByText('Target Contests')
+
+      const [, select2] = screen.getAllByLabelText(
+        /Maximize Batch Overlap With/
+      )
+      expect(select2).toHaveValue('contest-id-1')
+
+      userEvent.click(
+        screen.getAllByRole('button', { name: /Remove Contest/ })[0]
+      )
+      // Nesting isn't offered with a single contest
+      await waitFor(() => {
+        expect(
+          screen.queryByLabelText(/Maximize Batch Overlap With/)
+        ).not.toBeInTheDocument()
+      })
+
+      userEvent.click(screen.getByRole('button', { name: /Save & Next/ }))
+      await waitFor(() => {
+        expect(goToNextStage).toHaveBeenCalledTimes(1)
+      })
+    })
+  })
+
+  it('does not offer sample nesting outside Georgia', async () => {
+    const expectedCalls = [
+      aaApiCalls.getContests(batchContests),
+      aaApiCalls.getJurisdictions,
+      aaApiCalls.getStandardizedContests(null),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderContests({ auditType: 'BATCH_COMPARISON' })
+      await screen.findByText('Target Contests')
+      expect(screen.getAllByText('Contest Universe')).toHaveLength(2)
+      expect(
+        screen.queryByLabelText(/Maximize Batch Overlap With/)
+      ).not.toBeInTheDocument()
     })
   })
 })
