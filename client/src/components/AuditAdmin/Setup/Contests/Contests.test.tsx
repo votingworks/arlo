@@ -487,9 +487,9 @@ describe('Audit Setup > Contests', () => {
   it('handles a multi-contest batch audit', async () => {
     const uuids = [
       'contest-id-1',
+      'contest-id-2',
       'choice-id-1',
       'choice-id-2',
-      'contest-id-2',
       'choice-id-3',
       'choice-id-4',
     ]

@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React from 'react'
+import React, { useMemo } from 'react'
 import equal from 'fast-deep-equal'
 import styled from 'styled-components'
 import {
@@ -233,7 +233,6 @@ const contestFromValues = (
   auditType: AuditType
 ): IContest => ({
   ...contest,
-  id: contest.id || uuidv4(), // preserve given id if present, generate new one if empty string
   totalBallotsCast: parseNumber(contest.totalBallotsCast),
   numWinners: parseNumber(contest.numWinners),
   votesAllowed: parseNumber(contest.votesAllowed),
@@ -249,6 +248,30 @@ const contestFromValues = (
       : undefined,
 })
 
+const blankContestValues = (isTargeted: boolean): IContestValues => ({
+  id: uuidv4(),
+  name: '',
+  isTargeted,
+  totalBallotsCast: '',
+  numWinners: '1',
+  votesAllowed: '1',
+  jurisdictionIds: [],
+  pendingBallots: '',
+  isSubjectToRunoff: false,
+  choices: [
+    {
+      id: '',
+      name: '',
+      numVotes: '',
+    },
+    {
+      id: '',
+      name: '',
+      numVotes: '',
+    },
+  ],
+})
+
 const ContestForm: React.FC<IProps> = ({
   electionId,
   isTargeted,
@@ -257,32 +280,6 @@ const ContestForm: React.FC<IProps> = ({
   auditType,
   electionState,
 }) => {
-  const contestValues: IContestValues[] = [
-    {
-      id: '',
-      name: '',
-      isTargeted,
-      totalBallotsCast: '',
-      numWinners: '1',
-      votesAllowed: '1',
-      jurisdictionIds: [],
-      pendingBallots: '',
-      isSubjectToRunoff: false,
-      choices: [
-        {
-          id: '',
-          name: '',
-          numVotes: '',
-        },
-        {
-          id: '',
-          name: '',
-          numVotes: '',
-        },
-      ],
-    },
-  ]
-
   const isHybrid = auditType === 'HYBRID'
   const isBallotPolling = auditType === 'BALLOT_POLLING'
   const isBatchComparison = auditType === 'BATCH_COMPARISON'
@@ -291,6 +288,11 @@ const ContestForm: React.FC<IProps> = ({
   const updateContestsMutation = useUpdateContests(electionId, auditType)
   const jurisdictions = useJurisdictionsDeprecated(electionId)
   const standardizedContests = useStandardizedContests(electionId)
+  // Memoized so that the blank contest's id doesn't change on every render,
+  // which would make Formik reinitialize the form
+  const initialBlankContest = useMemo(() => blankContestValues(isTargeted), [
+    isTargeted,
+  ])
 
   if (
     (isHybrid && !standardizedContests) ||
@@ -310,7 +312,7 @@ const ContestForm: React.FC<IProps> = ({
   const initialValues = {
     contests: formContests.length
       ? formContests.map(contestToValues)
-      : contestValues,
+      : [initialBlankContest],
   }
 
   const isOpportunisticFormClean = (
@@ -632,7 +634,9 @@ const ContestForm: React.FC<IProps> = ({
                       icon="add"
                       type="button"
                       onClick={() =>
-                        contestsArrayHelpers.push({ ...contestValues[0] })
+                        contestsArrayHelpers.push(
+                          blankContestValues(isTargeted)
+                        )
                       }
                     >
                       Add Contest
