@@ -843,6 +843,11 @@ def compute_sample_batches(
     round_num: int,
     contest_sample_sizes: list[tuple[Contest, SampleSize]],
 ) -> list[BatchDraw]:
+    # The sample preview endpoint accepts an empty set of sample sizes, in
+    # which case there's nothing to sample
+    if len(contest_sample_sizes) == 0:
+        return []
+
     contests_by_id = {contest.id: contest for contest in election.contests}
     sample_size_by_contest_id = {
         contest.id: sample_size["size"] for contest, sample_size in contest_sample_sizes
