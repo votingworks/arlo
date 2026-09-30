@@ -56,6 +56,16 @@ def db_session(request):
     drop_database(url)
 
 
+WORKER_TEST_TIMEOUT_SECONDS = 60
+
+
+def terminate_workers(workers):
+    for worker in workers:
+        worker.terminate()
+    for worker in workers:
+        worker.join(timeout=5)
+
+
 @pytest.fixture(autouse=True)
 def setup():
     config.RUN_BACKGROUND_TASKS_IMMEDIATELY = False
@@ -490,25 +500,32 @@ def test_multiple_workers(db_session):
     for worker in workers:
         worker.start()
 
-    def num_incomplete_tasks():
+    def incomplete_tasks():
         return (
             db_session.query(BackgroundTask)
             .filter_by(task_name="count", completed_at=None)
-            .count()
+            .all()
         )
 
-    while num_incomplete_tasks() > num_tasks / 2:
-        time.sleep(0.1)
+    def wait_until_incomplete_tasks_at_most(max_num_tasks):
+        deadline = time.monotonic() + WORKER_TEST_TIMEOUT_SECONDS
+        while len(incomplete_tasks()) > max_num_tasks:
+            assert time.monotonic() < deadline, (
+                "Timed out waiting for tasks to complete. Incomplete tasks: "
+                f"{[(task.worker_id, task.started_at) for task in incomplete_tasks()]}"
+            )
+            time.sleep(0.1)
 
-    # Terminate some workers to make sure their tasks are reset and picked up by others
-    workers[0].terminate()
-    workers[1].terminate()
+    try:
+        wait_until_incomplete_tasks_at_most(num_tasks / 2)
 
-    while num_incomplete_tasks() > 0:
-        time.sleep(0.1)
+        # Terminate some workers to make sure their tasks are reset and picked up by others
+        workers[0].terminate()
+        workers[1].terminate()
 
-    for worker in workers:
-        worker.terminate()
+        wait_until_incomplete_tasks_at_most(0)
+    finally:
+        terminate_workers(workers)
 
     expected_sorted_results = list(range(num_tasks))
     results = [
@@ -620,24 +637,30 @@ def test_multiple_workers_lock_on_election(db_session):
             .count()
         )
 
-    while num_incomplete_tasks() > 0 or any(
-        num_tasks < num_tasks_per_election
-        for num_tasks in created_tasks_per_election.values()
-    ):
-        time.sleep(0.1)
-
-        # Enqueue more tasks as we go
-        for election_id in random.choices(
-            election_ids,
-            k=random.randint(1, len(election_ids)),
+    deadline = time.monotonic() + WORKER_TEST_TIMEOUT_SECONDS
+    try:
+        while num_incomplete_tasks() > 0 or any(
+            num_tasks < num_tasks_per_election
+            for num_tasks in created_tasks_per_election.values()
         ):
-            if created_tasks_per_election[election_id] < num_tasks_per_election:
-                create_background_task(add1, dict(election_id=election_id), db_session)
-                created_tasks_per_election[election_id] += 1
-        db_session.commit()
+            assert time.monotonic() < deadline, (
+                "Timed out waiting for tasks to complete"
+            )
+            time.sleep(0.1)
 
-    for worker in workers:
-        worker.terminate()
+            # Enqueue more tasks as we go
+            for election_id in random.choices(
+                election_ids,
+                k=random.randint(1, len(election_ids)),
+            ):
+                if created_tasks_per_election[election_id] < num_tasks_per_election:
+                    create_background_task(
+                        add1, dict(election_id=election_id), db_session
+                    )
+                    created_tasks_per_election[election_id] += 1
+            db_session.commit()
+    finally:
+        terminate_workers(workers)
 
     for election_id, count in db_session.execute(
         "SELECT election_id, count FROM election_count"
