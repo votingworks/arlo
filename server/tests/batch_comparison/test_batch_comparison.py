@@ -910,6 +910,41 @@ def test_batch_comparison_sample_preview(
         assert preview["numUnique"] == jurisdiction["currentRoundStatus"]["numUnique"]
 
 
+def test_batch_comparison_sample_preview_no_contests(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    manifests,
+    batch_tallies,
+    election_settings,
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/sample-preview",
+        {"sampleSizes": {}},
+    )
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/sample-preview")
+    assert rv.status_code == 200
+    sample_preview = json.loads(rv.data)
+    compare_json(
+        sample_preview["task"],
+        {
+            "status": "PROCESSED",
+            "startedAt": assert_is_date,
+            "completedAt": assert_is_date,
+            "error": None,
+        },
+    )
+    assert len(sample_preview["jurisdictions"]) == len(jurisdiction_ids)
+    for jurisdiction in sample_preview["jurisdictions"]:
+        assert jurisdiction["numSamples"] == 0
+        assert jurisdiction["numUnique"] == 0
+
+
 def test_batch_tallies_summed_by_jurisdiction_csv_generation(
     client: FlaskClient,
     election_id: str,
