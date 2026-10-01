@@ -373,6 +373,16 @@ const Review: React.FC<IProps> = ({
                 ballots cast
               </p>
             )}
+            {contest.nestedUnderContestId && (
+              <p>
+                Sample nested under{' '}
+                {
+                  contests.find(c => c.id === contest.nestedUnderContestId)
+                    ?.name
+                }{' '}
+                to maximize batch overlap
+              </p>
+            )}
             {cvrsUploaded &&
               isContestChoiceNameStandardizationComplete &&
               contest.cvrChoiceNameConsistencyError && (

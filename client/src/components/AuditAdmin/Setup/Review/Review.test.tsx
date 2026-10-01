@@ -315,6 +315,37 @@ describe('Audit Setup > Review & Launch', () => {
     })
   })
 
+  it('in a batch comparison audit, shows which contest a sample is nested under', async () => {
+    const nestedContests = [
+      ...contestMocks.filledTargetedWithJurisdictionId,
+      {
+        ...contestMocks.filledTargetedWithJurisdictionId[0],
+        id: 'nested-contest-id',
+        name: 'Nested Contest',
+        nestedUnderContestId: 'contest-id',
+      },
+    ]
+    const expectedCalls = [
+      apiCalls.getSettings(settingsMock.batch),
+      apiCalls.getJurisdictions({
+        jurisdictions: jurisdictionMocks.allManifests,
+      }),
+      apiCalls.getJurisdictionFile,
+      apiCalls.getStandardizedContests(),
+      apiCalls.getContests(nestedContests),
+      apiCalls.getContestChoiceNameStandardizations(),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView()
+      await screen.findByRole('heading', { name: 'Review & Launch' })
+      screen.getByText(
+        'Sample nested under Contest Name to maximize batch overlap'
+      )
+      // Only the nested contest shows the note
+      expect(screen.getAllByText(/Sample nested under/)).toHaveLength(1)
+    })
+  })
+
   it('in a batch comparison audit, shows sample size options once all tallies files uploaded', async () => {
     const expectedCalls = [
       apiCalls.getSettings(settingsMock.batch),
