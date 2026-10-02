@@ -642,23 +642,20 @@ class BatchDraw(TypedDict):
     ticket_number: str
 
 
-def compute_sample_batches_for_contest(
-    election: Election,
-    contest: Contest,
-    contest_sample_size: SampleSize,
-) -> list[BatchDraw]:
-    # Create a mapping from batch keys used in the sampling back to batch ids
+def batch_key_to_id_map(election_id: str) -> dict[sampler.BatchKey, str]:
     batches = (
         Batch.query.join(Jurisdiction)
-        .filter(Jurisdiction.election_id == contest.election_id)
+        .filter(Jurisdiction.election_id == election_id)
         .with_entities(Jurisdiction.name, Batch.name, Batch.id)
     )
-    batch_key_to_id = {
+    return {
         (jurisdiction_name, batch_name): batch_id
         for jurisdiction_name, batch_name, batch_id in batches
     }
 
-    previously_sampled_batch_keys: list[sampler.BatchKey] = list(
+
+def previously_sampled_batch_keys(contest: Contest) -> list[sampler.BatchKey]:
+    return list(
         Batch.query.join(Jurisdiction)
         .filter(Jurisdiction.election_id == contest.election_id)
         .join(SampledBatchDraw)
@@ -671,25 +668,6 @@ def compute_sample_batches_for_contest(
         )
         .with_entities(Jurisdiction.name, Batch.name)
     )
-
-    sample = sampler.draw_ppeb_sample(
-        str(election.random_seed),
-        sampler_contest.from_db_contest(contest),
-        contest_sample_size["size"],
-        previously_sampled_batch_keys,
-        batch_tallies(contest),
-    )
-
-    sample_batches = [
-        BatchDraw(
-            batch_id=batch_key_to_id[batch_key],
-            contest_id=contest.id,
-            ticket_number=ticket_number,
-        )
-        for ticket_number, batch_key in sample
-    ]
-
-    return sample_batches
 
 
 # Experimental feature
@@ -711,19 +689,9 @@ def compute_extra_batches_for_round(
         for jurisdiction in contest.jurisdictions:
             jurisdiction_id_to_contest_id.setdefault(jurisdiction.id, contest.id)
 
-    batch_rows = (
-        Batch.query.join(Jurisdiction)
-        .filter(Jurisdiction.election_id == election.id)
-        .with_entities(Jurisdiction.name, Batch.name, Batch.id)
-        .all()
-    )
-    batch_key_to_id = {
-        (jurisdiction_name, batch_name): batch_id
-        for jurisdiction_name, batch_name, batch_id in batch_rows
-    }
+    batch_key_to_id = batch_key_to_id_map(election.id)
     batch_id_to_key = {
-        batch_id: (jurisdiction_name, batch_name)
-        for jurisdiction_name, batch_name, batch_id in batch_rows
+        batch_id: batch_key for batch_key, batch_id in batch_key_to_id.items()
     }
 
     extra_batches: list[BatchDraw] = []
@@ -875,10 +843,51 @@ def compute_sample_batches(
     round_num: int,
     contest_sample_sizes: list[tuple[Contest, SampleSize]],
 ) -> list[BatchDraw]:
+    # The sample preview endpoint accepts an empty set of sample sizes, in
+    # which case there's nothing to sample
+    if len(contest_sample_sizes) == 0:
+        return []
+
+    contests_by_id = {contest.id: contest for contest in election.contests}
+    sample_size_by_contest_id = {
+        contest.id: sample_size["size"] for contest, sample_size in contest_sample_sizes
+    }
+
+    # A nested contest's draws are derived from its parent's, so every contest
+    # up the chain has to be passed to the sampler too, even one that already
+    # met its risk limit and isn't in this round. These contests don't sample
+    # additional batches, but their draws still determine their children's.
+    for contest, _ in contest_sample_sizes:
+        parent_id = contest.nested_under_contest_id
+        while parent_id is not None and parent_id not in sample_size_by_contest_id:
+            sample_size_by_contest_id[parent_id] = 0
+            parent_id = contests_by_id[parent_id].nested_under_contest_id
+
+    specs = [
+        sampler.ContestSampleSpec(
+            contest=sampler_contest.from_db_contest(contests_by_id[contest_id]),
+            sample_size=sample_size,
+            previously_sampled_batch_keys=previously_sampled_batch_keys(
+                contests_by_id[contest_id]
+            ),
+            batch_results=batch_tallies(contests_by_id[contest_id]),
+            nested_under_contest_id=contests_by_id[contest_id].nested_under_contest_id,
+        )
+        for contest_id, sample_size in sample_size_by_contest_id.items()
+    ]
+    samples_by_contest_id = sampler.draw_nested_ppeb_samples(
+        str(election.random_seed), specs
+    )
+
+    batch_key_to_id = batch_key_to_id_map(election.id)
     sample_batches = [
-        batch
-        for contest, sample_size in contest_sample_sizes
-        for batch in compute_sample_batches_for_contest(election, contest, sample_size)
+        BatchDraw(
+            batch_id=batch_key_to_id[batch_key],
+            contest_id=contest.id,
+            ticket_number=ticket_number,
+        )
+        for contest, _ in contest_sample_sizes
+        for ticket_number, batch_key in samples_by_contest_id[contest.id]
     ]
     extra_batches = compute_extra_batches_for_round(
         election, round_num, contest_sample_sizes, sample_batches
