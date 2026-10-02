@@ -376,10 +376,12 @@ const Review: React.FC<IProps> = ({
             {contest.nestedUnderContestId && (
               <p>
                 Sample nested under{' '}
-                {
-                  contests.find(c => c.id === contest.nestedUnderContestId)
-                    ?.name
-                }{' '}
+                <strong>
+                  {
+                    contests.find(c => c.id === contest.nestedUnderContestId)
+                      ?.name
+                  }
+                </strong>{' '}
                 to maximize batch overlap
               </p>
             )}

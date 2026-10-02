@@ -338,7 +338,10 @@ describe('Audit Setup > Review & Launch', () => {
     await withMockFetch(expectedCalls, async () => {
       renderView()
       await screen.findByRole('heading', { name: 'Review & Launch' })
-      screen.getByText(
+      const parentName = screen.getByText('Contest Name', {
+        selector: 'strong',
+      })
+      expect(parentName.closest('p')).toHaveTextContent(
         'Sample nested under Contest Name to maximize batch overlap'
       )
       // Only the nested contest shows the note
