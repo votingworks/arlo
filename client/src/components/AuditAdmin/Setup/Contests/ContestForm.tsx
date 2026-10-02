@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React from 'react'
+import React, { useMemo } from 'react'
 import equal from 'fast-deep-equal'
 import styled from 'styled-components'
 import {
@@ -35,6 +35,7 @@ import {
 import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
 import schema from './schema'
+import nestingParentOptions from './contestNesting'
 import { useContests, useUpdateContests } from '../../../useContests'
 import { useJurisdictionsDeprecated } from '../../../useJurisdictions'
 import { IContest } from '../../../../types'
@@ -195,6 +196,7 @@ export interface IContestValues {
   totalBallotsCast?: string
   pendingBallots?: string
   isSubjectToRunoff?: boolean
+  nestedUnderContestId?: string
   jurisdictionIds: string[]
 }
 
@@ -209,6 +211,7 @@ const contestToValues = (contest: IContest): IContestValues => ({
   totalBallotsCast: contest.totalBallotsCast?.toString(),
   pendingBallots: contest.pendingBallots?.toString() || '',
   isSubjectToRunoff: contest.isSubjectToRunoff ?? false,
+  nestedUnderContestId: contest.nestedUnderContestId ?? '',
 })
 
 const computeRunoffPreview = (choices: IChoiceValues[]): string => {
@@ -233,7 +236,6 @@ const contestFromValues = (
   auditType: AuditType
 ): IContest => ({
   ...contest,
-  id: contest.id || uuidv4(), // preserve given id if present, generate new one if empty string
   totalBallotsCast: parseNumber(contest.totalBallotsCast),
   numWinners: parseNumber(contest.numWinners),
   votesAllowed: parseNumber(contest.votesAllowed),
@@ -247,6 +249,35 @@ const contestFromValues = (
     auditType === 'BATCH_COMPARISON'
       ? contest.numWinners === '1' && !!contest.isSubjectToRunoff
       : undefined,
+  nestedUnderContestId:
+    auditType === 'BATCH_COMPARISON'
+      ? contest.nestedUnderContestId || null
+      : undefined,
+})
+
+const blankContestValues = (isTargeted: boolean): IContestValues => ({
+  id: uuidv4(),
+  name: '',
+  isTargeted,
+  totalBallotsCast: '',
+  numWinners: '1',
+  votesAllowed: '1',
+  jurisdictionIds: [],
+  pendingBallots: '',
+  isSubjectToRunoff: false,
+  nestedUnderContestId: '',
+  choices: [
+    {
+      id: '',
+      name: '',
+      numVotes: '',
+    },
+    {
+      id: '',
+      name: '',
+      numVotes: '',
+    },
+  ],
 })
 
 const ContestForm: React.FC<IProps> = ({
@@ -257,32 +288,6 @@ const ContestForm: React.FC<IProps> = ({
   auditType,
   electionState,
 }) => {
-  const contestValues: IContestValues[] = [
-    {
-      id: '',
-      name: '',
-      isTargeted,
-      totalBallotsCast: '',
-      numWinners: '1',
-      votesAllowed: '1',
-      jurisdictionIds: [],
-      pendingBallots: '',
-      isSubjectToRunoff: false,
-      choices: [
-        {
-          id: '',
-          name: '',
-          numVotes: '',
-        },
-        {
-          id: '',
-          name: '',
-          numVotes: '',
-        },
-      ],
-    },
-  ]
-
   const isHybrid = auditType === 'HYBRID'
   const isBallotPolling = auditType === 'BALLOT_POLLING'
   const isBatchComparison = auditType === 'BATCH_COMPARISON'
@@ -291,6 +296,11 @@ const ContestForm: React.FC<IProps> = ({
   const updateContestsMutation = useUpdateContests(electionId, auditType)
   const jurisdictions = useJurisdictionsDeprecated(electionId)
   const standardizedContests = useStandardizedContests(electionId)
+  // Memoized so that the blank contest's id doesn't change on every render,
+  // which would make Formik reinitialize the form
+  const initialBlankContest = useMemo(() => blankContestValues(isTargeted), [
+    isTargeted,
+  ])
 
   if (
     (isHybrid && !standardizedContests) ||
@@ -300,6 +310,8 @@ const ContestForm: React.FC<IProps> = ({
     return null // Still loading
 
   const showRunoffOption = isBatchComparison && electionState === 'GA'
+  const showNestingOption =
+    isBatchComparison && isTargeted && electionState === 'GA'
 
   const contests = contestsQuery.data
   const [formContests, restContests] = partition(
@@ -310,7 +322,7 @@ const ContestForm: React.FC<IProps> = ({
   const initialValues = {
     contests: formContests.length
       ? formContests.map(contestToValues)
-      : contestValues,
+      : [initialBlankContest],
   }
 
   const isOpportunisticFormClean = (
@@ -593,6 +605,37 @@ const ContestForm: React.FC<IProps> = ({
                               )}
                           </FormSection>
                         )}
+                        {showNestingOption && values.contests.length > 1 && (
+                          <FormSection
+                            label="Sample Nesting"
+                            description="Optionally nest this contest's sample under another target contest to maximize the number of batches the two samples have in common. This reduces the total number of batches to retrieve, while every batch keeps the same chance of being selected."
+                          >
+                            <label
+                              htmlFor={`contests[${i}].nestedUnderContestId`}
+                            >
+                              Maximize Batch Overlap With
+                              <br />
+                              <Field
+                                component={Select}
+                                id={`contests[${i}].nestedUnderContestId`}
+                                name={`contests[${i}].nestedUnderContestId`}
+                                onChange={(
+                                  e: React.FormEvent<HTMLSelectElement>
+                                ) =>
+                                  setFieldValue(
+                                    `contests[${i}].nestedUnderContestId`,
+                                    e.currentTarget.value
+                                  )
+                                }
+                                value={contest.nestedUnderContestId ?? ''}
+                                options={nestingParentOptions(
+                                  values.contests,
+                                  i
+                                )}
+                              />
+                            </label>
+                          </FormSection>
+                        )}
                         {!isHybrid && (
                           <FormSection
                             label="Contest Universe"
@@ -618,7 +661,22 @@ const ContestForm: React.FC<IProps> = ({
                               icon="remove"
                               intent="danger"
                               minimal
-                              onClick={() => contestsArrayHelpers.remove(i)}
+                              onClick={() => {
+                                // Clear references to the removed contest so
+                                // that no contest is left nested under it
+                                values.contests.forEach((otherContest, j) => {
+                                  if (
+                                    otherContest.nestedUnderContestId ===
+                                    contest.id
+                                  ) {
+                                    setFieldValue(
+                                      `contests[${j}].nestedUnderContestId`,
+                                      ''
+                                    )
+                                  }
+                                })
+                                contestsArrayHelpers.remove(i)
+                              }}
                             >
                               Remove Contest
                             </Button>
@@ -632,7 +690,9 @@ const ContestForm: React.FC<IProps> = ({
                       icon="add"
                       type="button"
                       onClick={() =>
-                        contestsArrayHelpers.push({ ...contestValues[0] })
+                        contestsArrayHelpers.push(
+                          blankContestValues(isTargeted)
+                        )
                       }
                     >
                       Add Contest
