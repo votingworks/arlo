@@ -264,6 +264,12 @@ def contest_rows(election: Election):
     show_runoff_columns = any(
         contest.is_subject_to_runoff for contest in election.contests
     )
+    # Which contest a sample is nested under changes which batches are drawn, so
+    # anyone reproducing the sample from the seed needs to know it
+    show_nested_under_column = any(
+        contest.nested_under_contest_id for contest in election.contests
+    )
+    contest_name_by_id = {contest.id: contest.name for contest in election.contests}
 
     rows = [
         heading("CONTESTS"),
@@ -290,7 +296,8 @@ def contest_rows(election: Election):
             if election.audit_type == AuditType.HYBRID
             else []
         )
-        + (["Runoff Law", "Reported Runoff Results"] if show_runoff_columns else []),
+        + (["Runoff Law", "Reported Runoff Results"] if show_runoff_columns else [])
+        + (["Sample Nested Under"] if show_nested_under_column else []),
     ]
 
     for contest in election.contests:
@@ -354,6 +361,13 @@ def contest_rows(election: Election):
                 ]
             else:
                 row += ["", ""]
+
+        if show_nested_under_column:
+            row.append(
+                contest_name_by_id[contest.nested_under_contest_id]
+                if contest.nested_under_contest_id
+                else ""
+            )
 
         rows.append(row)
     return rows
