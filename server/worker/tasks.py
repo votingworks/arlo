@@ -230,6 +230,22 @@ def reset_task(task: BackgroundTask, db_session):
     db_session.commit()
 
 
+def reset_worker_tasks(worker_id: str, db_session):
+    # Look up the worker's in-progress tasks in the database rather than relying
+    # on the worker's in-memory state. A task may have been claimed and
+    # committed right before the worker was interrupted, before the worker had a
+    # chance to record which task it was working on.
+    db_session.rollback()
+    in_progress_tasks = (
+        db_session.query(BackgroundTask)
+        .filter_by(worker_id=worker_id, completed_at=None)
+        .filter(BackgroundTask.started_at.isnot(None))
+        .all()
+    )
+    for task in in_progress_tasks:
+        reset_task(task, db_session)
+
+
 def serialize_background_task(task: BackgroundTask | None) -> JSONDict | None:
     if task is None:
         return None

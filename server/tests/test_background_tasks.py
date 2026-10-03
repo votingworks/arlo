@@ -2,7 +2,9 @@ from collections import defaultdict
 import logging
 import math
 import multiprocessing
+import os
 import random
+import signal
 import time
 from unittest.mock import patch
 import sqlalchemy
@@ -25,6 +27,7 @@ from ..worker.tasks import (
     create_background_task,
     background_task,
     reset_task,
+    reset_worker_tasks,
     run_task,
     serialize_background_task,
     UserError,
@@ -51,6 +54,16 @@ def db_session(request):
 
     db_session.close()
     drop_database(url)
+
+
+WORKER_TEST_TIMEOUT_SECONDS = 60
+
+
+def terminate_workers(workers):
+    for worker in workers:
+        worker.terminate()
+    for worker in workers:
+        worker.join(timeout=5)
 
 
 @pytest.fixture(autouse=True)
@@ -487,25 +500,32 @@ def test_multiple_workers(db_session):
     for worker in workers:
         worker.start()
 
-    def num_incomplete_tasks():
+    def incomplete_tasks():
         return (
             db_session.query(BackgroundTask)
             .filter_by(task_name="count", completed_at=None)
-            .count()
+            .all()
         )
 
-    while num_incomplete_tasks() > num_tasks / 2:
-        time.sleep(0.1)
+    def wait_until_incomplete_tasks_at_most(max_num_tasks):
+        deadline = time.monotonic() + WORKER_TEST_TIMEOUT_SECONDS
+        while len(incomplete_tasks()) > max_num_tasks:
+            assert time.monotonic() < deadline, (
+                "Timed out waiting for tasks to complete. Incomplete tasks: "
+                f"{[(task.worker_id, task.started_at) for task in incomplete_tasks()]}"
+            )
+            time.sleep(0.1)
 
-    # Terminate some workers to make sure their tasks are reset and picked up by others
-    workers[0].terminate()
-    workers[1].terminate()
+    try:
+        wait_until_incomplete_tasks_at_most(num_tasks / 2)
 
-    while num_incomplete_tasks() > 0:
-        time.sleep(0.1)
+        # Terminate some workers to make sure their tasks are reset and picked up by others
+        workers[0].terminate()
+        workers[1].terminate()
 
-    for worker in workers:
-        worker.terminate()
+        wait_until_incomplete_tasks_at_most(0)
+    finally:
+        terminate_workers(workers)
 
     expected_sorted_results = list(range(num_tasks))
     results = [
@@ -617,24 +637,30 @@ def test_multiple_workers_lock_on_election(db_session):
             .count()
         )
 
-    while num_incomplete_tasks() > 0 or any(
-        num_tasks < num_tasks_per_election
-        for num_tasks in created_tasks_per_election.values()
-    ):
-        time.sleep(0.1)
-
-        # Enqueue more tasks as we go
-        for election_id in random.choices(
-            election_ids,
-            k=random.randint(1, len(election_ids)),
+    deadline = time.monotonic() + WORKER_TEST_TIMEOUT_SECONDS
+    try:
+        while num_incomplete_tasks() > 0 or any(
+            num_tasks < num_tasks_per_election
+            for num_tasks in created_tasks_per_election.values()
         ):
-            if created_tasks_per_election[election_id] < num_tasks_per_election:
-                create_background_task(add1, dict(election_id=election_id), db_session)
-                created_tasks_per_election[election_id] += 1
-        db_session.commit()
+            assert time.monotonic() < deadline, (
+                "Timed out waiting for tasks to complete"
+            )
+            time.sleep(0.1)
 
-    for worker in workers:
-        worker.terminate()
+            # Enqueue more tasks as we go
+            for election_id in random.choices(
+                election_ids,
+                k=random.randint(1, len(election_ids)),
+            ):
+                if created_tasks_per_election[election_id] < num_tasks_per_election:
+                    create_background_task(
+                        add1, dict(election_id=election_id), db_session
+                    )
+                    created_tasks_per_election[election_id] += 1
+            db_session.commit()
+    finally:
+        terminate_workers(workers)
 
     for election_id, count in db_session.execute(
         "SELECT election_id, count FROM election_count"
@@ -642,6 +668,80 @@ def test_multiple_workers_lock_on_election(db_session):
         assert count == num_tasks_per_election, (
             f"Expected count {count} for {election_id} to equal {num_tasks_per_election}"
         )
+
+
+def test_reset_worker_tasks(db_session):
+    @background_task
+    def task(election_id):
+        pass
+
+    task_1 = create_background_task(task, dict(election_id="1"), db_session)
+    task_2 = create_background_task(task, dict(election_id="2"), db_session)
+    task_3 = create_background_task(task, dict(election_id="3"), db_session)
+    db_session.commit()
+
+    # worker-1 completes task_1 and is in the middle of task_2, while worker-2
+    # is in the middle of task_3
+    assert claim_next_task("worker-1", db_session).id == task_1.id
+    run_task(task_1, db_session)
+    assert claim_next_task("worker-1", db_session).id == task_2.id
+    assert claim_next_task("worker-2", db_session).id == task_3.id
+
+    reset_worker_tasks("worker-1", db_session)
+
+    # Only worker-1's in-progress task should be reset
+    assert task_2.started_at is None
+    assert task_2.worker_id is None
+    assert task_1.completed_at is not None
+    assert task_3.started_at is not None
+    assert task_3.worker_id == "worker-2"
+
+
+def test_worker_interrupted_right_after_claiming_task(db_session):
+    context = multiprocessing.get_context()
+
+    @background_task
+    def do_nothing(election_id):
+        pass
+
+    task = create_background_task(
+        do_nothing, dict(election_id="test-election-id"), db_session
+    )
+    db_session.commit()
+
+    db_url = db_session.bind.url
+
+    def run_test_worker():
+        engine = sqlalchemy.create_engine(db_url)
+        worker_db_session = scoped_session(
+            sessionmaker(autocommit=False, autoflush=True, bind=engine)
+        )
+
+        # Interrupt the worker right after it claims a task, before it gets a
+        # chance to record which task it claimed
+        def claim_next_task_and_interrupt(worker_id, db_session):
+            claimed_task = claim_next_task(worker_id, db_session)
+            if claimed_task:
+                os.kill(os.getpid(), signal.SIGTERM)
+            return claimed_task
+
+        with patch(
+            "server.worker.worker.claim_next_task", claim_next_task_and_interrupt
+        ):
+            run_worker("worker", worker_db_session, pause_between_tasks_seconds=0)
+
+    worker = context.Process(target=run_test_worker)
+    worker.start()
+    worker.join(timeout=10)
+    worker_exited = not worker.is_alive()
+    worker.terminate()
+    assert worker_exited, "Worker didn't exit after being interrupted"
+
+    # The task should have been reset so that another worker can pick it up
+    db_session.refresh(task)
+    assert task.started_at is None
+    assert task.worker_id is None
+    assert task.completed_at is None
 
 
 def test_task_missing_election_id():
