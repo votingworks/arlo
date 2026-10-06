@@ -15034,6 +15034,30 @@
             {
                 "code": "reportAny",
                 "range": {
+                    "startColumn": 12,
+                    "endColumn": 33,
+                    "lineCount": 1
+                }
+            },
+            {
+                "code": "reportAny",
+                "range": {
+                    "startColumn": 12,
+                    "endColumn": 41,
+                    "lineCount": 1
+                }
+            },
+            {
+                "code": "reportImplicitStringConcatenation",
+                "range": {
+                    "startColumn": 16,
+                    "endColumn": 62,
+                    "lineCount": 2
+                }
+            },
+            {
+                "code": "reportAny",
+                "range": {
                     "startColumn": 48,
                     "endColumn": 49,
                     "lineCount": 1
