@@ -50457,23 +50457,31 @@
                 "code": "reportAny",
                 "range": {
                     "startColumn": 42,
-                    "endColumn": 62,
+                    "endColumn": 68,
+                    "lineCount": 1
+                }
+            },
+            {
+                "code": "reportAny",
+                "range": {
+                    "startColumn": 42,
+                    "endColumn": 70,
                     "lineCount": 1
                 }
             },
             {
                 "code": "reportUnknownMemberType",
                 "range": {
-                    "startColumn": 64,
-                    "endColumn": 79,
+                    "startColumn": 72,
+                    "endColumn": 87,
                     "lineCount": 1
                 }
             },
             {
                 "code": "reportUnknownArgumentType",
                 "range": {
-                    "startColumn": 64,
-                    "endColumn": 79,
+                    "startColumn": 72,
+                    "endColumn": 87,
                     "lineCount": 1
                 }
             },

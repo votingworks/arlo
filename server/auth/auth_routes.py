@@ -368,7 +368,7 @@ def jurisdiction_admin_login():
     db_session.commit()
 
     code_is_expired = is_code_expired(user.login_code_requested_at)
-    code_matches = secrets.compare_digest(body.get("code", ""), user.login_code)
+    code_matches = secrets.compare_digest(body.get("code", "").strip(), user.login_code)
 
     if not code_matches or code_is_expired:
         organization = list(user.jurisdictions)[0].election.organization
