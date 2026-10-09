@@ -127,7 +127,7 @@ def test_manifest_with_contest_ballot_counts(
     )
     assert processing["status"] == ProcessingStatus.PROCESSED
     assert num_ballots_by_contest_id_by_batch(jurisdiction_ids[1]) == {"Batch 1": None}
-    assert Contest.query.get(contest_ids[0]).total_ballots_cast == 1100 + 500
+    assert Contest.query.get(contest_ids[0]).total_ballots_cast == (500 + 120 + 0) + 500
 
 
 def test_manifest_contest_ballot_count_exceeds_total(

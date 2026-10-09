@@ -76,8 +76,20 @@ def set_total_ballots_from_manifests(contest: Contest):
     if not all_manifests_uploaded(contest):
         return
 
-    contest.total_ballots_cast = sum(
-        jurisdiction.manifest_num_ballots for jurisdiction in contest.jurisdictions
+    contest.total_ballots_cast = (
+        Contest.query.filter_by(id=contest.id)
+        .join(Contest.jurisdictions)
+        .join(Batch)
+        .with_entities(
+            func.sum(
+                func.coalesce(
+                    Batch.num_ballots_by_contest_id[contest.id].as_integer(),
+                    Batch.num_ballots,
+                )
+            )
+        )
+        .scalar()
+        or 0
     )
 
 
