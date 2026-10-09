@@ -370,3 +370,27 @@ def test_batch_tallies_keep_contest_ballot_counts_after_rename(
     assert processing["status"] == ProcessingStatus.PROCESSED
     batch_tallies = Jurisdiction.query.get(jurisdiction_ids[0]).batch_tallies
     assert batch_tallies["Batch 1"][contest_ids[0]]["ballots"] == 120
+
+
+def test_contest_total_ballots_from_contest_counts(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
+):
+    upload_contest_count_manifests(client, election_id, jurisdiction_ids)
+
+    def total_ballots_cast() -> int:
+        return Contest.query.get(contest_ids[0]).total_ballots_cast
+
+    assert total_ballots_cast() == 120 + 500 + 500
+
+    # Without the column, the batch total counts for every contest again
+    processing = upload_manifest(
+        client,
+        election_id,
+        jurisdiction_ids[0],
+        b"Batch Name,Number of Ballots\nBatch 1,500\nBatch 2,500\n",
+    )
+    assert processing["status"] == ProcessingStatus.PROCESSED
+    assert total_ballots_cast() == 500 + 500 + 500

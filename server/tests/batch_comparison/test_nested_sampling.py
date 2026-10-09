@@ -242,14 +242,10 @@ def test_nested_sampling_end_to_end(
             jurisdiction_id,
             jurisdiction_name,
             choice_id_by_candidate,
-            votes_by_batch_name={
-                **BATCH_VOTES[jurisdiction_name],
-                **(
-                    {swapped_batch_name: swapped_votes}
-                    if jurisdiction_name == "J1"
-                    else {}
-                ),
-            },
+            votes_by_batch_name=BATCH_VOTES[jurisdiction_name]
+            | (
+                {swapped_batch_name: swapped_votes} if jurisdiction_name == "J1" else {}
+            ),
         )
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
