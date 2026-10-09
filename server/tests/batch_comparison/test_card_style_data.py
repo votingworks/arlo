@@ -31,10 +31,29 @@ def upload_manifest(
         client, io.BytesIO(manifest), election_id, jurisdiction_id
     )
     assert_ok(rv)
-    rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/ballot-manifest"
+    return get_file_processing(client, election_id, jurisdiction_id, "ballot-manifest")
+
+
+# J1 lists how many ballots carry Contest 1 in each batch; J2 does not
+def upload_manifests_with_contest_counts(
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
+):
+    processing = upload_manifest(
+        client,
+        election_id,
+        jurisdiction_ids[0],
+        b"Batch Name,Number of Ballots,Contest 1 - Number of Ballots\n"
+        b"Batch 1,500,120\n"
+        b"Batch 2,500,500\n",
     )
-    return json.loads(rv.data)["processing"]
+    assert processing["status"] == ProcessingStatus.PROCESSED
+    processing = upload_manifest(
+        client,
+        election_id,
+        jurisdiction_ids[1],
+        b"Batch Name,Number of Ballots\nBatch 1,500\n",
+    )
+    assert processing["status"] == ProcessingStatus.PROCESSED
 
 
 def num_ballots_by_contest_id_by_batch(
@@ -204,3 +223,23 @@ def test_contest_names_must_be_unique(
             }
         ]
     }
+
+
+def test_total_ballots_cast_from_manifest_counts(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
+):
+    upload_manifests_with_contest_counts(client, election_id, jurisdiction_ids)
+    assert Contest.query.get(contest_ids[0]).total_ballots_cast == 120 + 500 + 500
+
+    # Without the column, the batch total counts for every contest again
+    processing = upload_manifest(
+        client,
+        election_id,
+        jurisdiction_ids[0],
+        b"Batch Name,Number of Ballots\nBatch 1,500\nBatch 2,500\n",
+    )
+    assert processing["status"] == ProcessingStatus.PROCESSED
+    assert Contest.query.get(contest_ids[0]).total_ballots_cast == 500 + 500 + 500
