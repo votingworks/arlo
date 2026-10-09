@@ -31,10 +31,61 @@ def upload_manifest(
         client, io.BytesIO(manifest), election_id, jurisdiction_id
     )
     assert_ok(rv)
-    rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/ballot-manifest"
+    return get_file_processing(client, election_id, jurisdiction_id, "ballot-manifest")
+
+
+def upload_tallies(
+    client: FlaskClient, election_id: str, jurisdiction_id: str, tallies: bytes
+) -> dict[str, Any]:
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    return json.loads(rv.data)["processing"]
+    rv = upload_batch_tallies(client, io.BytesIO(tallies), election_id, jurisdiction_id)
+    assert_ok(rv)
+    return get_file_processing(client, election_id, jurisdiction_id, "batch-tallies")
+
+
+# J1 lists how many ballots carry Contest 1 in each batch; J2 does not
+def upload_contest_count_manifests(
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
+):
+    processing = upload_manifest(
+        client,
+        election_id,
+        jurisdiction_ids[0],
+        b"Batch Name,Number of Ballots,Contest 1 - Number of Ballots\n"
+        b"Batch 1,500,120\n"
+        b"Batch 2,500,500\n",
+    )
+    assert processing["status"] == ProcessingStatus.PROCESSED
+    processing = upload_manifest(
+        client,
+        election_id,
+        jurisdiction_ids[1],
+        b"Batch Name,Number of Ballots\nBatch 1,500\n",
+    )
+    assert processing["status"] == ProcessingStatus.PROCESSED
+
+
+def upload_contest_count_tallies(
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
+):
+    processing = upload_tallies(
+        client,
+        election_id,
+        jurisdiction_ids[0],
+        b"Batch Name,candidate 1,candidate 2,candidate 3\n"
+        b"Batch 1,100,50,50\n"
+        b"Batch 2,300,100,100\n",
+    )
+    assert processing["status"] == ProcessingStatus.PROCESSED
+    processing = upload_tallies(
+        client,
+        election_id,
+        jurisdiction_ids[1],
+        b"Batch Name,candidate 1,candidate 2,candidate 3\nBatch 1,300,100,100\n",
+    )
+    assert processing["status"] == ProcessingStatus.PROCESSED
 
 
 def num_ballots_by_contest_id_by_batch(
@@ -243,3 +294,79 @@ def test_contest_names_must_be_unique(
             }
         ]
     }
+
+
+def test_batch_tallies_use_contest_ballot_counts(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
+):
+    upload_contest_count_manifests(client, election_id, jurisdiction_ids)
+
+    upload_contest_count_tallies(client, election_id, jurisdiction_ids)
+
+    contest_id = contest_ids[0]
+    batch_tallies = Jurisdiction.query.get(jurisdiction_ids[0]).batch_tallies
+    assert batch_tallies["Batch 1"][contest_id]["ballots"] == 120
+    assert batch_tallies["Batch 2"][contest_id]["ballots"] == 500
+    batch_tallies = Jurisdiction.query.get(jurisdiction_ids[1]).batch_tallies
+    assert batch_tallies["Batch 1"][contest_id]["ballots"] == 500
+
+
+def test_batch_tallies_exceed_contest_ballot_counts(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],  # pylint: disable=unused-argument
+):
+    processing = upload_manifest(
+        client,
+        election_id,
+        jurisdiction_ids[0],
+        b"Batch Name,Number of Ballots,Contest 1 - Number of Ballots\n"
+        b"Batch 1,500,120\n",
+    )
+    assert processing["status"] == ProcessingStatus.PROCESSED
+
+    processing = upload_tallies(
+        client,
+        election_id,
+        jurisdiction_ids[0],
+        b"Batch Name,candidate 1,candidate 2,candidate 3\nBatch 1,200,50,0\n",
+    )
+    assert processing["status"] == ProcessingStatus.ERRORED
+    assert (
+        processing["error"]
+        == 'The total votes for contest "Contest 1" in batch "Batch 1" (250 votes) cannot exceed 240 - the number of ballots for this contest from the manifest (120 ballots) multiplied by the number of votes allowed for the contest (2 votes per ballot).'
+    )
+
+
+def test_batch_tallies_keep_contest_ballot_counts_after_rename(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
+):
+    upload_contest_count_manifests(client, election_id, jurisdiction_ids)
+    upload_contest_count_tallies(client, election_id, jurisdiction_ids)
+
+    # Renaming the contest reprocesses the batch tallies, which still find the
+    # counts since they are keyed by contest id
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contest = json.loads(rv.data)["contests"][0]
+    del contest["totalBallotsCast"]
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/contest",
+        [{**contest, "name": "Contest One"}],
+    )
+    assert_ok(rv)
+
+    processing = get_file_processing(
+        client, election_id, jurisdiction_ids[0], "batch-tallies"
+    )
+    assert processing["status"] == ProcessingStatus.PROCESSED
+    batch_tallies = Jurisdiction.query.get(jurisdiction_ids[0]).batch_tallies
+    assert batch_tallies["Batch 1"][contest_ids[0]]["ballots"] == 120
