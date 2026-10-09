@@ -31,6 +31,15 @@ def default_ja_email(election_id: str):
     return f"jurisdiction.admin-{election_id}@example.com"
 
 
+# The jurisdictions file fixture gives J3 its own admin; the others share the default
+def jurisdiction_admin_email(election_id: str, jurisdiction_name: str) -> str:
+    return (
+        f"j3-{election_id}@example.com"
+        if jurisdiction_name == "J3"
+        else default_ja_email(election_id)
+    )
+
+
 def post_json(client: FlaskClient, url: str, obj=None) -> Any:
     return client.post(
         url,
@@ -635,3 +644,82 @@ def no_automatic_task_execution():
         yield
     finally:
         config.RUN_BACKGROUND_TASKS_IMMEDIATELY = old_run_background_tasks_immediately
+
+
+def put_batch_results(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_id: str,
+    round_id: str,
+    batch_id: str,
+    results: list[dict[str, int]],
+):
+    return put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/batches/{batch_id}/results",
+        [
+            {"name": f"Tally Sheet #{i}", "results": sheet_results}
+            for i, sheet_results in enumerate(results)
+        ],
+    )
+
+
+def get_file_processing(
+    client: FlaskClient, election_id: str, jurisdiction_id: str, file_type: str
+) -> dict[str, Any]:
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/{file_type}"
+    )
+    return json.loads(rv.data)["processing"]
+
+
+# { contest name: [(jurisdiction name, batch name, ticket number)] }
+def sampled_batch_draws(round_id: str) -> dict[str, list[tuple[str, str, str]]]:
+    draws = (
+        SampledBatchDraw.query.filter_by(round_id=round_id)
+        .join(Batch)
+        .join(Jurisdiction)
+        .join(Contest, SampledBatchDraw.contest_id == Contest.id)
+        .with_entities(
+            Contest.name, Jurisdiction.name, Batch.name, SampledBatchDraw.ticket_number
+        )
+        .all()
+    )
+    draws_by_contest: dict[str, list[tuple[str, str, str]]] = {}
+    for contest_name, jurisdiction_name, batch_name, ticket_number in draws:
+        draws_by_contest.setdefault(contest_name, []).append(
+            (jurisdiction_name, batch_name, ticket_number)
+        )
+    return {name: sorted(rows) for name, rows in draws_by_contest.items()}
+
+
+def enter_reported_results(
+    client: FlaskClient,
+    election_id: str,
+    round_id: str,
+    jurisdiction_id: str,
+    jurisdiction_name: str,
+    choice_id_by_candidate: dict[tuple[str, str], str],
+    votes_by_batch_name: dict[str, dict[tuple[str, str], int]],
+):
+    set_logged_in_user(
+        client,
+        UserType.JURISDICTION_ADMIN,
+        jurisdiction_admin_email(election_id, jurisdiction_name),
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/batches"
+    )
+    for batch in json.loads(rv.data)["batches"]:
+        results = {
+            choice_id_by_candidate[candidate]: count
+            for candidate, count in votes_by_batch_name[batch["name"]].items()
+        }
+        rv = put_batch_results(
+            client, election_id, jurisdiction_id, round_id, batch["id"], [results]
+        )
+        assert_ok(rv)
+    rv = client.post(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/batches/finalize"
+    )
+    assert_ok(rv)
