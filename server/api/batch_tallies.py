@@ -113,39 +113,38 @@ def process_batch_tallies_file(
             )
 
         # Validate that the sum tallies for each batch don't exceed the allowed votes
-        num_ballots_by_batch = {
-            batch.name: batch.num_ballots for batch in jurisdiction.batches
-        }
+        batches_by_name = {batch.name: batch for batch in jurisdiction.batches}
         assert contest.votes_allowed is not None
+        batch_tallies_for_contest: dict[str, dict[str, int]] = {}
         for row in batch_tallies_csv:
-            allowed_tallies = (
-                num_ballots_by_batch[row[BATCH_NAME]] * contest.votes_allowed
-            )
-            total_tallies = sum(
-                int(row[contest_choice_csv_headers[(contest.id, choice.id)]])
+            batch = batches_by_name[row[BATCH_NAME]]
+            num_ballots = batch.num_ballots_for_contest(contest.id)
+            allowed_tallies = num_ballots * contest.votes_allowed
+            tallies = {
+                choice.id: int(row[contest_choice_csv_headers[(contest.id, choice.id)]])
                 for choice in contest.choices
-            )
+            }
+            total_tallies = sum(tallies.values())
             if total_tallies > allowed_tallies:
+                ballots_description = (
+                    "the number of ballots for this contest from the manifest"
+                    if batch.has_num_ballots_for_contest(contest.id)
+                    else "the number of ballots from the manifest"
+                )
                 raise UserError(
                     f'The total votes for contest "{contest.name}" in batch "{row[BATCH_NAME]}" '
                     f"({format_count(total_tallies, 'vote', 'votes')}) "
-                    f"cannot exceed {allowed_tallies} - "
-                    f"the number of ballots from the manifest "
-                    f"({format_count(num_ballots_by_batch[row[BATCH_NAME]], 'ballot', 'ballots')}) "
+                    f"cannot exceed {allowed_tallies} - {ballots_description} "
+                    f"({format_count(num_ballots, 'ballot', 'ballots')}) "
                     f"multiplied by the number of votes allowed for the contest "
                     f"({format_count(contest.votes_allowed, 'vote', 'votes')} per ballot)."
                 )
-
-        return {
-            row[BATCH_NAME]: {
-                "ballots": num_ballots_by_batch[row[BATCH_NAME]],
-                **{
-                    choice.id: row[contest_choice_csv_headers[(contest.id, choice.id)]]
-                    for choice in contest.choices
-                },
+            batch_tallies_for_contest[row[BATCH_NAME]] = {
+                "ballots": num_ballots,
+                **tallies,
             }
-            for row in batch_tallies_csv
-        }
+
+        return batch_tallies_for_contest
 
     def process() -> None:
         contests = list(jurisdiction.contests)
