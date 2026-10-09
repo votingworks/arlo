@@ -6,7 +6,7 @@ import time
 from server.database import db_session
 from server.worker.tasks import (
     claim_next_task,
-    reset_task,
+    reset_worker_tasks,
     run_task,
 )
 from server.sentry import configure_sentry
@@ -18,16 +18,12 @@ from server import api  # noqa
 
 
 def run_worker(worker_id: str, db_session, pause_between_tasks_seconds):
-    task = None
-
     # Heroku dynos are sent one or more SIGTERM signals when they are shut down,
     # then a SIGKILL if they don't exit after 30 seconds. If we're interrupted
     # in the middle of a task, reset it before exiting so it can be picked up by
     # another worker.
     def interrupt_handler(*_args):
-        nonlocal task
-        if task:
-            reset_task(task, db_session)
+        reset_worker_tasks(worker_id, db_session)
         sys.exit(1)
 
     signal.signal(signal.SIGTERM, interrupt_handler)
