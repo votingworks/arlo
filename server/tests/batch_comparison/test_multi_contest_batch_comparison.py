@@ -131,24 +131,6 @@ def batch_tallies(
         assert_ok(rv)
 
 
-def put_batch_results(
-    client: FlaskClient,
-    election_id: str,
-    jurisdiction_id: str,
-    round_id: str,
-    batch_id: str,
-    results: list[dict[str, int]],
-):
-    return put_json(
-        client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/batches/{batch_id}/results",
-        [
-            {"name": f"Tally Sheet #{i}", "results": sheet_results}
-            for i, sheet_results in enumerate(results)
-        ],
-    )
-
-
 def test_multi_contest_batch_comparison_jurisdiction_upload_validation(
     client: FlaskClient,
     election_id: str,
