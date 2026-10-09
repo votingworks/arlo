@@ -710,7 +710,11 @@ def test_worker_interrupted_right_after_claiming_task(db_session):
     worker = context.Process(target=run_test_worker)
     worker.start()
     worker.join(timeout=10)
-    assert not worker.is_alive(), "Worker didn't exit after being interrupted"
+    worker_exited = not worker.is_alive()
+    if not worker_exited:
+        worker.kill()
+        worker.join()
+    assert worker_exited, "Worker didn't exit after being interrupted"
 
     # The task should have been reset so that another worker can pick it up
     db_session.refresh(task)
