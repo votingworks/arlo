@@ -1,5 +1,5 @@
 import enum
-from typing import Type
+from typing import Type, cast
 from datetime import datetime as dt, timezone
 from werkzeug.exceptions import NotFound
 import sqlalchemy
@@ -420,6 +420,15 @@ class Batch(BaseModel):
     # the number of ballots carrying a specific contest in this batch. Contests
     # not listed here are assumed to be on num_ballots
     num_ballots_by_contest_id = Column(JSON)
+
+    def has_num_ballots_for_contest(self, contest_id: str) -> bool:
+        return contest_id in (self.num_ballots_by_contest_id or {})
+
+    def num_ballots_for_contest(self, contest_id: str) -> int:
+        num_ballots_by_contest_id = cast(
+            dict[str, int], self.num_ballots_by_contest_id or {}
+        )
+        return num_ballots_by_contest_id.get(contest_id, self.num_ballots)
 
     # For ballot polling and ballot comparison audits, a batch is associated
     # with a group of ballots sampled from this batch

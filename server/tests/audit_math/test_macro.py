@@ -1281,3 +1281,51 @@ def test_runoff_exact_tie_threshold_returns_infinite_max_error():
     )
 
     assert max_err == Decimal("inf")
+
+
+DISTRICT_CONTEST = Contest(
+    "District",
+    {
+        "winner": 6000,
+        "loser": 4000,
+        "ballots": 10000,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    },
+)
+
+
+def district_batches(ballots: int):
+    return {
+        f"Batch {i}": {"District": {"winner": 60, "loser": 40, "ballots": ballots}}
+        for i in range(100)
+    }
+
+
+def test_contest_ballot_counts_tighten_sample_size():
+    # A batch's "ballots" is the number of ballots carrying the contest. When
+    # the manifest gives the count per contest (card style data) instead of the
+    # batch total, the per-batch error bounds shrink and so does the sample.
+    diluted = district_batches(1000)  # Every ballot in the batch
+    exact = district_batches(100)  # Only the ballots carrying the contest
+    assert macro.compute_U(exact, DISTRICT_CONTEST) < macro.compute_U(
+        diluted, DISTRICT_CONTEST
+    )
+    assert (
+        macro.get_sample_sizes(RISK_LIMIT, DISTRICT_CONTEST, diluted, {}, {}, []) == 72
+    )
+    assert macro.get_sample_sizes(RISK_LIMIT, DISTRICT_CONTEST, exact, {}, {}, []) == 9
+
+
+def test_compute_risk_with_error_beyond_bound():
+    # Audited results beyond a batch's error bound, as a combined batch can
+    # produce, must leave the p-value unbounded rather than negative
+    sample = {"Batch 0": {"District": {"winner": 0, "loser": 150}}}
+    assert macro.compute_risk(
+        RISK_LIMIT,
+        DISTRICT_CONTEST,
+        district_batches(100),
+        sample,
+        {"0.1": "Batch 0"},
+        [],
+    ) == (1.0, False)

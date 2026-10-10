@@ -497,8 +497,11 @@ def compute_risk(
 
         taint = e_p / u_p
 
-        if taint == 1:
-            p = Decimal("inf")  # Our p-value blows up
+        # A combined batch's error e_p covers all of its sub-batches while its bound u_p
+        # is the original batch's alone, so the error can exceed the bound, leading to
+        # a taint >= 1. Thus the p-value blows up
+        if taint >= 1:
+            p = Decimal("inf")
         else:
             p *= (1 - 1 / U) / (1 - taint)
 

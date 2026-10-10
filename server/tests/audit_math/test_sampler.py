@@ -505,3 +505,76 @@ def test_ballot_labels():
         sample = sampler.draw_sample(SEED, manifest, 100, 0)
         for _, (batch, ballot_number), _ in sample:
             assert 1 <= ballot_number <= max(manifest[batch])
+
+
+def test_draw_ppeb_sample_skips_batches_without_contest(macro_contest, macro_batches):
+    # A batch with no ballots carrying the contest has no possible error
+    batches = {
+        **macro_batches,
+        ("Jx 1", "no contest"): {CONTEST_NAME: {"cand1": 0, "cand2": 0, "ballots": 0}},
+    }
+    weights = sampler.ppeb_weights(macro_contest, batches, list(batches))
+    assert weights[-1] == 0
+    sample = sampler.draw_ppeb_sample(SEED, macro_contest, 5, [], batches)
+    assert ("Jx 1", "no contest") not in {batch for _, batch in sample}
+
+
+def test_draw_nested_ppeb_positions_with_contest_ballot_counts():
+    # The child is on every ballot in some of the parent's batches, on only
+    # some ballots in others, and on none in the rest. Its draws must follow
+    # its own weights, which come from those counts, and never land on a batch
+    # with no ballots for it.
+    parent = Contest(
+        "Parent",
+        {
+            "winner": 6000,
+            "loser": 4000,
+            "ballots": 10000,
+            "numWinners": 1,
+            "votesAllowed": 1,
+        },
+    )
+    child = Contest(
+        "Child",
+        {
+            "winner": 600,
+            "loser": 400,
+            "ballots": 1000,
+            "numWinners": 1,
+            "votesAllowed": 1,
+        },
+    )
+    batch_keys = [("J1", f"Batch {i}") for i in range(10)]
+    parent_results = {
+        batch_key: {"Parent": {"winner": 600, "loser": 400, "ballots": 1000}}
+        for batch_key in batch_keys
+    }
+    child_results = {
+        batch_key: {"Child": {"winner": 90, "loser": 60, "ballots": 150}}
+        for batch_key in batch_keys[:4]
+    }
+    child_results.update(
+        {
+            batch_key: {"Child": {"winner": 120, "loser": 80, "ballots": 200}}
+            for batch_key in batch_keys[4:6]
+        }
+    )
+    child_results.update(
+        {
+            batch_key: {"Child": {"winner": 0, "loser": 0, "ballots": 0}}
+            for batch_key in batch_keys[6:]
+        }
+    )
+    parent_weights = sampler.ppeb_weights(parent, parent_results, batch_keys)
+    child_weights = sampler.ppeb_weights(child, child_results, batch_keys)
+    assert child_weights[6:] == [0, 0, 0, 0]
+
+    sample_size = 100_000
+    parent_draw = sampler.draw_ppeb_positions(SEED, parent_weights, sample_size)
+    child_sampled_batch_indexes, _ = sampler.draw_nested_ppeb_positions(
+        *parent_draw, parent_weights, child_weights
+    )
+    assert batch_frequencies(
+        child_sampled_batch_indexes, len(batch_keys)
+    ) == pytest.approx(child_weights, abs=0.01)
+    assert not set(child_sampled_batch_indexes) & {6, 7, 8, 9}

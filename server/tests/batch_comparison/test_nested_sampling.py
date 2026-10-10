@@ -8,7 +8,6 @@ from ...api.shared import batch_tallies as contest_batch_tallies
 from ...audit_math import sampler, sampler_contest
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
-from .test_multi_contest_batch_comparison import put_batch_results
 
 JURISDICTION_NAMES = ["J1", "J2", "J3"]
 BALLOTS_PER_BATCH = 50
@@ -132,64 +131,6 @@ def batch_tallies(  # pylint: disable=unused-argument
         assert_ok(rv)
 
 
-# { contest name: [(jurisdiction name, batch name, ticket number)] }
-def sampled_batch_draws(round_id: str) -> dict[str, list[tuple[str, str, str]]]:
-    draws = (
-        SampledBatchDraw.query.filter_by(round_id=round_id)
-        .join(Batch)
-        .join(Jurisdiction)
-        .join(Contest, SampledBatchDraw.contest_id == Contest.id)
-        .with_entities(
-            Contest.name, Jurisdiction.name, Batch.name, SampledBatchDraw.ticket_number
-        )
-        .all()
-    )
-    draws_by_contest: dict[str, list[tuple[str, str, str]]] = {}
-    for contest_name, jurisdiction_name, batch_name, ticket_number in draws:
-        draws_by_contest.setdefault(contest_name, []).append(
-            (jurisdiction_name, batch_name, ticket_number)
-        )
-    return {name: sorted(rows) for name, rows in draws_by_contest.items()}
-
-
-def enter_reported_results(
-    client: FlaskClient,
-    election_id: str,
-    round_id: str,
-    jurisdiction_id: str,
-    jurisdiction_name: str,
-    choice_id_by_candidate: dict[Candidate, str],
-    overrides: dict[str, dict[Candidate, int]],
-):
-    # J1 and J2 share an admin in the jurisdictions file; J3 has its own
-    set_logged_in_user(
-        client,
-        UserType.JURISDICTION_ADMIN,
-        f"j3-{election_id}@example.com"
-        if jurisdiction_name == "J3"
-        else default_ja_email(election_id),
-    )
-    rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/batches"
-    )
-    for batch in json.loads(rv.data)["batches"]:
-        votes = overrides.get(
-            batch["name"], BATCH_VOTES[jurisdiction_name][batch["name"]]
-        )
-        results = {
-            choice_id_by_candidate[candidate]: count
-            for candidate, count in votes.items()
-        }
-        rv = put_batch_results(
-            client, election_id, jurisdiction_id, round_id, batch["id"], [results]
-        )
-        assert_ok(rv)
-    rv = client.post(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/batches/finalize"
-    )
-    assert_ok(rv)
-
-
 @pytest.mark.usefixtures("election_settings", "manifests", "batch_tallies")
 def test_nested_sampling_end_to_end(
     client: FlaskClient,
@@ -301,9 +242,10 @@ def test_nested_sampling_end_to_end(
             jurisdiction_id,
             jurisdiction_name,
             choice_id_by_candidate,
-            overrides={swapped_batch_name: swapped_votes}
-            if jurisdiction_name == "J1"
-            else {},
+            votes_by_batch_name=BATCH_VOTES[jurisdiction_name]
+            | (
+                {swapped_batch_name: swapped_votes} if jurisdiction_name == "J1" else {}
+            ),
         )
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
