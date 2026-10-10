@@ -247,10 +247,13 @@ def validate_batch_results(
                 jurisdiction_id=jurisdiction.id,
             )
             batch_name = batch.combined_batch_name
-            num_ballots = sum(sub_batch.num_ballots for sub_batch in sub_batches)
+            num_ballots = sum(
+                sub_batch.num_ballots_for_contest(contest.id)
+                for sub_batch in sub_batches
+            )
         else:
             batch_name = batch.name
-            num_ballots = batch.num_ballots
+            num_ballots = batch.num_ballots_for_contest(contest.id)
 
         assert contest.votes_allowed is not None
         allowed_votes = num_ballots * contest.votes_allowed

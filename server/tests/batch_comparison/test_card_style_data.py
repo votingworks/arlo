@@ -351,3 +351,193 @@ def test_batch_tallies_keep_contest_ballot_counts_after_rename(
     assert processing["status"] == ProcessingStatus.PROCESSED
     batch_tallies = Jurisdiction.query.get(jurisdiction_ids[0]).batch_tallies
     assert batch_tallies["Batch 1"][contest_ids[0]]["ballots"] == 120
+
+
+@pytest.mark.usefixtures("election_settings")
+def test_combined_batches_with_card_style_data(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
+):
+    # Report totals that match the batch tallies below so the margin is sound
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contest = json.loads(rv.data)["contests"][0]
+    del contest["totalBallotsCast"]
+    num_votes_by_name = {"candidate 1": 1600, "candidate 2": 190, "candidate 3": 190}
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/contest",
+        [
+            {
+                **contest,
+                "choices": [
+                    {**choice, "numVotes": num_votes_by_name[choice["name"]]}
+                    for choice in contest["choices"]
+                ],
+            }
+        ],
+    )
+    assert_ok(rv)
+
+    processing = upload_manifest(
+        client,
+        election_id,
+        jurisdiction_ids[0],
+        b"Batch Name,Number of Ballots,Contest 1 - Number of Ballots\n"
+        b"Batch 1,500,120\n"
+        b"Batch 2,500,120\n"
+        b"Batch 3,500,120\n"
+        b"Batch 4,500,120\n"
+        b"Batch 5,500,0\n",
+    )
+    assert processing["status"] == ProcessingStatus.PROCESSED
+    processing = upload_manifest(
+        client,
+        election_id,
+        jurisdiction_ids[1],
+        b"Batch Name,Number of Ballots\nBatch 1,500\nBatch 2,500\nBatch 3,500\n",
+    )
+    assert processing["status"] == ProcessingStatus.PROCESSED
+    processing = upload_tallies(
+        client,
+        election_id,
+        jurisdiction_ids[0],
+        b"Batch Name,candidate 1,candidate 2,candidate 3\n"
+        b"Batch 1,100,10,10\n"
+        b"Batch 2,100,10,10\n"
+        b"Batch 3,100,10,10\n"
+        b"Batch 4,100,10,10\n"
+        b"Batch 5,0,0,0\n",
+    )
+    assert processing["status"] == ProcessingStatus.PROCESSED
+    processing = upload_tallies(
+        client,
+        election_id,
+        jurisdiction_ids[1],
+        b"Batch Name,candidate 1,candidate 2,candidate 3\n"
+        b"Batch 1,400,50,50\n"
+        b"Batch 2,400,50,50\n"
+        b"Batch 3,400,50,50\n",
+    )
+    assert processing["status"] == ProcessingStatus.PROCESSED
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 1,
+            "sampleSizes": {contest_ids[0]: {"key": "custom", "size": 2, "prob": None}},
+        },
+    )
+    assert_ok(rv)
+    rv = client.get(f"/api/election/{election_id}/round")
+    round_1_id = json.loads(rv.data)["rounds"][0]["id"]
+    choice_id_by_name = {
+        choice.name: choice.id for choice in Contest.query.get(contest_ids[0]).choices
+    }
+
+    # A batch's audited votes are capped by its ballots for the contest (120),
+    # not all of its ballots (500)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches"
+    )
+    batch_id = next(
+        batch["id"]
+        for batch in json.loads(rv.data)["batches"]
+        if batch["name"] == "Batch 2"
+    )
+    rv = put_batch_results(
+        client,
+        election_id,
+        jurisdiction_ids[0],
+        round_1_id,
+        batch_id,
+        [
+            {
+                choice_id_by_name["candidate 1"]: 200,
+                choice_id_by_name["candidate 2"]: 50,
+                choice_id_by_name["candidate 3"]: 0,
+            }
+        ],
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "Total votes for batch Batch 2 contest Contest 1 should not exceed 240 - the number of ballots in the batch (120) times the number of votes allowed (2).",
+            }
+        ]
+    }
+
+    # A combined batch is capped by the sum of its sub-batches' ballots for the
+    # contest, including Batch 5 with none
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
+    rv = post_json(
+        client,
+        f"/api/support/jurisdictions/{jurisdiction_ids[0]}/combined-batches",
+        {
+            "name": "Combined Batch",
+            "subBatchIds": [
+                batch.id
+                for batch in Batch.query.filter_by(jurisdiction_id=jurisdiction_ids[0])
+            ],
+        },
+    )
+    assert_ok(rv)
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches"
+    )
+    batches = json.loads(rv.data)["batches"]
+    assert [batch["name"] for batch in batches] == ["Combined Batch"]
+    # 961 votes fit in the combined batch's 2500 ballots, but not in the
+    # 4 x 120 + 0 carrying the contest
+    rv = put_batch_results(
+        client,
+        election_id,
+        jurisdiction_ids[0],
+        round_1_id,
+        batches[0]["id"],
+        [
+            {
+                choice_id_by_name["candidate 1"]: 800,
+                choice_id_by_name["candidate 2"]: 161,
+                choice_id_by_name["candidate 3"]: 0,
+            }
+        ],
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "Total votes for batch Combined Batch contest Contest 1 should not exceed 960 - the number of ballots in the batch (480) times the number of votes allowed (2).",
+            }
+        ]
+    }
+
+    rv = put_batch_results(
+        client,
+        election_id,
+        jurisdiction_ids[0],
+        round_1_id,
+        batches[0]["id"],
+        [
+            {
+                choice_id_by_name["candidate 1"]: 400,
+                choice_id_by_name["candidate 2"]: 40,
+                choice_id_by_name["candidate 3"]: 40,
+            }
+        ],
+    )
+    assert_ok(rv)
