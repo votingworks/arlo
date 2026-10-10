@@ -394,3 +394,109 @@ def test_contest_total_ballots_from_contest_counts(
     )
     assert processing["status"] == ProcessingStatus.PROCESSED
     assert total_ballots_cast() == 500 + 500 + 500
+
+
+@pytest.mark.usefixtures("election_settings")
+def test_audited_results_limited_by_contest_ballot_counts(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
+):
+    # Report totals that match the batch tallies below so the margin is sound
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contest = json.loads(rv.data)["contests"][0]
+    del contest["totalBallotsCast"]
+    num_votes_by_name = {"candidate 1": 700, "candidate 2": 250, "candidate 3": 250}
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/contest",
+        [
+            {
+                **contest,
+                "choices": [
+                    {**choice, "numVotes": num_votes_by_name[choice["name"]]}
+                    for choice in contest["choices"]
+                ],
+            }
+        ],
+    )
+    assert_ok(rv)
+
+    upload_contest_count_manifests(client, election_id, jurisdiction_ids)
+    upload_contest_count_tallies(client, election_id, jurisdiction_ids)
+
+    # Sample every batch so Batch 1 is certainly in the round
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 1,
+            "sampleSizes": {contest_ids[0]: {"key": "custom", "size": 3, "prob": None}},
+        },
+    )
+    assert_ok(rv)
+    rv = client.get(f"/api/election/{election_id}/round")
+    round_id = json.loads(rv.data)["rounds"][0]["id"]
+    choice_id_by_name = {
+        choice.name: choice.id for choice in Contest.query.get(contest_ids[0]).choices
+    }
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/batches"
+    )
+    batch_id = next(
+        batch["id"]
+        for batch in json.loads(rv.data)["batches"]
+        if batch["name"] == "Batch 1"
+    )
+    # 250 votes fit in the batch's 500 ballots, but not in the 120 carrying the contest
+    rv = put_batch_results(
+        client,
+        election_id,
+        jurisdiction_ids[0],
+        round_id,
+        batch_id,
+        [
+            {
+                choice_id_by_name["candidate 1"]: 200,
+                choice_id_by_name["candidate 2"]: 50,
+                choice_id_by_name["candidate 3"]: 0,
+            }
+        ],
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "Total votes for batch Batch 1 contest Contest 1 should not exceed 240 - the number of ballots in the batch (120) times the number of votes allowed (2).",
+            }
+        ]
+    }
+
+
+def test_manifest_contest_ballot_counts_zero_in_every_batch(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],  # pylint: disable=unused-argument
+):
+    processing = upload_manifest(
+        client,
+        election_id,
+        jurisdiction_ids[0],
+        b"Batch Name,Number of Ballots,Contest 1 - Number of Ballots\n"
+        b"Batch 1,500,0\n"
+        b"Batch 2,500,0\n",
+    )
+    assert processing["status"] == ProcessingStatus.ERRORED
+    assert (
+        processing["error"]
+        == "Found 1 column with 0 ballots in every batch: Contest 1 - Number of Ballots. If this jurisdiction has no ballots for a contest, remove the jurisdiction from the contest instead."
+    )

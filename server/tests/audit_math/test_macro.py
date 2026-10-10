@@ -1315,3 +1315,17 @@ def test_contest_ballot_counts_tighten_sample_size():
         macro.get_sample_sizes(RISK_LIMIT, DISTRICT_CONTEST, diluted, {}, {}, []) == 72
     )
     assert macro.get_sample_sizes(RISK_LIMIT, DISTRICT_CONTEST, exact, {}, {}, []) == 9
+
+
+def test_compute_risk_with_error_beyond_bound():
+    # Audited results beyond a batch's error bound, as a combined batch can
+    # produce, must leave the p-value unbounded rather than negative
+    sample = {"Batch 0": {"District": {"winner": 0, "loser": 150}}}
+    assert macro.compute_risk(
+        RISK_LIMIT,
+        DISTRICT_CONTEST,
+        district_batches(100),
+        sample,
+        {"0.1": "Batch 0"},
+        [],
+    ) == (1.0, False)
