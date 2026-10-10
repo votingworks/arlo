@@ -215,6 +215,7 @@ def process_ballot_manifest_file(
         num_batches = 0
         num_ballots = 0
         rows_without_ballots: list[int] = []
+        num_ballots_by_contest_id_total: dict[str, int] = {}
 
         for row_index, row in enumerate(manifest_csv):
             # For the "sample extra batches by counting group" feature, we
@@ -237,6 +238,14 @@ def process_ballot_manifest_file(
                 rows_without_ballots.append(row_index + 2)
                 continue
 
+            num_ballots_by_contest_id = contest_number_of_ballots_for_row(
+                row, contest_number_of_ballots_headers, row_index + 2
+            )
+            for contest_id, contest_num_ballots in num_ballots_by_contest_id.items():
+                num_ballots_by_contest_id_total[contest_id] = (
+                    num_ballots_by_contest_id_total.get(contest_id, 0)
+                    + contest_num_ballots
+                )
             batch = Batch(
                 id=str(uuid.uuid4()),
                 name=row[BATCH_NAME],
@@ -245,10 +254,7 @@ def process_ballot_manifest_file(
                 container=row.get(CONTAINER, None),
                 tabulator=row.get(TABULATOR, None),
                 has_cvrs=row.get(CVR, None),
-                num_ballots_by_contest_id=contest_number_of_ballots_for_row(
-                    row, contest_number_of_ballots_headers, row_index + 2
-                )
-                or None,
+                num_ballots_by_contest_id=num_ballots_by_contest_id or None,
             )
             db_session.add(batch)
             num_batches += 1
@@ -261,6 +267,22 @@ def process_ballot_manifest_file(
             displayed_rows = ", ".join(str(row) for row in rows_without_ballots)
             raise CSVParseError(
                 f'Found {num_rows} {"batch" if num_rows == 1 else "batches"} with 0 ballots in column "Number of Ballots" ({pluralize("row", num_rows)} {displayed_rows}). Batches must have at least 1 ballot. Please remove {"this row" if num_rows == 1 else "these rows"} from the CSV.'
+            )
+
+        # A column that is 0 in every batch means the jurisdiction has no
+        # ballots for the contest and shouldn't be assigned it
+        columns_without_ballots = [
+            csv_header
+            for contest_id, csv_header in contest_number_of_ballots_headers.items()
+            if num_ballots_by_contest_id_total.get(contest_id) == 0
+        ]
+        if len(columns_without_ballots) > 0:
+            num_columns = len(columns_without_ballots)
+            raise CSVParseError(
+                f"Found {num_columns} {pluralize('column', num_columns)} with 0 ballots"
+                f" in every batch: {', '.join(columns_without_ballots)}. If this"
+                " jurisdiction has no ballots for a contest, remove the jurisdiction"
+                " from the contest instead."
             )
 
         jurisdiction.manifest_num_ballots = num_ballots
