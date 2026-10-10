@@ -64,7 +64,10 @@ def validate_new_election(election: JSONDict):
             AuditMathType.SUPERSIMPLE,
             AuditMathType.CARD_STYLE_DATA,
         ],
-        AuditType.BATCH_COMPARISON: [AuditMathType.MACRO],
+        AuditType.BATCH_COMPARISON: [
+            AuditMathType.MACRO,
+            AuditMathType.CARD_STYLE_DATA,
+        ],
         AuditType.HYBRID: [AuditMathType.SUITE],
     }
 

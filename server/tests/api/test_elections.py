@@ -90,6 +90,53 @@ def test_create_election_new_batch_comparison_audit(client: FlaskClient, org_id:
     assert Election.query.get(election_id).online is False
 
 
+def test_create_election_new_batch_comparison_card_style_data_audit(
+    client: FlaskClient, org_id: str
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+
+    rv = post_json(
+        client,
+        "/api/election",
+        {
+            "auditName": "Test Audit Batch Comparison Card Style Data",
+            "organizationId": org_id,
+            "auditType": "BATCH_COMPARISON",
+            "auditMathType": AuditMathType.CARD_STYLE_DATA,
+        },
+    )
+    assert rv.status_code == 200
+    election_id = json.loads(rv.data)["electionId"]
+    assert (
+        Election.query.get(election_id).audit_math_type == AuditMathType.CARD_STYLE_DATA
+    )
+
+
+def test_create_election_card_style_data_mismatched_type(
+    client: FlaskClient, org_id: str
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = post_json(
+        client,
+        "/api/election",
+        {
+            "auditName": "Test Audit",
+            "auditType": AuditType.HYBRID,
+            "auditMathType": AuditMathType.CARD_STYLE_DATA,
+            "organizationId": org_id,
+        },
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "message": "Audit math type 'CARD_STYLE_DATA' cannot be used with audit type 'HYBRID'",
+                "errorType": "Conflict",
+            }
+        ]
+    }
+
+
 def test_create_election_new_ballot_comparison_audit(client: FlaskClient, org_id: str):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
 
