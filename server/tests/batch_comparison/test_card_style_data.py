@@ -541,3 +541,24 @@ def test_combined_batches_with_card_style_data(
         ],
     )
     assert_ok(rv)
+
+
+def test_manifest_contest_ballot_counts_zero_in_every_batch(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],  # pylint: disable=unused-argument
+):
+    processing = upload_manifest(
+        client,
+        election_id,
+        jurisdiction_ids[0],
+        b"Batch Name,Number of Ballots,Contest 1 - Number of Ballots\n"
+        b"Batch 1,500,0\n"
+        b"Batch 2,500,0\n",
+    )
+    assert processing["status"] == ProcessingStatus.ERRORED
+    assert (
+        processing["error"]
+        == "Found 1 column with 0 ballots in every batch: Contest 1 - Number of Ballots. If this jurisdiction has no ballots for a contest, remove the jurisdiction from the contest instead."
+    )
