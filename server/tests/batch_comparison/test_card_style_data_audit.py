@@ -1,3 +1,4 @@
+import csv
 import io
 import json
 import uuid
@@ -99,9 +100,17 @@ def total_votes(candidate: Candidate) -> int:
     return sum(batch["votes"].get(candidate, 0) for batch in all_batches())
 
 
+def num_ballots_for_jurisdiction(jurisdiction_name: str, contest_name: str) -> int:
+    return sum(
+        batch["cards_by_contest"].get(contest_name, 0)
+        for batch in BATCHES[jurisdiction_name].values()
+    )
+
+
 def total_cards(contest_name: str) -> int:
     return sum(
-        batch["cards_by_contest"].get(contest_name, 0) for batch in all_batches()
+        num_ballots_for_jurisdiction(jurisdiction_name, contest_name)
+        for jurisdiction_name in JURISDICTION_NAMES
     )
 
 
@@ -285,6 +294,26 @@ def test_card_style_data_end_to_end(
     assert {contest["name"]: contest["totalBallotsCast"] for contest in contests} == {
         name: total_cards(name) for name in CONTEST_NAMES
     }
+
+    # So does the reported results CSV, per jurisdiction
+    rv = client.get(
+        f"/api/election/{election_id}/batch-tallies/summed-by-jurisdiction-csv"
+    )
+    rows = list(csv.DictReader(io.StringIO(rv.data.decode("utf-8"))))
+    assert [row["Jurisdiction"] for row in rows] == JURISDICTION_NAMES + ["Total"]
+    assert [row["Total Ballots"] for row in rows] == [
+        str(len(BATCHES[jurisdiction_name]) * CARDS_PER_BATCH)
+        for jurisdiction_name in JURISDICTION_NAMES
+    ] + [str(sum(len(batches) for batches in BATCHES.values()) * CARDS_PER_BATCH)]
+    for name in CONTEST_NAMES:
+        assert [row[f"{name} - Total Ballots"] for row in rows] == [
+            (
+                str(num_ballots_for_jurisdiction(jurisdiction_name, name))
+                if jurisdiction_name in contest_jurisdiction_names(name)
+                else ""
+            )
+            for jurisdiction_name in JURISDICTION_NAMES
+        ] + [str(total_cards(name))]
 
     rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     sample_size_options = json.loads(rv.data)["sampleSizes"]
