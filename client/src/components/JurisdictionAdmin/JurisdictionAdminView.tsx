@@ -62,6 +62,8 @@ const JurisdictionAdminView: React.FC = () => {
   const isBallotComparison =
     auditSettings && auditSettings.auditType === 'BALLOT_COMPARISON'
   const isHybrid = auditSettings && auditSettings.auditType === 'HYBRID'
+  const isBatchComparisonCardStyleData =
+    auditSettings?.auditMathType === 'MACRO_CARD_STYLE_DATA'
 
   if (
     !auth?.user ||
@@ -154,7 +156,13 @@ const JurisdictionAdminView: React.FC = () => {
                   comma-separated list of all the ballot boxes/containers used
                   to store ballots for this particular election, plus a count of
                   how many ballot cards (individual pieces of paper) are stored
-                  in each container.`
+                  in each container.${
+                    isBatchComparisonCardStyleData
+                      ? ` For each contest that is not on every ballot, add a
+                  column with how many of the ballot cards in each container
+                  include that contest, as shown in the template.`
+                      : ''
+                  }`
                   }
                   sampleFileLink={(type => {
                     switch (type) {
@@ -163,7 +171,9 @@ const JurisdictionAdminView: React.FC = () => {
                       case 'HYBRID':
                         return '/sample_manifest_hybrid.csv'
                       default:
-                        return '/sample_ballot_manifest.csv'
+                        return isBatchComparisonCardStyleData
+                          ? '/sample_manifest_CSD.csv'
+                          : '/sample_ballot_manifest.csv'
                     }
                   })(auditSettings.auditType)}
                   enabled

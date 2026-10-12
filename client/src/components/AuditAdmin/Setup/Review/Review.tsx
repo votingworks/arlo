@@ -552,6 +552,7 @@ const Review: React.FC<IProps> = ({
                 MACRO: 'MACRO',
                 SUITE: 'SUITE',
                 SUPERSIMPLE_CARD_STYLE_DATA: 'Card Style Data',
+                MACRO_CARD_STYLE_DATA: 'Card Style Data',
               }[auditMathType]
             }
           </LabeledValue>

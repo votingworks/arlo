@@ -68,6 +68,28 @@ describe('JA setup', () => {
       await screen.findByText('Audit Setup')
       screen.getByText(/Jurisdiction One/)
       screen.getByText(/audit one/)
+      expect(screen.queryByText(/not on every ballot/)).not.toBeInTheDocument()
+    })
+  })
+
+  it('describes per-contest ballot count columns in card style data audits', async () => {
+    const expectedCalls = [
+      jaApiCalls.getUser,
+      jaApiCalls.getSettings({
+        ...auditSettingsMocks.batchComparisonAll,
+        auditMathType: 'MACRO_CARD_STYLE_DATA',
+      }),
+      jaApiCalls.getRounds([]),
+      jaApiCalls.getBallotManifestFile(manifestMocks.empty),
+      jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView()
+      await screen.findByText('Audit Setup')
+      screen.getByText(/not on every ballot/)
+      expect(
+        screen.getAllByRole('button', { name: 'Download Template' })[0]
+      ).toHaveAttribute('href', '/sample_manifest_CSD.csv')
     })
   })
 
