@@ -152,7 +152,7 @@ def sample_size_options(election: Election) -> dict[str, dict[str, SampleSizeOpt
                 rounds.batch_tallies(contest),
                 rounds.sampled_batch_results(contest),
                 rounds.sampled_batches_by_ticket_number(contest),
-                combined_batch_keys(election.id),
+                combined_batch_keys(contest),
             )
             return {"macro": {"key": "macro", "size": sample_size, "prob": None}}
 
