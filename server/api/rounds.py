@@ -299,7 +299,7 @@ def calculate_risk_measurements(election: Election, round: Round):
                 batch_tallies(contest),
                 sampled_batch_results(contest),
                 sampled_batches_by_ticket_number(contest),
-                combined_batch_keys(election.id),
+                combined_batch_keys(contest),
             )
         elif election.audit_type == AuditType.BALLOT_COMPARISON:
             p_value, is_complete = supersimple.compute_risk(

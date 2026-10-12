@@ -133,15 +133,18 @@ def group_combined_batches(all_sub_batches: list[Batch]) -> list[CombinedBatch]:
     ]
 
 
-def combined_batch_keys(election_id: str) -> list[set[sampler.BatchKey]]:
+def combined_batch_keys(contest: Contest) -> list[set[sampler.BatchKey]]:
     sub_batches = (
         Batch.query.join(Jurisdiction)
-        .filter_by(election_id=election_id)
+        .filter_by(election_id=contest.election_id)
         .filter(Batch.combined_batch_name.isnot(None))
         .all()
     )
+    # Sub-batches with no ballots for the contest aren't in its batch tallies
+    contest_batch_keys = batch_tallies(contest).keys()
     return [
         {(sub_batch.jurisdiction.name, sub_batch.name) for sub_batch in sub_batches}
+        & contest_batch_keys
         for _, sub_batches in group_by(
             sub_batches, lambda batch: batch.combined_batch_name
         ).items()

@@ -526,21 +526,84 @@ def test_combined_batches_with_card_style_data(
         ]
     }
 
-    rv = put_batch_results(
+    # Finishing the round and sizing round 2 both look up the combined batch's
+    # sub-batches in the contest's tallies, which properly leaves out Batch 5
+    # since it has 0 ballots for this contest
+    choice_id_by_candidate = {
+        ("Contest 1", name): choice_id for name, choice_id in choice_id_by_name.items()
+    }
+    votes_by_batch_name = {
+        "Combined Batch": {
+            ("Contest 1", "candidate 1"): 400,
+            ("Contest 1", "candidate 2"): 40,
+            ("Contest 1", "candidate 3"): 40,
+        },
+        "Batch 1": {
+            ("Contest 1", "candidate 1"): 400,
+            ("Contest 1", "candidate 2"): 50,
+            ("Contest 1", "candidate 3"): 50,
+        },
+        "Batch 2": {
+            ("Contest 1", "candidate 1"): 400,
+            ("Contest 1", "candidate 2"): 50,
+            ("Contest 1", "candidate 3"): 50,
+        },
+        "Batch 3": {
+            ("Contest 1", "candidate 1"): 400,
+            ("Contest 1", "candidate 2"): 50,
+            ("Contest 1", "candidate 3"): 50,
+        },
+    }
+    for jurisdiction_id, jurisdiction_name in zip(jurisdiction_ids, ["J1", "J2"]):
+        enter_reported_results(
+            client,
+            election_id,
+            round_1_id,
+            jurisdiction_id,
+            jurisdiction_name,
+            choice_id_by_candidate,
+            votes_by_batch_name,
+            {},
+        )
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
+    assert_ok(rv)
+    rv = client.get(f"/api/election/{election_id}/round")
+    round_1 = json.loads(rv.data)["rounds"][0]
+    assert round_1["endedAt"] is not None
+    assert round_1["isAuditComplete"] is False
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/2")
+    round_2_sample_size = json.loads(rv.data)["sampleSizes"][contest_ids[0]][0]
+
+    # Round 2's four more draws bring the risk under the limit, so the audit
+    # completes without a full hand tally of the seven batches with ballots for
+    # the contest
+    assert round_2_sample_size == {"key": "macro", "size": 4, "prob": None}
+    rv = post_json(
         client,
-        election_id,
-        jurisdiction_ids[0],
-        round_1_id,
-        batches[0]["id"],
-        [
-            {
-                choice_id_by_name["candidate 1"]: 400,
-                choice_id_by_name["candidate 2"]: 40,
-                choice_id_by_name["candidate 3"]: 40,
-            }
-        ],
+        f"/api/election/{election_id}/round",
+        {"roundNum": 2, "sampleSizes": {contest_ids[0]: round_2_sample_size}},
     )
     assert_ok(rv)
+    rv = client.get(f"/api/election/{election_id}/round")
+    round_2_id = json.loads(rv.data)["rounds"][1]["id"]
+    for jurisdiction_id, jurisdiction_name in zip(jurisdiction_ids, ["J1", "J2"]):
+        enter_reported_results(
+            client,
+            election_id,
+            round_2_id,
+            jurisdiction_id,
+            jurisdiction_name,
+            choice_id_by_candidate,
+            votes_by_batch_name,
+            {},
+        )
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
+    assert_ok(rv)
+    rv = client.get(f"/api/election/{election_id}/round")
+    assert json.loads(rv.data)["rounds"][1]["isAuditComplete"] is True
 
 
 def test_manifest_contest_ballot_counts_zero_in_every_batch(
