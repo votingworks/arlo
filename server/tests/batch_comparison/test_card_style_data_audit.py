@@ -41,7 +41,7 @@ def district_cards(jurisdiction_name: str, batch_index: int) -> dict[str, int]:
             "US House District 13": (
                 0 if batch_index <= 20 else 40 if batch_index <= 30 else CARDS_PER_BATCH
             ),
-            "State Senate District 5": CARDS_PER_BATCH if batch_index <= 10 else 0,
+            "State Senate District 5": CARDS_PER_BATCH if batch_index <= 25 else 0,
         }
     if jurisdiction_name == "J2":
         return {
@@ -251,9 +251,13 @@ def assert_draws_only_where_contest_has_cards(
 # The sample size the contest would have had with every batch's full card
 # count, i.e. without card style data
 def diluted_sample_size(contest: Contest) -> int:
+    # Every batch in the contest's jurisdictions, each with its full card count
     diluted_tallies = {
-        batch_key: {contest.id: {**tallies[contest.id], "ballots": CARDS_PER_BATCH}}
-        for batch_key, tallies in contest_batch_tallies(contest).items()
+        (jurisdiction.name, batch_name): {
+            contest.id: {**tallies[contest.id], "ballots": CARDS_PER_BATCH}
+        }
+        for jurisdiction in contest.jurisdictions
+        for batch_name, tallies in jurisdiction.batch_tallies.items()
     }
     return macro.get_sample_sizes(
         contest.election.risk_limit,

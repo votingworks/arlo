@@ -562,3 +562,101 @@ def test_manifest_contest_ballot_counts_zero_in_every_batch(
         processing["error"]
         == "Found 1 column with 0 ballots in every batch: Contest 1 - Number of Ballots. If this jurisdiction has no ballots for a contest, remove the jurisdiction from the contest instead."
     )
+
+
+@pytest.mark.usefixtures("election_settings")
+def test_full_hand_tally_covers_only_batches_with_contest_ballots(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
+):
+    # Report totals that match the batch tallies below so the margin is sound
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contest = json.loads(rv.data)["contests"][0]
+    del contest["totalBallotsCast"]
+    num_votes_by_name = {"candidate 1": 400, "candidate 2": 110, "candidate 3": 110}
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/contest",
+        [
+            {
+                **contest,
+                "choices": [
+                    {**choice, "numVotes": num_votes_by_name[choice["name"]]}
+                    for choice in contest["choices"]
+                ],
+            }
+        ],
+    )
+    assert_ok(rv)
+
+    # J1's Batch 2 has no ballots for the contest, leaving two batches to audit
+    processing = upload_manifest(
+        client,
+        election_id,
+        jurisdiction_ids[0],
+        b"Batch Name,Number of Ballots,Contest 1 - Number of Ballots\n"
+        b"Batch 1,500,120\n"
+        b"Batch 2,500,0\n",
+    )
+    assert processing["status"] == ProcessingStatus.PROCESSED
+    processing = upload_manifest(
+        client,
+        election_id,
+        jurisdiction_ids[1],
+        b"Batch Name,Number of Ballots\nBatch 1,500\n",
+    )
+    assert processing["status"] == ProcessingStatus.PROCESSED
+    processing = upload_tallies(
+        client,
+        election_id,
+        jurisdiction_ids[0],
+        b"Batch Name,candidate 1,candidate 2,candidate 3\n"
+        b"Batch 1,100,10,10\n"
+        b"Batch 2,0,0,0\n",
+    )
+    assert processing["status"] == ProcessingStatus.PROCESSED
+    processing = upload_tallies(
+        client,
+        election_id,
+        jurisdiction_ids[1],
+        b"Batch Name,candidate 1,candidate 2,candidate 3\nBatch 1,300,100,100\n",
+    )
+    assert processing["status"] == ProcessingStatus.PROCESSED
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 1,
+            "sampleSizes": {contest_ids[0]: {"key": "custom", "size": 3, "prob": None}},
+        },
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "Sample size for contest Contest 1 must be less than or equal to: 2 (the total number of batches in the contest)",
+            }
+        ]
+    }
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 1,
+            "sampleSizes": {contest_ids[0]: {"key": "custom", "size": 2, "prob": None}},
+        },
+    )
+    assert_ok(rv)
+    rv = client.get(f"/api/election/{election_id}/round")
+    round_id = json.loads(rv.data)["rounds"][0]["id"]
+    assert {(j, b) for j, b, _ in sampled_batch_draws(round_id)["Contest 1"]} == {
+        ("J1", "Batch 1"),
+        ("J2", "Batch 1"),
+    }
