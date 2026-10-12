@@ -114,7 +114,8 @@ def process_batch_tallies_file(
 
         # Validate that the sum tallies for each batch don't exceed the allowed votes
         num_ballots_by_batch = {
-            batch.name: batch.num_ballots for batch in jurisdiction.batches
+            batch.name: batch.num_ballots_for_contest(contest.id)
+            for batch in jurisdiction.batches
         }
         assert contest.votes_allowed is not None
         for row in batch_tallies_csv:
