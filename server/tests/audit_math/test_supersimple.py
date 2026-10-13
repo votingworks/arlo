@@ -202,7 +202,11 @@ def test_two_vote_overstatement_discrepancies(contests, cvrs):
         None,
     ],
 )
-def test_invalid_reported_value_discrepancy(contests, reported, audited):
+def test_invalid_reported_value_discrepancy(
+    contests: dict[str, Contest],
+    reported: dict[str, str],
+    audited: dict[str, str] | None,
+):
     contest = contests["Contest A"]
     cvrs: CVRS = {"ballot-0": {"Contest A": reported}}
     sample_cvr: SAMPLECVRS = {
@@ -231,17 +235,21 @@ def test_invalid_reported_value_discrepancy(contests, reported, audited):
     assert not res
 
 
-def test_compute_risk_nonpositive_p_b_denominator(contests, cvrs, monkeypatch):
+def test_compute_risk_nonpositive_p_b_denominator(
+    contests: dict[str, Contest], cvrs: CVRS, monkeypatch: pytest.MonkeyPatch
+):
     contest = contests["Contest A"]
     sample_cvr: SAMPLECVRS = {
         f"ballot-{i}": {"times_sampled": 2, "cvr": cvrs[f"ballot-{i}"]}
         for i in range(1000)
     }
-    monkeypatch.setattr(
-        supersimple,
-        "compute_discrepancies",
-        lambda *_: {"ballot-0": {"counted_as": 2, "weighted_error": Decimal(1)}},
-    )
+
+    def compute_discrepancies(
+        *_args: object,
+    ) -> dict[str, supersimple.Discrepancy]:
+        return {"ballot-0": {"counted_as": 2, "weighted_error": Decimal(1)}}
+
+    monkeypatch.setattr(supersimple, "compute_discrepancies", compute_discrepancies)
     assert supersimple.compute_risk(RISK_LIMIT, contest, cvrs, sample_cvr) == (
         1.0,
         False,

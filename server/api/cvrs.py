@@ -304,12 +304,12 @@ def normalize_interpretations(
             except ValueError as error:
                 raise UserError(
                     f"Unable to parse '{interpretation}' as an integer. "
-                    "Please export the CVR file with plain integer values."
+                    + "Please export the CVR file with plain integer values."
                 ) from error
             if parsed_interpretation not in [0, 1]:
                 raise UserError(
                     f"Invalid vote value '{interpretation}' for {choice_name} in {contest_name}. "
-                    "Each vote value in the CVR file must be 0 or 1."
+                    + "Each vote value in the CVR file must be 0 or 1."
                 )
             parsed_interpretations[choice_metadata["column"]] = parsed_interpretation
 

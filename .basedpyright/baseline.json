@@ -18442,14 +18442,6 @@
                 }
             },
             {
-                "code": "reportImplicitStringConcatenation",
-                "range": {
-                    "startColumn": 32,
-                    "endColumn": 87,
-                    "lineCount": 2
-                }
-            },
-            {
                 "code": "reportUnknownVariableType",
                 "range": {
                     "startColumn": 20,
