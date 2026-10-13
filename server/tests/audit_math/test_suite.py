@@ -1273,6 +1273,13 @@ def test_misstatements():
     expected = {("winner", "loser"): {"o1": 1, "o2": 1, "u1": 0, "u2": 0}}
     assert misstatements(contest, cvr, sample_cvr) == expected
 
+    # Invalid reported values count as two-vote overstatements.
+    cvr[16] = {"Jonah Test": {"winner": "0", "loser": "2"}}
+    cvr[17] = {"Jonah Test": {"winner": "1000000000", "loser": "0"}}
+    sample_cvr[16]["cvr"]["Jonah Test"] = {"winner": 0, "loser": 1}
+    expected = {("winner", "loser"): {"o1": 1, "o2": 3, "u1": 0, "u2": 0}}
+    assert misstatements(contest, cvr, sample_cvr) == expected
+
 
 def test_cvr_recount():
     contest_dict = {

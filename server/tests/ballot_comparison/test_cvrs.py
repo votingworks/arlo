@@ -6,6 +6,7 @@ from flask.testing import FlaskClient
 from ...models import *
 from ..helpers import *
 from .conftest import TEST_CVRS
+from ...api.cvrs import CVR_CONTESTS_METADATA, normalize_interpretations
 
 
 def test_dominion_cvr_upload(
@@ -912,6 +913,53 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
 """,
             "Unable to parse '0 (0)' as an integer. Please export the CVR file with plain integer values.",
             "DOMINION",
+        ),
+        (
+            """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote For=1)"
+,,,,,,,,Choice 1-1,Choice 1-2
+CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
+1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,2
+""",
+            "Invalid vote value '2' for Choice 1-2 in Contest 1. Each vote value in the CVR file must be 0 or 1.",
+            "DOMINION",
+        ),
+        (
+            """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote For=1)"
+,,,,,,,,Choice 1-1,Choice 1-2
+CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
+1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,-1,0
+""",
+            "Invalid vote value '-1' for Choice 1-1 in Contest 1. Each vote value in the CVR file must be 0 or 1.",
+            "DOMINION",
+        ),
+        (
+            """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote For=1)"
+,,,,,,,,Choice 1-1,Choice 1-2
+CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
+1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,1000000000,0
+""",
+            "Invalid vote value '1000000000' for Choice 1-1 in Contest 1. Each vote value in the CVR file must be 0 or 1.",
+            "DOMINION",
+        ),
+        (
+            """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote For=1)"
+,,,,,,,,Choice 1-1,Choice 1-2
+CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
+1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,,2
+""",
+            "Invalid vote value '2' for Choice 1-2 in Contest 1. Each vote value in the CVR file must be 0 or 1.",
+            "DOMINION",
+        ),
+        (
+            """RowNumber,BoxID,BoxPosition,BallotID,PrecinctID,BallotStyleID,PrecinctStyleName,ScanComputerName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1:Non-Partisan,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
+1,BATCH1,1,1-1-1,p,bs,ps,TABULATOR1,s,r,0,2,1,1,0
+""",
+            "Invalid vote value '2' for Choice 1-2 in Contest 1. Each vote value in the CVR file must be 0 or 1.",
+            "CLEARBALLOT",
         ),
         (
             """RowNumber,BoxID,BoxPosition,BallotID,PrecinctID,BallotStyleID,PrecinctStyleName,ScanComputerName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1:Non-Partisan,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
@@ -3179,3 +3227,28 @@ def test_remove_ballot_manifest_fails_while_processing_cvr_file(
                 }
             ]
         }
+
+
+def test_normalize_interpretations():
+    contests_metadata: CVR_CONTESTS_METADATA = {
+        "Contest 1": {
+            "choices": {
+                "Choice 1-1": {"column": 0, "num_votes": 0},
+                "Choice 1-2": {"column": 1, "num_votes": 0},
+            },
+            "votes_allowed": 1,
+            "total_ballots_cast": 0,
+        },
+        "Contest 2": {
+            "choices": {
+                "Choice 2-1": {"column": 2, "num_votes": 0},
+                "Choice 2-2": {"column": 3, "num_votes": 0},
+            },
+            "votes_allowed": 1,
+            "total_ballots_cast": 0,
+        },
+    }
+    assert (
+        normalize_interpretations([" 1", "00", "", "0", "extra"], contests_metadata)
+        == "1,0,,"
+    )

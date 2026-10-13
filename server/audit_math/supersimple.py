@@ -124,6 +124,14 @@ def discrepancy(
         if reported is None or audited is None:
             return 2
 
+        # Reported values outside the expected domain can't be scored
+        # reliably, so count them as a two-vote overstatement.
+        if any(
+            str(value) not in ["0", "1", "o", "u"]
+            for value in reported.get(contest.name, {}).values()
+        ):
+            return 2
+
         a_w, a_l = (
             (int(audited[contest.name][winner]), int(audited[contest.name][loser]))
             if contest.name in audited
@@ -305,7 +313,11 @@ def compute_risk(
         if contest.diluted_margin:
             U = 2 * gamma / Decimal(contest.diluted_margin)
             denom = (2 * gamma) / V
-            p_b = (1 - 1 / U) / (1 - (e_r / denom))
+            p_b_denom = 1 - (e_r / denom)
+            if p_b_denom <= 0:
+                p = Decimal("inf")
+                break
+            p_b = (1 - 1 / U) / p_b_denom
         else:
             # If the contest is a tie, this step results in 1 - 1/(infinity)
             # divided by 1 - e_r/infinity, i.e. 1

@@ -184,6 +184,70 @@ def test_two_vote_overstatement_discrepancies(contests, cvrs):
     assert discrepancies["ballot-0"]["weighted_error"] == Decimal(2) / Decimal(20000)
 
 
+@pytest.mark.parametrize(
+    "reported",
+    [
+        {"winner": "0", "loser": "2"},
+        {"winner": "-1", "loser": "0"},
+        {"winner": "1000000000", "loser": "0"},
+        {"winner": "", "loser": "1"},
+    ],
+)
+@pytest.mark.parametrize(
+    "audited",
+    [
+        {"winner": "1", "loser": "0"},
+        {"winner": "0", "loser": "1"},
+        {"winner": "0", "loser": "0"},
+        None,
+    ],
+)
+def test_invalid_reported_value_discrepancy(contests, reported, audited):
+    contest = contests["Contest A"]
+    cvrs: CVRS = {"ballot-0": {"Contest A": reported}}
+    sample_cvr: SAMPLECVRS = {
+        "ballot-0": {
+            "times_sampled": 2,
+            "cvr": {"Contest A": audited} if audited else {},
+        }
+    }
+
+    discrepancies = supersimple.compute_discrepancies(contest, cvrs, sample_cvr)
+    assert discrepancies["ballot-0"]["counted_as"] == 2
+
+    p, res = supersimple.compute_risk(RISK_LIMIT, contest, cvrs, sample_cvr)
+    two_vote_overstatement_p, _ = supersimple.compute_risk(
+        RISK_LIMIT,
+        contest,
+        {"ballot-0": {"Contest A": {"winner": "1", "loser": "0"}}},
+        {
+            "ballot-0": {
+                "times_sampled": 2,
+                "cvr": {"Contest A": {"winner": "0", "loser": "1"}},
+            }
+        },
+    )
+    assert p == two_vote_overstatement_p
+    assert not res
+
+
+def test_compute_risk_nonpositive_p_b_denominator(contests, cvrs, monkeypatch):
+    contest = contests["Contest A"]
+    sample_cvr: SAMPLECVRS = {
+        f"ballot-{i}": {"times_sampled": 2, "cvr": cvrs[f"ballot-{i}"]}
+        for i in range(1000)
+    }
+    monkeypatch.setattr(
+        supersimple,
+        "compute_discrepancies",
+        lambda *_: {"ballot-0": {"counted_as": 2, "weighted_error": Decimal(1)}},
+    )
+    assert supersimple.compute_risk(RISK_LIMIT, contest, cvrs, sample_cvr) == (
+        1.0,
+        False,
+    )
+
+
 def test_race_not_in_cvr_discrepancy(contests, cvrs):
     sample_cvr = {
         "ballot-0": {
