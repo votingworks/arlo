@@ -12,6 +12,7 @@ from ..util.jsonschema import validate, JSONDict
 from . import cvrs
 from . import ballot_manifest
 from . import batch_tallies
+from . import batch_inventory
 from ..util.get_json import safe_get_json_dict, safe_get_json_list
 
 
@@ -407,6 +408,14 @@ def should_reprocess_batch_tallies(
     )
 
 
+def contests_for_jurisdiction(
+    contests: list[JSONDict], jurisdiction_id: str
+) -> list[JSONDict]:
+    return [
+        contest for contest in contests if jurisdiction_id in contest["jurisdictionIds"]
+    ]
+
+
 @api.route("/election/<election_id>/contest", methods=["PUT"])
 @restrict_access([UserType.AUDIT_ADMIN])
 def create_or_update_all_contests(election: Election):
@@ -426,6 +435,13 @@ def create_or_update_all_contests(election: Election):
         ):
             raise Conflict(
                 "Cannot update contests while batch tallies file is being processed."
+            )
+        if any(
+            batch_inventory.is_cvr_file_processing(jurisdiction)
+            for jurisdiction in election.jurisdictions
+        ):
+            raise Conflict(
+                "Cannot update contests while batch inventory CVR file is being processed."
             )
 
         previous_contests = [
@@ -452,6 +468,20 @@ def create_or_update_all_contests(election: Election):
                 user,
                 get_support_user(session),
             )
+
+    # The batch inventory tool's results are computed per contest, so they go
+    # stale when a jurisdiction's own contests change
+    if election.audit_type == AuditType.BATCH_COMPARISON:
+        for jurisdiction in election.jurisdictions:
+            if should_reprocess_batch_tallies(
+                contests_for_jurisdiction(previous_contests, jurisdiction.id),
+                contests_for_jurisdiction(json_contests, jurisdiction.id),
+            ):
+                batch_inventory.reprocess_batch_inventory_cvr_if_uploaded(
+                    jurisdiction,
+                    get_loggedin_user(session),
+                    get_support_user(session),
+                )
 
     db_session.commit()
 

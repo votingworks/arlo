@@ -9,7 +9,7 @@ from collections import defaultdict
 import csv
 from datetime import datetime, timezone
 import io
-from typing import TypedDict
+from typing import NotRequired, TypedDict
 import uuid
 from defusedxml.ElementTree import parse as parse_xml
 from xml.etree.ElementTree import ElementTree
@@ -57,6 +57,7 @@ from ..util.file import (
 )
 from ..util.hart_parse import find_xml, parse_contest_results, find_text_xml
 from ..worker.tasks import UserError, background_task, create_background_task
+from . import ballot_manifest
 from ..util.csv_download import csv_response, jurisdiction_timestamp_name
 from ..util.isoformat import isoformat
 from .batch_tallies import construct_contest_choice_csv_headers
@@ -106,6 +107,8 @@ class ElectionResults(TypedDict):
     batch_to_counting_group: dict[BatchKey, str | None]
     # { batch_key: { choice_id: count } }
     batch_tallies: dict[BatchKey, dict[str, int]]
+    # { batch_key: { contest_id: count } }
+    contest_ballot_count_by_batch: NotRequired[dict[BatchKey, dict[str, int]]]
 
 
 def dict_to_items_list(dictionary):
@@ -235,6 +238,9 @@ def process_batch_inventory_cvr_file(
         batch_tallies: dict[BatchKey, dict[str, int]] = defaultdict(
             lambda: defaultdict(int)
         )
+        contest_ballot_count_by_batch: dict[BatchKey, dict[str, int]] = defaultdict(
+            lambda: defaultdict(int)
+        )
 
         def parse_vote(vote: str):
             return int(vote if vote != "" else 0)
@@ -272,18 +278,23 @@ def process_batch_inventory_cvr_file(
             batch_to_counting_group[batch_key] = counting_group
 
             for contest in contests:
-                contest_choice_votes: dict[str, int] = {
-                    choice.id: parse_vote(
-                        column_value(
-                            row,
-                            (contest.name, choice.name),
-                            cvr_number,
-                            choice_indices,
-                            required=False,
-                            header_readable_string_override=f"{choice.name} for contest {contest.name}",
-                        )
+                contest_choice_values = {
+                    choice.id: column_value(
+                        row,
+                        (contest.name, choice.name),
+                        cvr_number,
+                        choice_indices,
+                        required=False,
+                        header_readable_string_override=f"{choice.name} for contest {contest.name}",
                     )
                     for choice in contest.choices
+                }
+                # Blank cells mean the contest wasn't on the card
+                if all(value != "" for value in contest_choice_values.values()):
+                    contest_ballot_count_by_batch[batch_key][contest.id] += 1
+                contest_choice_votes: dict[str, int] = {
+                    choice_id: parse_vote(value)
+                    for choice_id, value in contest_choice_values.items()
                 }
 
                 # Skip overvotes
@@ -298,6 +309,9 @@ def process_batch_inventory_cvr_file(
             ballot_count_by_group=dict(ballot_count_by_group),
             batch_to_counting_group=dict_to_items_list(batch_to_counting_group),
             batch_tallies=dict_to_items_list(batch_tallies),
+            contest_ballot_count_by_batch=dict_to_items_list(
+                contest_ballot_count_by_batch
+            ),
         )
         batch_inventory_data.election_results = election_results
 
@@ -1256,6 +1270,36 @@ def clear_sign_off(batch_inventory_data: BatchInventoryData):
     batch_inventory_data.sign_off_user_id = None
 
 
+def is_cvr_file_processing(jurisdiction: Jurisdiction) -> bool:
+    batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
+    return bool(
+        batch_inventory_data
+        and batch_inventory_data.cvr_file
+        and batch_inventory_data.cvr_file.is_processing()
+    )
+
+
+def reprocess_batch_inventory_cvr_if_uploaded(
+    jurisdiction: Jurisdiction,
+    user: tuple[UserType, str],
+    support_user_email: str | None,
+):
+    batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
+    if not batch_inventory_data or not batch_inventory_data.cvr_file:
+        return
+    clear_sign_off(batch_inventory_data)
+    batch_inventory_data.election_results = None
+    batch_inventory_data.cvr_file.task = create_background_task(
+        process_batch_inventory_cvr_file,
+        dict(
+            election_id=jurisdiction.election_id,
+            jurisdiction_id=jurisdiction.id,
+            user=user,
+            support_user_email=support_user_email,
+        ),
+    )
+
+
 @api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-inventory/sign-off",
     methods=["POST"],
@@ -1301,7 +1345,7 @@ def download_batch_inventory_ballot_manifest(
     election_results: ElectionResults = batch_inventory_data.election_results
 
     csv_io = io.StringIO()
-    ballot_manifest = csv.writer(csv_io)
+    manifest_csv = csv.writer(csv_io)
 
     # We originally didn't have a batch_to_counting_group key at all, so we protect against the key
     # not existing by using .get for backwards compatibility
@@ -1310,10 +1354,29 @@ def download_batch_inventory_ballot_manifest(
     )
     should_include_container_column = len(batch_to_counting_group) > 0
 
+    # Only card style data audits read per-contest counts, and only Dominion
+    # CVRs processed since the counts were added have them
+    column_contests = (
+        list(jurisdiction.contests)
+        if election.audit_type == AuditType.BATCH_COMPARISON
+        and election.audit_math_type == AuditMathType.CARD_STYLE_DATA
+        and "contest_ballot_count_by_batch" in election_results
+        else []
+    )
+    contest_ballot_count_by_batch = items_list_to_dict(
+        election_results.get("contest_ballot_count_by_batch", [])
+    )
+    contest_headers = [
+        f"{contest.name}{ballot_manifest.CONTEST_NUMBER_OF_BALLOTS_SUFFIX}"
+        for contest in column_contests
+    ]
+
     if should_include_container_column:
-        ballot_manifest.writerow(["Container", "Batch Name", "Number of Ballots"])
+        manifest_csv.writerow(
+            ["Container", "Batch Name", "Number of Ballots", *contest_headers]
+        )
     else:
-        ballot_manifest.writerow(["Batch Name", "Number of Ballots"])
+        manifest_csv.writerow(["Batch Name", "Number of Ballots", *contest_headers])
 
     for batch_key, ballot_count in items_list_to_dict(
         election_results["ballot_count_by_batch"]
@@ -1321,14 +1384,20 @@ def download_batch_inventory_ballot_manifest(
         batch_name = batch_key_to_name(
             batch_key, batch_inventory_data.tabulator_id_to_name
         )
+        contest_ballot_counts = [
+            contest_ballot_count_by_batch.get(batch_key, {}).get(contest.id, 0)
+            for contest in column_contests
+        ]
         if should_include_container_column:
             counting_group = batch_to_counting_group.get(batch_key)
             assert counting_group is not None and counting_group != "", (
                 f"counting_group for batch_key={batch_key} is blank!"
             )
-            ballot_manifest.writerow([counting_group, batch_name, ballot_count])
+            manifest_csv.writerow(
+                [counting_group, batch_name, ballot_count, *contest_ballot_counts]
+            )
         else:
-            ballot_manifest.writerow([batch_name, ballot_count])
+            manifest_csv.writerow([batch_name, ballot_count, *contest_ballot_counts])
 
     csv_io.seek(0)
     return csv_response(
