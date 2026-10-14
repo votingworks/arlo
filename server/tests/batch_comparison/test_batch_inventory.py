@@ -2934,3 +2934,142 @@ def test_batch_inventory_card_style_data_manifest_without_contest_ballots(
         " Contest 2 - Number of Ballots. If this jurisdiction has no ballots for a"
         " contest, remove the jurisdiction from the contest instead."
     )
+
+
+@pytest.mark.parametrize(
+    "election_id", [AuditMathType.MACRO_CARD_STYLE_DATA], indirect=True
+)
+def test_batch_inventory_reprocesses_cvr_when_contests_change(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_id: str,
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type",
+        {"systemType": CvrFileType.DOMINION},
+    )
+    assert_ok(rv)
+    rv = upload_batch_inventory_cvr(
+        client, io.BytesIO(TEST_CVR.encode()), election_id, jurisdiction_ids[0]
+    )
+    assert_ok(rv)
+    rv = upload_batch_inventory_tabulator_status(
+        client,
+        io.BytesIO(TEST_TABULATOR_STATUS.encode()),
+        election_id,
+        jurisdiction_ids[0],
+    )
+    assert_ok(rv)
+    rv = client.post(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/sign-off"
+    )
+    assert_ok(rv)
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/ballot-manifest"
+    )
+    assert rv.data.decode("utf-8") == (
+        "Container,Batch Name,Number of Ballots,Contest 1 - Number of Ballots\r\n"
+        "Election Day,Tabulator 1 - BATCH1,3,3\r\n"
+        "Election Day,Tabulator 1 - BATCH2,3,3\r\n"
+        "Mail,Tabulator 2 - BATCH1,3,3\r\n"
+        "Election Day,Tabulator 2 - BATCH2,6,3\r\n"
+    )
+
+    # Adding Contest 2 reprocesses the CVR and undoes the sign off
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contest_1 = json.loads(rv.data)["contests"][0]
+    del contest_1["totalBallotsCast"]
+    contest_2 = {
+        "id": str(uuid.uuid4()),
+        "name": "Contest 2",
+        "isTargeted": True,
+        "choices": [
+            {"id": str(uuid.uuid4()), "name": "Choice 2-1", "numVotes": 15},
+            {"id": str(uuid.uuid4()), "name": "Choice 2-2", "numVotes": 7},
+            {"id": str(uuid.uuid4()), "name": "Choice 2-3", "numVotes": 8},
+            {"id": str(uuid.uuid4()), "name": "Write-In", "numVotes": 0},
+        ],
+        "numWinners": 1,
+        "votesAllowed": 2,
+        "jurisdictionIds": [jurisdiction_ids[0]],
+    }
+    rv = put_json(
+        client, f"/api/election/{election_id}/contest", [contest_1, contest_2]
+    )
+    assert_ok(rv)
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/sign-off"
+    )
+    assert json.loads(rv.data) == {"signedOffAt": None}
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr"
+    )
+    assert json.loads(rv.data)["processing"]["status"] == ProcessingStatus.PROCESSED
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/ballot-manifest"
+    )
+    assert rv.data.decode("utf-8") == (
+        "Container,Batch Name,Number of Ballots,Contest 1 - Number of Ballots,Contest 2 - Number of Ballots\r\n"
+        "Election Day,Tabulator 1 - BATCH1,3,3,3\r\n"
+        "Election Day,Tabulator 1 - BATCH2,3,3,3\r\n"
+        "Mail,Tabulator 2 - BATCH1,3,3,3\r\n"
+        "Election Day,Tabulator 2 - BATCH2,6,3,6\r\n"
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/batch-tallies"
+    )
+    assert rv.data.decode("utf-8") == (
+        "Batch Name,Contest 1 - Choice 1-1,Contest 1 - Choice 1-2,Contest 1 - Write-In,Contest 2 - Choice 2-1,Contest 2 - Choice 2-2,Contest 2 - Choice 2-3,Contest 2 - Write-In\r\n"
+        "Tabulator 1 - BATCH1,1,1,1,3,2,1,0\r\n"
+        "Tabulator 1 - BATCH2,2,1,0,3,1,2,0\r\n"
+        "Tabulator 2 - BATCH1,2,1,0,3,2,1,0\r\n"
+        "Tabulator 2 - BATCH2,2,0,0,6,2,4,0\r\n"
+    )
+
+
+def test_update_contests_while_cvr_file_is_processing_fails(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_id: str,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type",
+        {"systemType": CvrFileType.DOMINION},
+    )
+    assert_ok(rv)
+    with no_automatic_task_execution():
+        rv = upload_batch_inventory_cvr(
+            client, io.BytesIO(b"does not matter"), election_id, jurisdiction_ids[0]
+        )
+        assert_ok(rv)
+
+        set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+        rv = client.get(f"/api/election/{election_id}/contest")
+        contests = json.loads(rv.data)["contests"]
+        for contest in contests:
+            del contest["totalBallotsCast"]
+        rv = put_json(client, f"/api/election/{election_id}/contest", contests)
+        assert rv.status_code == 409
+        assert json.loads(rv.data) == {
+            "errors": [
+                {
+                    "errorType": "Conflict",
+                    "message": "Cannot update contests while batch inventory CVR file is being processed.",
+                }
+            ]
+        }
