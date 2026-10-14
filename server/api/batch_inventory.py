@@ -9,7 +9,7 @@ from collections import defaultdict
 import csv
 from datetime import datetime, timezone
 import io
-from typing import TypedDict
+from typing import NotRequired, TypedDict
 import uuid
 from defusedxml.ElementTree import parse as parse_xml
 from xml.etree.ElementTree import ElementTree
@@ -106,6 +106,8 @@ class ElectionResults(TypedDict):
     batch_to_counting_group: dict[BatchKey, str | None]
     # { batch_key: { choice_id: count } }
     batch_tallies: dict[BatchKey, dict[str, int]]
+    # { batch_key: { contest_id: count } }
+    contest_ballot_count_by_batch: NotRequired[dict[BatchKey, dict[str, int]]]
 
 
 def dict_to_items_list(dictionary):
@@ -235,6 +237,9 @@ def process_batch_inventory_cvr_file(
         batch_tallies: dict[BatchKey, dict[str, int]] = defaultdict(
             lambda: defaultdict(int)
         )
+        contest_ballot_count_by_batch: dict[BatchKey, dict[str, int]] = defaultdict(
+            lambda: defaultdict(int)
+        )
 
         def parse_vote(vote: str):
             return int(vote if vote != "" else 0)
@@ -272,18 +277,23 @@ def process_batch_inventory_cvr_file(
             batch_to_counting_group[batch_key] = counting_group
 
             for contest in contests:
-                contest_choice_votes: dict[str, int] = {
-                    choice.id: parse_vote(
-                        column_value(
-                            row,
-                            (contest.name, choice.name),
-                            cvr_number,
-                            choice_indices,
-                            required=False,
-                            header_readable_string_override=f"{choice.name} for contest {contest.name}",
-                        )
+                contest_choice_values = {
+                    choice.id: column_value(
+                        row,
+                        (contest.name, choice.name),
+                        cvr_number,
+                        choice_indices,
+                        required=False,
+                        header_readable_string_override=f"{choice.name} for contest {contest.name}",
                     )
                     for choice in contest.choices
+                }
+                # Blank cells mean the contest wasn't on the card
+                if all(value != "" for value in contest_choice_values.values()):
+                    contest_ballot_count_by_batch[batch_key][contest.id] += 1
+                contest_choice_votes: dict[str, int] = {
+                    choice_id: parse_vote(value)
+                    for choice_id, value in contest_choice_values.items()
                 }
 
                 # Skip overvotes
@@ -298,6 +308,9 @@ def process_batch_inventory_cvr_file(
             ballot_count_by_group=dict(ballot_count_by_group),
             batch_to_counting_group=dict_to_items_list(batch_to_counting_group),
             batch_tallies=dict_to_items_list(batch_tallies),
+            contest_ballot_count_by_batch=dict_to_items_list(
+                contest_ballot_count_by_batch
+            ),
         )
         batch_inventory_data.election_results = election_results
 

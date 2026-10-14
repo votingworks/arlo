@@ -1,6 +1,7 @@
 import pytest
 from flask.testing import FlaskClient
 from ..helpers import *
+from ...api.batch_inventory import items_list_to_dict
 from ...models import BatchInventoryData
 from ..ballot_comparison.test_cvrs import (
     ESS_BALLOTS_1,
@@ -2779,3 +2780,37 @@ def test_batch_inventory_ess_cvr_upload_multi_contest(
             },
         },
     )
+
+
+def test_batch_inventory_counts_ballots_per_contest(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type",
+        {"systemType": CvrFileType.DOMINION},
+    )
+    assert_ok(rv)
+    rv = upload_batch_inventory_cvr(
+        client, io.BytesIO(TEST_CVR.encode()), election_id, jurisdiction_ids[0]
+    )
+    assert_ok(rv)
+
+    # Contest 1 isn't on the three CITY cards in Tabulator 2's Batch 2, which
+    # have blank cells for it. The overvoted card in that batch still counts.
+    contest_1_id, contest_2_id = contest_ids
+    election_results = BatchInventoryData.query.get(
+        jurisdiction_ids[0]
+    ).election_results
+    assert items_list_to_dict(election_results["contest_ballot_count_by_batch"]) == {
+        ("TABULATOR1", "BATCH1"): {contest_1_id: 3, contest_2_id: 3},
+        ("TABULATOR1", "BATCH2"): {contest_1_id: 3, contest_2_id: 3},
+        ("TABULATOR2", "BATCH1"): {contest_1_id: 3, contest_2_id: 3},
+        ("TABULATOR2", "BATCH2"): {contest_1_id: 3, contest_2_id: 6},
+    }
