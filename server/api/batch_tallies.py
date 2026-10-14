@@ -192,6 +192,11 @@ def process_batch_tallies_file(
 
 # Raises if invalid
 def validate_batch_tallies_upload(election: Election, jurisdiction: Jurisdiction):
+    if len(list(election.rounds)) > 0:
+        raise Conflict(
+            "Cannot upload candidate totals by batch after audit has started."
+        )
+
     if election.audit_type != AuditType.BATCH_COMPARISON:
         raise Conflict(
             "Can only upload candidate totals by batch for batch comparison audits."
@@ -335,6 +340,10 @@ def clear_batch_tallies(
     election: Election,
     jurisdiction: Jurisdiction,
 ):
+    if len(list(election.rounds)) > 0:
+        raise Conflict(
+            "Cannot remove candidate totals by batch after audit has started."
+        )
     if any_jurisdiction_file_is_processing(jurisdiction):
         raise Conflict(
             "Cannot remove candidate totals by batch while any file upload is processing."

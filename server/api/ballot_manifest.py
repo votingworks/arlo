@@ -341,6 +341,9 @@ def complete_upload_for_ballot_manifest(
         [FileType.CSV],
     )
 
+    if len(list(election.rounds)) > 0:
+        raise Conflict("Cannot upload ballot manifest after audit has started.")
+
     if any_jurisdiction_file_is_processing(jurisdiction):
         raise Conflict(
             "Cannot upload ballot manifest while any file upload is processing."
@@ -391,6 +394,8 @@ def clear_ballot_manifest(
     election: Election,
     jurisdiction: Jurisdiction,
 ):
+    if len(list(election.rounds)) > 0:
+        raise Conflict("Cannot remove ballot manifest after audit has started.")
     if any_jurisdiction_file_is_processing(jurisdiction):
         raise Conflict(
             "Cannot remove ballot manifest while any file upload is processing."

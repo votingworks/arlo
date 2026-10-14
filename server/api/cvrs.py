@@ -1488,6 +1488,9 @@ def process_cvr_file(
 def validate_cvr_upload(
     request: Request, election: Election, jurisdiction: Jurisdiction
 ):
+    if len(list(election.rounds)) > 0:
+        raise Conflict("Cannot upload CVRs after audit has started.")
+
     if election.audit_type not in [AuditType.BALLOT_COMPARISON, AuditType.HYBRID]:
         raise Conflict("Can't upload CVR file for this audit type.")
 
@@ -1641,6 +1644,8 @@ def clear_cvrs(
     election: Election,
     jurisdiction: Jurisdiction,
 ):
+    if len(list(election.rounds)) > 0:
+        raise Conflict("Cannot remove CVRs after audit has started.")
     if any_jurisdiction_file_is_processing(jurisdiction):
         raise Conflict("Cannot remove CVRs while any file upload is processing.")
     if jurisdiction.cvr_file_id:
