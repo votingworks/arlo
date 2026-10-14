@@ -464,6 +464,43 @@ describe('Home screen', () => {
     })
   })
 
+  it('creates batch comparison audits with card style data', async () => {
+    const expectedCalls = [
+      aaApiCalls.getUser,
+      aaApiCalls.getOrganizations(mockOrganizations.oneOrgNoAudits),
+      aaApiCalls.postNewAudit({
+        organizationId: 'org-id',
+        auditName: 'November Presidential Election 2020',
+        auditType: 'BATCH_COMPARISON',
+        auditMathType: 'MACRO_CARD_STYLE_DATA',
+      }),
+      aaApiCalls.getOrganizations(mockOrganizations.oneOrgOneAudit),
+      ...setupScreenCalls,
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView('/')
+      await screen.findByRole('heading', {
+        name: 'Active Audits — State of California',
+      })
+
+      const createAuditButton = screen.getByRole('button', {
+        name: 'Create Audit',
+      })
+
+      // Create a new audit
+      userEvent.type(
+        screen.getByRole('textbox', { name: 'Audit name' }),
+        'November Presidential Election 2020'
+      )
+      userEvent.click(screen.getByRole('radio', { name: 'Batch Comparison' }))
+      userEvent.click(
+        screen.getByRole('radio', { name: 'Card Style Data (Beta)' })
+      )
+      userEvent.click(createAuditButton)
+      await screen.findByText('The audit has not started.')
+    })
+  })
+
   it('creates ballot comparison audits', async () => {
     const expectedCalls = [
       aaApiCalls.getUser,

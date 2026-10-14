@@ -601,6 +601,25 @@ const CreateAudit = ({ organizations }: { organizations: IOrganization[] }) => {
                   </MathTypeWrapper>
                 )}
                 <Radio value="BATCH_COMPARISON">Batch Comparison</Radio>
+                {values.auditType === 'BATCH_COMPARISON' && (
+                  <MathTypeWrapper>
+                    <label htmlFor="auditMathType">
+                      <p>Batch comparison type</p>
+                      <RadioGroup
+                        name="auditMathType"
+                        onChange={e =>
+                          setFieldValue('auditMathType', e.currentTarget.value)
+                        }
+                        selectedValue={values.auditMathType}
+                      >
+                        <Radio value="MACRO">Default</Radio>
+                        <Radio value="MACRO_CARD_STYLE_DATA">
+                          Card Style Data (Beta)
+                        </Radio>
+                      </RadioGroup>
+                    </label>
+                  </MathTypeWrapper>
+                )}
                 <Radio value="BALLOT_COMPARISON">Ballot Comparison</Radio>
                 {values.auditType === 'BALLOT_COMPARISON' && (
                   <MathTypeWrapper>
