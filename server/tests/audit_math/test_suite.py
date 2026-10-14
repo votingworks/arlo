@@ -3,7 +3,7 @@ from itertools import product
 import pytest
 
 
-from ...audit_math.sampler_contest import Contest
+from ...audit_math.sampler_contest import CVRS, SAMPLECVRS, Contest
 from ...audit_math.suite import (
     BallotPollingStratum,
     BallotComparisonStratum,
@@ -1272,6 +1272,35 @@ def test_misstatements():
     sample_cvr[17]["cvr"]["Jonah Test"] = {"winner": 1, "loser": 0}
     expected = {("winner", "loser"): {"o1": 1, "o2": 1, "u1": 0, "u2": 0}}
     assert misstatements(contest, cvr, sample_cvr) == expected
+
+
+def test_misstatements_invalid_reported_values():
+    contest = Contest(
+        "Contest A",
+        {"winner": 2, "loser": 1, "ballots": 3, "numWinners": 1, "votesAllowed": 1},
+    )
+    cvr: CVRS = {
+        "ballot-0": {"Contest A": {"winner": "0", "loser": "2"}},
+        "ballot-1": {"Contest A": {"winner": "1000000000", "loser": "0"}},
+        "ballot-2": {"Contest A": {"winner": "1", "loser": "0"}},
+    }
+    sample_cvr: SAMPLECVRS = {
+        "ballot-0": {
+            "times_sampled": 1,
+            "cvr": {"Contest A": {"winner": "0", "loser": "1"}},
+        },
+        "ballot-1": {
+            "times_sampled": 1,
+            "cvr": {"Contest A": {"winner": "1", "loser": "0"}},
+        },
+        "ballot-2": {
+            "times_sampled": 1,
+            "cvr": {"Contest A": {"winner": "1", "loser": "0"}},
+        },
+    }
+    assert misstatements(contest, cvr, sample_cvr) == {
+        ("winner", "loser"): {"o1": 0, "o2": 2, "u1": 0, "u2": 0}
+    }
 
 
 def test_cvr_recount():

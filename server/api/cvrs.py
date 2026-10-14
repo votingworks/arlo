@@ -281,6 +281,46 @@ def csv_reader_for_cvr(cvr_file: BinaryIO) -> CSVIterator:
     return csv.reader(text_file, delimiter=",")
 
 
+def normalize_interpretations(
+    cells: list[str], contests_metadata: CVR_CONTESTS_METADATA
+) -> str:
+    """Validates a CVR row's choice cells and normalizes them to "0", "1", or "" (contest not on ballot)."""
+    max_column = max(
+        choice_metadata["column"]
+        for contest_metadata in contests_metadata.values()
+        for choice_metadata in contest_metadata["choices"].values()
+    )
+    interpretations = ["" for _ in range(max_column + 1)]
+    for contest_name, contest_metadata in contests_metadata.items():
+        parsed_interpretations: dict[int, int] = {}  # { column: parsed_interpretation }
+        for choice_name, choice_metadata in contest_metadata["choices"].items():
+            interpretation = cells[choice_metadata["column"]]
+            if interpretation == "":
+                continue
+            # Dominion CVR files sometimes contain interpretation values that
+            # can't be parsed as integers
+            try:
+                parsed_interpretation = int(interpretation)
+            except ValueError as error:
+                raise UserError(
+                    f"Unable to parse '{interpretation}' as an integer. "
+                    + "Please export the CVR file with plain integer values."
+                ) from error
+            if parsed_interpretation not in [0, 1]:
+                raise UserError(
+                    f"Invalid vote value '{interpretation}' for {choice_name} in {contest_name}. "
+                    + "Each vote value in the CVR file must be 0 or 1."
+                )
+            parsed_interpretations[choice_metadata["column"]] = parsed_interpretation
+
+        # Leave the contest blank (not on ballot) unless every choice has a value
+        if len(parsed_interpretations) == len(contest_metadata["choices"]):
+            for column, parsed_interpretation in parsed_interpretations.items():
+                interpretations[column] = str(parsed_interpretation)
+
+    return ",".join(interpretations)
+
+
 def parse_clearballot_cvrs(
     jurisdiction: Jurisdiction,
     working_directory: str,
@@ -336,15 +376,15 @@ def parse_clearballot_cvrs(
             scan_computer_name = column_value(
                 row, "ScanComputerName", row_number, header_indices
             )
-            interpretations = row[first_contest_column:]
-
             db_batch = batches_by_key.get((scan_computer_name, box_id))
             if db_batch:
                 yield CvrBallot(
                     batch=db_batch,
                     record_id=int(box_position),
                     imprinted_id=ballot_id,
-                    interpretations=",".join(interpretations),
+                    interpretations=normalize_interpretations(
+                        row[first_contest_column:], contests_metadata
+                    ),
                 )
             else:
                 close_matches = difflib.get_close_matches(
@@ -480,8 +520,6 @@ def parse_dominion_cvrs(
                 remove_leading_equal_sign=True,
             )
 
-            interpretations = row[first_contest_column:]
-
             db_batch = batches_by_key.get((tabulator_number, batch_id))
 
             if db_batch:
@@ -489,7 +527,9 @@ def parse_dominion_cvrs(
                     batch=db_batch,
                     record_id=int(record_id),
                     imprinted_id=imprinted_id,
-                    interpretations=",".join(interpretations),
+                    interpretations=normalize_interpretations(
+                        row[first_contest_column:], contests_metadata
+                    ),
                 )
             else:
                 close_matches = difflib.get_close_matches(
@@ -1360,22 +1400,10 @@ def process_cvr_file(
                     ):
                         continue
 
-                    # Dominions CVR files sometimes contain interpretation values that can't be
-                    # parsed as integers
-                    parsed_contest_interpretations: dict[
-                        str, int
-                    ] = {}  # { choice_name: parsed_interpretation }
-                    for choice_name, interpretation in contest_interpretations.items():
-                        try:
-                            parsed_interpretation = int(interpretation)
-                        except Exception as error:
-                            raise UserError(
-                                f"Unable to parse '{interpretation}' as an integer. "
-                                "Please export the CVR file with plain integer values."
-                            ) from error
-                        parsed_contest_interpretations[choice_name] = (
-                            parsed_interpretation
-                        )
+                    parsed_contest_interpretations = {
+                        choice_name: int(interpretation)
+                        for choice_name, interpretation in contest_interpretations.items()
+                    }
 
                     # Skip overvotes
                     votes = sum(parsed_contest_interpretations.values())
