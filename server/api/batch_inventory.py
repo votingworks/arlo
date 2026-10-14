@@ -57,6 +57,7 @@ from ..util.file import (
 )
 from ..util.hart_parse import find_xml, parse_contest_results, find_text_xml
 from ..worker.tasks import UserError, background_task, create_background_task
+from .ballot_manifest import CONTEST_NUMBER_OF_BALLOTS_SUFFIX
 from ..util.csv_download import csv_response, jurisdiction_timestamp_name
 from ..util.isoformat import isoformat
 from .batch_tallies import construct_contest_choice_csv_headers
@@ -1323,10 +1324,29 @@ def download_batch_inventory_ballot_manifest(
     )
     should_include_container_column = len(batch_to_counting_group) > 0
 
+    # Only card style data audits read per-contest counts, and only Dominion
+    # CVRs processed since the counts were added have them
+    column_contests = (
+        list(jurisdiction.contests)
+        if election.audit_type == AuditType.BATCH_COMPARISON
+        and election.audit_math_type == AuditMathType.CARD_STYLE_DATA
+        and "contest_ballot_count_by_batch" in election_results
+        else []
+    )
+    contest_ballot_count_by_batch = items_list_to_dict(
+        election_results.get("contest_ballot_count_by_batch", [])
+    )
+    contest_headers = [
+        f"{contest.name}{CONTEST_NUMBER_OF_BALLOTS_SUFFIX}"
+        for contest in column_contests
+    ]
+
     if should_include_container_column:
-        ballot_manifest.writerow(["Container", "Batch Name", "Number of Ballots"])
+        ballot_manifest.writerow(
+            ["Container", "Batch Name", "Number of Ballots", *contest_headers]
+        )
     else:
-        ballot_manifest.writerow(["Batch Name", "Number of Ballots"])
+        ballot_manifest.writerow(["Batch Name", "Number of Ballots", *contest_headers])
 
     for batch_key, ballot_count in items_list_to_dict(
         election_results["ballot_count_by_batch"]
@@ -1334,14 +1354,20 @@ def download_batch_inventory_ballot_manifest(
         batch_name = batch_key_to_name(
             batch_key, batch_inventory_data.tabulator_id_to_name
         )
+        contest_ballot_counts = [
+            contest_ballot_count_by_batch.get(batch_key, {}).get(contest.id, 0)
+            for contest in column_contests
+        ]
         if should_include_container_column:
             counting_group = batch_to_counting_group.get(batch_key)
             assert counting_group is not None and counting_group != "", (
                 f"counting_group for batch_key={batch_key} is blank!"
             )
-            ballot_manifest.writerow([counting_group, batch_name, ballot_count])
+            ballot_manifest.writerow(
+                [counting_group, batch_name, ballot_count, *contest_ballot_counts]
+            )
         else:
-            ballot_manifest.writerow([batch_name, ballot_count])
+            ballot_manifest.writerow([batch_name, ballot_count, *contest_ballot_counts])
 
     csv_io.seek(0)
     return csv_response(

@@ -2,7 +2,7 @@ import pytest
 from flask.testing import FlaskClient
 from ..helpers import *
 from ...api.batch_inventory import items_list_to_dict
-from ...models import BatchInventoryData
+from ...models import Batch, BatchInventoryData
 from ..ballot_comparison.test_cvrs import (
     ESS_BALLOTS_1,
     ESS_BALLOTS_2,
@@ -33,6 +33,15 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
 14,TABULATOR2,BATCH2,5,2-2-5,Election Day,12345,CITY,,,,1,1,0,0
 15,TABULATOR2,BATCH2,6,2-2-6,Election Day,12345,CITY,,,,1,0,1,0
 """
+
+# Every card has blank cells for both contests, so neither contest is on any card
+TEST_CVR_WITHOUT_CONTESTS = (
+    "\n".join(
+        ",".join(line.split(",")[:8] + [""] * 7) if index >= 4 else line
+        for index, line in enumerate(TEST_CVR.splitlines())
+    )
+    + "\n"
+)
 
 # Overvote for contest Contest 1 in row 11
 TEST_CVRS_WITH_LEADING_EQUAL_SIGNS = """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,,,,,,
@@ -2814,3 +2823,110 @@ def test_batch_inventory_counts_ballots_per_contest(
         ("TABULATOR2", "BATCH1"): {contest_1_id: 3, contest_2_id: 3},
         ("TABULATOR2", "BATCH2"): {contest_1_id: 3, contest_2_id: 6},
     }
+
+
+@pytest.mark.parametrize("election_id", [AuditMathType.CARD_STYLE_DATA], indirect=True)
+def test_batch_inventory_card_style_data_manifest(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type",
+        {"systemType": CvrFileType.DOMINION},
+    )
+    assert_ok(rv)
+    rv = upload_batch_inventory_cvr(
+        client, io.BytesIO(TEST_CVR.encode()), election_id, jurisdiction_ids[0]
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/ballot-manifest"
+    )
+    ballot_manifest = rv.data.decode("utf-8")
+    assert ballot_manifest == (
+        "Container,Batch Name,Number of Ballots,Contest 1 - Number of Ballots,Contest 2 - Number of Ballots\r\n"
+        "Election Day,TABULATOR1 - BATCH1,3,3,3\r\n"
+        "Election Day,TABULATOR1 - BATCH2,3,3,3\r\n"
+        "Mail,TABULATOR2 - BATCH1,3,3,3\r\n"
+        "Election Day,TABULATOR2 - BATCH2,6,3,6\r\n"
+    )
+
+    # The manifest parser reads the columns back
+    rv = upload_ballot_manifest(
+        client, io.BytesIO(ballot_manifest.encode()), election_id, jurisdiction_ids[0]
+    )
+    assert_ok(rv)
+    processing = get_file_processing(
+        client, election_id, jurisdiction_ids[0], "ballot-manifest"
+    )
+    assert processing["status"] == ProcessingStatus.PROCESSED
+    contest_1_id, contest_2_id = contest_ids
+    assert {
+        batch.name: batch.num_ballots_by_contest_id
+        for batch in Batch.query.filter_by(jurisdiction_id=jurisdiction_ids[0])
+    } == {
+        "TABULATOR1 - BATCH1": {contest_1_id: 3, contest_2_id: 3},
+        "TABULATOR1 - BATCH2": {contest_1_id: 3, contest_2_id: 3},
+        "TABULATOR2 - BATCH1": {contest_1_id: 3, contest_2_id: 3},
+        "TABULATOR2 - BATCH2": {contest_1_id: 3, contest_2_id: 6},
+    }
+
+
+@pytest.mark.parametrize("election_id", [AuditMathType.CARD_STYLE_DATA], indirect=True)
+def test_batch_inventory_card_style_data_manifest_without_contest_ballots(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],  # pylint: disable=unused-argument
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type",
+        {"systemType": CvrFileType.DOMINION},
+    )
+    assert_ok(rv)
+    rv = upload_batch_inventory_cvr(
+        client,
+        io.BytesIO(TEST_CVR_WITHOUT_CONTESTS.encode()),
+        election_id,
+        jurisdiction_ids[0],
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/ballot-manifest"
+    )
+    ballot_manifest = rv.data.decode("utf-8")
+    assert ballot_manifest == (
+        "Container,Batch Name,Number of Ballots,Contest 1 - Number of Ballots,Contest 2 - Number of Ballots\r\n"
+        "Election Day,TABULATOR1 - BATCH1,3,0,0\r\n"
+        "Election Day,TABULATOR1 - BATCH2,3,0,0\r\n"
+        "Mail,TABULATOR2 - BATCH1,3,0,0\r\n"
+        "Election Day,TABULATOR2 - BATCH2,6,0,0\r\n"
+    )
+
+    # The parser rejects the all-zero columns rather than treating the contests
+    # as being on every ballot
+    rv = upload_ballot_manifest(
+        client, io.BytesIO(ballot_manifest.encode()), election_id, jurisdiction_ids[0]
+    )
+    assert_ok(rv)
+    processing = get_file_processing(
+        client, election_id, jurisdiction_ids[0], "ballot-manifest"
+    )
+    assert processing["status"] == ProcessingStatus.ERRORED
+    assert processing["error"] == (
+        "Found 2 columns with 0 ballots in every batch: Contest 1 - Number of Ballots,"
+        " Contest 2 - Number of Ballots. If this jurisdiction has no ballots for a"
+        " contest, remove the jurisdiction from the contest instead."
+    )
