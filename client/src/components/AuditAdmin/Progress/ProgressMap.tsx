@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
-import { select, json, geoPath, geoAlbers } from 'd3'
+import { geoPath, geoAlbers } from 'd3-geo'
 import { feature } from 'topojson-client'
 // topojson-specification is defined in package.json but throwing linting error here
 // eslint-disable-next-line import/no-unresolved
@@ -136,10 +136,11 @@ const Map: React.FC<IProps> = ({
 }) => {
   const width = 960
   const height = 500
-  const d3Container = useRef(null)
-  const tooltipContainer = useRef(null)
 
   const [jsonData, setJsonData] = useState<Topology | undefined>(undefined)
+  const [tooltip, setTooltip] = useState<
+    { text: string; left: number; top: number } | undefined
+  >(undefined)
 
   const getJurisdictionStatusClass = (
     jurisdiction: IJurisdiction | undefined
@@ -171,19 +172,14 @@ const Map: React.FC<IProps> = ({
     // Load topology data from a JSON file. This file is copied from:
     // https://www.npmjs.com/package/us-atlas#counties-10m.json @ v3.0.0
     const loadMapData = async () => {
-      setJsonData(await json('/us-states-counties.json'))
+      const response = await fetch('/us-states-counties.json')
+      setJsonData(await response.json())
     }
     loadMapData()
   }, [])
 
-  const projection = geoAlbers()
-  const path = geoPath().projection(projection)
-
+  let mapContents: React.ReactNode = null
   if (jsonData) {
-    const svgElement = select(d3Container.current)
-
-    svgElement.selectAll('path').remove()
-
     const stateName = states[stateAbbreviation]
     const usState = (feature(
       jsonData,
@@ -226,51 +222,65 @@ const Map: React.FC<IProps> = ({
     ).length
     if (numMatchedJurisdictions / jurisdictions.length < 0.5) return null
 
-    projection.fitSize([width, height], usState)
-    svgElement.attr('width', width).attr('height', height)
-    svgElement
-      .selectAll('path')
-      .data(stateCounties)
-      .enter()
-      .append('path')
-      .attr('d', path)
-      .attr('clip-path', 'url(#clip-state)')
-      .attr('class', county => {
-        const statusClass = getJurisdictionStatusClass(
-          countyToJurisdiction[county.id!]
-        )
-        return `county ${statusClass}`
-      })
-      .on('mouseover', (event, county) => {
-        const jurisdiction = countyToJurisdiction[county.id!]
-        select(tooltipContainer.current)
-          .style('display', 'block')
-          .style('left', `${event.offsetX + 10}px`)
-          .style('top', `${event.offsetY}px`)
-          .html(jurisdiction ? jurisdiction.name : county.properties!.name)
-      })
-      .on('mouseout', () => {
-        select('#tooltip').style('display', 'none')
-      })
+    const projection = geoAlbers().fitSize([width, height], usState)
+    const path = geoPath().projection(projection)
 
-    svgElement
-      .append('path')
-      .datum(usState)
-      .attr('class', 'outline')
-      .attr('d', path)
-      .attr('id', 'single-state')
-
-    svgElement
-      .append('clipPath')
-      .attr('id', 'clip-state')
-      .append('use')
-      .attr('xlink:href', '#single-state')
+    mapContents = (
+      <>
+        {stateCounties.map(county => {
+          const jurisdiction = countyToJurisdiction[county.id!]
+          return (
+            <path
+              key={county.id}
+              d={path(county) || undefined}
+              clipPath="url(#clip-state)"
+              className={`county ${getJurisdictionStatusClass(jurisdiction)}`}
+              onMouseOver={event =>
+                setTooltip({
+                  text: jurisdiction
+                    ? jurisdiction.name
+                    : county.properties!.name,
+                  left: event.nativeEvent.offsetX + 10,
+                  top: event.nativeEvent.offsetY,
+                })
+              }
+              onMouseOut={() => setTooltip(undefined)}
+            />
+          )
+        })}
+        <path
+          className="outline"
+          d={path(usState) || undefined}
+          id="single-state"
+        />
+        <clipPath id="clip-state">
+          <use xlinkHref="#single-state" />
+        </clipPath>
+      </>
+    )
   }
 
   return (
     <MapWrapper aria-hidden="true">
-      <SVGMap className="d3-component" width={0} height={0} ref={d3Container} />
-      <Tooltip id="tooltip" className="hide-tooltip" ref={tooltipContainer} />
+      <SVGMap
+        className="d3-component"
+        width={jsonData ? width : 0}
+        height={jsonData ? height : 0}
+      >
+        {mapContents}
+      </SVGMap>
+      <Tooltip
+        id="tooltip"
+        style={
+          tooltip && {
+            display: 'block',
+            left: `${tooltip.left}px`,
+            top: `${tooltip.top}px`,
+          }
+        }
+      >
+        {tooltip?.text}
+      </Tooltip>
       {jsonData ? (
         <MapLabels>
           {isRoundStarted ? (
