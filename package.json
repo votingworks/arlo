@@ -21,8 +21,8 @@
   },
   "devDependencies": {
     "husky": "^7.0.1",
-    "lint-staged": "^13.0.3",
+    "lint-staged": "^16.4.0",
     "prettier": "^1.19.1",
-    "sort-package-json": "^1.53.1"
+    "sort-package-json": "^3.7.1"
   }
 }
