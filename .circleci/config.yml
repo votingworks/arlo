@@ -2,7 +2,7 @@ version: 2.1
 orbs:
   browser-tools: circleci/browser-tools@1.4.0
   node: circleci/node@6.3.0
-  python: circleci/python@2.2.0
+  python: circleci/python@4.0.0
 
 workflows:
   version: 2
@@ -49,7 +49,8 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - python/install-packages:
-          pkg-manager: poetry
+          pkg-manager: uv
+          args: --locked
       - create-data-model
       - run:
           name: typecheck server
@@ -73,13 +74,14 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - python/install-packages:
-          pkg-manager: poetry
+          pkg-manager: uv
+          args: --locked
       - create-data-model
       - run:
           name: test server
           command: |
             mkdir -p server/test_results
-            poetry run pytest -n 8 --cov=. --junitxml=server/test-results/junit.xml
+            uv run pytest -n 8 --cov=. --junitxml=server/test-results/junit.xml
       - store_test_results:
           path: server/test-results
 
@@ -121,7 +123,8 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - python/install-packages:
-          pkg-manager: poetry
+          pkg-manager: uv
+          args: --locked
           cache-version: v7
       - node/install-packages:
           pkg-manager: yarn
