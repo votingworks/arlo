@@ -29,3 +29,7 @@ def test_content_security_policy(client: FlaskClient):
         for directive in rv.headers["Content-Security-Policy"].split(";")
     )
     assert directives["script-src"] == "'self'"
+    assert directives["object-src"] == "'none'"
+    assert directives["base-uri"] == "'self'"
+    assert directives["form-action"] == "'self'"
+    assert directives["frame-ancestors"] == "'self'"

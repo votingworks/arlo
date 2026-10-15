@@ -40,6 +40,10 @@ Talisman(
         # Accepted risk: styled-components injects <style> tags at runtime.
         "style-src": "'self' 'unsafe-inline'",
         "connect-src": "'self' https://*.s3.amazonaws.com",
+        "object-src": "'none'",
+        "base-uri": "'self'",
+        "form-action": "'self'",
+        "frame-ancestors": "'self'",
     },
 )
 csrf = SeaSurf(app)
