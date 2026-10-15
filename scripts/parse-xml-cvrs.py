@@ -8,7 +8,7 @@ from server.api.cvrs import parse_scanned_ballot_information_file
 
 # This script that parses hart CVRS and outputs a CSV file similar to the dominion format.
 # Run with:
-# FLASK_ENV=development poetry run python -m scripts.parse-xml-cvrs <path/to/hart/cvrs> <output-file.csv> [--include-votes-cast-per-contest] [--cvrs-include-scanned-ballot-info] [--cvrs-exported-by-tabulator]
+# FLASK_ENV=development uv run python -m scripts.parse-xml-cvrs <path/to/hart/cvrs> <output-file.csv> [--include-votes-cast-per-contest] [--cvrs-include-scanned-ballot-info] [--cvrs-exported-by-tabulator]
 ##
 
 # Annoyingly, ElementTree requires that you specify the namespace in all tag

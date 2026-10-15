@@ -1,56 +1,67 @@
-[tool.poetry]
+[project]
 name = "arlo"
 version = "0.1.0"
 description = ""
 authors = []
-package-mode = false
+requires-python = "~=3.11.0"
+dependencies = [
+    "alembic>=1.4.3,<2",
+    "Authlib>=1.6.12,<2",
+    "chardet>=3.0.4,<4",
+    "Flask>=3.1.3,<4",
+    "flask-talisman>=1.1.0,<2",
+    "jsonschema>=3.2.0,<4",
+    "numpy>=1.22.0,<2",
+    "requests>=2.33.0,<3",
+    "SQLAlchemy-Utils==0.38.3",
+    "xkcdpass>=1.19.2,<2",
+    "SQLAlchemy~=1.3.20",
+    "typing-extensions>=4.1.0,<5",
+    "auth0-python>=3.16.2,<4",
+    "gunicorn>=23.0.0,<24",
+    "sentry-sdk[flask]>=2.36.0,<3",
+    "athena",
+    "psycopg2-binary>=2.9.9,<3",
+    "consistent-sampler",
+    "scipy~=1.11.0",
+    "Flask-SeaSurf>=2.0.0,<3",
+    "boto3>=1.20.8,<2",
+    "r2b2",
+    "MarkupSafe==3.0.2",
+    "jinja2==3.1.6",
+    "itsdangerous==2.2.0",
+    "werkzeug==3.1.6",
+    "defusedxml>=0.7.1,<0.8",
+]
 
-[tool.poetry.dependencies]
-python = "^3.11"
-alembic = "^1.4.3"
-Authlib = "^1.6.12"
-chardet = "^3.0.4"
-Flask = "^3.1.3"
-flask-talisman = "^1.1.0"
-jsonschema = "^3.2.0"
-numpy = "^1.22.0"
-requests = "^2.33.0"
-SQLAlchemy-Utils = "0.38.3"
-xkcdpass = "^1.19.2"
-SQLAlchemy = "~1.3.20"
-typing-extensions = "^4.1.0"
-auth0-python = "^3.16.2"
-gunicorn = "^23.0.0"
-sentry-sdk = { version = "^2.36.0", extras = ["flask"] }
-athena = { git = "https://github.com/filipzz/athena.git", rev = "9e07d15aff2098231c23024c68419bfe02796471" } # v0.8.3
-psycopg2-binary = "^2.9.9"
-consistent-sampler = { git = "https://github.com/votingworks/consistent_sampler.git", rev = "46f6f0a6761adc7172e2c3e844bee359e6bd11bf" }
-scipy = "~1.11.0"
-Flask-SeaSurf = "^2.0.0"
-boto3 = "^1.20.8"
-r2b2 = { git = "https://github.com/gwexploratoryaudits/r2b2.git", rev = "43479256a349c5ffea061d1b8dcc8fac5d9a64de" }
-MarkupSafe = "3.0.2"
-jinja2 = "3.1.6"
-itsdangerous = "2.2.0"
-werkzeug = "3.1.6"
-defusedxml = "^0.7.1"
+[dependency-groups]
+dev = [
+    "basedpyright>=1.31.4,<2",
+    "filelock>=3.20.3,<4",
+    "pytest>=6.2.4,<7",
+    "pytest-cov>=2.12.1,<3",
+    "pytest-testmon>=1.1.1,<2",
+    "snapshottest>=0.6.0,<0.7",
+    "pytest-alembic>=0.2.5,<0.3",
+    "pytest-xdist>=2.3.0,<3",
+    "sqlalchemy-stubs>=0.3,<0.4",
+    "noauth",
+    "ruff>=0.12.12,<0.13",
+    "watchdog>=6.0.0,<7",
+    "types-chardet>=5.0.4.6,<6",
+    "types-boto3>=1.40.51,<2",
+    "types-defusedxml>=0.7.0.20250822,<0.8",
+]
 
-[tool.poetry.group.dev.dependencies]
-basedpyright = "^1.31.4"
-filelock = "^3.20.3"
-pytest = "^6.2.4"
-pytest-cov = "^2.12.1"
-pytest-testmon = "^1.1.1"
-snapshottest = "^0.6.0"
-pytest-alembic = "^0.2.5"
-pytest-xdist = "^2.3.0"
-sqlalchemy-stubs = "^0.3"
+[tool.uv]
+package = false
+default-groups = "all"
+
+[tool.uv.sources]
 noauth = { git = "https://github.com/votingworks/nOAuth.git", rev = "542245905c0024977a2d2ef08309b606a7ae98c8" }
-ruff = "^0.12.12"
-watchdog = "^6.0.0"
-types-chardet = "^5.0.4.6"
-types-boto3 = "^1.40.51"
-types-defusedxml = "^0.7.0.20250822"
+athena = { git = "https://github.com/filipzz/athena.git", rev = "9e07d15aff2098231c23024c68419bfe02796471" } # v0.8.3
+consistent-sampler = { git = "https://github.com/votingworks/consistent_sampler.git", rev = "46f6f0a6761adc7172e2c3e844bee359e6bd11bf" }
+r2b2 = { git = "https://github.com/gwexploratoryaudits/r2b2.git", rev = "43479256a349c5ffea061d1b8dcc8fac5d9a64de" }
 
 [tool.basedpyright]
 stubPath = "stubs"
@@ -61,7 +72,3 @@ ignore = [
   "F405",
   "F403",
 ]
-
-[build-system]
-requires = ["poetry-core>=1.8.0"]
-build-backend = "poetry.core.masonry.api"

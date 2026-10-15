@@ -16,7 +16,7 @@ First, make sure the database is in the existing, unmigrated state. Two options:
 
 Then, use Alembic to autogenerate a migration script:
 
-    poetry run alembic revision --autogenerate -m "Some description of the migration"
+    uv run alembic revision --autogenerate -m "Some description of the migration"
 
 The resulting migration script will be in `migrations/versions`.
 
@@ -30,6 +30,6 @@ Note that we don't support reverse migrations (`alembic downgrade`) because we d
 
 Populate your local database with some data (e.g. restored from a backup), then run:
 
-    poetry run alembic upgrade head
+    uv run alembic upgrade head
 
 ...and see if it works!
