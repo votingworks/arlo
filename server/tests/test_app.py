@@ -20,3 +20,12 @@ def test_logo(client: FlaskClient):
 def test_static_logo(client: FlaskClient):
     rv = client.get("/votingworks-logo.png")
     assert rv.status_code == 200
+
+
+def test_content_security_policy(client: FlaskClient):
+    rv = client.get("/")
+    directives = dict(
+        directive.strip().split(" ", 1)
+        for directive in rv.headers["Content-Security-Policy"].split(";")
+    )
+    assert directives["script-src"] == "'self'"
