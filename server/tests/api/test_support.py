@@ -51,7 +51,7 @@ def test_support_create_organization_invalid(client: FlaskClient):
     rv = post_json(client, "/api/support/organizations", {"name": ""})
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
-        "errors": [{"errorType": "Bad Request", "message": "'' is too short"}]
+        "errors": [{"errorType": "Bad Request", "message": "'' should be non-empty"}]
     }
 
 

@@ -480,7 +480,7 @@ def test_full_hand_tally_results_validation(
                     for choice in contest["choices"]
                 },
             },
-            "'' is too short",
+            "'' should be non-empty",
         ),
         (
             {
