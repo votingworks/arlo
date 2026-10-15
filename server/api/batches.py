@@ -275,7 +275,7 @@ def record_batch_results(
     batch_id: str,
 ):
     batch = Batch.query.filter_by(id=batch_id).with_for_update().one_or_none()
-    if batch is None:
+    if batch is None or batch.jurisdiction_id != jurisdiction.id:
         raise NotFound()
     batch_results = safe_get_json_list(request)
     validate_batch_results(election, jurisdiction, round, batch, batch_results)

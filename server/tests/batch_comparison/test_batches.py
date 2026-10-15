@@ -744,6 +744,71 @@ def test_unfinalize_batch_results(
     }
 
 
+def test_record_batch_results_other_jurisdiction(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    round_1_id: str,
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contests = json.loads(rv.data)["contests"]
+    choice_ids: list[str] = [choice["id"] for choice in contests[0]["choices"]]
+
+    # Record results for one of J2's batches
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    j2_url = f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches"
+    rv = client.get(j2_url)
+    j2_batch_id: str = json.loads(rv.data)["batches"][0]["id"]
+    j2_results = [
+        {
+            "name": "Tally Sheet #1",
+            "results": {choice_id: 1 for choice_id in choice_ids},
+        }
+    ]
+    rv = put_json(client, f"{j2_url}/{j2_batch_id}/results", j2_results)
+    assert_ok(rv)
+
+    def j2_batch_results():
+        rv = client.get(j2_url)
+        return json.loads(rv.data)["batches"][0]["resultTallySheets"]
+
+    expected_results = j2_batch_results()
+
+    # A JA of J1 only can't record results for J2's batch via J1's URL
+    j1_ja_email = "j1-only-admin@example.com"
+    create_jurisdiction_admin(jurisdiction_ids[0], j1_ja_email)
+    j1_batch_url = f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/{j2_batch_id}/results"
+    other_results = [
+        {
+            "name": "Tally Sheet #1",
+            "results": {choice_id: 0 for choice_id in choice_ids},
+        }
+    ]
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, j1_ja_email)
+    rv = put_json(client, j1_batch_url, other_results)
+    assert rv.status_code == 404
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    assert j2_batch_results() == expected_results
+
+    # Same after J2 finalizes
+    rv = post_json(client, f"{j2_url}/finalize")
+    assert_ok(rv)
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, j1_ja_email)
+    rv = put_json(client, j1_batch_url, other_results)
+    assert rv.status_code == 404
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    assert j2_batch_results() == expected_results
+
+
 def test_record_batch_results_bad_round(
     client: FlaskClient,
     org_id: str,
@@ -815,7 +880,7 @@ def test_record_batch_results_bad_round(
     # Try a batch from the previous round
     rv = put_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/batches/{batches[0]['id']}/results",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_2_id}/batches/{batches[0]['id']}/results",
         [{choice_id: 0 for choice_id in choice_ids}],
     )
     assert rv.status_code == 409
