@@ -11,8 +11,8 @@
       "prettier --write"
     ],
     "*.py": [
-      "poetry run ruff format",
-      "poetry run ruff check",
+      "uv run ruff format",
+      "uv run ruff check",
       "./scripts/run-basedpyright.sh"
     ],
     "package.json": [
