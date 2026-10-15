@@ -233,6 +233,9 @@ class Election(BaseModel):
 
     __table_args__ = (UniqueConstraint("organization_id", "audit_name"),)
 
+    def is_audit_started(self) -> bool:
+        return len(list(self.rounds)) > 0
+
 
 class CvrFileType(str, enum.Enum):
     DOMINION = "DOMINION"
