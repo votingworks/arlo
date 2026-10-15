@@ -25,8 +25,8 @@ dev-environment:
 	curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
 	sudo apt install -y nodejs
 
-	@# Install Poetry: https://python-poetry.org/docs/#installing-with-the-official-installer
-	curl -sSL https://install.python-poetry.org | python3.11 -
+	@# Install uv: https://docs.astral.sh/uv/getting-started/installation/
+	curl -LsSf https://astral.sh/uv/install.sh | sh
 
 	@# Install Yarn
 	sudo npm install -g yarn
@@ -34,12 +34,11 @@ dev-environment:
 	yarn prepare # Set up Git hooks
 
 	@echo
-	@echo '⚠️  User action required: Make poetry available in your PATH.'
+	@echo '⚠️  User action required: Make uv available in your PATH.'
 	@echo "⚠️  If using bash, run: echo 'export PATH=\"\$$PATH:\$$HOME/.local/bin\"' >> ~/.bashrc && source ~/.bashrc"
 
 install:
-	poetry env use 3.11
-	poetry install
+	uv sync
 	make -C client install
 
 dev-dbs:
@@ -62,36 +61,36 @@ run: # Used for development, not during production deployment. Defaults to 3 por
 #
 
 typecheck:
-	poetry run basedpyright
+	uv run basedpyright
 
 typecheck-update-baseline:
-	poetry run basedpyright --writebaseline
+	uv run basedpyright --writebaseline
 
 format:
-	poetry run ruff format .
+	uv run ruff format .
 
 lint:
-	poetry run ruff check server scripts fixtures
+	uv run ruff check server scripts fixtures
 
 test:
-	poetry run pytest -n auto --ignore=server/tests/arlo-extra-tests
+	uv run pytest -n auto --ignore=server/tests/arlo-extra-tests
 
 test-coverage:
-	poetry run pytest -n auto --cov=. --ignore=server/tests/arlo-extra-tests
+	uv run pytest -n auto --cov=. --ignore=server/tests/arlo-extra-tests
 
 test-extra: # This additionally runs the tests in arlo-extra-tests (must download first)
-	poetry run pytest -n auto
+	uv run pytest -n auto
 
 test-extra-coverage:
-	poetry run pytest -n auto --cov=.
+	uv run pytest -n auto --cov=.
 
 # Can't run with parallelization (-n auto) when updating snapshots
 test-update-snapshots:
-	poetry run pytest -n 1 --ignore=server/tests/arlo-extra-tests --snapshot-update
-	poetry run ruff format .
+	uv run pytest -n 1 --ignore=server/tests/arlo-extra-tests --snapshot-update
+	uv run ruff format .
 
 db-clean:
-	FLASK_ENV=$${FLASK_ENV:-development} poetry run python -m scripts.resetdb
+	FLASK_ENV=$${FLASK_ENV:-development} uv run python -m scripts.resetdb
 
 db-migrate:
-	FLASK_ENV=$${FLASK_ENV:-development} poetry run alembic upgrade head
+	FLASK_ENV=$${FLASK_ENV:-development} uv run alembic upgrade head
