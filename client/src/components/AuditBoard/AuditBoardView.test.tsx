@@ -140,6 +140,8 @@ const apiCalls = {
   },
 }
 
+const confirmSelectionsHeading = /^Confirm the Ballot Selections\s*Tabulator 11 · Batch 0003-04-Precinct 19 \(Jonesboro Fire Department\) · Ballot Number 2112$/
+
 describe('AuditBoardView', () => {
   describe('member form', () => {
     it('submits, goes to ballot table, and header shows member names', async () => {
@@ -285,8 +287,7 @@ describe('AuditBoardView', () => {
         )
         const dialog = (
           await screen.findByRole('heading', {
-            name:
-              'Confirm the Ballot Selections Tabulator 11 · Batch 0003-04-Precinct 19 (Jonesboro Fire Department) · Ballot Number 2112',
+            name: confirmSelectionsHeading,
           })
         ).closest('.bp3-dialog')! as HTMLElement
         expect(within(dialog).getAllByText('Ballot Not Found').length).toBe(1)
@@ -337,8 +338,7 @@ describe('AuditBoardView', () => {
 
         const dialog = (
           await screen.findByRole('heading', {
-            name:
-              'Confirm the Ballot Selections Tabulator 11 · Batch 0003-04-Precinct 19 (Jonesboro Fire Department) · Ballot Number 2112',
+            name: confirmSelectionsHeading,
           })
         ).closest('.bp3-dialog')! as HTMLElement
         within(dialog).getByText('Contest 1')
@@ -423,8 +423,7 @@ describe('AuditBoardView', () => {
 
         const dialog = (
           await screen.findByRole('heading', {
-            name:
-              'Confirm the Ballot Selections Tabulator 11 · Batch 0003-04-Precinct 19 (Jonesboro Fire Department) · Ballot Number 2112',
+            name: confirmSelectionsHeading,
           })
         ).closest('.bp3-dialog')! as HTMLElement
         within(dialog).getByText('Contest 1')
@@ -483,8 +482,7 @@ describe('AuditBoardView', () => {
 
         const dialog = (
           await screen.findByRole('heading', {
-            name:
-              'Confirm the Ballot Selections Tabulator 11 · Batch 0003-04-Precinct 19 (Jonesboro Fire Department) · Ballot Number 2112',
+            name: confirmSelectionsHeading,
           })
         ).closest('.bp3-dialog')! as HTMLElement
         within(dialog).getByText('Contest 1')
@@ -552,8 +550,7 @@ describe('AuditBoardView', () => {
         // Confirm
         const dialog = (
           await screen.findByRole('heading', {
-            name:
-              'Confirm the Ballot Selections Tabulator 11 · Batch 0003-04-Precinct 19 (Jonesboro Fire Department) · Ballot Number 2112',
+            name: confirmSelectionsHeading,
           })
         ).closest('.bp3-dialog')! as HTMLElement
         within(dialog).getByText('Ballot Not Found')
@@ -600,8 +597,7 @@ describe('AuditBoardView', () => {
         )
         const dialog1 = (
           await screen.findByRole('heading', {
-            name:
-              'Confirm the Ballot Selections Tabulator 11 · Batch 0003-04-Precinct 19 (Jonesboro Fire Department) · Ballot Number 2112',
+            name: confirmSelectionsHeading,
           })
         ).closest('.bp3-dialog')! as HTMLElement
         userEvent.click(
@@ -624,8 +620,7 @@ describe('AuditBoardView', () => {
         // Confirm
         const dialog2 = (
           await screen.findByRole('heading', {
-            name:
-              'Confirm the Ballot Selections Tabulator 11 · Batch 0003-04-Precinct 19 (Jonesboro Fire Department) · Ballot Number 2112',
+            name: confirmSelectionsHeading,
           })
         ).closest('.bp3-dialog')! as HTMLElement
         within(dialog2).getByText('Ballot Not Found')
@@ -748,8 +743,7 @@ describe('AuditBoardView', () => {
         userEvent.click(submitSelectionsButton)
         const confirmationDialog = (
           await screen.findByRole('heading', {
-            name:
-              'Confirm the Ballot Selections Tabulator 11 · Batch 0003-04-Precinct 19 (Jonesboro Fire Department) · Ballot Number 2112',
+            name: confirmSelectionsHeading,
           })
         ).closest('.bp3-dialog')! as HTMLElement
         expect(
