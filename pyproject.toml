@@ -3,14 +3,7 @@ name = "arlo"
 version = "0.1.0"
 description = ""
 authors = []
-requires-python = ">=3.11,<4"
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
-    "Programming Language :: Python :: 3.14",
-]
+requires-python = "~=3.11.0"
 dependencies = [
     "alembic>=1.4.3,<2",
     "Authlib>=1.6.12,<2",
@@ -66,13 +59,9 @@ default-groups = "all"
 
 [tool.uv.sources]
 noauth = { git = "https://github.com/votingworks/nOAuth.git", rev = "542245905c0024977a2d2ef08309b606a7ae98c8" }
-athena = { git = "https://github.com/filipzz/athena.git", rev = "9e07d15aff2098231c23024c68419bfe02796471" }
+athena = { git = "https://github.com/filipzz/athena.git", rev = "9e07d15aff2098231c23024c68419bfe02796471" } # v0.8.3
 consistent-sampler = { git = "https://github.com/votingworks/consistent_sampler.git", rev = "46f6f0a6761adc7172e2c3e844bee359e6bd11bf" }
 r2b2 = { git = "https://github.com/gwexploratoryaudits/r2b2.git", rev = "43479256a349c5ffea061d1b8dcc8fac5d9a64de" }
-
-[build-system]
-requires = ["uv_build>=0.12.3,<0.13.0"]
-build-backend = "uv_build"
 
 [tool.basedpyright]
 stubPath = "stubs"
