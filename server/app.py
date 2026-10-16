@@ -34,12 +34,16 @@ Talisman(
     session_cookie_http_only=True,
     session_cookie_secure=True,
     feature_policy="camera 'none'; microphone 'none'; geolocation 'none'",
-    # TODO: Configure webpack to use a nonce: https://webpack.js.org/guides/csp/.
     content_security_policy={
         "default-src": "'self'",
-        "script-src": "'self' 'unsafe-inline'",
+        "script-src": "'self'",
+        # Accepted risk: styled-components injects <style> tags at runtime.
         "style-src": "'self' 'unsafe-inline'",
         "connect-src": "'self' https://*.s3.amazonaws.com",
+        "object-src": "'none'",
+        "base-uri": "'self'",
+        "form-action": "'self'",
+        "frame-ancestors": "'self'",
     },
 )
 csrf = SeaSurf(app)

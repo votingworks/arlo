@@ -7,12 +7,9 @@
     <meta name="theme-color" content="#000000" />
     <link rel="manifest" href="/manifest.json" />
     <title>Arlo, by VotingWorks</title>
-    <script type="text/javascript">
-      // Inject environment variables from the Flask backend by rendering this
-      // HTML page as a template.
-      window._arlo_flask_env = '{{ flask_env }}'
-      window._arlo_sentry_dsn = '{{ sentry_dsn }}'
-    </script>
+    <!-- Rendered as a Flask template to inject environment variables. -->
+    <meta name="arlo-flask-env" content="{{ flask_env }}" />
+    <meta name="arlo-sentry-dsn" content="{{ sentry_dsn }}" />
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
