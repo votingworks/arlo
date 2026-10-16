@@ -148,8 +148,8 @@ def combined_batch_keys(election_id: str) -> list[set[sampler.BatchKey]]:
 
 # The contests a batch still has to be audited for in a round: those it was
 # drawn for in this round and not in an earlier one. A combined batch is audited
-# for all of its sub-batches' contests. A batch drawn as an extra batch is
-# audited for every contest.
+# for all of its sub-batches' contests. An extra batch's draw carries the first
+# targeted contest its jurisdiction is in, so it is audited for that contest only.
 def sampled_contest_ids(
     jurisdiction: Jurisdiction, round: Round, batch: Batch
 ) -> list[str]:
@@ -162,19 +162,18 @@ def sampled_contest_ids(
         else [batch]
     )
     round_num_by_id = {r.id: r.round_num for r in jurisdiction.election.rounds}
-    contest_ids = [contest.id for contest in jurisdiction.contests]
-
-    def drawn_contest_ids(draws: list[SampledBatchDraw]) -> set[str]:
-        if any(draw.ticket_number == EXTRA_TICKET_NUMBER for draw in draws):
-            return set(contest_ids)
-        return {draw.contest_id for draw in draws}
-
     draws = [draw for batch in batches for draw in batch.draws]
-    audited = drawn_contest_ids(
-        [draw for draw in draws if round_num_by_id[draw.round_id] < round.round_num]
-    )
-    sampled = drawn_contest_ids([draw for draw in draws if draw.round_id == round.id])
-    return [contest_id for contest_id in contest_ids if contest_id in sampled - audited]
+    audited = {
+        draw.contest_id
+        for draw in draws
+        if round_num_by_id[draw.round_id] < round.round_num
+    }
+    sampled = {draw.contest_id for draw in draws if draw.round_id == round.id}
+    return [
+        contest.id
+        for contest in jurisdiction.contests
+        if contest.id in sampled - audited
+    ]
 
 
 def tally_sheets_for_contests(
@@ -730,9 +729,13 @@ def compute_extra_batches_for_round(
         {j for contest, _ in contest_sample_sizes for j in contest.jurisdictions},
         key=lambda j: j.name,
     )
-    # Each unique jurisdiction mapped to the first audited contest it appears in.
+    # Each unique jurisdiction mapped to the first audited contest it appears in,
+    # in the order the contests were entered (top of the ticket first).
     jurisdiction_id_to_contest_id = {}
-    for contest, _ in contest_sample_sizes:
+    for contest in sorted(
+        (contest for contest, _ in contest_sample_sizes),
+        key=lambda contest: contest.created_at,
+    ):
         for jurisdiction in contest.jurisdictions:
             jurisdiction_id_to_contest_id.setdefault(jurisdiction.id, contest.id)
 
