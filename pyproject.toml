@@ -32,7 +32,7 @@ r2b2 = { git = "https://github.com/gwexploratoryaudits/r2b2.git", rev = "4347925
 MarkupSafe = "3.0.2"
 jinja2 = "3.1.6"
 itsdangerous = "2.2.0"
-werkzeug = "3.1.6"
+werkzeug = "3.1.9"
 defusedxml = "^0.7.1"
 
 [tool.poetry.group.dev.dependencies]
