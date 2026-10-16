@@ -1319,6 +1319,9 @@ def process_cvr_file(
             shutil.rmtree(working_directory)
 
     def process() -> None:
+        if jurisdiction.election.is_audit_started():
+            raise UserError("Cannot process CVRs after audit has started.")
+
         # Clear out any existing CVR data from previous files (e.g., if we're
         # overwriting a previous file). This query can sometimes be slow so we
         # run it here in the background task instead of in the endpoint for
@@ -1516,6 +1519,9 @@ def process_cvr_file(
 def validate_cvr_upload(
     request: Request, election: Election, jurisdiction: Jurisdiction
 ):
+    if election.is_audit_started():
+        raise Conflict("Cannot upload CVRs after audit has started.")
+
     if election.audit_type not in [AuditType.BALLOT_COMPARISON, AuditType.HYBRID]:
         raise Conflict("Can't upload CVR file for this audit type.")
 
@@ -1669,6 +1675,8 @@ def clear_cvrs(
     election: Election,
     jurisdiction: Jurisdiction,
 ):
+    if election.is_audit_started():
+        raise Conflict("Cannot remove CVRs after audit has started.")
     if any_jurisdiction_file_is_processing(jurisdiction):
         raise Conflict("Cannot remove CVRs while any file upload is processing.")
     if jurisdiction.cvr_file_id:

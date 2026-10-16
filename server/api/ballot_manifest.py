@@ -114,6 +114,9 @@ def process_ballot_manifest_file(
     jurisdiction = Jurisdiction.query.get(jurisdiction_id)
 
     def process() -> None:
+        if jurisdiction.election.is_audit_started():
+            raise UserError("Cannot process ballot manifest after audit has started.")
+
         # In ballot comparison and hybrid audits, each batch is uniquely
         # identified by (tabulator, batch name). For other types of audits, the
         # batch name is unique.
@@ -341,6 +344,9 @@ def complete_upload_for_ballot_manifest(
         [FileType.CSV],
     )
 
+    if election.is_audit_started():
+        raise Conflict("Cannot upload ballot manifest after audit has started.")
+
     if any_jurisdiction_file_is_processing(jurisdiction):
         raise Conflict(
             "Cannot upload ballot manifest while any file upload is processing."
@@ -391,6 +397,8 @@ def clear_ballot_manifest(
     election: Election,
     jurisdiction: Jurisdiction,
 ):
+    if election.is_audit_started():
+        raise Conflict("Cannot remove ballot manifest after audit has started.")
     if any_jurisdiction_file_is_processing(jurisdiction):
         raise Conflict(
             "Cannot remove ballot manifest while any file upload is processing."

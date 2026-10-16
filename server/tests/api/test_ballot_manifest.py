@@ -3,6 +3,8 @@ import json
 from flask.testing import FlaskClient
 
 from ...models import *
+from ...api.ballot_manifest import process_ballot_manifest_file
+from ...worker.tasks import create_background_task
 from ..helpers import *
 
 
@@ -444,3 +446,78 @@ def test_ballot_manifest_get_upload_url(
             f"audits/{election_id}/jurisdictions/{jurisdiction_ids[0]}/manifest_"
         )
         assert response_data["fields"]["key"].endswith(".csv")
+
+
+def test_ballot_manifest_cannot_change_after_audit_started(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    round_1_id: str,
+):
+    jurisdiction = Jurisdiction.query.get(jurisdiction_ids[0])
+    manifest_file_id = jurisdiction.manifest_file_id
+    num_batches = Batch.query.filter_by(jurisdiction_id=jurisdiction_ids[0]).count()
+    num_sampled_ballots = (
+        SampledBallot.query.join(Batch)
+        .filter(Batch.jurisdiction_id == jurisdiction_ids[0])
+        .count()
+    )
+    assert num_sampled_ballots > 0
+
+    for user_type, user_key in [
+        (UserType.JURISDICTION_ADMIN, default_ja_email(election_id)),
+        (UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL),
+    ]:
+        set_logged_in_user(client, user_type, user_key)
+        rv = upload_ballot_manifest(
+            client,
+            io.BytesIO(b"Batch Name,Number of Ballots\n1,23\n"),
+            election_id,
+            jurisdiction_ids[0],
+        )
+        assert rv.status_code == 409
+        assert json.loads(rv.data) == {
+            "errors": [
+                {
+                    "errorType": "Conflict",
+                    "message": "Cannot upload ballot manifest after audit has started.",
+                }
+            ]
+        }
+
+        rv = client.delete(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
+        )
+        assert rv.status_code == 409
+        assert json.loads(rv.data) == {
+            "errors": [
+                {
+                    "errorType": "Conflict",
+                    "message": "Cannot remove ballot manifest after audit has started.",
+                }
+            ]
+        }
+
+    task = create_background_task(
+        process_ballot_manifest_file,
+        dict(
+            election_id=election_id,
+            jurisdiction_id=jurisdiction_ids[0],
+            jurisdiction_admin_email=default_ja_email(election_id),
+            support_user_email=None,
+        ),
+    )
+    assert task.error == "Cannot process ballot manifest after audit has started."
+
+    jurisdiction = Jurisdiction.query.get(jurisdiction_ids[0])
+    assert jurisdiction.manifest_file_id == manifest_file_id
+    assert (
+        Batch.query.filter_by(jurisdiction_id=jurisdiction_ids[0]).count()
+        == num_batches
+    )
+    assert (
+        SampledBallot.query.join(Batch)
+        .filter(Batch.jurisdiction_id == jurisdiction_ids[0])
+        .count()
+        == num_sampled_ballots
+    )

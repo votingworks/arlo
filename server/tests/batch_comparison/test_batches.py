@@ -1,7 +1,10 @@
 import io
+import json
 from flask.testing import FlaskClient
 
 from ...models import *
+from ...api.batch_tallies import process_batch_tallies_file
+from ...worker.tasks import create_background_task
 from ..helpers import *
 
 J1_BATCHES_ROUND_1 = 5
@@ -1126,3 +1129,69 @@ def test_finalize_batch_results_incomplete(
             }
         ]
     }
+
+
+def test_batch_tallies_cannot_change_after_audit_started(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    round_1_id: str,
+):
+    jurisdiction = Jurisdiction.query.get(jurisdiction_ids[0])
+    batch_tallies_file_id = jurisdiction.batch_tallies_file_id
+    batch_tallies = jurisdiction.batch_tallies
+    assert batch_tallies is not None
+
+    for user_type, user_key in [
+        (UserType.JURISDICTION_ADMIN, default_ja_email(election_id)),
+        (UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL),
+    ]:
+        set_logged_in_user(client, user_type, user_key)
+        rv = upload_batch_tallies(
+            client,
+            io.BytesIO(
+                b"Batch Name,candidate 1,candidate 2,candidate 3\nBatch 1,1,1,1\n"
+            ),
+            election_id,
+            jurisdiction_ids[0],
+        )
+        assert rv.status_code == 409
+        assert json.loads(rv.data) == {
+            "errors": [
+                {
+                    "errorType": "Conflict",
+                    "message": "Cannot upload candidate totals by batch after audit has started.",
+                }
+            ]
+        }
+
+        rv = client.delete(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
+        )
+        assert rv.status_code == 409
+        assert json.loads(rv.data) == {
+            "errors": [
+                {
+                    "errorType": "Conflict",
+                    "message": "Cannot remove candidate totals by batch after audit has started.",
+                }
+            ]
+        }
+
+    task = create_background_task(
+        process_batch_tallies_file,
+        dict(
+            election_id=election_id,
+            jurisdiction_id=jurisdiction_ids[0],
+            user=(UserType.JURISDICTION_ADMIN, default_ja_email(election_id)),
+            support_user_email=None,
+        ),
+    )
+    assert (
+        task.error
+        == "Cannot process candidate totals by batch after audit has started."
+    )
+
+    jurisdiction = Jurisdiction.query.get(jurisdiction_ids[0])
+    assert jurisdiction.batch_tallies_file_id == batch_tallies_file_id
+    assert jurisdiction.batch_tallies == batch_tallies

@@ -6,7 +6,12 @@ from flask.testing import FlaskClient
 from ...models import *
 from ..helpers import *
 from .conftest import TEST_CVRS
-from ...api.cvrs import CVR_CONTESTS_METADATA, normalize_interpretations
+from ...api.cvrs import (
+    CVR_CONTESTS_METADATA,
+    normalize_interpretations,
+    process_cvr_file,
+)
+from ...worker.tasks import create_background_task
 
 
 def test_dominion_cvr_upload(
@@ -3252,3 +3257,107 @@ def test_normalize_interpretations():
         normalize_interpretations([" 1", "00", "", "0", "extra"], contests_metadata)
         == "1,0,,"
     )
+
+
+def test_cvrs_cannot_change_after_audit_started(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    election_settings,
+    manifests,
+    cvrs,
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = upload_standardized_contests(
+        client,
+        io.BytesIO(b'Contest Name,Jurisdictions\nContest 1,"J1,J2"\n'),
+        election_id,
+    )
+    assert_ok(rv)
+    contest_id = str(uuid.uuid4())
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/contest",
+        [
+            {
+                "id": contest_id,
+                "name": "Contest 1",
+                "numWinners": 1,
+                "jurisdictionIds": jurisdiction_ids[:2],
+                "isTargeted": True,
+            }
+        ],
+    )
+    assert_ok(rv)
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
+    sample_size = json.loads(rv.data)["sampleSizes"][contest_id][0]
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {"roundNum": 1, "sampleSizes": {contest_id: sample_size}},
+    )
+    assert_ok(rv)
+
+    cvr_file_id = Jurisdiction.query.get(jurisdiction_ids[0]).cvr_file_id
+    num_cvr_ballots = (
+        CvrBallot.query.join(Batch)
+        .filter(Batch.jurisdiction_id == jurisdiction_ids[0])
+        .count()
+    )
+    assert num_cvr_ballots > 0
+    contest_choice_ids = {choice.id for choice in Contest.query.get(contest_id).choices}
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = upload_cvrs(
+        client,
+        io.BytesIO(TEST_CVRS.encode()),
+        election_id,
+        jurisdiction_ids[0],
+        "DOMINION",
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Cannot upload CVRs after audit has started.",
+            }
+        ]
+    }
+
+    rv = client.delete(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Cannot remove CVRs after audit has started.",
+            }
+        ]
+    }
+
+    task = create_background_task(
+        process_cvr_file,
+        dict(
+            election_id=election_id,
+            jurisdiction_id=jurisdiction_ids[0],
+            jurisdiction_admin_email=default_ja_email(election_id),
+            support_user_email=None,
+        ),
+    )
+    assert task.error == "Cannot process CVRs after audit has started."
+
+    assert Jurisdiction.query.get(jurisdiction_ids[0]).cvr_file_id == cvr_file_id
+    assert (
+        CvrBallot.query.join(Batch)
+        .filter(Batch.jurisdiction_id == jurisdiction_ids[0])
+        .count()
+        == num_cvr_ballots
+    )
+    assert {
+        choice.id for choice in Contest.query.get(contest_id).choices
+    } == contest_choice_ids
