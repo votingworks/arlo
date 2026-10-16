@@ -1092,6 +1092,19 @@ def test_multi_contest_batch_comparison_round_2(
     jurisdiction_3_batches = json.loads(rv.data)["batches"]
     assert len(jurisdiction_3_batches) == 0
 
+    # Two of jurisdiction 1's draws re-sample batches already audited for that
+    # contest. The reopened batches keep their round 1 tally sheets, but don't
+    # count as audited until their round 2 contest is entered.
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    assert json.loads(rv.data)["jurisdictions"][0]["currentRoundStatus"] == {
+        "status": "IN_PROGRESS",
+        "numSamples": 4,
+        "numSamplesAudited": 2,
+        "numUnique": 4,
+        "numUniqueAudited": 2,
+    }
+
     #
     # Enter batch results
     #
@@ -1117,6 +1130,18 @@ def test_multi_contest_batch_comparison_round_2(
             ),
         )
         assert_ok(rv)
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    assert json.loads(rv.data)["jurisdictions"][0]["currentRoundStatus"] == {
+        "status": "IN_PROGRESS",
+        "numSamples": 4,
+        "numSamplesAudited": 4,
+        "numUnique": 4,
+        "numUniqueAudited": 4,
+    }
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = post_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/batches/finalize",
