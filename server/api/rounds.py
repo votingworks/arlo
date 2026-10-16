@@ -199,7 +199,7 @@ def count_audited_votes(election: Election, round: Round):
                         .join(SampledBatchDraw)
                         # Special case: don't include extra sampled batches
                         .filter(SampledBatchDraw.ticket_number != EXTRA_TICKET_NUMBER)
-                        .filter_by(round_id=round.id)
+                        .filter_by(round_id=round.id, contest_id=contest.id)
                         .with_entities(BatchResultTallySheet.id)
                         .subquery()
                     )

@@ -26125,8 +26125,16 @@
                 "code": "reportUnknownMemberType",
                 "range": {
                     "startColumn": 16,
-                    "endColumn": 20,
+                    "endColumn": 23,
                     "lineCount": 7
+                }
+            },
+            {
+                "code": "reportUnknownMemberType",
+                "range": {
+                    "startColumn": 16,
+                    "endColumn": 20,
+                    "lineCount": 8
                 }
             },
             {
@@ -26134,6 +26142,14 @@
                 "range": {
                     "startColumn": 53,
                     "endColumn": 61,
+                    "lineCount": 1
+                }
+            },
+            {
+                "code": "reportUnknownMemberType",
+                "range": {
+                    "startColumn": 55,
+                    "endColumn": 65,
                     "lineCount": 1
                 }
             },
@@ -31441,6 +31457,14 @@
                     "startColumn": 24,
                     "endColumn": 35,
                     "lineCount": 7
+                }
+            },
+            {
+                "code": "reportUnknownMemberType",
+                "range": {
+                    "startColumn": 65,
+                    "endColumn": 75,
+                    "lineCount": 1
                 }
             },
             {
