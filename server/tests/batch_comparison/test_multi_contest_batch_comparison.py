@@ -1037,6 +1037,19 @@ def test_multi_contest_batch_comparison_round_2(
     jurisdiction_3_batches = json.loads(rv.data)["batches"]
     assert len(jurisdiction_3_batches) == 0
 
+    # Two of jurisdiction 1's draws re-sample batches already audited for that
+    # contest. The reopened batches keep their round 1 tally sheets, but don't
+    # count as audited until their round 2 contest is entered.
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    assert json.loads(rv.data)["jurisdictions"][0]["currentRoundStatus"] == {
+        "status": "IN_PROGRESS",
+        "numSamples": 4,
+        "numSamplesAudited": 2,
+        "numUnique": 4,
+        "numUniqueAudited": 2,
+    }
+
     #
     # Enter batch results
     #
@@ -1058,6 +1071,18 @@ def test_multi_contest_batch_comparison_round_2(
             client, election_id, jurisdiction_ids[0], round_2_id, batch["id"], results
         )
         assert_ok(rv)
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    assert json.loads(rv.data)["jurisdictions"][0]["currentRoundStatus"] == {
+        "status": "IN_PROGRESS",
+        "numSamples": 4,
+        "numSamplesAudited": 4,
+        "numUnique": 4,
+        "numUniqueAudited": 4,
+    }
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = post_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/batches/finalize",
@@ -1340,6 +1365,59 @@ def test_multi_contest_batch_comparison_combined_batches(
             ).count()
             == 2
         )
+
+
+def test_multi_contest_batch_comparison_progress_with_new_contest_draw(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
+    election_settings,
+    manifests,
+    batch_tallies,
+    round_1_id: str,
+):
+    # Batch 2 is drawn for Contest 1 only
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches"
+    )
+    batch_2 = next(b for b in json.loads(rv.data)["batches"] if b["name"] == "Batch 2")
+    rv = put_batch_results(
+        client,
+        election_id,
+        jurisdiction_ids[0],
+        round_1_id,
+        batch_2["id"],
+        [{choice.id: 0 for choice in Contest.query.get(contest_ids[0]).choices}],
+    )
+    assert_ok(rv)
+
+    # Hackily draw Batch 2 for Contest 2 too, as a later round would for a
+    # batch already audited for Contest 1
+    db_session.add(
+        SampledBatchDraw(
+            batch_id=batch_2["id"],
+            round_id=round_1_id,
+            contest_id=contest_ids[1],
+            ticket_number="0.1",
+        )
+    )
+    db_session.commit()
+
+    # The Contest 1 draw counts as audited, but the batch doesn't until
+    # Contest 2's results are entered
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    assert json.loads(rv.data)["jurisdictions"][0]["currentRoundStatus"] == {
+        "status": "IN_PROGRESS",
+        "numSamples": 16,
+        "numSamplesAudited": 1,
+        "numUnique": 9,
+        "numUniqueAudited": 0,
+    }
 
 
 def test_multi_contest_batch_comparison_batch_tallies_template_csv_generation(
