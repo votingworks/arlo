@@ -314,7 +314,7 @@ def test_multi_contest_batch_comparison_batch_results_validation(
         ),
         (
             jurisdiction_ids[1],
-            jurisdiction_1_batches[1]["id"],
+            jurisdiction_2_batches[0]["id"],
             [{contest_1_choice_ids[0]: 0, contest_1_choice_ids[1]: 0}],
             None,
         ),
