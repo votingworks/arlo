@@ -57,7 +57,7 @@ Test Audit test_nested_sampling_end_to_end,BATCH_COMPARISON,MACRO,10%,1234567890
 ######## ROUNDS ########\r
 Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes,Batches Sampled,Ballots Sampled,Reported Votes\r
 1,Contest 1,Targeted,8,Yes,0.0677603615,DATETIME,DATETIME,Candidate 1: 245; Candidate 2: 105,7,350,Candidate 1: 245; Candidate 2: 105\r
-1,Contest 2,Targeted,6,No,0.9536743164,DATETIME,DATETIME,Candidate 3: 170; Candidate 4: 80,7,350,Candidate 3: 240; Candidate 4: 60\r
+1,Contest 2,Targeted,6,No,0.9536743164,DATETIME,DATETIME,Candidate 3: 170; Candidate 4: 80,5,250,Candidate 3: 200; Candidate 4: 50\r
 2,Contest 2,Targeted,6,No,,DATETIME,,Candidate 3: 0; Candidate 4: 0,6,300,Candidate 3: 240; Candidate 4: 60\r
 \r
 ######## SAMPLED BATCHES ########\r

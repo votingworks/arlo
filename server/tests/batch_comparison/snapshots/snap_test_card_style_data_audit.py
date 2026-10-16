@@ -199,14 +199,14 @@ Test Audit test_card_style_data_end_to_end,BATCH_COMPARISON,MACRO_CARD_STYLE_DAT
 \r
 ######## ROUNDS ########\r
 Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes,Batches Sampled,Ballots Sampled,Reported Votes\r
-1,Governor,Targeted,17,Yes,0.0802073528,DATETIME,DATETIME,Candidate A: 460; Candidate B: 324,52,2600,Candidate A: 1486; Candidate B: 1062\r
-1,Lieutenant Governor,Targeted,17,Yes,0.0802073528,DATETIME,DATETIME,Candidate A: 455; Candidate B: 329,52,2600,Candidate A: 1482; Candidate B: 1066\r
-1,Secretary of State,Targeted,17,Yes,0.0802073528,DATETIME,DATETIME,Candidate A: 452; Candidate B: 332,52,2600,Candidate A: 1474; Candidate B: 1074\r
-1,Attorney General,Targeted,17,Yes,0.0802073528,DATETIME,DATETIME,Candidate A: 462; Candidate B: 322,52,2600,Candidate A: 1486; Candidate B: 1062\r
-1,US House District 7,Targeted,16,No,0.1054273772,DATETIME,DATETIME,Candidate A: 369; Candidate B: 277,52,2600,Candidate A: 740; Candidate B: 521\r
-1,US House District 13,Targeted,16,Yes,0.0828724206,DATETIME,DATETIME,Candidate A: 390; Candidate B: 276,52,2600,Candidate A: 749; Candidate B: 534\r
-1,State Senate District 5,Targeted,17,Yes,0.0774381159,DATETIME,DATETIME,Candidate A: 337; Candidate B: 251,52,2600,Candidate A: 508; Candidate B: 374\r
-1,State House District 50,Targeted,17,Yes,0.0802073528,DATETIME,DATETIME,Candidate A: 401; Candidate B: 285,52,2600,Candidate A: 740; Candidate B: 534\r
+1,Governor,Targeted,17,Yes,0.0802073528,DATETIME,DATETIME,Candidate A: 460; Candidate B: 324,16,800,Candidate A: 460; Candidate B: 324\r
+1,Lieutenant Governor,Targeted,17,Yes,0.0802073528,DATETIME,DATETIME,Candidate A: 455; Candidate B: 329,16,800,Candidate A: 455; Candidate B: 329\r
+1,Secretary of State,Targeted,17,Yes,0.0802073528,DATETIME,DATETIME,Candidate A: 452; Candidate B: 332,16,800,Candidate A: 452; Candidate B: 332\r
+1,Attorney General,Targeted,17,Yes,0.0802073528,DATETIME,DATETIME,Candidate A: 462; Candidate B: 322,16,800,Candidate A: 462; Candidate B: 322\r
+1,US House District 7,Targeted,16,No,0.1054273772,DATETIME,DATETIME,Candidate A: 369; Candidate B: 277,14,700,Candidate A: 376; Candidate B: 270\r
+1,US House District 13,Targeted,16,Yes,0.0828724206,DATETIME,DATETIME,Candidate A: 390; Candidate B: 276,14,700,Candidate A: 390; Candidate B: 276\r
+1,State Senate District 5,Targeted,17,Yes,0.0774381159,DATETIME,DATETIME,Candidate A: 337; Candidate B: 251,12,600,Candidate A: 337; Candidate B: 251\r
+1,State House District 50,Targeted,17,Yes,0.0802073528,DATETIME,DATETIME,Candidate A: 401; Candidate B: 285,14,700,Candidate A: 401; Candidate B: 285\r
 2,US House District 7,Targeted,2,No,,DATETIME,,Candidate A: 0; Candidate B: 0,2,100,Candidate A: 57; Candidate B: 41\r
 \r
 ######## SAMPLED BATCHES ########\r
