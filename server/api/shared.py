@@ -146,6 +146,53 @@ def combined_batch_keys(election_id: str) -> list[set[sampler.BatchKey]]:
     ]
 
 
+# The contests a batch still has to be audited for in a round: those it was
+# drawn for in this round and not in an earlier one. A combined batch is audited
+# for all of its sub-batches' contests. A batch drawn as an extra batch is
+# audited for every contest.
+def sampled_contest_ids(
+    jurisdiction: Jurisdiction, round: Round, batch: Batch
+) -> list[str]:
+    batches = (
+        Batch.query.filter_by(
+            combined_batch_name=batch.combined_batch_name,
+            jurisdiction_id=jurisdiction.id,
+        ).all()
+        if batch.combined_batch_name is not None
+        else [batch]
+    )
+    round_num_by_id = {r.id: r.round_num for r in jurisdiction.election.rounds}
+    contest_ids = [contest.id for contest in jurisdiction.contests]
+
+    def drawn_contest_ids(draws: list[SampledBatchDraw]) -> set[str]:
+        if any(draw.ticket_number == EXTRA_TICKET_NUMBER for draw in draws):
+            return set(contest_ids)
+        return {draw.contest_id for draw in draws}
+
+    draws = [draw for batch in batches for draw in batch.draws]
+    audited = drawn_contest_ids(
+        [draw for draw in draws if round_num_by_id[draw.round_id] < round.round_num]
+    )
+    sampled = drawn_contest_ids([draw for draw in draws if draw.round_id == round.id])
+    return [contest_id for contest_id in contest_ids if contest_id in sampled - audited]
+
+
+def tally_sheets_for_contests(
+    jurisdiction: Jurisdiction, batch: Batch, contest_ids: list[str]
+) -> list[BatchResultTallySheet]:
+    choice_ids = {
+        choice.id
+        for contest in jurisdiction.contests
+        if contest.id in contest_ids
+        for choice in contest.choices
+    }
+    return [
+        tally_sheet
+        for tally_sheet in batch.result_tally_sheets
+        if any(result.contest_choice_id in choice_ids for result in tally_sheet.results)
+    ]
+
+
 def sampled_batch_results(
     contest: Contest, include_non_rla_batches=False
 ) -> BatchTallies:
@@ -164,7 +211,7 @@ def sampled_batch_results(
         .join(ContestChoice)
         .outerjoin(BatchResultTallySheet)
         .filter(BatchResultTallySheet.batch_id.isnot(None))
-        .outerjoin(
+        .join(
             BatchResult,
             and_(
                 BatchResult.tally_sheet_id == BatchResultTallySheet.id,

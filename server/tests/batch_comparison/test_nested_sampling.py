@@ -181,7 +181,12 @@ def enter_reported_results(
             for candidate, count in votes.items()
         }
         rv = put_batch_results(
-            client, election_id, jurisdiction_id, round_id, batch["id"], [results]
+            client,
+            election_id,
+            jurisdiction_id,
+            round_id,
+            batch["id"],
+            only_sampled_contests(batch["id"], round_id, [results]),
         )
         assert_ok(rv)
     rv = client.post(
