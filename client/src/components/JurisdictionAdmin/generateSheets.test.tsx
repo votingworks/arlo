@@ -21,8 +21,16 @@ import { IBatch } from './useBatchResults'
 
 const mockJurisdiction = jaApiCalls.getUser.response.user.jurisdictions[0]
 const mockRound = roundMocks.incomplete
+const mockContestIds = [
+  'Contest 1',
+  'Contest 2',
+  'Contest 3',
+  'Contest 4',
+  'Contest 5',
+]
 const mockBatches: IBatch[] = [
   {
+    contestIds: mockContestIds,
     id: 'B1',
     lastEditedBy: null,
     name: 'Batch #1',
@@ -30,6 +38,7 @@ const mockBatches: IBatch[] = [
     resultTallySheets: [],
   },
   {
+    contestIds: mockContestIds,
     id: 'B2',
     lastEditedBy: null,
     name: 'Batch #2',
@@ -51,7 +60,7 @@ function constructMinimalContest(
   for (let i = 0; i < numChoices; i += 1) {
     choices.push({ name: `${contestName} Candidate ${i + 1}` })
   }
-  return { name: contestName, choices }
+  return { id: contestName, name: contestName, choices }
 }
 
 const mockSavePDF = vi.fn()
@@ -392,6 +401,7 @@ describe('generateSheets', () => {
         "Hey now, you're an all-star, get your game on, go play / Hey now, you're a rock star, get the show on, get paid / And all that glitters is gold / Only shooting stars break the mold"
       const batches: IBatch[] = [
         {
+          contestIds: [allStarLyrics],
           id: 'B1',
           lastEditedBy: null,
           name: allStarLyrics,
@@ -399,6 +409,7 @@ describe('generateSheets', () => {
           resultTallySheets: [],
         },
         {
+          contestIds: [allStarLyrics],
           id: 'B2',
           lastEditedBy: null,
           name: allStarLyrics,
@@ -407,6 +418,7 @@ describe('generateSheets', () => {
         },
       ]
       const contest: IMinimalContest = {
+        id: allStarLyrics,
         name: allStarLyrics,
         choices: [{ name: allStarLyrics }, { name: allStarLyrics }],
       }
@@ -433,6 +445,7 @@ describe('generateSheets', () => {
         'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
       const batches: IBatch[] = [
         {
+          contestIds: [manyAs],
           id: 'B1',
           lastEditedBy: null,
           name: manyAs,
@@ -440,6 +453,7 @@ describe('generateSheets', () => {
           resultTallySheets: [],
         },
         {
+          contestIds: [manyAs],
           id: 'B2',
           lastEditedBy: null,
           name: manyAs,
@@ -448,6 +462,7 @@ describe('generateSheets', () => {
         },
       ]
       const contest: IMinimalContest = {
+        id: manyAs,
         name: manyAs,
         choices: [{ name: manyAs }, { name: manyAs }],
       }
@@ -629,7 +644,7 @@ describe('generateSheets', () => {
       for (let i = 0; i < names.length; i += 1) {
         choices.push({ name: names[i] })
       }
-      const contest = { name: 'Secretary of State', choices }
+      const contest = { id: 'contest-id', name: 'Secretary of State', choices }
 
       const pdf = await downloadStackLabels(
         mockJurisdiction.election.auditName,
