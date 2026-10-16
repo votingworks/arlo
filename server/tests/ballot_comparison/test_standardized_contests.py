@@ -1,7 +1,9 @@
 import io
 import json
+import pytest
 from flask.testing import FlaskClient
 
+from ...database import db_session
 from ...models import *
 from ..helpers import *
 
@@ -633,3 +635,123 @@ def test_replace_standardized_contests_file_while_processing_jurisdictions_file_
                 }
             ]
         }
+
+
+@pytest.mark.usefixtures("election_settings", "manifests", "cvrs")
+def test_standardized_contests_cannot_change_after_audit_started(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = upload_standardized_contests(
+        client,
+        io.BytesIO(
+            b'Contest Name,Jurisdictions\nContest 1,"J1,J2"\nContest 2,"J1,J2"\n'
+        ),
+        election_id,
+    )
+    assert_ok(rv)
+
+    target_contest_id = str(uuid.uuid4())
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/contest",
+        [
+            {
+                "id": target_contest_id,
+                "name": "Contest 1",
+                "numWinners": 1,
+                "jurisdictionIds": jurisdiction_ids[:2],
+                "isTargeted": True,
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "name": "Contest 2",
+                "numWinners": 1,
+                "jurisdictionIds": jurisdiction_ids[:2],
+                "isTargeted": False,
+            },
+        ],
+    )
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
+    sample_size = json.loads(rv.data)["sampleSizes"][target_contest_id][0]
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {"roundNum": 1, "sampleSizes": {target_contest_id: sample_size}},
+    )
+    assert_ok(rv)
+    round_1_id = Round.query.filter_by(election_id=election_id).one().id
+
+    # Audit boards record some interpretations
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    for jurisdiction_id in jurisdiction_ids[:2]:
+        rv = post_json(
+            client,
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/audit-board",
+            [{"name": "Audit Board #1"}],
+        )
+        assert_ok(rv)
+
+    target_choice = Contest.query.get(target_contest_id).choices[0]
+    sampled_ballots = (
+        SampledBallot.query.join(SampledBallotDraw)
+        .filter_by(round_id=round_1_id)
+        .limit(3)
+        .all()
+    )
+    for ballot in sampled_ballots:
+        audit_ballot(ballot, target_contest_id, Interpretation.VOTE, [target_choice])
+    db_session.commit()
+
+    def audit_state():
+        contests = Contest.query.filter_by(election_id=election_id).all()
+        contest_ids = [contest.id for contest in contests]
+        return dict(
+            contests=sorted(
+                (contest.id, sorted(j.id for j in contest.jurisdictions))
+                for contest in contests
+            ),
+            choices=sorted(
+                (choice.id, choice.num_votes)
+                for choice in ContestChoice.query.filter(
+                    ContestChoice.contest_id.in_(contest_ids)
+                )
+            ),
+            draws=SampledBallotDraw.query.filter_by(round_id=round_1_id).count(),
+            interpretations=BallotInterpretation.query.filter(
+                BallotInterpretation.contest_id.in_(contest_ids)
+            ).count(),
+            selections=db_session.query(ballot_interpretation_contest_choice)
+            .filter(ballot_interpretation_contest_choice.c.contest_id.in_(contest_ids))
+            .count(),
+            file_id=Election.query.get(election_id).standardized_contests_file_id,
+        )
+
+    before = audit_state()
+    assert before["selections"] == 3
+
+    # Re-uploading the standardized contests file is rejected
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = upload_standardized_contests(
+        client,
+        io.BytesIO(b'Contest Name,Jurisdictions\nContest 1,"J1,J2"\n'),
+        election_id,
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Cannot update standardized contests after audit has started.",
+            }
+        ]
+    }
+
+    db_session.expire_all()
+    assert audit_state() == before
