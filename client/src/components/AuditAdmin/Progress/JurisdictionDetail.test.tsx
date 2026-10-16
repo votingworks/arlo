@@ -576,7 +576,11 @@ describe('JurisdictionDetail', () => {
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getBatchTalliesFile(talliesMocks.processed),
       jaApiCalls.getAuditBoards(auditBoardMocks.unfinished),
-      jaApiCalls.getBatches({ batches: [], resultsFinalizedAt: null }),
+      jaApiCalls.getBatches({
+        batches: [],
+        resultsFinalizedAt: null,
+        roundNum: 1,
+      }),
     ]
     await withMockFetch(expectedCalls, async () => {
       render({

@@ -121,6 +121,7 @@ export const batchesMocks = mocksOfType<IBatches>()({
     batches: [
       {
         id: 'batch-1',
+        contestIds: ['contest-id-1', 'contest-id-2'],
         lastEditedBy: null,
         name: 'Batch One',
         numBallots: 100,
@@ -128,6 +129,7 @@ export const batchesMocks = mocksOfType<IBatches>()({
       },
       {
         id: 'batch-2',
+        contestIds: ['contest-id-1', 'contest-id-2'],
         lastEditedBy: null,
         name: 'Batch Two',
         numBallots: 100,
@@ -135,6 +137,7 @@ export const batchesMocks = mocksOfType<IBatches>()({
       },
       {
         id: 'batch-3',
+        contestIds: ['contest-id-1', 'contest-id-2'],
         lastEditedBy: null,
         name: 'Batch Three',
         numBallots: 100,
@@ -142,11 +145,13 @@ export const batchesMocks = mocksOfType<IBatches>()({
       },
     ],
     resultsFinalizedAt: null,
+    roundNum: 1,
   },
   complete: {
     batches: [
       {
         id: 'batch-1',
+        contestIds: ['contest-id-1', 'contest-id-2'],
         lastEditedBy: 'ja@example.com',
         name: 'Batch One',
         numBallots: 100,
@@ -162,6 +167,7 @@ export const batchesMocks = mocksOfType<IBatches>()({
       },
       {
         id: 'batch-2',
+        contestIds: ['contest-id-1', 'contest-id-2'],
         lastEditedBy: 'ja@example.com',
         name: 'Batch Two',
         numBallots: 100,
@@ -177,6 +183,7 @@ export const batchesMocks = mocksOfType<IBatches>()({
       },
       {
         id: 'batch-3',
+        contestIds: ['contest-id-1', 'contest-id-2'],
         lastEditedBy: 'ja@example.com',
         name: 'Batch Three',
         numBallots: 100,
@@ -192,6 +199,7 @@ export const batchesMocks = mocksOfType<IBatches>()({
       },
     ],
     resultsFinalizedAt: '2020-09-14T17:35:19.482Z',
+    roundNum: 1,
   },
 })
 
