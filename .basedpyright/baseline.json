@@ -47374,54 +47374,6 @@
         ],
         "./server/audit_math/supersimple.py": [
             {
-                "code": "reportUnknownMemberType",
-                "range": {
-                    "startColumn": 16,
-                    "endColumn": 43,
-                    "lineCount": 1
-                }
-            },
-            {
-                "code": "reportUnknownArgumentType",
-                "range": {
-                    "startColumn": 15,
-                    "endColumn": 35,
-                    "lineCount": 1
-                }
-            },
-            {
-                "code": "reportUnknownArgumentType",
-                "range": {
-                    "startColumn": 16,
-                    "endColumn": 36,
-                    "lineCount": 1
-                }
-            },
-            {
-                "code": "reportUnknownArgumentType",
-                "range": {
-                    "startColumn": 42,
-                    "endColumn": 67,
-                    "lineCount": 1
-                }
-            },
-            {
-                "code": "reportUnknownLambdaType",
-                "range": {
-                    "startColumn": 49,
-                    "endColumn": 50,
-                    "lineCount": 1
-                }
-            },
-            {
-                "code": "reportUnknownLambdaType",
-                "range": {
-                    "startColumn": 52,
-                    "endColumn": 67,
-                    "lineCount": 1
-                }
-            },
-            {
                 "code": "reportConstantRedefinition",
                 "range": {
                     "startColumn": 8,

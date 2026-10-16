@@ -343,6 +343,130 @@ def test_ballot_not_in_cvr_and_not_found(contests):
     assert discrepancies["ballot-0"]["weighted_error"] == Decimal(2) / Decimal(2000)
 
 
+@pytest.fixture
+def mayor_contest() -> Contest:
+    # Alice won. Her margin over Bob is close (50 votes), while her margin over
+    # Carol is wide (4950 votes).
+    return Contest(
+        "Mayor",
+        {
+            "Alice": 5000,
+            "Bob": 4950,
+            "Carol": 50,
+            "ballots": 10000,
+            "numWinners": 1,
+            "votesAllowed": 1,
+        },
+    )
+
+
+MAYOR_VOTE_FOR_ALICE = {"Mayor": {"Alice": "1", "Bob": "0", "Carol": "0"}}
+MAYOR_VOTE_FOR_CAROL = {"Mayor": {"Alice": "0", "Bob": "0", "Carol": "1"}}
+
+
+def test_discrepancy_weighted_by_closest_margin(mayor_contest: Contest):
+    # The CVR recorded a vote for Alice, but the paper ballot is a vote for Carol
+    cvrs: CVRS = {"ballot-0": MAYOR_VOTE_FOR_ALICE}
+    sample_cvr: SAMPLECVRS = {
+        "ballot-0": {"times_sampled": 1, "cvr": MAYOR_VOTE_FOR_CAROL}
+    }
+
+    discrepancies = supersimple.compute_discrepancies(mayor_contest, cvrs, sample_cvr)
+
+    # Alice vs Bob: overstated by 1 vote of a 50-vote margin = 1/50
+    # Alice vs Carol: overstated by 2 votes of a 4950-vote margin = 2/4950
+    # The ballot's raw error is the larger raw value (2), but its weighted
+    # error must be the larger weighted value (1/50), from the close race.
+    assert discrepancies["ballot-0"]["counted_as"] == 2
+    assert discrepancies["ballot-0"]["weighted_error"] == Decimal(1) / Decimal(50)
+
+
+@pytest.mark.parametrize(
+    "audited",
+    [
+        # Ballot not found
+        None,
+        # Votes recorded for Alice and Dave, but the paper ballot is blank
+        {"City Council": {"Alice": "0", "Dave": "0", "Bob": "0"}},
+    ],
+)
+def test_discrepancy_multi_winner_weighted_by_smallest_margin(
+    audited: dict[str, dict[str, str]] | None,
+):
+    # Alice and Dave both won seats. Dave's margin over Bob (200 votes) is
+    # closer than Alice's (500 votes).
+    contest = Contest(
+        "City Council",
+        {
+            "Alice": 600,
+            "Dave": 300,
+            "Bob": 100,
+            "ballots": 1000,
+            "numWinners": 2,
+            "votesAllowed": 2,
+        },
+    )
+    cvrs: CVRS = {"ballot-0": {"City Council": {"Alice": "1", "Dave": "1", "Bob": "0"}}}
+    sample_cvr: SAMPLECVRS = {"ballot-0": {"times_sampled": 1, "cvr": audited}}
+
+    discrepancies = supersimple.compute_discrepancies(contest, cvrs, sample_cvr)
+
+    # Both pairs have the same raw error, so the ballot must be weighted by the
+    # closer margin (Dave vs Bob = 200), not Alice vs Bob (500).
+    counted_as = 2 if audited is None else 1
+    assert discrepancies["ballot-0"]["counted_as"] == counted_as
+    assert discrepancies["ballot-0"]["weighted_error"] == Decimal(counted_as) / Decimal(
+        200
+    )
+
+
+def test_compute_risk_ignores_multi_pair_understatement(mayor_contest: Contest):
+    # The CVR recorded a vote for Carol, but the paper ballot is a vote for
+    # Alice. That understates Alice's lead over both Bob and Carol, so the
+    # audit should treat it like a ballot with no discrepancy.
+    num_ballots = 1500
+    sample_cvr: SAMPLECVRS = {
+        f"ballot-{i}": {"times_sampled": 1, "cvr": MAYOR_VOTE_FOR_ALICE}
+        for i in range(num_ballots)
+    }
+    clean_cvrs: CVRS = {f"ballot-{i}": MAYOR_VOTE_FOR_ALICE for i in range(num_ballots)}
+    cvrs: CVRS = {**clean_cvrs, "ballot-0": MAYOR_VOTE_FOR_CAROL}
+
+    assert supersimple.compute_risk(
+        RISK_LIMIT, mayor_contest, cvrs, sample_cvr
+    ) == supersimple.compute_risk(RISK_LIMIT, mayor_contest, clean_cvrs, sample_cvr)
+
+
+@pytest.mark.parametrize("num_discrepancies,expected_complete", [(0, True), (3, False)])
+def test_compute_risk_weighted_by_closest_margin(
+    mayor_contest: Contest,
+    num_discrepancies: int,
+    expected_complete: bool,
+):
+    # Every sampled ballot was recorded in the CVR as a vote for Alice. With
+    # no discrepancies the sample confirms Alice's win. If 3 of those paper
+    # ballots are actually votes for Carol, each one overstates Alice's
+    # 50-vote margin over Bob, and the audit should not confirm the outcome.
+    num_ballots = 1503
+    cvrs: CVRS = {f"ballot-{i}": MAYOR_VOTE_FOR_ALICE for i in range(num_ballots)}
+    sample_cvr: SAMPLECVRS = {
+        f"ballot-{i}": {
+            "times_sampled": 1,
+            "cvr": (
+                MAYOR_VOTE_FOR_CAROL if i < num_discrepancies else MAYOR_VOTE_FOR_ALICE
+            ),
+        }
+        for i in range(num_ballots)
+    }
+
+    p_value, is_complete = supersimple.compute_risk(
+        RISK_LIMIT, mayor_contest, cvrs, sample_cvr
+    )
+
+    assert is_complete == expected_complete
+    assert (p_value < ALPHA) == expected_complete
+
+
 def test_ess_discrepancies(contests) -> None:
     cvrs: CVRS = {
         "ballot-0": {"Contest A": {"winner": "o", "loser": "o"}},
