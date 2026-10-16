@@ -203,6 +203,9 @@ def complete_upload_for_standardized_contests_file(election: Election):
     if election.audit_type not in [AuditType.BALLOT_COMPARISON, AuditType.HYBRID]:
         raise Conflict("Can't upload standardized contests file for this audit type.")
 
+    if election.is_audit_started():
+        raise Conflict("Cannot update standardized contests after audit has started.")
+
     if len(list(election.jurisdictions)) == 0:
         raise Conflict(
             "Must upload jurisdictions file before uploading standardized contests file."
