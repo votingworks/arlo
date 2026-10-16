@@ -37,7 +37,7 @@ const BatchRoundTallyEntry: React.FC<IProps> = ({
     return null
   }
 
-  const { batches, resultsFinalizedAt } = batchesQuery.data
+  const { batches, resultsFinalizedAt, roundNum } = batchesQuery.data
   const contests = contestsQuery.data
 
   if (batches.length === 0) {
@@ -52,6 +52,7 @@ const BatchRoundTallyEntry: React.FC<IProps> = ({
       electionId={electionId}
       jurisdictionId={jurisdictionId}
       roundId={roundId}
+      roundNum={roundNum}
     />
   )
 }
@@ -63,6 +64,7 @@ interface IBatchRoundTallyEntryContentProps {
   electionId: string
   jurisdictionId: string
   roundId: string
+  roundNum: number
 }
 
 const BatchRoundTallyEntryContent: React.FC<
@@ -74,6 +76,7 @@ const BatchRoundTallyEntryContent: React.FC<
   electionId,
   jurisdictionId,
   roundId,
+  roundNum,
 }) => {
   const recordBatchResults = useRecordBatchResults(
     electionId,
@@ -148,9 +151,12 @@ const BatchRoundTallyEntryContent: React.FC<
       <BatchDetail
         areResultsFinalized={areResultsFinalized}
         batch={selectedBatch}
-        contests={contests}
+        contests={contests.filter(contest =>
+          selectedBatch.contestIdsToAudit.includes(contest.id)
+        )}
         isEditing={isEditing}
         key={selectedBatch.id}
+        roundNum={roundNum}
         saveBatchResults={async (
           resultTallySheets: IBatchResultTallySheet[]
         ) => {

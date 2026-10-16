@@ -151,8 +151,11 @@ function sheetStateEntryToSheet(
   }
 }
 
-function defaultSheetName(sheetNumber: number) {
-  return `Sheet ${sheetNumber}`
+// Sheets from earlier rounds stay on the batch, so their names are taken
+function defaultSheetName(roundNum: number, sheetNumber: number) {
+  return roundNum === 1
+    ? `Sheet ${sheetNumber}`
+    : `Round ${roundNum} Sheet ${sheetNumber}`
 }
 
 function constructEmptySheet(sheetName: string): IBatchResultTallySheet {
@@ -177,6 +180,7 @@ interface IBatchDetailProps {
   batch: IBatch
   contests: IContest[]
   isEditing: boolean
+  roundNum: number
   saveBatchResults: (
     resultTallySheets: IBatchResultTallySheet[]
   ) => Promise<void>
@@ -192,12 +196,13 @@ const BatchDetail: React.FC<IBatchDetailProps> = ({
   batch,
   contests,
   isEditing,
+  roundNum,
   saveBatchResults,
   setIsEditing,
 }) => {
   const [sheets, setSheets] = useState<IBatchResultTallySheetStateEntry[]>(
     (batch.resultTallySheets.length === 0
-      ? [constructEmptySheet(defaultSheetName(1))]
+      ? [constructEmptySheet(defaultSheetName(roundNum, 1))]
       : batch.resultTallySheets
     ).map(sheetToSheetStateEntry)
   )
@@ -222,10 +227,11 @@ const BatchDetail: React.FC<IBatchDetailProps> = ({
       sheets.some(sheet => sheet.name === sheetName)
 
     let incrementToAvoidNamingConflict = 0
-    let newSheetName = defaultSheetName(sheets.length + 1)
+    let newSheetName = defaultSheetName(roundNum, sheets.length + 1)
     while (isSheetNameAlreadyTaken(newSheetName)) {
       incrementToAvoidNamingConflict += 1
       newSheetName = defaultSheetName(
+        roundNum,
         sheets.length + 1 + incrementToAvoidNamingConflict
       )
     }
@@ -277,7 +283,9 @@ const BatchDetail: React.FC<IBatchDetailProps> = ({
     let updatedSheets = sheets.filter((_, i) => i !== currentSheetIndex)
     if (updatedSheets.length === 1) {
       // If we're dropping back to 1 sheet, reset the name of that sheet back to the default
-      updatedSheets = [{ ...updatedSheets[0], name: defaultSheetName(1) }]
+      updatedSheets = [
+        { ...updatedSheets[0], name: defaultSheetName(roundNum, 1) },
+      ]
     }
 
     await saveBatchResults(updatedSheets.map(sheetStateEntryToSheet))

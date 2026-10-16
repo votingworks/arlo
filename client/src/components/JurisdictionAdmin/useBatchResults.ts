@@ -11,6 +11,7 @@ export interface IBatchResultTallySheet {
 }
 
 export interface IBatch {
+  contestIdsToAudit: string[]
   id: string
   lastEditedBy: string | null
   name: string
@@ -21,6 +22,7 @@ export interface IBatch {
 export interface IBatches {
   batches: IBatch[]
   resultsFinalizedAt: string | null
+  roundNum: number
 }
 
 export const useBatches = (
