@@ -466,12 +466,22 @@ def batch_round_status(election: Election, round: Round) -> dict[str, JSONDict]:
             ),
         )
     )
+    # A batch audited in an earlier round keeps its tally sheets, so a draw only
+    # counts as audited once results are entered for its contest
+    draw_has_results = (
+        BatchResult.query.join(BatchResultTallySheet)
+        .join(ContestChoice)
+        .filter(
+            BatchResultTallySheet.batch_id == SampledBatchDraw.batch_id,
+            ContestChoice.contest_id == SampledBatchDraw.contest_id,
+        )
+        .exists()
+    )
     audited_sample_count_by_jurisdiction = dict(
         SampledBatchDraw.query.filter_by(round_id=round.id)
         .join(Batch)
-        .join(BatchResultTallySheet)
+        .filter(draw_has_results)
         .group_by(Batch.jurisdiction_id)
-        .having(func.count(BatchResultTallySheet.id) > 0)
         .values(
             Batch.jurisdiction_id,
             func.count(
@@ -495,9 +505,8 @@ def batch_round_status(election: Election, round: Round) -> dict[str, JSONDict]:
     audited_batch_count_by_jurisdiction = dict(
         Batch.query.join(SampledBatchDraw)
         .filter_by(round_id=round.id)
-        .join(BatchResultTallySheet)
+        .filter(draw_has_results)
         .group_by(Batch.jurisdiction_id)
-        .having(func.count(BatchResultTallySheet.id) > 0)
         .values(Batch.jurisdiction_id, func.count(Batch.id.distinct()))
     )
 

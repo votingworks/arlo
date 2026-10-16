@@ -57,13 +57,13 @@ Test Audit test_nested_sampling_end_to_end,BATCH_COMPARISON,MACRO,10%,1234567890
 ######## ROUNDS ########\r
 Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes,Batches Sampled,Ballots Sampled,Reported Votes\r
 1,Contest 1,Targeted,8,Yes,0.0677603615,DATETIME,DATETIME,Candidate 1: 245; Candidate 2: 105,7,350,Candidate 1: 245; Candidate 2: 105\r
-1,Contest 2,Targeted,6,No,0.9536743164,DATETIME,DATETIME,Candidate 3: 210; Candidate 4: 90,7,350,Candidate 3: 240; Candidate 4: 60\r
+1,Contest 2,Targeted,6,No,0.9536743164,DATETIME,DATETIME,Candidate 3: 170; Candidate 4: 80,5,250,Candidate 3: 200; Candidate 4: 50\r
 2,Contest 2,Targeted,6,No,,DATETIME,,Candidate 3: 0; Candidate 4: 0,6,300,Candidate 3: 240; Candidate 4: 60\r
 \r
 ######## SAMPLED BATCHES ########\r
 Jurisdiction Name,Batch Name,Ballots in Batch,Ticket Numbers: Contest 1,Ticket Numbers: Contest 2,Audited?,Reported Results: Contest 1,Audit Results: Contest 1,Change in Results: Contest 1,Change in Margin: Contest 1,Reported Results: Contest 2,Audit Results: Contest 2,Change in Results: Contest 2,Change in Margin: Contest 2,Last Edited By\r
 J1,Batch 05,50,"Round 1: 0.9709625076938577465, 0.9833518491151625693","Round 1: 0.9709625076938577465, 0.9833518491151625693",Yes,Candidate 1: 40; Candidate 2: 10,Candidate 1: 40; Candidate 2: 10,,,Candidate 3: 40; Candidate 4: 10,Candidate 3: 10; Candidate 4: 40,Candidate 3: +30; Candidate 4: -30,60,jurisdiction.admin-UUID@example.com\r
-J1,Batch 15,50,Round 1: 0.880123697445425636,Round 2: 0.880123697445425636,Yes,Candidate 1: 30; Candidate 2: 20,Candidate 1: 30; Candidate 2: 20,,,Candidate 3: 40; Candidate 4: 10,Candidate 3: 40; Candidate 4: 10,,,jurisdiction.admin-UUID@example.com\r
+J1,Batch 15,50,Round 1: 0.880123697445425636,Round 2: 0.880123697445425636,Yes,Candidate 1: 30; Candidate 2: 20,Candidate 1: 30; Candidate 2: 20,,,Candidate 3: 40; Candidate 4: 10,,,,jurisdiction.admin-UUID@example.com\r
 J1,Batch 21,50,Round 1: 0.501363046258331055,Round 1: 0.501363046258331055,Yes,Candidate 1: 30; Candidate 2: 20,Candidate 1: 30; Candidate 2: 20,,,Candidate 3: 40; Candidate 4: 10,Candidate 3: 40; Candidate 4: 10,,,jurisdiction.admin-UUID@example.com\r
 J1,Batch 23,50,Round 1: 0.455584192063654027,Round 1: 0.455584192063654027,Yes,Candidate 1: 40; Candidate 2: 10,Candidate 1: 40; Candidate 2: 10,,,Candidate 3: 40; Candidate 4: 10,Candidate 3: 40; Candidate 4: 10,,,jurisdiction.admin-UUID@example.com\r
 J1,Batch 35,50,Round 1: 0.546585191596479016,Round 1: 0.546585191596479016,Yes,Candidate 1: 40; Candidate 2: 10,Candidate 1: 40; Candidate 2: 10,,,Candidate 3: 40; Candidate 4: 10,Candidate 3: 40; Candidate 4: 10,,,jurisdiction.admin-UUID@example.com\r
@@ -74,5 +74,5 @@ J1,Batch 11,50,,Round 2: 0.9831918631389931679,No,Candidate 1: 40; Candidate 2: 
 J1,Batch 18,50,,Round 2: 0.140322073008067452,No,Candidate 1: 30; Candidate 2: 20,,,,Candidate 3: 40; Candidate 4: 10,,,,\r
 J1,Batch 19,50,,Round 2: 0.776430995092033462,No,Candidate 1: 35; Candidate 2: 15,,,,Candidate 3: 40; Candidate 4: 10,,,,\r
 J1,Batch 30,50,,Round 2: 0.264473907597457953,No,Candidate 1: 30; Candidate 2: 20,,,,Candidate 3: 40; Candidate 4: 10,,,,\r
-Totals,,600,,,,Candidate 1: 410; Candidate 2: 190,Candidate 1: 245; Candidate 2: 105,,,Candidate 3: 440; Candidate 4: 110,Candidate 3: 210; Candidate 4: 90,,\r
+Totals,,600,,,,Candidate 1: 410; Candidate 2: 190,Candidate 1: 245; Candidate 2: 105,,,Candidate 3: 440; Candidate 4: 110,Candidate 3: 170; Candidate 4: 80,,\r
 """

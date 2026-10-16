@@ -21,6 +21,7 @@ from ..auth.auth_helpers import UserType
 from ..auth import auth_helpers
 from ..database import db_session
 from ..models import *
+from ..api.shared import sampled_contest_ids
 
 
 DEFAULT_SUPPORT_EMAIL = "support@example.org"
@@ -635,3 +636,26 @@ def no_automatic_task_execution():
         yield
     finally:
         config.RUN_BACKGROUND_TASKS_IMMEDIATELY = old_run_background_tasks_immediately
+
+
+def only_sampled_contests(
+    batch_id: str, round_id: str, tally_sheets: list[dict[str, int]]
+) -> list[dict[str, int]]:
+    batch = Batch.query.get(batch_id)
+    contest_ids = sampled_contest_ids(
+        batch.jurisdiction, Round.query.get(round_id), batch
+    )
+    choice_ids = {
+        choice.id
+        for contest in batch.jurisdiction.contests
+        if contest.id in contest_ids
+        for choice in contest.choices
+    }
+    return [
+        {
+            choice_id: votes
+            for choice_id, votes in sheet.items()
+            if choice_id in choice_ids
+        }
+        for sheet in tally_sheets
+    ]

@@ -665,6 +665,63 @@ describe('Batch comparison data entry', () => {
     })
   })
 
+  it('only shows the contests a batch was sampled for, naming later-round tally sheets by round', async () => {
+    const batches = {
+      ...batchesMocks.emptyInitial,
+      batches: batchesMocks.emptyInitial.batches.map(batch => ({
+        ...batch,
+        contestIds: ['contest-id-2'],
+      })),
+      roundNum: 2,
+    }
+    const tallySheet1 = {
+      name: 'Round 2 Sheet 1',
+      results: {
+        'choice-id-3': 3,
+        'choice-id-4': 4,
+      },
+    }
+    const expectedCalls = [
+      apiCalls.getBatches(batches),
+      apiCalls.getJAContests({ contests: contestMocks.two }),
+      apiCalls.putBatchResults('batch-1', [tallySheet1]),
+      apiCalls.getBatches({
+        ...batches,
+        batches: [
+          {
+            ...batches.batches[0],
+            resultTallySheets: [tallySheet1],
+            lastEditedBy: 'ja@example.com',
+          },
+          ...batches.batches.slice(1),
+        ],
+      }),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderComponent()
+      let batchTable = await screen.findByRole('table')
+
+      userEvent.click(screen.getByRole('button', { name: /Edit Tallies/ }))
+
+      batchTable = await screen.findByRole('table')
+      expect(screen.getAllByRole('table')).toHaveLength(1)
+      const headers = within(batchTable).getAllByRole('columnheader')
+      expect(headers[0]).toHaveTextContent('Contest 2')
+      const rows = within(batchTable).getAllByRole('row')
+      const row1 = within(rows[2]).getAllByRole('cell')
+      const row2 = within(rows[3]).getAllByRole('cell')
+      userEvent.type(within(row1[1]).getByRole('spinbutton'), '3')
+      userEvent.type(within(row2[1]).getByRole('spinbutton'), '4')
+      userEvent.click(screen.getByRole('button', { name: /Save Tallies/ }))
+      await waitFor(() =>
+        expect(
+          screen.queryByRole('button', { name: /Save Tallies/ })
+        ).not.toBeInTheDocument()
+      )
+      screen.getByText('Last edited by: ja@example.com')
+    })
+  })
+
   it('handles errors on save', async () => {
     const expectedCalls = [
       apiCalls.getBatches(batchesMocks.emptyInitial),

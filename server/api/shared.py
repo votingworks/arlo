@@ -146,6 +146,52 @@ def combined_batch_keys(election_id: str) -> list[set[sampler.BatchKey]]:
     ]
 
 
+# The contests a batch still has to be audited for in a round: those it was
+# drawn for in this round and not in an earlier one. A combined batch is audited
+# for all of its sub-batches' contests. An extra batch's draw carries the first
+# targeted contest its jurisdiction is in, so it is audited for that contest only.
+def sampled_contest_ids(
+    jurisdiction: Jurisdiction, round: Round, batch: Batch
+) -> list[str]:
+    batches = (
+        Batch.query.filter_by(
+            combined_batch_name=batch.combined_batch_name,
+            jurisdiction_id=jurisdiction.id,
+        ).all()
+        if batch.combined_batch_name is not None
+        else [batch]
+    )
+    round_num_by_id = {r.id: r.round_num for r in jurisdiction.election.rounds}
+    draws = [draw for batch in batches for draw in batch.draws]
+    audited = {
+        draw.contest_id
+        for draw in draws
+        if round_num_by_id[draw.round_id] < round.round_num
+    }
+    sampled = {draw.contest_id for draw in draws if draw.round_id == round.id}
+    return [
+        contest.id
+        for contest in jurisdiction.contests
+        if contest.id in sampled - audited
+    ]
+
+
+def tally_sheets_for_contests(
+    jurisdiction: Jurisdiction, batch: Batch, contest_ids: list[str]
+) -> list[BatchResultTallySheet]:
+    choice_ids = {
+        choice.id
+        for contest in jurisdiction.contests
+        if contest.id in contest_ids
+        for choice in contest.choices
+    }
+    return [
+        tally_sheet
+        for tally_sheet in batch.result_tally_sheets
+        if any(result.contest_choice_id in choice_ids for result in tally_sheet.results)
+    ]
+
+
 def sampled_batch_results(
     contest: Contest, include_non_rla_batches=False
 ) -> BatchTallies:
@@ -164,7 +210,7 @@ def sampled_batch_results(
         .join(ContestChoice)
         .outerjoin(BatchResultTallySheet)
         .filter(BatchResultTallySheet.batch_id.isnot(None))
-        .outerjoin(
+        .join(
             BatchResult,
             and_(
                 BatchResult.tally_sheet_id == BatchResultTallySheet.id,
@@ -683,9 +729,13 @@ def compute_extra_batches_for_round(
         {j for contest, _ in contest_sample_sizes for j in contest.jurisdictions},
         key=lambda j: j.name,
     )
-    # Each unique jurisdiction mapped to the first audited contest it appears in.
+    # Each unique jurisdiction mapped to the first audited contest it appears in,
+    # in the order the contests were entered (top of the ticket first).
     jurisdiction_id_to_contest_id = {}
-    for contest, _ in contest_sample_sizes:
+    for contest in sorted(
+        (contest for contest, _ in contest_sample_sizes),
+        key=lambda contest: contest.created_at,
+    ):
         for jurisdiction in contest.jurisdictions:
             jurisdiction_id_to_contest_id.setdefault(jurisdiction.id, contest.id)
 
