@@ -1,4 +1,4 @@
-from typing import BinaryIO
+from typing import Any, BinaryIO
 import uuid
 import logging
 from datetime import datetime
@@ -60,6 +60,7 @@ TABULATOR = "Tabulator"
 BATCH_NAME = "Batch Name"
 NUMBER_OF_BALLOTS = "Number of Ballots"
 CVR = "CVR"
+CONTEST_NUMBER_OF_BALLOTS_SUFFIX = f" - {NUMBER_OF_BALLOTS}"
 
 BATCH_INVENTORY_WORKSHEET_UPLOADED_ERROR = 'You have uploaded a Batch Inventory Worksheet. Please upload a ballot manifest file exported from Step 4: "Download Audit Files".'
 
@@ -104,6 +105,41 @@ def hybrid_jurisdiction_total_ballots(jurisdiction: Jurisdiction) -> HybridPair:
     )
 
 
+def construct_contest_number_of_ballots_headers(
+    jurisdiction: Jurisdiction,
+) -> dict[str, str]:
+    election = jurisdiction.election
+    if not (
+        election.audit_type == AuditType.BATCH_COMPARISON
+        and election.audit_math_type == AuditMathType.CARD_STYLE_DATA
+    ):
+        return {}
+    return {
+        contest.id: f"{contest.name}{CONTEST_NUMBER_OF_BALLOTS_SUFFIX}"
+        for contest in jurisdiction.contests
+    }
+
+
+def contest_number_of_ballots_for_row(
+    row: dict[str, Any],
+    contest_number_of_ballots_headers: dict[str, str],
+    row_number: int,
+) -> dict[str, int]:
+    num_ballots_by_contest_id: dict[str, int] = {}
+    for contest_id, csv_header in contest_number_of_ballots_headers.items():
+        if csv_header not in row:
+            continue
+        num_ballots = row[csv_header]
+        if num_ballots > row[NUMBER_OF_BALLOTS]:
+            raise CSVParseError(
+                f'Number of ballots in column "{csv_header}" ({num_ballots})'
+                f' cannot exceed "{NUMBER_OF_BALLOTS}" ({row[NUMBER_OF_BALLOTS]})'
+                f" in row {row_number}."
+            )
+        num_ballots_by_contest_id[contest_id] = num_ballots
+    return num_ballots_by_contest_id
+
+
 @background_task
 def process_ballot_manifest_file(
     election_id: str,
@@ -146,6 +182,13 @@ def process_ballot_manifest_file(
             columns.append(
                 CSVColumnType(CVR, CSVValueType.YES_NO, required_column=True)
             )
+        contest_number_of_ballots_headers = construct_contest_number_of_ballots_headers(
+            jurisdiction
+        )
+        columns += [
+            CSVColumnType(csv_header, CSVValueType.NUMBER, required_column=False)
+            for csv_header in contest_number_of_ballots_headers.values()
+        ]
 
         manifest_file = retrieve_file(jurisdiction.manifest_file)
         validate_is_not_batch_inventory_worksheet(manifest_file)
@@ -190,6 +233,10 @@ def process_ballot_manifest_file(
                 container=row.get(CONTAINER, None),
                 tabulator=row.get(TABULATOR, None),
                 has_cvrs=row.get(CVR, None),
+                num_ballots_by_contest_id=contest_number_of_ballots_for_row(
+                    row, contest_number_of_ballots_headers, row_index + 2
+                )
+                or None,
             )
             db_session.add(batch)
             num_batches += 1
