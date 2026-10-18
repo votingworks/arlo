@@ -1,6 +1,7 @@
 import csv
 import io
 from typing import Literal
+import pytest
 from flask.testing import FlaskClient
 
 from ...models import *
@@ -124,6 +125,57 @@ def test_batch_comparison_too_many_votes(
             },
         },
     )
+
+
+@pytest.mark.usefixtures("election_settings", "manifests", "batch_tallies")
+def test_batch_comparison_start_round_too_many_votes(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_id: str,
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
+    sample_size_options = json.loads(rv.data)["sampleSizes"]
+    assert sample_size_options is not None
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    batch_tallies_file = (
+        b"Batch Name,candidate 1,candidate 2,candidate 3\n"
+        b"Batch 1,1000,0,0\n"  # Too many votes for candidate 1
+        b"Batch 2,500,250,250\n"
+        b"Batch 3,500,250,250\n"
+        b"Batch 4,500,250,250\n"
+        b"Batch 5,100,50,50\n"
+        b"Batch 6,100,50,50\n"
+    )
+    rv = upload_batch_tallies(
+        client, io.BytesIO(batch_tallies_file), election_id, jurisdiction_ids[1]
+    )
+    assert_ok(rv)
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 1,
+            "sampleSizes": {contest_id: sample_size_options[contest_id][0]},
+        },
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "message": "Total votes in batch tallies files for contest choice candidate 1 (5,200 votes) is greater than the reported number of votes for that choice (5,000 votes).",
+                "errorType": "Conflict",
+            }
+        ]
+    }
+
+    assert Round.query.filter_by(election_id=election_id).count() == 0
 
 
 def test_batch_comparison_round_1(
