@@ -1,6 +1,6 @@
 from collections import defaultdict
 import random
-from typing import TypedDict
+from typing import TypedDict, cast as typing_cast
 from sqlalchemy import and_, func, literal
 from sqlalchemy.orm import joinedload, load_only
 
@@ -15,6 +15,8 @@ from ..audit_math import (
     supersimple,
 )
 from ..util.collections import group_by
+from ..util.string import format_count
+from ..worker.tasks import UserError
 from .ballot_manifest import CountingGroup, hybrid_contest_total_ballots
 from .cvrs import cvr_contests_metadata, hybrid_contest_choice_vote_counts
 from ..feature_flags import (
@@ -96,6 +98,28 @@ def batch_tallies(contest: Contest) -> BatchTallies:
         for batch_name, tally in jurisdiction.batch_tallies.items()
         if tally[contest.id]["ballots"] > 0
     }
+
+
+def validate_batch_tallies(contest: Contest):
+    total_votes_by_choice: dict[str, int] = defaultdict(int)
+    for jurisdiction in contest.jurisdictions:
+        batch_tallies = typing_cast(BatchTallies, jurisdiction.batch_tallies)
+        if batch_tallies is None:
+            raise UserError(
+                "Some jurisdictions haven't uploaded their batch tallies files yet."
+            )
+        for tally in batch_tallies.values():
+            for choice_id, votes in tally[contest.id].items():
+                total_votes_by_choice[choice_id] += votes
+
+    for choice in contest.choices:
+        if total_votes_by_choice[choice.id] > choice.num_votes:
+            raise UserError(
+                f"Total votes in batch tallies files for contest choice {choice.name}"
+                f" ({format_count(total_votes_by_choice[choice.id], 'vote', 'votes')})"
+                " is greater than the reported number of votes for that choice"
+                f" ({format_count(choice.num_votes, 'vote', 'votes')})."
+            )
 
 
 class CombinedBatch(TypedDict):
