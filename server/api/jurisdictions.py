@@ -7,6 +7,7 @@ import datetime
 import math
 from flask import jsonify, request
 from sqlalchemy import distinct, func, tuple_
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.orm import joinedload
 from werkzeug.exceptions import Conflict, BadRequest
 
@@ -83,12 +84,14 @@ def process_jurisdictions_file(election_id: str):
         email = row[ADMIN_EMAIL]
         expected_num_ballots = row.get(EXPECTED_NUM_BALLOTS)
 
-        # Find or create the user for this jurisdiction.
-        user = User.query.filter_by(email=email.lower()).one_or_none()
-
-        if not user:
-            user = User(id=str(uuid.uuid4()), email=email)
-            db_session.add(user)
+        # Find or create the user for this jurisdiction. Another audit's task
+        # may be creating the same user concurrently, so tolerate conflicts.
+        db_session.execute(
+            pg_insert(User)
+            .values(id=str(uuid.uuid4()), email=email.lower())
+            .on_conflict_do_nothing(index_elements=[User.email])
+        )
+        user = User.query.filter_by(email=email.lower()).one()
 
         # Find or create the jurisdiction by name.
         jurisdiction = Jurisdiction.query.filter_by(
