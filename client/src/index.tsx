@@ -8,10 +8,13 @@ import { FocusStyleManager } from '@blueprintjs/core'
 import './index.css'
 import App from './App'
 
+const getMetaContent = (name: string): string | undefined =>
+  document.querySelector<HTMLMetaElement>(`meta[name="${name}"]`)?.content
+
 if (process.env.NODE_ENV === 'production') {
   Sentry.init({
-    dsn: (window as any)._arlo_sentry_dsn, // eslint-disable-line @typescript-eslint/no-explicit-any
-    environment: (window as any)._arlo_flask_env, // eslint-disable-line @typescript-eslint/no-explicit-any
+    dsn: getMetaContent('arlo-sentry-dsn'),
+    environment: getMetaContent('arlo-flask-env'),
     integrations: [new Integrations.BrowserTracing()],
     tracesSampleRate: 0.2,
   })
