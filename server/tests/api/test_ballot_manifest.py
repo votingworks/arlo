@@ -3,6 +3,8 @@ import json
 from flask.testing import FlaskClient
 
 from ...models import *
+from ...api.ballot_manifest import process_ballot_manifest_file
+from ...worker.tasks import create_background_task
 from ..helpers import *
 
 
@@ -495,6 +497,17 @@ def test_ballot_manifest_cannot_change_after_audit_started(
                 }
             ]
         }
+
+    task = create_background_task(
+        process_ballot_manifest_file,
+        dict(
+            election_id=election_id,
+            jurisdiction_id=jurisdiction_ids[0],
+            jurisdiction_admin_email=default_ja_email(election_id),
+            support_user_email=None,
+        ),
+    )
+    assert task.error == "Cannot process ballot manifest after audit has started."
 
     jurisdiction = Jurisdiction.query.get(jurisdiction_ids[0])
     assert jurisdiction.manifest_file_id == manifest_file_id

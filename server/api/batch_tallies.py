@@ -148,6 +148,11 @@ def process_batch_tallies_file(
         }
 
     def process() -> None:
+        if jurisdiction.election.is_audit_started():
+            raise UserError(
+                "Cannot process candidate totals by batch after audit has started."
+            )
+
         contests = list(jurisdiction.contests)
         contest_choice_csv_headers = construct_contest_choice_csv_headers(
             jurisdiction.election, jurisdiction

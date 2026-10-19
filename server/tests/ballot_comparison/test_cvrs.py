@@ -6,7 +6,12 @@ from flask.testing import FlaskClient
 from ...models import *
 from ..helpers import *
 from .conftest import TEST_CVRS
-from ...api.cvrs import CVR_CONTESTS_METADATA, normalize_interpretations
+from ...api.cvrs import (
+    CVR_CONTESTS_METADATA,
+    normalize_interpretations,
+    process_cvr_file,
+)
+from ...worker.tasks import create_background_task
 
 
 def test_dominion_cvr_upload(
@@ -3294,6 +3299,13 @@ def test_cvrs_cannot_change_after_audit_started(
     assert_ok(rv)
 
     cvr_file_id = Jurisdiction.query.get(jurisdiction_ids[0]).cvr_file_id
+    num_cvr_ballots = (
+        CvrBallot.query.join(Batch)
+        .filter(Batch.jurisdiction_id == jurisdiction_ids[0])
+        .count()
+    )
+    assert num_cvr_ballots > 0
+    contest_choice_ids = {choice.id for choice in Contest.query.get(contest_id).choices}
 
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -3328,4 +3340,24 @@ def test_cvrs_cannot_change_after_audit_started(
         ]
     }
 
+    task = create_background_task(
+        process_cvr_file,
+        dict(
+            election_id=election_id,
+            jurisdiction_id=jurisdiction_ids[0],
+            jurisdiction_admin_email=default_ja_email(election_id),
+            support_user_email=None,
+        ),
+    )
+    assert task.error == "Cannot process CVRs after audit has started."
+
     assert Jurisdiction.query.get(jurisdiction_ids[0]).cvr_file_id == cvr_file_id
+    assert (
+        CvrBallot.query.join(Batch)
+        .filter(Batch.jurisdiction_id == jurisdiction_ids[0])
+        .count()
+        == num_cvr_ballots
+    )
+    assert {
+        choice.id for choice in Contest.query.get(contest_id).choices
+    } == contest_choice_ids

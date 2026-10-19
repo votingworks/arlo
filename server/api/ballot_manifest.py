@@ -114,6 +114,9 @@ def process_ballot_manifest_file(
     jurisdiction = Jurisdiction.query.get(jurisdiction_id)
 
     def process() -> None:
+        if jurisdiction.election.is_audit_started():
+            raise UserError("Cannot process ballot manifest after audit has started.")
+
         # In ballot comparison and hybrid audits, each batch is uniquely
         # identified by (tabulator, batch name). For other types of audits, the
         # batch name is unique.

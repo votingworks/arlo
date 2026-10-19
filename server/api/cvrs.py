@@ -1319,6 +1319,9 @@ def process_cvr_file(
             shutil.rmtree(working_directory)
 
     def process() -> None:
+        if jurisdiction.election.is_audit_started():
+            raise UserError("Cannot process CVRs after audit has started.")
+
         # Clear out any existing CVR data from previous files (e.g., if we're
         # overwriting a previous file). This query can sometimes be slow so we
         # run it here in the background task instead of in the endpoint for

@@ -3,6 +3,8 @@ import json
 from flask.testing import FlaskClient
 
 from ...models import *
+from ...api.batch_tallies import process_batch_tallies_file
+from ...worker.tasks import create_background_task
 from ..helpers import *
 
 J1_BATCHES_ROUND_1 = 5
@@ -1175,6 +1177,20 @@ def test_batch_tallies_cannot_change_after_audit_started(
                 }
             ]
         }
+
+    task = create_background_task(
+        process_batch_tallies_file,
+        dict(
+            election_id=election_id,
+            jurisdiction_id=jurisdiction_ids[0],
+            user=(UserType.JURISDICTION_ADMIN, default_ja_email(election_id)),
+            support_user_email=None,
+        ),
+    )
+    assert (
+        task.error
+        == "Cannot process candidate totals by batch after audit has started."
+    )
 
     jurisdiction = Jurisdiction.query.get(jurisdiction_ids[0])
     assert jurisdiction.batch_tallies_file_id == batch_tallies_file_id
