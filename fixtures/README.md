@@ -46,7 +46,7 @@ Not supported yet!
 - Create a new subdirectory for your election
 - Create an election specification file within that directory
 - (Suggested) Use the audit planner (`/planner`) to test out your election results to make sure they give you a workable sample size
-- Run `poetry run python generate_election.py <path to your spec file> <path to your subdirectory>`
+- Run `uv run python generate_election.py <path to your spec file> <path to your subdirectory>`
 
 The `generate_election.py` script uses a fixed random seed and is idempotent, so running it with a given spec file will always produce the same results. If you want to change anything, just change the spec and re-run the script - it will overwrite the existing test files.
 
@@ -56,7 +56,7 @@ If you want some help generating fun random names for your election spec, check 
 
 ### Testing
 
-    poetry run pytest
+    uv run pytest
 
 ### Regenerating all elections
 

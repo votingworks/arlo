@@ -3,7 +3,7 @@
 export FLASK_ENV=${FLASK_ENV:-development}
 trap 'kill 0' SIGINT SIGHUP
 cd "$(dirname "${BASH_SOURCE[0]}")"
-PORT=8080 poetry run python -m noauth &
-poetry run python -m server.main &
-poetry run python scripts/run-dev-worker.py &
+PORT=8080 uv run python -m noauth &
+uv run python -m server.main &
+uv run python scripts/run-dev-worker.py &
 yarn --cwd client start
