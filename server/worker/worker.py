@@ -21,30 +21,35 @@ def run_worker(worker_id: str, db_session, pause_between_tasks_seconds):
     # Heroku dynos are sent one or more SIGTERM signals when they are shut down,
     # then a SIGKILL if they don't exit after 30 seconds. If we're interrupted
     # in the middle of a task, reset it before exiting so it can be picked up by
-    # another worker.
+    # another worker. The reset happens after unwinding, since the signal may
+    # arrive while the session is mid-transaction.
     def interrupt_handler(*_args):
-        reset_worker_tasks(worker_id, db_session)
+        signal.signal(signal.SIGTERM, signal.SIG_IGN)
+        signal.signal(signal.SIGINT, signal.SIG_IGN)
         sys.exit(1)
 
     signal.signal(signal.SIGTERM, interrupt_handler)
     # Also handle SIGINT for local development
     signal.signal(signal.SIGINT, interrupt_handler)
 
-    # If the database connection is closed due to sys.exit above, stop working.
-    while db_session.is_active:
-        task = claim_next_task(worker_id, db_session)
-        if task:
-            run_task(task, db_session)
+    try:
+        while True:
+            task = claim_next_task(worker_id, db_session)
+            if task:
+                run_task(task, db_session)
 
-        # Unrelated, we use the same worker process to clean up expired web
-        # sessions, since it's a convenient place to essentially run a cron job.
-        cleanup_sessions(db_session)
+            # Unrelated, we use the same worker process to clean up expired web
+            # sessions, since it's a convenient place to essentially run a cron job.
+            cleanup_sessions(db_session)
 
-        # Before sleeping, we need to commit the current transaction, otherwise
-        # we will have "idle in transaction" queries that will lock the
-        # database, which gets in the way of migrations.
-        db_session.commit()
-        time.sleep(pause_between_tasks_seconds)
+            # Before sleeping, we need to commit the current transaction, otherwise
+            # we will have "idle in transaction" queries that will lock the
+            # database, which gets in the way of migrations.
+            db_session.commit()
+            time.sleep(pause_between_tasks_seconds)
+    except SystemExit:
+        reset_worker_tasks(worker_id, db_session)
+        raise
 
 
 if __name__ == "__main__":
