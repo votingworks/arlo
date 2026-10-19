@@ -337,6 +337,53 @@ def test_rounds_create_before_previous_round_complete(
     }
 
 
+def test_rounds_create_while_file_processing(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
+    election_settings,
+    manifests,
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
+    sample_size_options = json.loads(rv.data)["sampleSizes"]
+
+    with no_automatic_task_execution():
+        # Upload a new manifest, but don't process it yet
+        set_logged_in_user(
+            client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+        )
+        rv = upload_ballot_manifest(
+            client,
+            io.BytesIO(b"does not matter"),
+            election_id,
+            jurisdiction_ids[0],
+        )
+        assert_ok(rv)
+
+        set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+        rv = post_json(
+            client,
+            f"/api/election/{election_id}/round",
+            {
+                "roundNum": 1,
+                "sampleSizes": {contest_ids[0]: sample_size_options[contest_ids[0]][0]},
+            },
+        )
+        assert rv.status_code == 409
+        assert json.loads(rv.data) == {
+            "errors": [
+                {
+                    "message": "Cannot start a round while any file upload is processing.",
+                    "errorType": "Conflict",
+                }
+            ]
+        }
+
+    assert Round.query.filter_by(election_id=election_id).count() == 0
+
+
 def test_rounds_wrong_number_too_big(
     client: FlaskClient, election_id: str, contest_ids: list[str]
 ):

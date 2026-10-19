@@ -34,6 +34,7 @@ from .shared import (
 from ..auth import restrict_access, UserType
 from ..util.isoformat import isoformat
 from ..util.collections import group_by
+from ..util.file import any_jurisdiction_file_is_processing
 from ..audit_math import (
     ballot_polling,
     macro,
@@ -474,6 +475,12 @@ def validate_round(round: dict, election: Election):
 
     if current_round and not current_round.ended_at:
         raise Conflict("The current round is not complete")
+
+    if any(
+        any_jurisdiction_file_is_processing(jurisdiction)
+        for jurisdiction in election.jurisdictions
+    ):
+        raise Conflict("Cannot start a round while any file upload is processing.")
 
 
 def validate_sample_size(round: dict, election: Election):
