@@ -81,17 +81,18 @@ def compute_discrepancies(
     Outputs:
         discrepancies   - A mapping of ballot ids to their discrepancies. This
                           includes entries for ballots in the sample that have discrepancies
-                          only.
+                          only. Each value is the maximum across all winner-loser
+                          pairs, so the two values may come from different pairs.
                     {
                         'ballot_id': {
-                            'counted_as': -1, # The maximum value for a discrepancy
-                            'weighted_error': -0.0033 # Weighted error used for p-value calculation
+                            'counted_as': -1, # The maximum discrepancy in votes
+                            'weighted_error': -0.0033 # The maximum discrepancy relative to the pair's margin, used for p-value calculation
                         }
                     }
     """
     discrepancies: dict[str, Discrepancy] = {}
     for ballot, ballot_sample_cvr in sample_cvr.items():
-        ballot_discrepancies = []
+        ballot_discrepancies: list[Discrepancy] = []
         for winner, loser in product(contest.winners, contest.losers):
             ballot_discrepancy = discrepancy(
                 contest,
@@ -104,8 +105,9 @@ def compute_discrepancies(
                 ballot_discrepancies.append(ballot_discrepancy)
 
         if len(ballot_discrepancies) > 0:
-            discrepancies[ballot] = max(
-                ballot_discrepancies, key=lambda d: d["counted_as"]
+            discrepancies[ballot] = Discrepancy(
+                counted_as=max(d["counted_as"] for d in ballot_discrepancies),
+                weighted_error=max(d["weighted_error"] for d in ballot_discrepancies),
             )
 
     return discrepancies
