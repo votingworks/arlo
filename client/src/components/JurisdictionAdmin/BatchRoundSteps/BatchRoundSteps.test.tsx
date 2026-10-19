@@ -337,7 +337,8 @@ describe('BatchRoundSteps', () => {
   )
 
   it('on Step 2, polls for login requests and can confirm/reject a request', async () => {
-    vi.useFakeTimers()
+    // Only fake setInterval so that findBy/waitFor don't advance the polling clock
+    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] })
 
     const expectedCalls = [
       jaApiCalls.getBatches(batchesMocks.emptyInitial),
@@ -359,24 +360,11 @@ describe('BatchRoundSteps', () => {
         },
         error: { status: 400, statusText: 'Bad Request' },
       },
-      jaApiCalls.getTallyEntryAccountStatus(
-        tallyEntryAccountStatusMocks.loginRequestsUnconfirmed
-      ),
       jaApiCalls.postConfirmTallyEntryLoginCode,
       jaApiCalls.getTallyEntryAccountStatus(
         tallyEntryAccountStatusMocks.loginRequestsOneConfirmed
       ),
-      jaApiCalls.getTallyEntryAccountStatus(
-        tallyEntryAccountStatusMocks.loginRequestsOneConfirmed
-      ),
       jaApiCalls.postRejectTallyEntryLoginRequest,
-      jaApiCalls.getTallyEntryAccountStatus({
-        ...tallyEntryAccountStatusMocks.loginRequestsOneConfirmed,
-        loginRequests: [
-          tallyEntryAccountStatusMocks.loginRequestsOneConfirmed
-            .loginRequests[0],
-        ],
-      }),
       jaApiCalls.getTallyEntryAccountStatus({
         ...tallyEntryAccountStatusMocks.loginRequestsOneConfirmed,
         loginRequests: [
@@ -394,7 +382,7 @@ describe('BatchRoundSteps', () => {
       })
 
       // On first poll, no requests
-      screen.getByText('No tally entry accounts have logged in yet')
+      await screen.findByText('No tally entry accounts have logged in yet')
 
       // On next poll, two login requests
       vi.advanceTimersByTime(1000)
@@ -449,17 +437,19 @@ describe('BatchRoundSteps', () => {
       screen.getAllByRole('button', { name: 'Close' })
 
       // The dialog auto-closes after a bit
-      vi.advanceTimersByTime(1000)
-      await waitFor(() => {
-        expect(
-          screen.queryByText('Confirm Login: John Doe, Jane Smith')
-        ).not.toBeInTheDocument()
-      })
+      await waitFor(
+        () => {
+          expect(
+            screen.queryByText('Confirm Login: John Doe, Jane Smith')
+          ).not.toBeInTheDocument()
+        },
+        { timeout: 2000 }
+      )
 
       loginRequest1 = (await screen.findByText('John Doe')).closest(
         `.${Classes.CARD}`
       ) as HTMLElement
-      within(loginRequest1).getByText('Logged In')
+      await within(loginRequest1).findByText('Logged In')
 
       // Open and close the second request's dialog
       userEvent.click(
