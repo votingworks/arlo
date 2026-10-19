@@ -52,7 +52,11 @@ def test_support_combined_batches(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches"
     )
     sampled_batches = json.loads(rv.data)["batches"]
-    all_batches = Batch.query.filter_by(jurisdiction_id=jurisdiction_ids[0]).all()
+    all_batches = (
+        Batch.query.filter_by(jurisdiction_id=jurisdiction_ids[0])
+        .order_by(Batch.name)
+        .all()
+    )
     unsampled_batches = [
         batch
         for batch in all_batches

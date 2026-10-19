@@ -665,7 +665,10 @@ def list_jurisdiction_batches(jurisdiction_id: str):
         )
 
     return jsonify(
-        batches=[serialize_batch(batch) for batch in jurisdiction.batches],
+        batches=[
+            serialize_batch(batch)
+            for batch in sorted(jurisdiction.batches, key=lambda batch: batch.name)
+        ],
         combinedBatches=[
             dict(
                 name=combined_batch["name"],

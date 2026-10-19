@@ -723,6 +723,60 @@ def test_worker_interrupted_right_after_claiming_task(db_session):
     assert task.completed_at is None
 
 
+def test_worker_interrupted_while_completing_task(db_session):
+    context = multiprocessing.get_context()
+
+    db_session.execute("CREATE TABLE IF NOT EXISTS completing_results (num INT)")
+    db_session.execute("TRUNCATE TABLE completing_results")
+    db_session.commit()
+
+    @background_task
+    def insert_num(election_id, db_session, num: int):
+        db_session.execute(
+            "INSERT INTO completing_results (num) VALUES (:num)", dict(num=num)
+        )
+
+    task = create_background_task(
+        insert_num, dict(election_id="test-election-id", num=1), db_session
+    )
+    db_session.commit()
+
+    db_url = db_session.bind.url
+
+    def run_test_worker():
+        engine = sqlalchemy.create_engine(db_url)
+        session_factory = sessionmaker(autocommit=False, autoflush=True, bind=engine)
+
+        # Interrupt the worker while it is committing the completed task
+        @sqlalchemy.event.listens_for(session_factory, "after_flush")
+        def interrupt_on_complete(session, _flush_context):
+            if any(
+                isinstance(obj, BackgroundTask) and obj.completed_at
+                for obj in session.dirty
+            ):
+                os.kill(os.getpid(), signal.SIGTERM)
+
+        run_worker(
+            "worker", scoped_session(session_factory), pause_between_tasks_seconds=0
+        )
+
+    worker = context.Process(target=run_test_worker)
+    worker.start()
+    worker.join(timeout=10)
+    worker_exited = not worker.is_alive()
+    if not worker_exited:
+        worker.kill()
+        worker.join()
+    assert worker_exited, "Worker didn't exit after being interrupted"
+
+    # The task should have been reset without recording an error
+    db_session.refresh(task)
+    assert task.error is None
+    assert task.started_at is None
+    assert task.completed_at is None
+    assert db_session.execute("SELECT num FROM completing_results").fetchall() == []
+
+
 def test_task_missing_election_id():
     with pytest.raises(
         AssertionError,
