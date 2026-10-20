@@ -351,7 +351,7 @@ def test_end_to_end_runoff_majority_threshold_drives_round_1_failure(
         rounds = json.loads(client.get(f"/api/election/{election_id}/round").data)[
             "rounds"
         ]
-        return rounds[-1]["id"]
+        return rounds[-1]["id"]  # ty: ignore[unsound-return-statement]
 
     # 4. Round 1: submit Alice→Bob shift (Alice 70/Bob 25 instead of 80/15)
     #    on every sampled batch.

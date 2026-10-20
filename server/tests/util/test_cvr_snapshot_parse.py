@@ -35,7 +35,7 @@ def test_read_cvr_snapshot_two_entries_earlier_snapshot_ends_later():
     try:
         iterator = read_cvr_snapshots(
             ["file1.csv", "file2.csv"],
-            [repeat("test", 3), repeat("test", 1)],
+            [repeat("test", 3), repeat("test", 1)],  # ty: ignore[invalid-argument-type]
         )
         next(iterator)
         next(iterator)

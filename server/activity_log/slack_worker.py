@@ -222,7 +222,7 @@ def slack_message(activity: activity_log.Activity):
                             type="context",
                             elements=[
                                 org_context,
-                                jurisdiction_context,
+                                jurisdiction_context,  # ty: ignore[possibly-unresolved-reference]
                                 audit_context,
                                 time_context,
                                 user_context,
@@ -249,7 +249,7 @@ def slack_message(activity: activity_log.Activity):
                     type="context",
                     elements=[
                         org_context,
-                        jurisdiction_context,
+                        jurisdiction_context,  # ty: ignore[possibly-unresolved-reference]
                         audit_context,
                         time_context,
                         user_context,
@@ -273,7 +273,7 @@ def slack_message(activity: activity_log.Activity):
                     type="context",
                     elements=[
                         org_context,
-                        jurisdiction_context,
+                        jurisdiction_context,  # ty: ignore[possibly-unresolved-reference]
                         audit_context,
                         time_context,
                         user_context,
@@ -315,7 +315,7 @@ def slack_message(activity: activity_log.Activity):
                     type="context",
                     elements=[
                         org_context,
-                        jurisdiction_context,
+                        jurisdiction_context,  # ty: ignore[possibly-unresolved-reference]
                         audit_context,
                         time_context,
                         user_context,
@@ -339,7 +339,7 @@ def slack_message(activity: activity_log.Activity):
                     type="context",
                     elements=[
                         org_context,
-                        jurisdiction_context,
+                        jurisdiction_context,  # ty: ignore[possibly-unresolved-reference]
                         audit_context,
                         time_context,
                         user_context,
@@ -376,7 +376,7 @@ def send_new_slack_notification(organization_id: str | None = None) -> None:
                 base=activity_log.ActivityBase(**record.info["base"]),
                 timestamp=record.timestamp,
             )
-        )
+        )  # ty: ignore[unsound-assignment]
 
         rv = requests.post(
             config.SLACK_WEBHOOK_URL,

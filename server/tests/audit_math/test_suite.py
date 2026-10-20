@@ -1376,7 +1376,7 @@ def test_cvr_recount():
     ) as error:
         compute_risk(10, contest, no_cvr_stratum, cvr_stratum)
 
-        pvalue, res = error.args[1], error.args[2]
+        pvalue, res = error.args[1], error.args[2]  # ty: ignore[unresolved-attribute]
         expected_pvalue = 0.005819346812076758
         diff = abs(expected_pvalue - pvalue)
         assert diff < 0.000001, "Got {}".format(pvalue)
@@ -1456,7 +1456,7 @@ def test_bp_recount():
     ) as error:
         compute_risk(10, contest, no_cvr_stratum, cvr_stratum)
 
-        pvalue, res = error.args[1], error.args[2]
+        pvalue, res = error.args[1], error.args[2]  # ty: ignore[unresolved-attribute]
         expected_pvalue = 0.005819346812076758
         diff = abs(expected_pvalue - pvalue)
         assert diff < 0.000001, "Got {}".format(pvalue)
@@ -1536,7 +1536,7 @@ def test_full_recount():
     ) as error:
         compute_risk(10, contest, no_cvr_stratum, cvr_stratum)
 
-        pvalue, res = error.args[1], error.args[2]
+        pvalue, res = error.args[1], error.args[2]  # ty: ignore[unresolved-attribute]
         expected_pvalue = 0.0
         diff = abs(expected_pvalue - pvalue)
         assert diff < 0.000001, "Got {}".format(pvalue)

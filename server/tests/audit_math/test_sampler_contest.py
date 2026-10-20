@@ -19,21 +19,22 @@ def test_compute_margins(contests):
         computed_margins_for_contest = contest.margins
 
         for winner in true_margins_for_contest["winners"]:
-            expected = round(true_margins_for_contest["winners"][winner]["p_w"], 5)
+            expected = round(true_margins_for_contest["winners"][winner]["p_w"], 5)  # ty: ignore[no-matching-overload]
             computed = round(computed_margins_for_contest["winners"][winner]["p_w"], 5)
             assert expected == computed, "{} p_w failed: got {}, expected {}".format(
                 contest.name, computed, expected
             )
 
-            expected = round(true_margins_for_contest["winners"][winner]["s_w"], 5)
+            expected = round(true_margins_for_contest["winners"][winner]["s_w"], 5)  # ty: ignore[no-matching-overload]
             computed = round(computed_margins_for_contest["winners"][winner]["s_w"], 5)
             assert expected == computed, "{} s_w failed: got {}, expected {}".format(
                 contest.name, computed, expected
             )
 
-            for cand in true_margins_for_contest["winners"][winner]["swl"]:
+            for cand in true_margins_for_contest["winners"][winner]["swl"]:  # ty: ignore[not-iterable]
                 expected = round(
-                    true_margins_for_contest["winners"][winner]["swl"][cand], 5
+                    true_margins_for_contest["winners"][winner]["swl"][cand],  # ty: ignore[not-subscriptable]
+                    5,
                 )
                 computed = round(
                     computed_margins_for_contest["winners"][winner]["swl"][cand], 5
@@ -45,13 +46,13 @@ def test_compute_margins(contests):
                 )
 
         for loser in true_margins_for_contest["losers"]:
-            expected = round(true_margins_for_contest["losers"][loser]["p_l"], 5)
+            expected = round(true_margins_for_contest["losers"][loser]["p_l"], 5)  # ty: ignore[no-matching-overload]
             computed = round(computed_margins_for_contest["losers"][loser]["p_l"], 5)
             assert expected == computed, "{} p_l failed: got {}, expected {}".format(
                 contest.name, computed, expected
             )
 
-            expected = round(true_margins_for_contest["losers"][loser]["s_l"], 5)
+            expected = round(true_margins_for_contest["losers"][loser]["s_l"], 5)  # ty: ignore[no-matching-overload]
             computed = round(computed_margins_for_contest["losers"][loser]["s_l"], 5)
             assert expected == computed, "{} s_l failed: got {}, expected {}".format(
                 contest.name, computed, expected

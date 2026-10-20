@@ -64,7 +64,7 @@ def construct_contest_choice_csv_headers(
         for contest in contests
         for choice in contest.choices
     }
-    return contest_choice_csv_headers
+    return contest_choice_csv_headers  # ty: ignore[unsound-return-statement]
 
 
 @background_task
@@ -74,7 +74,7 @@ def process_batch_tallies_file(
     user: tuple[UserType, str],
     support_user_email: str | None,
 ):
-    jurisdiction: Jurisdiction = Jurisdiction.query.get(jurisdiction_id)
+    jurisdiction: Jurisdiction = Jurisdiction.query.get(jurisdiction_id)  # ty: ignore[unsound-assignment]
 
     def process_batch_tallies_for_contest(
         contest: Contest,
@@ -168,7 +168,7 @@ def process_batch_tallies_file(
             for batch_name, batch_votes in batch_tallies_for_contest.items():
                 batch_tallies[batch_name][contest.id] = batch_votes
 
-        jurisdiction.batch_tallies = batch_tallies
+        jurisdiction.batch_tallies = batch_tallies  # ty: ignore[invalid-assignment]
 
     error = None
     try:
@@ -222,7 +222,7 @@ def validate_batch_tallies_upload(election: Election, jurisdiction: Jurisdiction
 
 
 def clear_batch_tallies_data(jurisdiction: Jurisdiction):
-    jurisdiction.batch_tallies = None
+    jurisdiction.batch_tallies = None  # ty: ignore[invalid-assignment]
 
 
 def reprocess_batch_tallies_file_if_uploaded(
@@ -287,13 +287,13 @@ def complete_upload_for_batch_tallies(
 
     clear_batch_tallies_data(jurisdiction)
 
-    jurisdiction.batch_tallies_file = File(
+    jurisdiction.batch_tallies_file = File(  # ty: ignore[invalid-assignment]
         id=str(uuid.uuid4()),
         name=filename,
         storage_path=storage_path,
         uploaded_at=datetime.now(timezone.utc),
     )
-    jurisdiction.batch_tallies_file.task = create_background_task(
+    jurisdiction.batch_tallies_file.task = create_background_task(  # ty: ignore[invalid-assignment]
         process_batch_tallies_file,
         dict(
             election_id=election.id,

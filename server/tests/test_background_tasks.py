@@ -106,7 +106,7 @@ def test_task_happy_path(caplog, db_session):
 
     assert task_ran is False
 
-    run_task(claim_next_task("test_worker", db_session), db_session)
+    run_task(claim_next_task("test_worker", db_session), db_session)  # ty: ignore[invalid-argument-type]
 
     task = db_session.query(BackgroundTask).get(task_id)
     compare_json(
@@ -152,7 +152,7 @@ def test_task_user_error(caplog, db_session):
         user_error, dict(election_id="test-election-id"), db_session
     )
 
-    run_task(claim_next_task("test_worker", db_session), db_session)
+    run_task(claim_next_task("test_worker", db_session), db_session)  # ty: ignore[invalid-argument-type]
 
     task = db_session.query(BackgroundTask).get(task.id)
     compare_json(
@@ -198,7 +198,7 @@ def test_task_python_error(capture_exception, caplog, db_session):
         python_error, dict(election_id="test-election-id"), db_session
     )
 
-    run_task(claim_next_task("test_worker", db_session), db_session)
+    run_task(claim_next_task("test_worker", db_session), db_session)  # ty: ignore[invalid-argument-type]
 
     task = db_session.query(BackgroundTask).get(task.id)
     compare_json(
@@ -247,7 +247,7 @@ def test_task_python_error_format(capture_exception, caplog, db_session):
         error_format, dict(election_id="test-election-id"), db_session
     )
 
-    run_task(claim_next_task("test_worker", db_session), db_session)
+    run_task(claim_next_task("test_worker", db_session), db_session)  # ty: ignore[invalid-argument-type]
 
     task = db_session.query(BackgroundTask).get(task.id)
     compare_json(
@@ -296,7 +296,7 @@ def test_task_db_error(capture_exception, caplog, db_session):
         db_error, dict(election_id="test-election-id"), db_session
     )
 
-    run_task(claim_next_task("test_worker", db_session), db_session)
+    run_task(claim_next_task("test_worker", db_session), db_session)  # ty: ignore[invalid-argument-type]
 
     task = db_session.query(BackgroundTask).get(task.id)
     compare_json(
@@ -355,9 +355,9 @@ def test_task_multiple_run_in_order(db_session):
         multiple, dict(election_id="test-election-id", num=3), db_session
     )
 
-    run_task(claim_next_task("test_worker", db_session), db_session)
-    run_task(claim_next_task("test_worker", db_session), db_session)
-    run_task(claim_next_task("test_worker", db_session), db_session)
+    run_task(claim_next_task("test_worker", db_session), db_session)  # ty: ignore[invalid-argument-type]
+    run_task(claim_next_task("test_worker", db_session), db_session)  # ty: ignore[invalid-argument-type]
+    run_task(claim_next_task("test_worker", db_session), db_session)  # ty: ignore[invalid-argument-type]
 
     assert results == [1, 2, 3]
 
@@ -398,8 +398,8 @@ def test_task_interrupted(caplog, db_session):
     reset_task(task1, db_session)
 
     # Continue running tasks
-    run_task(claim_next_task("test_worker", db_session), db_session)
-    run_task(claim_next_task("test_worker", db_session), db_session)
+    run_task(claim_next_task("test_worker", db_session), db_session)  # ty: ignore[invalid-argument-type]
+    run_task(claim_next_task("test_worker", db_session), db_session)  # ty: ignore[invalid-argument-type]
     # Ensure resetting didn't duplicate the task
     assert claim_next_task("test_worker", db_session) is None
 
@@ -536,18 +536,18 @@ def test_lock_key(db_session):
     task2a = create_background_task(lock_task_a, dict(election_id="2"), db_session)
 
     next_task_1 = claim_next_task("test_worker", db_session)
-    assert next_task_1.id == task1a.id
+    assert next_task_1.id == task1a.id  # ty: ignore[unresolved-attribute]
 
     # task1b should not be claimed because it has the same lock_key
     # (election_id) as task1a
     next_task_2 = claim_next_task("test_worker", db_session)
-    assert next_task_2.id == task2a.id
+    assert next_task_2.id == task2a.id  # ty: ignore[unresolved-attribute]
 
-    run_task(next_task_1, db_session)
+    run_task(next_task_1, db_session)  # ty: ignore[invalid-argument-type]
 
     # Now task1b should be claimable, since task1a has been completed
     next_task_3 = claim_next_task("test_worker", db_session)
-    assert next_task_3.id == task1b.id
+    assert next_task_3.id == task1b.id  # ty: ignore[unresolved-attribute]
 
 
 # The idea of this test is to create race conditions by having multiple tasks
@@ -659,10 +659,10 @@ def test_reset_worker_tasks(db_session):
 
     # worker-1 completes task_1 and is in the middle of task_2, while worker-2
     # is in the middle of task_3
-    assert claim_next_task("worker-1", db_session).id == task_1.id
+    assert claim_next_task("worker-1", db_session).id == task_1.id  # ty: ignore[unresolved-attribute]
     run_task(task_1, db_session)
-    assert claim_next_task("worker-1", db_session).id == task_2.id
-    assert claim_next_task("worker-2", db_session).id == task_3.id
+    assert claim_next_task("worker-1", db_session).id == task_2.id  # ty: ignore[unresolved-attribute]
+    assert claim_next_task("worker-2", db_session).id == task_3.id  # ty: ignore[unresolved-attribute]
 
     reset_worker_tasks("worker-1", db_session)
 
@@ -748,7 +748,7 @@ def test_worker_interrupted_while_completing_task(db_session):
         session_factory = sessionmaker(autocommit=False, autoflush=True, bind=engine)
 
         # Interrupt the worker while it is committing the completed task
-        @sqlalchemy.event.listens_for(session_factory, "after_flush")
+        @sqlalchemy.event.listens_for(session_factory, "after_flush")  # ty: ignore[dynamic-function-decorator-return]
         def interrupt_on_complete(session, _flush_context):
             if any(
                 isinstance(obj, BackgroundTask) and obj.completed_at
@@ -816,12 +816,12 @@ def test_file_is_processing(db_session):
         pass
 
     # queue the task
-    file.task = create_background_task(
+    file.task = create_background_task(  # ty: ignore[invalid-assignment]
         process_file, dict(election_id="election-01"), db_session
     )
     assert file.is_processing() is True
     db_session.commit()
 
     # run the task
-    run_task(claim_next_task("test_worker", db_session), db_session)
+    run_task(claim_next_task("test_worker", db_session), db_session)  # ty: ignore[invalid-argument-type]
     assert file.is_processing() is False

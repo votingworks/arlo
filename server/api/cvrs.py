@@ -209,7 +209,7 @@ def set_total_ballots_from_cvrs(contest: Contest):
         assert metadata is not None
         total_ballots += metadata[contest.name]["total_ballots_cast"]
 
-    contest.total_ballots_cast = total_ballots
+    contest.total_ballots_cast = total_ballots  # ty: ignore[invalid-assignment]
 
 
 def set_contest_metadata_from_cvrs(contest: Contest):
@@ -218,7 +218,7 @@ def set_contest_metadata_from_cvrs(contest: Contest):
 
     first_jurisdiction_metadata = cvr_contests_metadata(list(contest.jurisdictions)[0])
     assert first_jurisdiction_metadata is not None
-    contest.votes_allowed = first_jurisdiction_metadata[contest.name]["votes_allowed"]
+    contest.votes_allowed = first_jurisdiction_metadata[contest.name]["votes_allowed"]  # ty: ignore[invalid-assignment]
 
     # ES&S/Hart CVRs may only contain a subset of contest choices in each
     # jurisdiction, so we union choice names across jurisdictions.
@@ -233,7 +233,7 @@ def set_contest_metadata_from_cvrs(contest: Contest):
         for choice_name, choice_metadata in metadata[contest.name]["choices"].items():
             choices[choice_name] += choice_metadata["num_votes"]
 
-    contest.choices = [
+    contest.choices = [  # ty: ignore[invalid-assignment]
         ContestChoice(
             id=str(uuid.uuid4()),
             contest_id=contest.id,
@@ -795,7 +795,7 @@ def parse_ess_cvrs(
                         record_id=record_id,
                         imprinted_id=imprinted_id,
                     ),
-                )
+                )  # ty: ignore[unsound-yield]
             else:
                 close_matches = difflib.get_close_matches(
                     str((tabulator_number, batch_name)),
@@ -932,7 +932,7 @@ def parse_ess_cvrs(
                 cvr_number = column_value(
                     row, "Cast Vote Record", row_index + 1, header_indices
                 )
-                yield (cvr_number, parse_row_interpretations(row, cvr_number))
+                yield (cvr_number, parse_row_interpretations(row, cvr_number))  # ty: ignore[unsound-yield]
         except UserError as error:
             raise UserError(f"{cvr_file_name}: {error}") from error
         finally:
@@ -985,8 +985,8 @@ def parse_ess_cvrs(
             (interpretations_cvr_number, interpretations) = cvr_interpretations
             if ballot_cvr_number != interpretations_cvr_number:
                 raise mismatch_error
-            ballot.interpretations = interpretations
-            yield ballot
+            ballot.interpretations = interpretations  # ty: ignore[invalid-assignment]
+            yield ballot  # ty: ignore[unsound-yield]
 
     ballots = parse_and_concat_ballots_files(ballots_files)
     try:
@@ -1271,7 +1271,7 @@ def parse_hart_cvrs(
                 if use_tabulator_in_batch_key:
                     raise UserError(
                         f"Error in file: {cvr_file_name} from {cvr_zip_file_name}. "
-                        f"Couldn't find a matching batch for Tabulator: {tabulator}, BatchNumber: {batch_number}. "
+                        f"Couldn't find a matching batch for Tabulator: {tabulator}, BatchNumber: {batch_number}. "  # ty: ignore[possibly-unresolved-reference]
                         "Either the Workstation values in scanned ballot information CSVs, if provided, or "
                         "CVR ZIP file names, if multiple, should match the Tabulator values in the ballot manifest. "
                         "Likewise, the BatchNumber values in CVR files should match the Batch Name values in the ballot manifest."
@@ -1283,7 +1283,7 @@ def parse_hart_cvrs(
                         n=1,
                     )
                     closest_match = (
-                        ast.literal_eval(close_matches[0]) if close_matches else None
+                        ast.literal_eval(close_matches[0]) if close_matches else None  # ty: ignore[invalid-argument-type]
                     )
                     raise UserError(
                         f"Error in file: {cvr_file_name} from {cvr_zip_file_name}. "
@@ -1467,7 +1467,7 @@ def process_cvr_file(
             .subquery()
         )
         db_session.execute(
-            CvrBallot.__table__.update()
+            CvrBallot.__table__.update()  # ty: ignore[unresolved-attribute]
             .values(ballot_position=ballot_position.c.ballot_position)
             .where(
                 and_(
@@ -1535,20 +1535,20 @@ def validate_cvr_upload(
 
 
 def clear_cvr_contests_metadata(jurisdiction: Jurisdiction):
-    jurisdiction.cvr_contests_metadata = None
+    jurisdiction.cvr_contests_metadata = None  # ty: ignore[invalid-assignment]
 
 
 def finalize_cvr_upload(
     storage_path: str, file_name: str, cvr_file_type: str, jurisdiction: Jurisdiction
 ):
-    jurisdiction.cvr_file = File(
+    jurisdiction.cvr_file = File(  # ty: ignore[invalid-assignment]
         id=str(uuid.uuid4()),
         name=file_name,
         storage_path=storage_path,
         uploaded_at=datetime.now(timezone.utc),
     )
-    jurisdiction.cvr_file_type = cvr_file_type
-    jurisdiction.cvr_file.task = create_background_task(
+    jurisdiction.cvr_file_type = cvr_file_type  # ty: ignore[invalid-assignment]
+    jurisdiction.cvr_file.task = create_background_task(  # ty: ignore[invalid-assignment]
         process_cvr_file,
         dict(
             election_id=jurisdiction.election_id,
@@ -1636,7 +1636,7 @@ def complete_upload_for_cvrs(election: Election, jurisdiction: Jurisdiction):
         raise Conflict("Cannot upload CVRs while any file upload is processing.")
 
     clear_cvr_contests_metadata(jurisdiction)
-    finalize_cvr_upload(storage_path, filename, cvr_file_type, jurisdiction)
+    finalize_cvr_upload(storage_path, filename, cvr_file_type, jurisdiction)  # ty: ignore[invalid-argument-type]
     db_session.commit()
     return jsonify(status="ok")
 

@@ -57,7 +57,7 @@ def set_loggedin_user(
 def get_loggedin_user(session) -> tuple[UserType, str] | tuple[None, None]:  # noqa: ANN001
     check_session_expiration(session)
     user = session.get(_USER, None)
-    return (user["type"], user["key"]) if user else (None, None)
+    return (user["type"], user["key"]) if user else (None, None)  # ty: ignore[unsound-return-statement]
 
 
 def clear_loggedin_user(session):  # noqa: ANN001
@@ -103,7 +103,7 @@ def clear_support_user(session: SessionMixin):
 
 def get_support_user(session: SessionMixin) -> str | None:
     check_session_expiration(session)
-    support_user_email: str | None = session.get(_SUPPORT_USER)
+    support_user_email: str | None = session.get(_SUPPORT_USER)  # ty: ignore[unsound-assignment]
     return support_user_email
 
 
@@ -208,7 +208,8 @@ def restrict_access(
             if "jurisdiction_id" in kwargs:
                 jurisdiction = find_or_404(
                     Jurisdiction.query.filter_by(
-                        id=kwargs.pop("jurisdiction_id"), election_id=election.id
+                        id=kwargs.pop("jurisdiction_id"),
+                        election_id=election.id,  # ty: ignore[possibly-unresolved-reference]
                     )
                 )
                 kwargs["jurisdiction"] = jurisdiction
@@ -217,7 +218,8 @@ def restrict_access(
             if "round_id" in kwargs:
                 round = find_or_404(
                     Round.query.filter_by(
-                        id=kwargs.pop("round_id"), election_id=election.id
+                        id=kwargs.pop("round_id"),
+                        election_id=election.id,  # ty: ignore[possibly-unresolved-reference]
                     )
                 )
                 kwargs["round"] = round
@@ -227,17 +229,17 @@ def restrict_access(
                 audit_board = find_or_404(
                     AuditBoard.query.filter_by(
                         id=kwargs.pop("audit_board_id"),
-                        round_id=round.id,
-                        jurisdiction_id=jurisdiction.id,
+                        round_id=round.id,  # ty: ignore[unresolved-attribute]
+                        jurisdiction_id=jurisdiction.id,  # ty: ignore[unresolved-attribute]
                     )
                 )
                 kwargs["audit_board"] = audit_board
 
-            check_access(user_types, election, jurisdiction, audit_board)
+            check_access(user_types, election, jurisdiction, audit_board)  # ty: ignore[possibly-unresolved-reference]
 
             return route(*args, **kwargs)
 
-        wrapper.has_access_control = True
+        wrapper.has_access_control = True  # ty: ignore[unresolved-attribute]
 
         return wrapper
 
@@ -256,7 +258,7 @@ def restrict_access_support(route: Callable[..., T]) -> Callable[..., T]:
 
         return route(*args, **kwargs)
 
-    wrapper.has_access_control = True
+    wrapper.has_access_control = True  # ty: ignore[unresolved-attribute]
 
     return wrapper
 
@@ -270,7 +272,7 @@ def allow_public_access(route: Callable[..., T]) -> Callable[..., T]:
     def wrapper(*args, **kwargs):  # noqa: ANN002, ANN003
         return route(*args, **kwargs)
 
-    wrapper.has_access_control = True
+    wrapper.has_access_control = True  # ty: ignore[unresolved-attribute]
 
     return wrapper
 
@@ -287,6 +289,6 @@ def allow_any_logged_in_user_access(route: Callable[..., T]) -> Callable[..., T]
             raise Unauthorized("Please log in to access Arlo")
         return route(*args, **kwargs)
 
-    wrapper.has_access_control = True
+    wrapper.has_access_control = True  # ty: ignore[unresolved-attribute]
 
     return wrapper

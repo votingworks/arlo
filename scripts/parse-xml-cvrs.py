@@ -52,7 +52,7 @@ def parse_cvr_file(
     include_votes_cast_per_contest=False,  # noqa: ANN001
 ):
     xml = parse_xml(file_path).getroot()
-    assert xml.tag == f"{{{ns}}}Cvr"
+    assert xml.tag == f"{{{ns}}}Cvr"  # ty: ignore[unresolved-attribute]
 
     cvr = {
         "CvrGuid": find(xml, "CvrGuid").text,

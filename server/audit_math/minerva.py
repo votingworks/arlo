@@ -210,7 +210,7 @@ def collect_risks(
     }
     logging.debug(f"minerva  collect_risks return: {risks=}")
 
-    return risks
+    return risks  # ty: ignore[unsound-return-statement]
 
 
 def compute_risk(

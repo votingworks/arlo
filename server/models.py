@@ -67,7 +67,7 @@ COMMIT;
 )
 
 
-class UTCDateTime(TypeDecorator):
+class UTCDateTime(TypeDecorator):  # ty: ignore[missing-type-argument]
     # Store with no timezone
     impl = DateTime
 
@@ -359,7 +359,7 @@ class User(BaseModel):
     login_code_requested_at = Column(UTCDateTime)
     login_code_attempts = Column(Integer)
 
-    @validates("email")
+    @validates("email")  # ty: ignore[dynamic-function-decorator-return]
     def lowercase_email(self, _key, email):  # noqa: ANN001
         return email.lower()
 

@@ -33,9 +33,9 @@ F = TypeVar("F", bound=Callable[..., Any])
 # Decorator to register background task handlers. We use the handler's function
 # name as the key.
 def background_task(task_handler: F) -> F:
-    task_dispatch[task_handler.__name__] = task_handler
+    task_dispatch[task_handler.__name__] = task_handler  # ty: ignore[unresolved-attribute]
     assert "election_id" in signature(task_handler).parameters, (
-        f"Payload for task {task_handler.__name__} must include 'election_id' to easily identify all task logs for a single audit."
+        f"Payload for task {task_handler.__name__} must include 'election_id' to easily identify all task logs for a single audit."  # ty: ignore[unresolved-attribute]
     )
     return task_handler
 
@@ -46,8 +46,8 @@ def create_background_task(
     # Use the global db_session by default, but allow it to be overridden for testing.
     db_session=db_session,  # noqa: ANN001
 ) -> BackgroundTask:
-    assert task_handler.__name__ in task_dispatch, (
-        f"No task handler registered for {task_handler.__name__}."
+    assert task_handler.__name__ in task_dispatch, (  # ty: ignore[unresolved-attribute]
+        f"No task handler registered for {task_handler.__name__}."  # ty: ignore[unresolved-attribute]
         " Did you forget to use the @background_task decorator?"
     )
     task_parameters = set(signature(task_handler).parameters.keys()) - {
@@ -55,14 +55,14 @@ def create_background_task(
         "db_session",
     }
     assert task_parameters == set(payload.keys()), (
-        f"Payload for task {task_handler.__name__} must match the handler's parameters.\n"
+        f"Payload for task {task_handler.__name__} must match the handler's parameters.\n"  # ty: ignore[unresolved-attribute]
         f"Expected: {task_parameters}\n"
         f"Got: {set(payload.keys())}\n"
     )
 
     task = BackgroundTask(
         id=str(uuid.uuid4()),
-        task_name=task_handler.__name__,
+        task_name=task_handler.__name__,  # ty: ignore[unresolved-attribute]
         payload=payload,
         # Only allow one task per audit to run at a time. This ensures that
         # tasks won't try to access the same db resources at the same time.
@@ -72,7 +72,7 @@ def create_background_task(
 
     # For testing, we often prefer tasks to run immediately, instead of asynchronously.
     if config.RUN_BACKGROUND_TASKS_IMMEDIATELY:
-        task.started_at = datetime.now(timezone.utc)
+        task.started_at = datetime.now(timezone.utc)  # ty: ignore[invalid-assignment]
         db_session.commit()
         run_task(task, db_session)
 
@@ -121,7 +121,7 @@ def run_task(task: BackgroundTask, db_session):  # noqa: ANN001
     try:
         task_handler(**task_args)
 
-        task.completed_at = datetime.now(timezone.utc)
+        task.completed_at = datetime.now(timezone.utc)  # ty: ignore[invalid-assignment]
 
         db_session.commit()
 
@@ -130,11 +130,11 @@ def run_task(task: BackgroundTask, db_session):  # noqa: ANN001
     except Exception as error:
         db_session.rollback()
 
-        task.completed_at = datetime.now(timezone.utc)
+        task.completed_at = datetime.now(timezone.utc)  # ty: ignore[invalid-assignment]
 
         # Some exceptions stringify nicely, some don't (e.g. StopIteration) so
         # we just print the exception class name.
-        task.error = str(error) or str(error.__class__.__name__)
+        task.error = str(error) or str(error.__class__.__name__)  # ty: ignore[invalid-assignment]
 
         db_session.commit()
 
@@ -205,10 +205,10 @@ def claim_next_task(worker_id: str, db_session) -> BackgroundTask | None:  # noq
         .order_by(BackgroundTask.created_at)
         .limit(1)
         .one_or_none()
-    )
+    )  # ty: ignore[unsound-assignment]
     if task:
-        task.worker_id = worker_id
-        task.started_at = datetime.now(timezone.utc)
+        task.worker_id = worker_id  # ty: ignore[invalid-assignment]
+        task.started_at = datetime.now(timezone.utc)  # ty: ignore[invalid-assignment]
     # Commit the transaction to release the table lock, regardless of whether we
     # claimed a task.
     db_session.commit()
@@ -228,8 +228,8 @@ def reset_task(task: BackgroundTask, db_session):  # noqa: ANN001
         return
 
     logger.info(f"TASK_RESET {task_log_data(task)}")
-    task.worker_id = None
-    task.started_at = None
+    task.worker_id = None  # ty: ignore[invalid-assignment]
+    task.started_at = None  # ty: ignore[invalid-assignment]
     db_session.commit()
 
 

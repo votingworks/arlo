@@ -72,7 +72,7 @@ def auth0_create_audit_admin(email: str) -> str | None:
     token = auth0_get_token()
     auth0 = Auth0(AUTH0_DOMAIN, token)
     try:
-        user = auth0.users.create(
+        user = auth0.users.create(  # ty: ignore[unresolved-attribute]
             dict(
                 email=email,
                 password=secrets.token_urlsafe(),
@@ -83,7 +83,7 @@ def auth0_create_audit_admin(email: str) -> str | None:
     except Auth0Error as error:
         # If user already exists in Auth0, no problem!
         if error.status_code == 409:
-            users = auth0.users_by_email.search_users_by_email(email.lower())
+            users = auth0.users_by_email.search_users_by_email(email.lower())  # ty: ignore[unresolved-attribute]
             return str(users[0]["user_id"])
         raise error  # pragma: no cover
 
@@ -157,10 +157,10 @@ def list_users_by_organization():
         )
         .options(
             subqueryload(Election.jurisdictions)
-            .subqueryload(Jurisdiction.jurisdiction_administrations)
+            .subqueryload(Jurisdiction.jurisdiction_administrations)  # ty: ignore[unresolved-attribute]
             .subqueryload(JurisdictionAdministration.user),
             subqueryload(Election.organization)
-            .subqueryload(Organization.audit_administrations)
+            .subqueryload(Organization.audit_administrations)  # ty: ignore[unresolved-attribute]
             .subqueryload(AuditAdministration.user),
         )
         .all()
@@ -397,7 +397,7 @@ def create_audit_admin(organization_id: str):
     db_session.add(admin)
 
     auth0_user_id = auth0_create_audit_admin(audit_admin["email"])
-    user.external_id = auth0_user_id
+    user.external_id = auth0_user_id  # ty: ignore[invalid-assignment]
 
     db_session.commit()
 
@@ -636,7 +636,7 @@ def reopen_current_round(election_id: str):
     if not current_round.ended_at:
         raise Conflict("Round is in progress.")
 
-    current_round.ended_at = None
+    current_round.ended_at = None  # ty: ignore[invalid-assignment]
     for round_contest in current_round.round_contests:
         round_contest.end_p_value = None
         round_contest.is_complete = None

@@ -1149,7 +1149,7 @@ def test_logout(client: FlaskClient, aa_email: str):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email)
 
     with client.session_transaction() as session:
-        previous_session = session.copy()
+        previous_session = session.copy()  # ty: ignore[unresolved-attribute]
 
     rv = client.get("/auth/logout")
     assert rv.status_code == 302
@@ -1170,7 +1170,7 @@ def test_logout(client: FlaskClient, aa_email: str):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email)
 
     with client.session_transaction() as session:
-        previous_session = session.copy()
+        previous_session = session.copy()  # ty: ignore[unresolved-attribute]
 
     rv = client.get("/auth/logout")
     assert rv.status_code == 302
@@ -1197,7 +1197,7 @@ def test_support_logout(client: FlaskClient, aa_email: str):
     set_support_user(client, SA_EMAIL)
 
     with client.session_transaction() as session:
-        previous_session = session.copy()
+        previous_session = session.copy()  # ty: ignore[unresolved-attribute]
 
     rv = client.get("/auth/support/logout")
     assert rv.status_code == 302
@@ -1217,7 +1217,7 @@ def test_support_logout(client: FlaskClient, aa_email: str):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email)
 
     with client.session_transaction() as session:
-        previous_session = session.copy()
+        previous_session = session.copy()  # ty: ignore[unresolved-attribute]
 
     rv = client.get("/auth/support/logout")
     assert rv.status_code == 302
@@ -2243,7 +2243,7 @@ def test_csrf(client: FlaskClient, org_id: str):
     }
 
     rv = client.get("/")
-    csrf_token = client.get_cookie("_csrf_token").value
+    csrf_token = client.get_cookie("_csrf_token").value  # ty: ignore[unresolved-attribute]
     rv = client.post(
         "/api/election",
         headers={"Content-Type": "application/json", "X-CSRFToken": csrf_token},

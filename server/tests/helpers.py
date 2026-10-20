@@ -92,7 +92,7 @@ def create_user(email=DEFAULT_AA_EMAIL) -> User:
         return user
     except IntegrityError:
         user = User.query.filter_by(email=email).first()
-        return user
+        return user  # ty: ignore[unsound-return-statement]
 
 
 def create_org_and_admin(
@@ -104,7 +104,7 @@ def create_org_and_admin(
     db_session.add(org)
     aa_id = add_admin_to_org(org.id, user_email)
     db_session.commit()
-    return org.id, aa_id
+    return org.id, aa_id  # ty: ignore[unsound-return-statement]
 
 
 def add_admin_to_org(org_id: str, user_email: str):
@@ -155,7 +155,7 @@ def create_jurisdiction_and_admin(
 ) -> tuple[str, str]:
     jurisdiction = create_jurisdiction(election_id, jurisdiction_name)
     ja_id = create_jurisdiction_admin(jurisdiction.id, user_email)
-    return jurisdiction.id, ja_id
+    return jurisdiction.id, ja_id  # ty: ignore[unsound-return-statement]
 
 
 def create_election(
@@ -191,7 +191,7 @@ def audit_ballot(
 ):
     # Make sure we don't try to audit this ballot twice for this contest
     if not any(i for i in ballot.interpretations if i.contest_id == contest_id):
-        ballot.interpretations = list(ballot.interpretations) + [
+        ballot.interpretations = list(ballot.interpretations) + [  # ty: ignore[invalid-assignment]
             BallotInterpretation(
                 ballot_id=ballot.id,
                 contest_id=contest_id,
@@ -201,7 +201,7 @@ def audit_ballot(
                 has_invalid_write_in=has_invalid_write_in,
             )
         ]
-        ballot.status = BallotStatus.AUDITED
+        ballot.status = BallotStatus.AUDITED  # ty: ignore[invalid-assignment]
 
 
 def run_audit_round(
@@ -436,7 +436,7 @@ def find_log(caplog, level: int, message: str) -> logging.LogRecord | None:
             if record.levelno == level and message in record.message
         ),
         None,
-    )
+    )  # ty: ignore[unsound-return-statement]
 
 
 def string_to_bytes_io(string: str) -> io.BytesIO:

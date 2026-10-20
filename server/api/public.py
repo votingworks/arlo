@@ -122,7 +122,7 @@ def parse_compute_sample_sizes_input(
     )
     contest_for_sampler: sampler_contest.Contest = sampler_contest.from_db_contest(
         contest
-    )
+    )  # ty: ignore[unsound-assignment]
     return contest_for_sampler
 
 
@@ -178,7 +178,7 @@ def validate_and_authorize_storage_key(unvalidated_storage_key: str):
     if key_match is None or key_hides_its_real_path:
         raise BadRequest("Invalid storage path")
 
-    election: Election = get_or_404(Election, key_match["election_id"])
+    election: Election = get_or_404(Election, key_match["election_id"])  # ty: ignore[unsound-assignment]
     if election.deleted_at is not None:
         raise NotFound(f"Election {key_match['election_id']} not found")
 
@@ -188,7 +188,7 @@ def validate_and_authorize_storage_key(unvalidated_storage_key: str):
     else:
         jurisdiction: Jurisdiction = find_or_404(
             Jurisdiction.query.filter_by(id=jurisdiction_id, election_id=election.id)
-        )
+        )  # ty: ignore[unsound-assignment]
         check_access(
             [UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN], election, jurisdiction
         )

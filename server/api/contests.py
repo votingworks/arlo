@@ -163,7 +163,7 @@ def serialize_contest(contest: Contest) -> JSONDict:
                         jurisdiction_id_with_most_cvr_choices
                     ]
                 ):
-                    jurisdiction_id_with_most_cvr_choices = jurisdiction.id
+                    jurisdiction_id_with_most_cvr_choices = jurisdiction.id  # ty: ignore[unsound-assignment]
 
         if len(cvr_choice_names_by_jurisdiction) > 1:
             assert jurisdiction_id_with_most_cvr_choices is not None
@@ -414,7 +414,7 @@ def create_or_update_all_contests(election: Election):
 
     for contest in election.contests:
         db_session.delete(contest)
-    election.contests = [
+    election.contests = [  # ty: ignore[invalid-assignment]
         deserialize_contest(json_contest, election.id) for json_contest in json_contests
     ]
 
@@ -422,7 +422,7 @@ def create_or_update_all_contests(election: Election):
 
     if (
         election.audit_type == AuditType.BATCH_COMPARISON
-        and should_reprocess_batch_tallies(previous_contests, json_contests)
+        and should_reprocess_batch_tallies(previous_contests, json_contests)  # ty: ignore[possibly-unresolved-reference]
     ):
         user = get_loggedin_user(session)
         assert user[0] is not None

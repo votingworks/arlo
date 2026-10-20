@@ -201,7 +201,7 @@ def pretty_cvr_interpretation(
         choice_id_to_name[choice_id]
         for choice_id, interpretation in cvrs_by_choice.items()
         if interpretation == "1"
-    )
+    )  # ty: ignore[unsound-return-statement]
 
 
 def add_sign(value: int) -> str:
@@ -519,7 +519,7 @@ def round_rows(election: Election):
                 if choice_votes:
                     cvr_choice_votes.update(
                         {
-                            choice_id_to_name[choice_id]: int(count)
+                            choice_id_to_name[choice_id]: int(count)  # ty: ignore[invalid-argument-type]
                             for choice_id, count in choice_votes.items()
                         }
                     )
@@ -604,17 +604,17 @@ def round_rows(election: Election):
             ]
             + (
                 [
-                    pretty_choice_votes(dict(cvr_choice_votes)),
-                    pretty_choice_votes(non_cvr_choice_vote),
+                    pretty_choice_votes(dict(cvr_choice_votes)),  # ty: ignore[possibly-unresolved-reference]
+                    pretty_choice_votes(non_cvr_choice_vote),  # ty: ignore[possibly-unresolved-reference]
                 ]
                 if election.audit_type == AuditType.HYBRID
                 else []
             )
             + (
                 [
-                    num_sampled_batches,
-                    num_ballots_in_sampled_batches,
-                    pretty_choice_votes(reported_results_by_name),
+                    num_sampled_batches,  # ty: ignore[possibly-unresolved-reference]
+                    num_ballots_in_sampled_batches,  # ty: ignore[possibly-unresolved-reference]
+                    pretty_choice_votes(reported_results_by_name),  # ty: ignore[possibly-unresolved-reference]
                 ]
                 if election.audit_type == AuditType.BATCH_COMPARISON
                 else []
@@ -862,7 +862,7 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction | None = 
         if election.online:
             if (
                 is_ballot_comparison
-                and not show_discrepancies_by_jurisdiction[batch.jurisdiction_id]
+                and not show_discrepancies_by_jurisdiction[batch.jurisdiction_id]  # ty: ignore[possibly-unresolved-reference]
             ):
                 result_values = ["NOT_AUDITED"] + ([""] * (len(result_columns) - 1))
             else:
@@ -870,25 +870,28 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction | None = 
                 for contest in election.contests:
                     if show_cvrs:
                         cvr_interpretation = pretty_cvr_interpretation(
-                            ballot, contest, cvrs_by_contest[contest.id]
+                            ballot,
+                            contest,
+                            cvrs_by_contest[contest.id],  # ty: ignore[possibly-unresolved-reference]
                         )
                         result_values.append(cvr_interpretation)
                     result_values.append(
                         pretty_ballot_interpretation(interpretations, contest)
                     )
                     if show_cvrs:
-                        audited_result = audited_cvrs_by_contest[contest.id].get(
+                        audited_result = audited_cvrs_by_contest[contest.id].get(  # ty: ignore[possibly-unresolved-reference]
                             ballot.id
                         )
                         vote_deltas = audited_result and ballot_vote_deltas(
                             contest,
-                            cvrs_by_contest[contest.id].get(ballot.id),
+                            cvrs_by_contest[contest.id].get(ballot.id),  # ty: ignore[possibly-unresolved-reference]
                             audited_result["cvr"],
                         )
                         result_values.append(pretty_vote_deltas(contest, vote_deltas))
                         result_values.append(
                             pretty_discrepancy(
-                                ballot, discrepancies_by_contest[contest.id]
+                                ballot,
+                                discrepancies_by_contest[contest.id],  # ty: ignore[possibly-unresolved-reference]
                             )
                         )
 

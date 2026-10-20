@@ -240,7 +240,7 @@ def finalize_full_hand_tally_batch_results(
     jurisdiction: Jurisdiction,
     round: Round,
 ):
-    jurisdiction.finalized_full_hand_tally_results_at = datetime.now(timezone.utc)
+    jurisdiction.finalized_full_hand_tally_results_at = datetime.now(timezone.utc)  # ty: ignore[invalid-assignment]
 
     sum_results_by_choice = (
         FullHandTallyBatchResult.query.filter_by(jurisdiction_id=jurisdiction.id)
@@ -286,7 +286,7 @@ def unfinalize_full_hand_tally_batch_results(
     if round.ended_at is not None:
         raise Conflict("Results cannot be unfinalized after the audit round ends")
 
-    jurisdiction.finalized_full_hand_tally_results_at = None
+    jurisdiction.finalized_full_hand_tally_results_at = None  # ty: ignore[invalid-assignment]
 
     JurisdictionResult.query.filter_by(
         round_id=round.id,

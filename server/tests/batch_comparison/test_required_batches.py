@@ -152,7 +152,7 @@ REQUIRED_BATCHES_ORG = "TEST-ORG/required-batches"
 
 
 def batch_id_by_name(jurisdiction_id: str, name: str) -> str:
-    return Batch.query.filter_by(jurisdiction_id=jurisdiction_id, name=name).one().id
+    return Batch.query.filter_by(jurisdiction_id=jurisdiction_id, name=name).one().id  # ty: ignore[unsound-return-statement]
 
 
 def start_round_1(client: FlaskClient, election_id: str) -> str:
@@ -173,7 +173,7 @@ def start_round_1(client: FlaskClient, election_id: str) -> str:
     )
     assert_ok(rv)
     rv = client.get(f"/api/election/{election_id}/round")
-    return json.loads(rv.data)["rounds"][0]["id"]
+    return json.loads(rv.data)["rounds"][0]["id"]  # ty: ignore[unsound-return-statement]
 
 
 def get_sampled_batches(

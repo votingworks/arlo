@@ -41,9 +41,9 @@ def replace_combined_batches_with_representative_batches(
         combined_batch["representative_batch"] for combined_batch in combined_batches
     ]
     for representative_batch in representative_batches:
-        representative_batch.name = representative_batch.combined_batch_name
+        representative_batch.name = representative_batch.combined_batch_name  # ty: ignore[invalid-assignment]
 
-    return regular_batches + representative_batches
+    return regular_batches + representative_batches  # ty: ignore[unsound-return-statement]
 
 
 def already_audited_batches(jurisdiction: Jurisdiction, round: Round) -> Query:
@@ -54,7 +54,7 @@ def already_audited_batches(jurisdiction: Jurisdiction, round: Round) -> Query:
         .filter(Round.round_num < round.round_num)
         .with_entities(Batch.id)
         .subquery()
-    )
+    )  # ty: ignore[unsound-assignment]
     return query
 
 
@@ -113,7 +113,7 @@ def construct_batch_last_edited_by_string(batch: Batch) -> str | None:
     if batch.last_edited_by_support_user_email:
         return batch.last_edited_by_support_user_email
     if batch.last_edited_by_user:
-        return batch.last_edited_by_user.email
+        return batch.last_edited_by_user.email  # ty: ignore[unsound-return-statement]
     if batch.last_edited_by_tally_entry_user:
         member_1 = batch.last_edited_by_tally_entry_user.member_1
         member_2 = batch.last_edited_by_tally_entry_user.member_2
@@ -122,7 +122,7 @@ def construct_batch_last_edited_by_string(batch: Batch) -> str | None:
             members.append(member_1)
         if member_2 is not None:
             members.append(member_2)
-        return ", ".join(members)
+        return ", ".join(members)  # ty: ignore[unsound-return-statement]
     return None
 
 
@@ -414,7 +414,7 @@ def unfinalize_batch_results(
     jurisdiction: Jurisdiction,
     round: Round,
 ):
-    round = Round.query.with_for_update().get(round.id)
+    round = Round.query.with_for_update().get(round.id)  # ty: ignore[unsound-assignment]
     if round.ended_at is not None:
         raise Conflict("Results cannot be unfinalized after the audit round ends")
 

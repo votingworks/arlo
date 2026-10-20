@@ -354,7 +354,7 @@ def test_find_best_audit_simple():
     expected = raire_utils.NEBAssertion("Contest A", "winner", "loser")
 
     assert tree.best_assertion == expected
-    assert not tree.best_assertion.subsumes(expected)
+    assert not tree.best_assertion.subsumes(expected)  # ty: ignore[unresolved-attribute]
     assert not expected.subsumes(tree.best_assertion)
 
     assert tree.estimate == expected.difficulty

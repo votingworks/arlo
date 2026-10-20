@@ -110,8 +110,8 @@ def start_computing_sample_preview(election: Election):
         create_sample_preview_schema(AuditType(election.audit_type)),
     )
 
-    election.sample_preview = None
-    election.sample_preview_task = create_background_task(
+    election.sample_preview = None  # ty: ignore[invalid-assignment]
+    election.sample_preview_task = create_background_task(  # ty: ignore[invalid-assignment]
         compute_sample_preview,
         dict(election_id=election.id, sample_sizes=json_preview_args["sampleSizes"]),
     )

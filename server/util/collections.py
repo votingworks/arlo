@@ -6,7 +6,7 @@ T = TypeVar("T")
 
 
 def group_by_iter(items: Iterable[T], key=None):  # noqa: ANN001
-    return itertools.groupby(sorted(items, key=key), key=key)
+    return itertools.groupby(sorted(items, key=key), key=key)  # ty: ignore[no-matching-overload]
 
 
 # group_by groups items in a collection according to a key function.

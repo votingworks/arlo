@@ -23,7 +23,7 @@ meta = MetaData(
 
 @as_declarative(metadata=meta)
 class Base:
-    query: Query = db_session.query_property()
+    query: Query = db_session.query_property()  # ty: ignore[unsound-assignment]
 
     if TYPE_CHECKING:
         metadata: MetaData
@@ -34,7 +34,7 @@ class Base:
     def __tablename__(cls):
         # Convert CamelCase model name to snake_case table name
         # https://stackoverflow.com/a/1176023
-        return re.sub(r"(?<!^)(?=[A-Z])", "_", cls.__name__).lower()
+        return re.sub(r"(?<!^)(?=[A-Z])", "_", cls.__name__).lower()  # ty: ignore[unresolved-attribute]
 
 
 def init_db(engine=engine):  # noqa: ANN001

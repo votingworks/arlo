@@ -102,7 +102,7 @@ def assign_sampled_ballots(
     # start, so we add all the batches to the first bucket before balancing.
     buckets = [Bucket(audit_board.id) for audit_board in audit_boards]
     for batch_key, num_ballots in ballot_counts_by_batch:
-        buckets[0].add_batch(batch_key, num_ballots)
+        buckets[0].add_batch(batch_key, num_ballots)  # ty: ignore[invalid-argument-type]
     balanced_buckets = BalancedBucketList(buckets)
 
     # Set the audit board in the database for each bucket of ballots.
@@ -115,7 +115,7 @@ def assign_sampled_ballots(
                 batch_filter = dict(tabulator=tabulator, name=batch_name)
 
             db_session.execute(
-                SampledBallot.__table__.update()
+                SampledBallot.__table__.update()  # ty: ignore[unresolved-attribute]
                 .values(audit_board_id=bucket.name)
                 .where(
                     SampledBallot.batch_id.in_(
@@ -388,7 +388,7 @@ def sign_off_audit_board(
 ):
     validate_sign_off(safe_get_json_dict(request), audit_board)
 
-    audit_board.signed_off_at = datetime.now(timezone.utc)
+    audit_board.signed_off_at = datetime.now(timezone.utc)  # ty: ignore[invalid-assignment]
 
     assert audit_board.name
     record_activity(
@@ -426,7 +426,7 @@ def reopen_audit_board(
     if audit_board.signed_off_at is None:
         raise Conflict("Audit board has not signed off.")
 
-    audit_board.signed_off_at = None
+    audit_board.signed_off_at = None  # ty: ignore[invalid-assignment]
     db_session.commit()
 
     return jsonify(status="ok")

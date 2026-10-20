@@ -275,13 +275,13 @@ def validate_is_not_batch_inventory_worksheet(file: BinaryIO):
 def save_ballot_manifest_file(
     storage_path: str, file_name: str, jurisdiction: Jurisdiction
 ):
-    jurisdiction.manifest_file = File(
+    jurisdiction.manifest_file = File(  # ty: ignore[invalid-assignment]
         id=str(uuid.uuid4()),
         name=file_name,
         storage_path=storage_path,
         uploaded_at=datetime.now(timezone.utc),
     )
-    jurisdiction.manifest_file.task = create_background_task(
+    jurisdiction.manifest_file.task = create_background_task(  # ty: ignore[invalid-assignment]
         process_ballot_manifest_file,
         dict(
             election_id=jurisdiction.election_id,
@@ -293,8 +293,8 @@ def save_ballot_manifest_file(
 
 
 def clear_ballot_manifest_file(jurisdiction: Jurisdiction):
-    jurisdiction.manifest_num_ballots = None
-    jurisdiction.manifest_num_batches = None
+    jurisdiction.manifest_num_ballots = None  # ty: ignore[invalid-assignment]
+    jurisdiction.manifest_num_batches = None  # ty: ignore[invalid-assignment]
 
     if jurisdiction.manifest_file_id:
         File.query.filter_by(id=jurisdiction.manifest_file_id).delete()

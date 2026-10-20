@@ -443,7 +443,7 @@ def tally_entry_passphrase(passphrase: str):
 @allow_public_access  # Access control is implemented within the route
 def tally_entry_user_generate_code():
     _, user_key = get_loggedin_user(session)
-    tally_entry_user = get_or_404(TallyEntryUser, user_key)
+    tally_entry_user = get_or_404(TallyEntryUser, user_key)  # ty: ignore[invalid-argument-type]
 
     body = safe_get_json_dict(request)
     members = body.get("members", [])

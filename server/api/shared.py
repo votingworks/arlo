@@ -33,7 +33,7 @@ def get_current_round(election: Election) -> Round | None:
 def get_previous_round(election: Election, round: Round) -> Round | None:
     if round.round_num == 1:
         return None
-    return next(r for r in election.rounds if r.round_num == round.round_num - 1)
+    return next(r for r in election.rounds if r.round_num == round.round_num - 1)  # ty: ignore[unsound-return-statement]
 
 
 def contest_results_by_round(
@@ -555,7 +555,7 @@ def ballot_vote_deltas(
     if all(delta == 0 for delta in deltas.values()):
         return None
 
-    return deltas
+    return deltas  # ty: ignore[unsound-return-statement]
 
 
 def batch_vote_deltas(

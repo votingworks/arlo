@@ -82,7 +82,7 @@ def is_round_ready_to_finish(election: Election, round: Round) -> bool:
             )
             .with_entities(Jurisdiction.id)
             .count()
-        )
+        )  # ty: ignore[unsound-assignment]
         return num_jurisdictions_not_finalized == 0
 
     # For online audits, check that all the audit boards are finished auditing
@@ -109,13 +109,13 @@ def is_round_ready_to_finish(election: Election, round: Round) -> bool:
             # Finally, count how many jurisdictions have no audit boards set up.
             .having(func.count(AuditBoard.id) == 0)
             .count()
-        )
+        )  # ty: ignore[unsound-assignment]
         num_audit_boards_with_ballots_not_signed_off: int = (
             AuditBoard.query.filter_by(round_id=round.id, signed_off_at=None)
             .join(SampledBallot)
             .group_by(AuditBoard.id)
             .count()
-        )
+        )  # ty: ignore[unsound-assignment]
         return (
             num_jurisdictions_without_audit_boards_set_up == 0
             and num_audit_boards_with_ballots_not_signed_off == 0
@@ -142,7 +142,7 @@ def is_round_ready_to_finish(election: Election, round: Round) -> bool:
                 .group_by(Jurisdiction.id, Contest.id)
                 .having(func.count(JurisdictionResult.result) == 0)
                 .count()
-            )
+            )  # ty: ignore[unsound-assignment]
         else:
             num_jurisdictions_without_results = (
                 # For each jurisdiction...
@@ -168,8 +168,8 @@ def is_round_ready_to_finish(election: Election, round: Round) -> bool:
                 .group_by(Jurisdiction.id, Contest.id)
                 .having(func.count(JurisdictionResult.result) == 0)
                 .count()
-            )
-        return num_jurisdictions_without_results == 0
+            )  # ty: ignore[unsound-assignment]
+        return num_jurisdictions_without_results == 0  # ty: ignore[unsound-return-statement]
 
 
 def is_audit_complete(round: Round | None):
@@ -389,7 +389,7 @@ def draw_sample_ballots(
             sample_draw["batch_id"],
             sample_draw["ballot_position"],
         ),
-    )
+    )  # ty: ignore[unsound-assignment]
 
     # Record which ballots are sampled in the db.
     # Note that a ballot may be sampled more than once (within a round or
@@ -600,7 +600,7 @@ def create_round(election: Election):
     )
 
     # Create RoundContest objects to include the contests in this round
-    round.round_contests = [
+    round.round_contests = [  # ty: ignore[invalid-assignment]
         RoundContest(
             round=round,
             contest=contest,
@@ -610,7 +610,7 @@ def create_round(election: Election):
     ]
 
     # Create a new task to draw the sample in the background.
-    round.draw_sample_task = create_background_task(
+    round.draw_sample_task = create_background_task(  # ty: ignore[invalid-assignment]
         draw_sample,
         dict(election_id=election.id, round_id=round.id),
     )
@@ -641,7 +641,7 @@ def finish_round(election: Election):
 
     count_audited_votes(election, current_round)
     calculate_risk_measurements(election, current_round)
-    current_round.ended_at = datetime.now(timezone.utc)
+    current_round.ended_at = datetime.now(timezone.utc)  # ty: ignore[invalid-assignment]
 
     db_session.flush()  # Ensure round contest results are queryable by is_audit_complete
     record_activity(
