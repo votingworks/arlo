@@ -370,7 +370,7 @@ exports[`full hand tally data entry > finalizes full hand tally results 1`] = `
       </p>
       <div
         class="bp3-callout bp3-intent-success bp3-callout-icon"
-        style="margin: 20px 0px 20px 0px;"
+        style="margin: 20px 0px;"
       >
         <span
           class="bp3-icon bp3-icon-tick-circle"

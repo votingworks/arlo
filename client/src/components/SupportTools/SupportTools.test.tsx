@@ -432,14 +432,16 @@ describe('Support Tools', () => {
       await screen.findByRole('heading', { name: 'Organization 1' })
 
       screen.getByRole('heading', { name: 'Audits' })
-      screen.getByRole('link', { name: 'Audit 2 Round 1 In Progress' })
-      screen.getByRole('link', { name: 'Audit 4 Completed' })
-      screen.getByRole('link', { name: 'Audit 1 Not Started' })
+      screen.getByRole('link', { name: /^Audit 2\s*Round 1 In Progress$/ })
+      screen.getByRole('link', { name: /^Audit 4\s*Completed$/ })
+      screen.getByRole('link', { name: /^Audit 1\s*Not Started$/ })
 
       screen.getByRole('heading', { name: 'Deleted Audits' })
       screen.getByRole('row', { name: /Audit 3/ })
 
-      userEvent.click(screen.getByRole('link', { name: 'Audit 1 Not Started' }))
+      userEvent.click(
+        screen.getByRole('link', { name: /^Audit 1\s*Not Started$/ })
+      )
       await screen.findByRole('heading', { name: 'Audit 1' })
       expect(history.location.pathname).toEqual('/support/audits/election-id-1')
     })
@@ -766,7 +768,7 @@ describe('Support Tools', () => {
 
       await screen.findByRole('heading', { name: 'Organization 1' })
 
-      userEvent.click(screen.getByRole('button', { name: 'delete Delete' }))
+      userEvent.click(screen.getByRole('button', { name: /^delete\s*Delete$/ }))
 
       // Confirm dialog should open
       const dialog = (
@@ -800,7 +802,7 @@ describe('Support Tools', () => {
 
       await screen.findByRole('heading', { name: 'Organization 1' })
 
-      userEvent.click(screen.getByRole('button', { name: 'delete Delete' }))
+      userEvent.click(screen.getByRole('button', { name: /^delete\s*Delete$/ }))
 
       // Confirm dialog should open
       const dialog = (
@@ -844,7 +846,7 @@ describe('Support Tools', () => {
 
       userEvent.click(
         screen.getByRole('button', {
-          name: 'archive View Archived Organizations',
+          name: /^archive\s*View Archived Organizations$/,
         })
       )
 
@@ -873,7 +875,9 @@ describe('Support Tools', () => {
       await screen.findByRole('heading', { name: 'Organization 1' })
       expect(screen.queryByText('Archived')).not.toBeInTheDocument()
 
-      userEvent.click(screen.getByRole('button', { name: 'archive Archive' }))
+      userEvent.click(
+        screen.getByRole('button', { name: /^archive\s*Archive$/ })
+      )
 
       // Confirm dialog should open
       const dialog = (
@@ -890,7 +894,7 @@ describe('Support Tools', () => {
       await findAndCloseToast('Archived organization Organization 1')
 
       await screen.findByText('Archived')
-      screen.getByRole('button', { name: 'unarchive Unarchive' })
+      screen.getByRole('button', { name: /^unarchive\s*Unarchive$/ })
     })
   })
 
@@ -911,7 +915,7 @@ describe('Support Tools', () => {
       screen.getByText('Archived')
 
       userEvent.click(
-        screen.getByRole('button', { name: 'unarchive Unarchive' })
+        screen.getByRole('button', { name: /^unarchive\s*Unarchive$/ })
       )
 
       // Confirm dialog should open
@@ -930,7 +934,7 @@ describe('Support Tools', () => {
       await waitFor(() =>
         expect(screen.queryByText('Archived')).not.toBeInTheDocument()
       )
-      screen.getByRole('button', { name: 'archive Archive' })
+      screen.getByRole('button', { name: /^archive\s*Archive$/ })
     })
   })
 
@@ -945,7 +949,9 @@ describe('Support Tools', () => {
 
       await screen.findByRole('heading', { name: 'Organization 1' })
 
-      userEvent.click(screen.getByRole('button', { name: 'archive Archive' }))
+      userEvent.click(
+        screen.getByRole('button', { name: /^archive\s*Archive$/ })
+      )
 
       const dialog = (
         await screen.findByRole('heading', {
