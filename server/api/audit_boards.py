@@ -242,7 +242,7 @@ def serialize_audit_board(audit_board: AuditBoard, round_status: JSONDict) -> JS
     }
 
 
-def serialize_members(audit_board):
+def serialize_members(audit_board):  # noqa: ANN001
     members = []
 
     for i in range(0, 2):

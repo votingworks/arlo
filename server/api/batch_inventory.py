@@ -108,11 +108,11 @@ class ElectionResults(TypedDict):
     batch_tallies: dict[BatchKey, dict[str, int]]
 
 
-def dict_to_items_list(dictionary):
+def dict_to_items_list(dictionary):  # noqa: ANN001
     return [dict(key=key, value=value) for key, value in dictionary.items()]
 
 
-def items_list_to_dict(items):
+def items_list_to_dict(items):  # noqa: ANN001
     return {
         (tuple(item["key"]) if isinstance(item["key"], list) else item["key"]): item[
             "value"

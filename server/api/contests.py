@@ -360,7 +360,7 @@ def should_reprocess_batch_tallies(
     if len(previous_contests) != len(new_contests):
         return True
 
-    def normalize_contest(contest):
+    def normalize_contest(contest):  # noqa: ANN001
         contest = contest.copy()
         # This field isn't sent from the client, its computed on the backend, so
         # new_contests won't have it
@@ -539,7 +539,7 @@ def put_contest_name_standardizations(election: Election):
 @api.route("/election/<election_id>/contest/standardizations", methods=["GET"])
 @restrict_access([UserType.AUDIT_ADMIN])
 def get_contest_name_standardizations(election: Election):
-    def standardizations(jurisdiction):
+    def standardizations(jurisdiction):  # noqa: ANN001
         if jurisdiction.cvr_contests_metadata is None:
             return None
         contests_needing_standardization = [
@@ -618,7 +618,7 @@ def put_contest_choice_name_standardizations(election: Election):  # pragma: no 
 )
 @restrict_access([UserType.AUDIT_ADMIN])
 def get_contest_choice_name_standardizations(election: Election):  # pragma: no cover
-    def get_standardizations_for_jurisdiction_and_contest(jurisdiction, contest):
+    def get_standardizations_for_jurisdiction_and_contest(jurisdiction, contest):  # noqa: ANN001
         # Get metadata with contest name standardizations applied but not contest choice name
         # standardizations applied
         metadata = cvrs.cvr_contests_metadata(

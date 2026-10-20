@@ -36,7 +36,7 @@ def validate_all_manifests_uploaded(contest: Contest):
         raise UserError("Some jurisdictions haven't uploaded their manifests yet")
 
 
-def validate_batch_tallies(contest):
+def validate_batch_tallies(contest):  # noqa: ANN001
     total_votes_by_choice: dict[str, int] = defaultdict(int)
     for jurisdiction in contest.jurisdictions:
         batch_tallies = typing_cast(BatchTallies, jurisdiction.batch_tallies)
@@ -246,7 +246,7 @@ def autoselect_sample_size(options: dict[str, SampleSizeOption], audit_type: Aud
         return options["suite"]
 
 
-def serialize_sample_size_options(sample_size_options):
+def serialize_sample_size_options(sample_size_options):  # noqa: ANN001
     if sample_size_options is None:
         return None
     return {

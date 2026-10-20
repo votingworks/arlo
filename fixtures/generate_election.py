@@ -98,7 +98,7 @@ def generate_contest_votes(
         yield {choice_name: 0 for choice_name in choice_names}
 
 
-def safe_dict(*args):
+def safe_dict(*args):  # noqa: ANN002
     return dict(filter(lambda x: x is not None, *args))
 
 

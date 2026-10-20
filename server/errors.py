@@ -13,7 +13,7 @@ from .app import app
 
 
 @app.errorhandler(ValidationError)
-def handle_validation_error(error):
+def handle_validation_error(error):  # noqa: ANN001
     return (
         jsonify(errors=[{"message": error.message, "errorType": "Bad Request"}]),
         BadRequest.code,
@@ -21,7 +21,7 @@ def handle_validation_error(error):
 
 
 @app.errorhandler(BadRequest)
-def handle_400(error):
+def handle_400(error):  # noqa: ANN001
     return (
         jsonify(errors=[{"message": error.description, "errorType": "Bad Request"}]),
         BadRequest.code,
@@ -29,7 +29,7 @@ def handle_400(error):
 
 
 @app.errorhandler(Unauthorized)
-def handle_401(error):
+def handle_401(error):  # noqa: ANN001
     return (
         jsonify(errors=[{"message": error.description, "errorType": "Unauthorized"}]),
         Unauthorized.code,
@@ -37,7 +37,7 @@ def handle_401(error):
 
 
 @app.errorhandler(Conflict)
-def handle_409(error):
+def handle_409(error):  # noqa: ANN001
     return (
         jsonify(errors=[{"message": error.description, "errorType": "Conflict"}]),
         Conflict.code,
@@ -45,7 +45,7 @@ def handle_409(error):
 
 
 @app.errorhandler(Forbidden)
-def handle_403(error):
+def handle_403(error):  # noqa: ANN001
     return (
         jsonify(errors=[{"message": error.description, "errorType": "Forbidden"}]),
         Forbidden.code,
@@ -53,7 +53,7 @@ def handle_403(error):
 
 
 @app.errorhandler(RequestEntityTooLarge)
-def handle_413(error):
+def handle_413(error):  # noqa: ANN001
     max_size_gb = round(app.config["MAX_CONTENT_LENGTH"] / 1024**3, 2)
     return (
         jsonify(
@@ -69,7 +69,7 @@ def handle_413(error):
 
 
 @app.errorhandler(InternalServerError)
-def handle_500(error):
+def handle_500(error):  # noqa: ANN001
     original = getattr(error, "original_exception", None)
 
     if original is None:

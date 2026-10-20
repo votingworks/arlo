@@ -37,7 +37,7 @@ class Base:
         return re.sub(r"(?<!^)(?=[A-Z])", "_", cls.__name__).lower()
 
 
-def init_db(engine=engine):
+def init_db(engine=engine):  # noqa: ANN001
     import server.models  # noqa: F401
 
     Base.metadata.create_all(bind=engine)

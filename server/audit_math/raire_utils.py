@@ -124,7 +124,7 @@ class RaireAssertion:
             loser, and 0 otherwise.
         """
 
-    def subsumes(self, other):
+    def subsumes(self, other):  # noqa: ANN001
         """
         Returns true if this assertion 'subsumes' the input assertion 'other'.
         An assertion 'A' subsumes assertion 'B' if the alternate outcomes
@@ -139,17 +139,17 @@ class RaireAssertion:
         """
 
     @override
-    def __eq__(self, other):
+    def __eq__(self, other):  # noqa: ANN001
         """
         Returns True if this assertion is equal to 'other' (i.e., they
         are the same assertion), and False otherwise.
         """
 
     # Assertions are ordered from greatest to least difficulty.
-    def __lt__(self, other):
+    def __lt__(self, other):  # noqa: ANN001
         return self.difficulty > other.difficulty
 
-    def __gt__(self, other):
+    def __gt__(self, other):  # noqa: ANN001
         return self.difficulty < other.difficulty
 
     @override
@@ -228,7 +228,7 @@ class NEBAssertion(RaireAssertion):
         return False
 
     @override
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other) -> bool:  # noqa: ANN001
         return (
             isinstance(other, NEBAssertion)
             and self.contest == other.contest
@@ -298,7 +298,7 @@ class NENAssertion(RaireAssertion):
         return False
 
     @override
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other) -> bool:  # noqa: ANN001
         return (
             isinstance(other, NENAssertion)
             and self.contest == other.contest
@@ -361,7 +361,7 @@ class RaireNode:
         return self.tail[len1 - len2 :] == node.tail
 
     @override
-    def __eq__(self, other):
+    def __eq__(self, other):  # noqa: ANN001
         return (
             self.estimate == other.estimate
             and self.best_assertion == other.best_assertion
@@ -423,7 +423,7 @@ class RaireFrontier:
         self.insert_node(node)
 
     @override
-    def __eq__(self, other):
+    def __eq__(self, other):  # noqa: ANN001
         return self.nodes == other.nodes
 
     @override
@@ -434,7 +434,7 @@ class RaireFrontier:
 def find_best_audit(
     contest: Contest,
     ballots: list[dict[str, int]],
-    neb_matrix,
+    neb_matrix,  # noqa: ANN001
     node: RaireNode,
     asn_func: Callable[[float], float],
 ):
@@ -533,7 +533,7 @@ def perform_dive(
     node: RaireNode,
     contest: Contest,
     ballots: list[dict[str, int]],
-    neb_matrix,
+    neb_matrix,  # noqa: ANN001
     asn_func: Callable[[float], float],
 ):
     """

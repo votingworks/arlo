@@ -43,7 +43,7 @@ from .shared import group_combined_batches
 AUTH0_DOMAIN = urlparse(AUDITADMIN_AUTH0_BASE_URL).hostname
 
 
-def get_current_round_info(election):
+def get_current_round_info(election):  # noqa: ANN001
     current_round = get_current_round(election)
     if not current_round:
         return None
@@ -657,7 +657,7 @@ def list_jurisdiction_batches(jurisdiction_id: str):
         [batch for batch in jurisdiction.batches if batch.combined_batch_name]
     )
 
-    def serialize_batch(batch):
+    def serialize_batch(batch):  # noqa: ANN001
         return dict(
             id=batch.id,
             name=batch.name,

@@ -41,7 +41,10 @@ _LAST_REQUEST_AT = "_last_request_at"
 
 
 def set_loggedin_user(
-    session, user_type: UserType, user_key: str, from_support_user: bool = False
+    session,  # noqa: ANN001
+    user_type: UserType,
+    user_key: str,
+    from_support_user: bool = False,
 ):
     session[_USER] = {"type": user_type, "key": user_key}
     # We don't want to set the created time when a support user logs in as
@@ -51,17 +54,17 @@ def set_loggedin_user(
     session[_LAST_REQUEST_AT] = datetime.now(timezone.utc).isoformat()
 
 
-def get_loggedin_user(session) -> tuple[UserType, str] | tuple[None, None]:
+def get_loggedin_user(session) -> tuple[UserType, str] | tuple[None, None]:  # noqa: ANN001
     check_session_expiration(session)
     user = session.get(_USER, None)
     return (user["type"], user["key"]) if user else (None, None)
 
 
-def clear_loggedin_user(session):
+def clear_loggedin_user(session):  # noqa: ANN001
     session[_USER] = None
 
 
-def check_session_expiration(session):
+def check_session_expiration(session):  # noqa: ANN001
     if (
         _CREATED_AT not in session
         or _LAST_REQUEST_AT not in session
@@ -177,7 +180,7 @@ def restrict_access(
 
     def restrict_access_decorator(route: Callable[..., T]) -> Callable[..., T]:
         @functools.wraps(route)
-        def wrapper(*args, **kwargs):
+        def wrapper(*args, **kwargs):  # noqa: ANN002, ANN003
             if "jurisdiction_id" in kwargs and "election_id" not in kwargs:
                 raise Exception(
                     "election_id required in route params"
@@ -247,7 +250,7 @@ def restrict_access_support(route: Callable[..., T]) -> Callable[..., T]:
     """
 
     @functools.wraps(route)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs):  # noqa: ANN002, ANN003
         if not get_support_user(session):
             raise Forbidden(description="requires support privileges")
 
@@ -264,7 +267,7 @@ def allow_public_access(route: Callable[..., T]) -> Callable[..., T]:
     """
 
     @functools.wraps(route)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs):  # noqa: ANN002, ANN003
         return route(*args, **kwargs)
 
     wrapper.has_access_control = True
@@ -278,7 +281,7 @@ def allow_any_logged_in_user_access(route: Callable[..., T]) -> Callable[..., T]
     """
 
     @functools.wraps(route)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs):  # noqa: ANN002, ANN003
         _, user_key = get_loggedin_user(session)
         if not user_key:
             raise Unauthorized("Please log in to access Arlo")

@@ -18,7 +18,7 @@ if __name__ == "__main__":
     writer = csv.writer(sys.stdout)
     writer.writerow(["Jurisdiction", "CVR File", "Tabulator Status File", "Signed Off"])
 
-    def file_status(file):
+    def file_status(file):  # noqa: ANN001
         if not file:
             return "NOT_UPLOADED"
         status = serialize_file_processing(file)["status"]

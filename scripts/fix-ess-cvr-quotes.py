@@ -4,7 +4,7 @@ import re
 
 # Splits a string based on a separator pattern containing capture groups. Then
 # attaches the captured separator back onto the previous portion of the string.
-def split_attach_sep(pattern, str):
+def split_attach_sep(pattern, str):  # noqa: ANN001
     split = re.split(pattern, str)
     return ["".join(split[i : i + 2]) for i in range(0, len(split), 2)]
 

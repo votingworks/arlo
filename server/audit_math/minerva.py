@@ -22,7 +22,7 @@ from .ballot_polling_types import (
 from ..config import MINERVA_MULTIPLE
 
 
-def make_arlo_contest(tally, num_winners=1, votes_allowed=1):
+def make_arlo_contest(tally, num_winners=1, votes_allowed=1):  # noqa: ANN001
     """Return an Arlo Contest with the given tally (a dictionary of candidate_name:vote_counts)
     Treat "_undervote_" candidate as undervotes
     For testing purposes.
@@ -57,7 +57,7 @@ def make_sample_results(
     return sample_results
 
 
-def make_athena_audit(arlo_contest, alpha):
+def make_athena_audit(arlo_contest, alpha):  # noqa: ANN001
     """Make an Athena audit object, with associated contest and election, from an Arlo contest
 
     >>> c3 = make_arlo_contest({"a": 600, "b": 400, "c": 100, "_undervote_": 100})

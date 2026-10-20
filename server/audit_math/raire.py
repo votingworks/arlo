@@ -17,7 +17,7 @@ from .raire_utils import (
 NEBMatrix = dict[str, dict[str, NEBAssertion | None]]
 
 
-def make_neb_matrix(contest: Contest, cvrs: CVRS, asn_func) -> NEBMatrix:
+def make_neb_matrix(contest: Contest, cvrs: CVRS, asn_func) -> NEBMatrix:  # noqa: ANN001
     """
     Builds the NEB matrix for use by find_best_audit.
 
@@ -59,7 +59,7 @@ def make_frontier(
     contest: Contest,
     ballots: list[dict[str, int]],
     nebs: NEBMatrix,
-    asn_func,
+    asn_func,  # noqa: ANN001
 ) -> RaireFrontier:
     """
     Constructs the frontier for the search for the best audit

@@ -132,7 +132,8 @@ def are_uploaded_cvrs_valid(contest: Contest):
 # metadata, so that contest and choice names from CVR files will match those
 # provided by the AA.
 def cvr_contests_metadata(
-    jurisdiction: Jurisdiction, should_standardize_contest_choice_names=True
+    jurisdiction: Jurisdiction,
+    should_standardize_contest_choice_names=True,  # noqa: ANN001
 ) -> CVR_CONTESTS_METADATA | None:
     metadata = typing_cast(
         CVR_CONTESTS_METADATA | None, jurisdiction.cvr_contests_metadata
@@ -1304,7 +1305,7 @@ def process_cvr_file(
     jurisdiction_id: str,
     jurisdiction_admin_email: str,
     support_user_email: str | None,
-    emit_progress,
+    emit_progress,  # noqa: ANN001
 ):
     jurisdiction = Jurisdiction.query.get(jurisdiction_id)
 

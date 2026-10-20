@@ -44,7 +44,7 @@ def create_background_task(
     task_handler: Callable[..., Any],
     payload: JSONDict,
     # Use the global db_session by default, but allow it to be overridden for testing.
-    db_session=db_session,
+    db_session=db_session,  # noqa: ANN001
 ) -> BackgroundTask:
     assert task_handler.__name__ in task_dispatch, (
         f"No task handler registered for {task_handler.__name__}."
@@ -100,7 +100,7 @@ def emit_progress_for_task(task_id: str):
     return emit_progress
 
 
-def run_task(task: BackgroundTask, db_session):
+def run_task(task: BackgroundTask, db_session):  # noqa: ANN001
     task_handler = task_dispatch.get(task.task_name)
     assert task_handler, (
         f"No task handler registered for {task.task_name}."
@@ -151,7 +151,7 @@ def run_task(task: BackgroundTask, db_session):
             sentry_sdk.capture_exception(error)
 
 
-def claim_next_task(worker_id: str, db_session) -> BackgroundTask | None:
+def claim_next_task(worker_id: str, db_session) -> BackgroundTask | None:  # noqa: ANN001
     # Use SELECT ... FOR UPDATE to lock all queued tasks, ensuring that only a
     # single worker can claim a single task at a time. This ensures that we get
     # an accurate view of which tasks are available to claim. If another worker has
@@ -215,7 +215,7 @@ def claim_next_task(worker_id: str, db_session) -> BackgroundTask | None:
     return task
 
 
-def reset_task(task: BackgroundTask, db_session):
+def reset_task(task: BackgroundTask, db_session):  # noqa: ANN001
     # If a task got interrupted during processing, rollback any database changes
     # it made so far.
     db_session.rollback()
@@ -233,7 +233,7 @@ def reset_task(task: BackgroundTask, db_session):
     db_session.commit()
 
 
-def reset_worker_tasks(worker_id: str, db_session):
+def reset_worker_tasks(worker_id: str, db_session):  # noqa: ANN001
     db_session.rollback()
     in_progress_tasks = (
         db_session.query(BackgroundTask)

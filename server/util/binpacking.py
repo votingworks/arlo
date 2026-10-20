@@ -153,7 +153,7 @@ class BalancedBucketList:
     avg_size: float
     buckets: list[Bucket]
 
-    def __init__(self, buckets):
+    def __init__(self, buckets):  # noqa: ANN001
         """
         Assign all batches that are bigger than the average size to buckets,
         minimizing the amount of size deviation from the average.

@@ -16,8 +16,8 @@ from . import config
 
 
 class ArloSession(CallbackDict[str, Any], SessionMixin):
-    def __init__(self, sid=None, initial=None):
-        def on_update(self):
+    def __init__(self, sid=None, initial=None):  # noqa: ANN001
+        def on_update(self):  # noqa: ANN001
             self.modified = True
 
         CallbackDict.__init__(self, initial, on_update)
@@ -44,7 +44,7 @@ class ArloSessionInterface(SessionInterface):
             return ArloSession(sid=self._generate_sid())
 
     @override
-    def save_session(self, app, session, response):
+    def save_session(self, app, session, response):  # noqa: ANN001
         if not session.modified:
             return
 
@@ -92,7 +92,7 @@ class ArloSessionInterface(SessionInterface):
         )
 
 
-def cleanup_sessions(db_session):
+def cleanup_sessions(db_session):  # noqa: ANN001
     """
     Because we keep session freshness information in fields embedded inside the data column,
     the only marker in the database that we can safely and cleanly use to clean up a session is the updated_at field.

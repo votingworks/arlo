@@ -77,7 +77,7 @@ auth0_aa = oauth.register(
 )
 
 
-def serialize_election(election):
+def serialize_election(election):  # noqa: ANN001
     return {
         "id": election.id,
         "auditName": election.audit_name,
@@ -573,7 +573,7 @@ def tally_entry_jurisdiction_reject_request(
 
 
 @auth.errorhandler(OAuthError)
-def handle_oauth_error(error):
+def handle_oauth_error(error):  # noqa: ANN001
     # If Auth0 sends an error to one of the callbacks, we want to redirect the
     # user to the login screen and display the error.
     return redirect(

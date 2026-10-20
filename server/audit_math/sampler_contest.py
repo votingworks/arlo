@@ -8,7 +8,7 @@ from typing import Any, TypedDict
 from typing_extensions import override
 
 
-def from_db_contest(db_contest):
+def from_db_contest(db_contest):  # noqa: ANN001
     """
     Builds sampler_contest object from the database
 

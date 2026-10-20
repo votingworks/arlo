@@ -123,7 +123,7 @@ class BallotPollingStratum:
             + np.sum(np.log(v_u - np.arange(n_u)))
         )
 
-        def null_logLR(Nw):
+        def null_logLR(Nw):  # noqa: ANN001
             return (
                 (n_w > 0) * np.sum(np.log(Nw - np.arange(n_w)))
                 + (n_l > 0) * np.sum(np.log(Nw - null_margin - np.arange(n_l)))
@@ -141,7 +141,7 @@ class BallotPollingStratum:
         if upper_n_w_limit < n_w or (upper_n_w_limit - null_margin) < n_l:
             return 0
 
-        def LR_derivative(Nw):
+        def LR_derivative(Nw):  # noqa: ANN001
             return (
                 np.sum([1 / (Nw - i) for i in range(n_w)])
                 + np.sum([1 / (Nw - null_margin - i) for i in range(n_l)])
@@ -226,7 +226,7 @@ class BallotComparisonStratum:
         self.misstatements = misstatements
         self.sample_size = sample_size
 
-    def compute_pvalue(self, reported_margin, winner, loser, null_lambda) -> float:
+    def compute_pvalue(self, reported_margin, winner, loser, null_lambda) -> float:  # noqa: ANN001
         """
         Compute a p-value for a winner-loser pair for this strata based on its math type.
 
@@ -344,7 +344,7 @@ def maximize_fisher_combined_pvalue(
     assert Ln >= 0, f"{Wn, Ln, Un}"
     assert Un >= 0, f"{Wn, Ln, Un}"
 
-    def T2(delta):
+    def T2(delta):  # noqa: ANN001
         return (
             2
             * cvr_stratum.sample_size
@@ -353,7 +353,7 @@ def maximize_fisher_combined_pvalue(
             )
         )
 
-    def modulus(delta):
+    def modulus(delta):  # noqa: ANN001
         return (
             2 * Wn * np.log(1 + reported_margin * delta)
             + 2 * Ln * np.log(1 + reported_margin * delta)
@@ -690,7 +690,10 @@ def get_sample_size(
 
 
 def compute_risk(
-    risk_limit: int, contest: Contest, bp_stratum, cvr_stratum
+    risk_limit: int,
+    contest: Contest,
+    bp_stratum,  # noqa: ANN001
+    cvr_stratum,  # noqa: ANN001
 ) -> tuple[float, bool]:
     """
     Computes a risk measurement for a given sample, using fisher's combining

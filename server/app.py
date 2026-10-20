@@ -63,7 +63,7 @@ from . import errors  # noqa: E402, F401
 
 
 @app.teardown_appcontext
-def shutdown_session(exception=None):
+def shutdown_session(exception=None):  # noqa: ANN001
     db_session.remove()
 
 

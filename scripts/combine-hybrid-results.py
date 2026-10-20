@@ -10,7 +10,7 @@ from server.audit_math import sampler_contest, suite
 from server.models import *
 
 
-def ballot_comparison_stratum(contest):
+def ballot_comparison_stratum(contest):  # noqa: ANN001
     # for type check
     assert contest.total_ballots_cast
 
@@ -32,7 +32,7 @@ def ballot_comparison_stratum(contest):
     )
 
 
-def ballot_polling_stratum(contest, remap):
+def ballot_polling_stratum(contest, remap):  # noqa: ANN001
     # for type checker
     assert contest.total_ballots_cast
 
@@ -60,7 +60,7 @@ def ballot_polling_stratum(contest, remap):
     )
 
 
-def combined_contests(cvr_contest, bp_contest, remap):
+def combined_contests(cvr_contest, bp_contest, remap):  # noqa: ANN001
     contest_info_dict = {}
 
     cvr_candidates = cvr_contest.candidates

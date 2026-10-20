@@ -328,7 +328,7 @@ def expected_prob(
     return round(float(stats.norm.cdf(float(-z))), 2)
 
 
-def compute_cumulative_sample(sample_results):
+def compute_cumulative_sample(sample_results):  # noqa: ANN001
     """
     Computes a cumulative sample given a round-by-round sample
     """

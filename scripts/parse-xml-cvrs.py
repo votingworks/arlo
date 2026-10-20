@@ -17,24 +17,24 @@ from server.api.cvrs import parse_scanned_ballot_information_file
 ns = "http://tempuri.org/CVRDesign.xsd"
 
 
-def find(xml, tag):
+def find(xml, tag):  # noqa: ANN001
     return xml.find(tag, namespaces={"": ns})
 
 
-def findall(xml, tag):
+def findall(xml, tag):  # noqa: ANN001
     return xml.findall(tag, namespaces={"": ns})
 
 
 NUM_CAST = "# Number of Votes Cast in Contest"
 
 
-def get_directory_name(file_path):
+def get_directory_name(file_path):  # noqa: ANN001
     directory_path = os.path.dirname(file_path)
     directory_name = os.path.basename(directory_path)
     return directory_name
 
 
-def parse_scanned_ballot_file(file_path, cvr_workstation_mapping):
+def parse_scanned_ballot_file(file_path, cvr_workstation_mapping):  # noqa: ANN001
     with open(file_path, "rb") as ballots_file:
         rows = parse_scanned_ballot_information_file(ballots_file)
 
@@ -47,9 +47,9 @@ def parse_scanned_ballot_file(file_path, cvr_workstation_mapping):
 
 
 def parse_cvr_file(
-    file_path,
-    use_directory_name_as_tabulator=False,
-    include_votes_cast_per_contest=False,
+    file_path,  # noqa: ANN001
+    use_directory_name_as_tabulator=False,  # noqa: ANN001
+    include_votes_cast_per_contest=False,  # noqa: ANN001
 ):
     xml = parse_xml(file_path).getroot()
     assert xml.tag == f"{{{ns}}}Cvr"

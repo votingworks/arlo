@@ -4,7 +4,7 @@ from server.database import db_session
 from server.util.file import retrieve_file, store_file, timestamp_filename
 
 
-def migrate_file(file, path):
+def migrate_file(file, path):  # noqa: ANN001
     contents = file.contents.encode("utf-8")
     if not file.storage_path:
         storage_path = store_file(io.BytesIO(contents), path)

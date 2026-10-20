@@ -147,7 +147,8 @@ def combined_batch_keys(election_id: str) -> list[set[sampler.BatchKey]]:
 
 
 def sampled_batch_results(
-    contest: Contest, include_non_rla_batches=False
+    contest: Contest,
+    include_non_rla_batches=False,  # noqa: ANN001
 ) -> BatchTallies:
     results_by_batch_and_choice = (
         Batch.query.filter(
@@ -764,7 +765,8 @@ def compute_extra_batches_for_round(
             min_percentage_of_jurisdiction_ballots_selected = 0.02
 
             def compute_percentage_of_jurisdiction_ballots_selected(
-                selected_batch_keys, num_jurisdiction_ballots
+                selected_batch_keys,  # noqa: ANN001
+                num_jurisdiction_ballots,  # noqa: ANN001
             ):
                 num_jurisdiction_ballots_selected = sum(
                     batch_key_to_num_ballots[batch_key]

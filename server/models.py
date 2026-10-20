@@ -73,7 +73,7 @@ class UTCDateTime(TypeDecorator):
 
     # Ensure UTC timezone on write
     @override
-    def process_bind_param(self, value, dialect):
+    def process_bind_param(self, value, dialect):  # noqa: ANN001
         if value:
             assert value.tzinfo == timezone.utc, (
                 "All datetimes must have UTC timezone - use datetime.now(timezone.utc)"
@@ -82,7 +82,7 @@ class UTCDateTime(TypeDecorator):
 
     # Repopulate UTC timezone on read
     @override
-    def process_result_value(self, value, dialect):
+    def process_result_value(self, value, dialect):  # noqa: ANN001
         return value and value.replace(tzinfo=timezone.utc)
 
 
@@ -360,7 +360,7 @@ class User(BaseModel):
     login_code_attempts = Column(Integer)
 
     @validates("email")
-    def lowercase_email(self, _key, email):
+    def lowercase_email(self, _key, email):  # noqa: ANN001
         return email.lower()
 
 
