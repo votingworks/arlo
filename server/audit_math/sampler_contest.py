@@ -5,6 +5,7 @@ computations.
 
 import operator
 from typing import Any, TypedDict
+from typing_extensions import override
 
 
 def from_db_contest(db_contest):
@@ -177,6 +178,7 @@ class Contest:
         else:
             self.diluted_margin = -1.0
 
+    @override
     def __repr__(self) -> str:
         """
         Generates a string representation of this object, for debugging.

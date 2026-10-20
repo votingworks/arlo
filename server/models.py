@@ -2,6 +2,7 @@ import enum
 from typing import Type
 from datetime import datetime as dt, timezone
 from werkzeug.exceptions import NotFound
+from typing_extensions import override
 import sqlalchemy
 from sqlalchemy import (
     Table,
@@ -71,6 +72,7 @@ class UTCDateTime(TypeDecorator):
     impl = DateTime
 
     # Ensure UTC timezone on write
+    @override
     def process_bind_param(self, value, dialect):
         if value:
             assert value.tzinfo == timezone.utc, (
@@ -79,6 +81,7 @@ class UTCDateTime(TypeDecorator):
         return value
 
     # Repopulate UTC timezone on read
+    @override
     def process_result_value(self, value, dialect):
         return value and value.replace(tzinfo=timezone.utc)
 

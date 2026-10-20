@@ -1,6 +1,7 @@
 from typing import cast
 import operator
 import numpy
+from typing_extensions import override
 
 
 class Bucket:
@@ -32,6 +33,7 @@ class Bucket:
 
         return {batch_name: taken}
 
+    @override
     def __repr__(self) -> str:
         ret_str = {
             "name": self.name,
@@ -44,6 +46,7 @@ class Bucket:
     def __gt__(self, other: "Bucket") -> bool:
         return self.size > other.size
 
+    @override
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Bucket):
             return False
@@ -131,6 +134,7 @@ class BucketList:
 
         return BucketList(new_buckets)
 
+    @override
     def __repr__(self) -> str:
         return str(self.buckets)
 
@@ -219,6 +223,7 @@ class BalancedBucketList:
     def deviation(self) -> float:
         return sum(abs(self.avg_size - b.size) for b in self.buckets) / self.avg_size
 
+    @override
     def __repr__(self) -> str:
         return str(self.buckets)
 

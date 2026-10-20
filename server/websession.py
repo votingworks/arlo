@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 from flask import Flask, Request
 from flask.sessions import SessionInterface, SessionMixin
 from werkzeug.datastructures import CallbackDict
+from typing_extensions import override
 from .models import WebSession
 from .database import db_session
 from . import config
@@ -29,6 +30,7 @@ class ArloSessionInterface(SessionInterface):
     def _generate_sid(self):
         return secrets.token_urlsafe(50)
 
+    @override
     def open_session(self, app: Flask, request: Request):
         sid = request.cookies.get(app.config["SESSION_COOKIE_NAME"])
         if not sid:
@@ -41,6 +43,7 @@ class ArloSessionInterface(SessionInterface):
         else:
             return ArloSession(sid=self._generate_sid())
 
+    @override
     def save_session(self, app, session, response):
         if not session.modified:
             return
