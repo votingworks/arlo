@@ -2,15 +2,17 @@ import json
 import random
 import uuid
 import itertools
-from datetime import datetime
+from datetime import datetime, timezone
 from collections import defaultdict
 from flask.testing import FlaskClient
+from werkzeug.wrappers import Response
 
 from ..helpers import *
 from ...models import *
 from ...auth import UserType
 from ...api.rounds import count_audited_votes
 from ...util.jsonschema import JSONDict
+from ...worker.tasks import run_task
 
 
 def assert_ballots_got_assigned_correctly(
@@ -450,6 +452,128 @@ def test_audit_boards_already_created(
             }
         ]
     }
+
+
+def start_round_without_drawing_sample(
+    client: FlaskClient, election_id: str, contest_ids: list[str]
+) -> Round:
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
+    sample_size_options = json.loads(rv.data)["sampleSizes"]
+    with no_automatic_task_execution():
+        rv = post_json(
+            client,
+            f"/api/election/{election_id}/round",
+            {
+                "roundNum": 1,
+                "sampleSizes": {contest_ids[0]: sample_size_options[contest_ids[0]][0]},
+            },
+        )
+        assert_ok(rv)
+    round = Round.query.filter_by(election_id=election_id).one()
+    assert isinstance(round, Round)
+    return round
+
+
+def assert_sample_not_drawn_conflict(rv: Response):
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Cannot create audit boards until the sample has been drawn.",
+            }
+        ]
+    }
+
+
+def test_audit_boards_create_before_sample_drawn(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
+    election_settings: None,
+    manifests: None,
+):
+    round = start_round_without_drawing_sample(client, election_id, contest_ids)
+    round_id = round.id
+    assert round.draw_sample_task_id is not None
+    task_id = round.draw_sample_task_id
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    audit_board_url = f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/audit-board"
+
+    # Draw task queued
+    rv = post_json(client, audit_board_url, [{"name": "Audit Board #1"}])
+    assert_sample_not_drawn_conflict(rv)
+
+    # Draw task in progress
+    task = BackgroundTask.query.get(task_id)
+    task.started_at = datetime.now(timezone.utc)
+    db_session.commit()
+    rv = post_json(client, audit_board_url, [{"name": "Audit Board #1"}])
+    assert_sample_not_drawn_conflict(rv)
+
+    assert (
+        AuditBoard.query.filter_by(
+            jurisdiction_id=jurisdiction_ids[0], round_id=round_id
+        ).count()
+        == 0
+    )
+
+    # Once the draw completes, audit boards get every drawn ballot
+    run_task(BackgroundTask.query.get(task_id), db_session)
+    rv = post_json(
+        client,
+        audit_board_url,
+        [{"name": "Audit Board #1"}, {"name": "Audit Board #2"}],
+    )
+    assert_ok(rv)
+
+    ballots_drawn = (
+        SampledBallot.query.join(Batch)
+        .filter_by(jurisdiction_id=jurisdiction_ids[0])
+        .join(SampledBallot.draws)
+        .filter_by(round_id=round_id)
+    )
+    assert ballots_drawn.count() > 0
+    assert ballots_drawn.filter(SampledBallot.audit_board_id.is_(None)).count() == 0
+
+
+def test_audit_boards_create_after_sample_draw_failed(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
+    election_settings: None,
+    manifests: None,
+):
+    round = start_round_without_drawing_sample(client, election_id, contest_ids)
+    round_id = round.id
+    task = round.draw_sample_task
+    assert task is not None
+    task.started_at = datetime.now(timezone.utc)
+    task.completed_at = datetime.now(timezone.utc)
+    task.error = "Draw failed"
+    db_session.commit()
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/audit-board",
+        [{"name": "Audit Board #1"}],
+    )
+    assert_sample_not_drawn_conflict(rv)
+    assert (
+        AuditBoard.query.filter_by(
+            jurisdiction_id=jurisdiction_ids[0], round_id=round_id
+        ).count()
+        == 0
+    )
 
 
 def test_audit_boards_wrong_round(

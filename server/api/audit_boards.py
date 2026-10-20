@@ -48,6 +48,14 @@ def validate_audit_boards(
     if election.audit_type == AuditType.BATCH_COMPARISON:
         raise Conflict("Batch comparison audits do not use audit boards")
 
+    draw_sample_task = round.draw_sample_task
+    if (
+        draw_sample_task is None
+        or draw_sample_task.completed_at is None
+        or draw_sample_task.error is not None
+    ):
+        raise Conflict("Cannot create audit boards until the sample has been drawn.")
+
     if any(ab for ab in jurisdiction.audit_boards if ab.round_id == round.id):
         raise Conflict(f"Audit boards already created for round {round.round_num}")
 
