@@ -22,7 +22,7 @@ dev-environment:
 	sudo apt install -y gcc graphicsmagick libpq-dev postgresql
 
 	@# Install Node: https://github.com/nodesource/distributions/blob/master/README.md#deb
-	curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+	curl -fsSL https://deb.nodesource.com/setup_26.x | sudo -E bash -
 	sudo apt install -y nodejs
 
 	@# Install uv: https://docs.astral.sh/uv/getting-started/installation/
