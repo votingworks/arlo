@@ -270,8 +270,8 @@ def validate_contests(contests: list[JSONDict], election: Election):
     if not any(contest["isTargeted"] for contest in contests):
         raise BadRequest("Must have at least one targeted contest")
 
-    # Card style data manifests have a column per contest named after the
-    # contest, so contest names must be unique
+    # Batch comparison card style data manifests have a column per contest
+    # named after the contest, so contest names must be unique
     if (
         election.audit_type == AuditType.BATCH_COMPARISON
         and election.audit_math_type == AuditMathType.CARD_STYLE_DATA
