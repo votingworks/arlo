@@ -558,7 +558,7 @@ def test_record_batch_results_invalid(
                     "results": {choice_id: 1 for choice_id in choice_ids},
                 }
             ],
-            "'' is too short",
+            "'' should be non-empty",
         ),
         (
             [

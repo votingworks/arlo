@@ -264,7 +264,7 @@ def test_update_contests_invalid_jurisdictions(
     assert json.loads(rv.data) == {
         "errors": [
             {
-                "message": "[] is too short",
+                "message": "[] should be non-empty",
                 "errorType": "Bad Request",
             }
         ]

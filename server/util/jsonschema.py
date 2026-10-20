@@ -12,11 +12,13 @@ JSONSchema = JSONDict
 # https://emailregex.com/
 EMAIL_REGEX = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
 
+FORMAT_CHECKER = jsonschema.FormatChecker(formats=())
+
+
 # The built-in checker for email just checks if there's an @ in the string
-jsonschema.draft7_format_checker.checkers["email"] = (
-    lambda value: EMAIL_REGEX.match(value) is not None,
-    (),
-)
+@FORMAT_CHECKER.checks("email")
+def is_email(value: object) -> bool:
+    return not isinstance(value, str) or EMAIL_REGEX.match(value) is not None
 
 
 def validate(instance: Any, schema: JSONSchema):
@@ -25,7 +27,7 @@ def validate(instance: Any, schema: JSONSchema):
     jsonschema.validate(
         instance=instance,
         schema=schema,
-        format_checker=jsonschema.draft7_format_checker,
+        format_checker=FORMAT_CHECKER,
     )
 
 
