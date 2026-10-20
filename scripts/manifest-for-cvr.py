@@ -25,7 +25,7 @@ if __name__ == "__main__":
             cvr_file_lines = (line for line in cvr_file)
 
         cvr = csv.reader(cvr_file_lines, delimiter=",")
-        batch_counts = defaultdict(int)  # type: ignore
+        batch_counts = defaultdict(int)
 
         if cvr_file_type == "DOMINION":
             _election_name_row = next(cvr)

@@ -12,7 +12,7 @@ TODO: if necessary pull out risks for individual contests
 
 import logging
 
-from athena.audit import Audit as AthenaAudit  # type: ignore
+from athena.audit import Audit as AthenaAudit
 from .sampler_contest import Contest
 from .ballot_polling_types import (
     SampleSizeOption,
@@ -94,7 +94,7 @@ def get_sample_size(
     contest: Contest,
     sample_results: BALLOT_POLLING_SAMPLE_RESULTS | None,
     round_sizes: BALLOT_POLLING_ROUND_SIZES | None,
-) -> dict[str, SampleSizeOption]:  # type: ignore
+) -> dict[str, SampleSizeOption]:
     """
     Computes sample size for the next round, parameterized by likelihood that the
     sample will confirm the election result, assuming accurate results.

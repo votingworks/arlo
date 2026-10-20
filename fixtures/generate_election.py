@@ -88,14 +88,14 @@ def generate_contest_votes(
             yield {
                 choice_name: 1 if choice_name == voted_choice_name else 0
                 for choice_name in choice_names
-            }  # type: ignore
+            }
 
     overvotes = round(jurisdiction_tally["invalid_votes"] / 2)
     undervotes = jurisdiction_tally["invalid_votes"] - overvotes
     for _ in range(overvotes):
-        yield {choice_name: 1 for choice_name in choice_names}  # type: ignore
+        yield {choice_name: 1 for choice_name in choice_names}
     for _ in range(undervotes):
-        yield {choice_name: 0 for choice_name in choice_names}  # type: ignore
+        yield {choice_name: 0 for choice_name in choice_names}
 
 
 def safe_dict(*args):

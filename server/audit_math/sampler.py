@@ -97,7 +97,7 @@ def draw_ppeb_positions(
     seed: str, weights: list[float], sample_size: int
 ) -> tuple[list[int], list[float]]:
     # Convert seed into something numpy can use
-    int_seed = int(consistent_sampler.sha256_hex(seed), 16)  # type: ignore
+    int_seed = int(consistent_sampler.sha256_hex(seed), 16)
     generator = default_rng(int_seed)
     # Mirror numpy's Generator.choice(p=weights) step for step so the batches
     # drawn are identical to what it produced.
@@ -237,13 +237,13 @@ def assign_ticket_numbers(
         count = counts.get(batch_key, 0) + 1
 
         ticket = (
-            consistent_sampler.first_fraction(batch_key, seed)  # type: ignore
+            consistent_sampler.first_fraction(batch_key, seed)
             if count == 1
-            else consistent_sampler.next_fraction(tickets.get(batch_key)[-1])  # type: ignore
+            else consistent_sampler.next_fraction(tickets.get(batch_key)[-1])
         )
 
         # Trim the ticket number
-        ticket = consistent_sampler.trim(ticket, 18)  # type: ignore
+        ticket = consistent_sampler.trim(ticket, 18)
 
         batch_keys_with_ticket_numbers.append((ticket, batch_key))
         counts[batch_key] = count

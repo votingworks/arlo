@@ -394,7 +394,7 @@ def maximize_fisher_combined_pvalue(
                 fisher_pvalues[i] = 1 - sp.stats.chi2.cdf(obs, df=2 * len(pvalues))
 
         pvalue = np.max(fisher_pvalues)
-        alloc_lambda: float = test_lambdas[np.argmax(fisher_pvalues)]  # type: ignore
+        alloc_lambda: float = test_lambdas[np.argmax(fisher_pvalues)]
 
         # If p-value is over the risk limit, then there's no need to refine the
         # maximization. We have a lower bound on the maximum.
@@ -657,11 +657,11 @@ def get_sample_size(
     # the p-values for the first round.
 
     if bp_stratum.sample_size == 0 and cvr_stratum.sample_size == 0:
-        worst_winner = min(  # type: ignore
+        worst_winner = min(
             {winner: contest.candidates[winner] for winner in contest.winners},
             key=contest.candidates.get,
         )
-        best_loser = max(  # type: ignore
+        best_loser = max(
             {loser: contest.candidates[loser] for loser in contest.losers},
             key=contest.candidates.get,
         )

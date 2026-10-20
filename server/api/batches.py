@@ -41,7 +41,7 @@ def replace_combined_batches_with_representative_batches(
         combined_batch["representative_batch"] for combined_batch in combined_batches
     ]
     for representative_batch in representative_batches:
-        representative_batch.name = representative_batch.combined_batch_name  # type: ignore
+        representative_batch.name = representative_batch.combined_batch_name
 
     return regular_batches + representative_batches
 

@@ -1639,7 +1639,7 @@ def complete_upload_for_cvrs(election: Election, jurisdiction: Jurisdiction):
         raise Conflict("Cannot upload CVRs while any file upload is processing.")
 
     clear_cvr_contests_metadata(jurisdiction)
-    finalize_cvr_upload(storage_path, filename, cvr_file_type, jurisdiction)  # type: ignore
+    finalize_cvr_upload(storage_path, filename, cvr_file_type, jurisdiction)
     db_session.commit()
     return jsonify(status="ok")
 

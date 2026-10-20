@@ -25,7 +25,7 @@ if FLASK_ENV not in ["development", "test"]:
     Request.trusted_hosts = [str(urlparse(HTTP_ORIGIN).hostname)]  # pragma: no cover
 
 app = Flask("arlo", static_folder=None, template_folder=STATIC_FOLDER)
-app.wsgi_app = ProxyFix(app.wsgi_app)  # type: ignore
+app.wsgi_app = ProxyFix(app.wsgi_app)
 app.testing = FLASK_ENV == "test"
 app.config["MAX_CONTENT_LENGTH"] = MAX_UPLOAD_FILE_SIZE_BYTES
 Talisman(

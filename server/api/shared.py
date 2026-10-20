@@ -92,7 +92,7 @@ def batch_tallies(contest: Contest) -> BatchTallies:
     return {
         (jurisdiction.name, batch_name): tally
         for jurisdiction in contest.jurisdictions
-        for batch_name, tally in jurisdiction.batch_tallies.items()  # type: ignore
+        for batch_name, tally in jurisdiction.batch_tallies.items()
     }
 
 

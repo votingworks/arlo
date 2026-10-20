@@ -65,22 +65,22 @@ def set_logged_in_user(
     user_key=DEFAULT_AA_EMAIL,
     from_support_user=False,
 ):
-    with client.session_transaction() as session:  # type: ignore
+    with client.session_transaction() as session:
         auth_helpers.set_loggedin_user(session, user_type, user_key, from_support_user)
 
 
 def clear_logged_in_user(client: FlaskClient):
-    with client.session_transaction() as session:  # type: ignore
+    with client.session_transaction() as session:
         auth_helpers.clear_loggedin_user(session)
 
 
 def set_support_user(client: FlaskClient, email: str):
-    with client.session_transaction() as session:  # type: ignore
+    with client.session_transaction() as session:
         auth_helpers.set_support_user(session, email)
 
 
 def clear_support_user(client: FlaskClient):
-    with client.session_transaction() as session:  # type: ignore
+    with client.session_transaction() as session:
         auth_helpers.clear_support_user(session)
 
 

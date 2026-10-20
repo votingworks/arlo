@@ -135,7 +135,7 @@ def get_batch_comparison_discrepancies_by_jurisdiction(
                 combined_batch_name = combined_batch["name"]
                 sub_batches = combined_batch["sub_batches"]
                 sub_batch_reported_results = list(
-                    sub_batch.jurisdiction.batch_tallies[sub_batch.name].get(contest.id)  # type: ignore
+                    sub_batch.jurisdiction.batch_tallies[sub_batch.name].get(contest.id)
                     for sub_batch in sub_batches
                 )
                 reported_contest_result = {
