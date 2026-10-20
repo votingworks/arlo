@@ -1178,6 +1178,60 @@ describe('Audit Setup > Review & Launch', () => {
     })
   })
 
+  it('in a batch comparison audit, shows a warning when one of multiple target contests is a full hand tally', async () => {
+    const expectedCalls = [
+      apiCalls.getSettings(auditSettingsMocks.batchComparisonAll),
+      apiCalls.getJurisdictions({
+        jurisdictions: jurisdictionMocks.allManifestsAllTallies,
+      }),
+      apiCalls.getJurisdictionFile,
+      apiCalls.getStandardizedContests(),
+      apiCalls.getContests([
+        contestMocks.filledTargeted[0],
+        {
+          ...contestMocks.filledTargeted[0],
+          name: 'Contest 2',
+          id: 'contest-id-2',
+        },
+      ]),
+      apiCalls.getContestChoiceNameStandardizations(),
+      apiCalls.getSampleSizeOptions({
+        ...sampleSizeMock.ballotPolling,
+        sampleSizes: {
+          ...sampleSizeMock.ballotPolling.sampleSizes,
+          'contest-id-2': sampleSizeMock.ballotPolling.sampleSizes![
+            'contest-id'
+          ],
+        },
+      }),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView()
+      const sampleSizeForm = (
+        await screen.findByText(/Choose the initial sample size/)
+      ).closest('form')!
+      const contest1Card = within(sampleSizeForm)
+        .getByRole('heading', { name: 'Contest Name' })
+        .closest('div')!
+
+      userEvent.click(
+        within(contest1Card).getByLabelText(/Enter your own sample size/)
+      )
+      userEvent.type(within(contest1Card).getByRole('spinbutton'), '20')
+      const callout = (
+        await within(contest1Card).findByText(
+          'The currently selected sample size for this contest requires a full hand tally.'
+        )
+      ).closest('.bp3-callout') as HTMLElement
+      expect(callout).toHaveClass('bp3-intent-warning')
+      expect(
+        within(callout).queryByText(
+          /Arlo supports running a full hand tally for audits with one target contest/
+        )
+      ).not.toBeInTheDocument()
+    })
+  })
+
   it('has a button to show a sample preview', async () => {
     const expectedCalls = [
       apiCalls.getSettings(auditSettingsMocks.all),
