@@ -7,7 +7,6 @@ import itertools
 import os
 import shutil
 from xml.etree.ElementTree import ElementTree
-import typing
 from typing import (
     IO,
     BinaryIO,
@@ -177,24 +176,21 @@ def cvr_contests_metadata(
         contest_id = contest_name_to_id.get(potentially_standardized_contest_name, None)
 
         standardized_metadata[potentially_standardized_contest_name] = (
-            typing.cast(
-                CvrContestMetadata,
-                {
-                    **contest_metadata,
-                    "choices": {
-                        contest_choice_name_standardizations.get(contest_id, {}).get(
-                            cvr_choice_name, None
-                        )
-                        # We need this "or" and can't just use cvr_choice_name as a fallback to the
-                        # .get because some keys exist in the standardizations but explicitly have
-                        # None as a value
-                        or cvr_choice_name: choice_metadata
-                        for cvr_choice_name, choice_metadata in contest_metadata[
-                            "choices"
-                        ].items()
-                    },
+            {
+                **contest_metadata,
+                "choices": {
+                    contest_choice_name_standardizations.get(contest_id, {}).get(
+                        cvr_choice_name, None
+                    )
+                    # We need this "or" and can't just use cvr_choice_name as a fallback to the
+                    # .get because some keys exist in the standardizations but explicitly have
+                    # None as a value
+                    or cvr_choice_name: choice_metadata
+                    for cvr_choice_name, choice_metadata in contest_metadata[
+                        "choices"
+                    ].items()
                 },
-            )
+            }
             if should_standardize_contest_choice_names and contest_id
             else contest_metadata
         )
