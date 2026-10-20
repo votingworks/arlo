@@ -250,6 +250,42 @@ def test_full_hand_tally_of_one_contest_in_first_round(
     assert json.loads(rv.data)["rounds"][0]["isAuditComplete"] is True
 
 
+def test_full_hand_tally_of_two_contests_in_first_round(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
+    election_settings,
+    batch_tallies,
+):
+    sample_sizes = default_sample_sizes(client, election_id, 1)
+    for contest_id, size in [
+        (contest_ids[0], sum(NUM_BATCHES)),
+        (contest_ids[1], sum(NUM_BATCHES[:2])),
+    ]:
+        sample_sizes[contest_id] = {"key": "custom", "size": size, "prob": None}
+    round_1 = start_round(client, election_id, 1, sample_sizes)
+    assert round_1["needsFullHandTally"] is True
+    assert round_1["isFullHandTally"] is False
+
+    batch_contests = audit_round(
+        client, election_id, jurisdiction_ids, round_1["id"], {}
+    )
+    for i, num_batches in enumerate(NUM_BATCHES):
+        all_batch_names = {f"Batch {j}" for j in range(1, num_batches + 1)}
+        assert batches_audited_for("Contest 1", batch_contests[i]) == all_batch_names
+        if i < 2:
+            assert (
+                batches_audited_for("Contest 2", batch_contests[i]) == all_batch_names
+            )
+    status = round_contest_status(round_1["id"])
+    assert status["Contest 1"] == (True, 0)
+    assert status["Contest 2"] == (True, 0)
+
+    rv = client.get(f"/api/election/{election_id}/round")
+    assert json.loads(rv.data)["rounds"][0]["isAuditComplete"] is True
+
+
 def test_full_hand_tally_of_one_contest_after_escalation(
     client: FlaskClient,
     election_id: str,
