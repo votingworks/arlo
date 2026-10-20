@@ -1,6 +1,6 @@
 import io
 import csv
-from typing import cast as typing_cast
+from typing import Mapping, cast as typing_cast
 from collections import defaultdict, Counter
 from sqlalchemy import func, and_
 from sqlalchemy.dialects.postgresql import aggregate_order_by
@@ -236,7 +236,7 @@ def pretty_discrepancy(
 
 
 def pretty_choice_votes(
-    choice_votes: dict[str, int | str], not_found: int | None = None
+    choice_votes: Mapping[str, int | str], not_found: int | None = None
 ) -> str:
     return "; ".join(
         [f"{name}: {votes}" for name, votes in choice_votes.items()]
@@ -330,7 +330,7 @@ def contest_rows(election: Election):
         if election.audit_type == AuditType.HYBRID:
             total_ballots = hybrid_contest_total_ballots(contest)
             vote_counts = hybrid_contest_choice_vote_counts(contest)
-            if total_ballots and vote_counts:
+            if vote_counts:
                 choice_id_to_name = {
                     choice.id: choice.name for choice in contest.choices
                 }
@@ -382,7 +382,8 @@ def contest_name_standardization_rows(election: Election):
         for jurisdiction in election.jurisdictions
         if jurisdiction.contest_name_standardizations
         for contest_name, cvr_contest_name in typing_cast(
-            dict, jurisdiction.contest_name_standardizations
+            dict[str, str],
+            jurisdiction.contest_name_standardizations,
         ).items()
     ]
     if len(standardization_rows) == 0:
@@ -572,7 +573,9 @@ def round_rows(election: Election):
             )
 
             # Get the reported votes aggregated across batches
-            reported_results: dict = {choice.id: 0 for choice in contest.choices}
+            reported_results: dict[str, int] = {
+                choice.id: 0 for choice in contest.choices
+            }
             for batch in sampled_batches:
                 reported_results_for_batch = batch.jurisdiction.batch_tallies[
                     batch.name
@@ -638,7 +641,7 @@ def full_hand_tally_result_rows(
 
     # For now, we only support one contest
     contest = list(election.contests)[0]
-    results_by_batch: dict = defaultdict(
+    results_by_batch: dict[tuple[str, str, str], dict[str, int | None]] = defaultdict(
         lambda: {choice.id: None for choice in contest.choices}
     )
     for jurisdiction_name, result in results:
@@ -987,10 +990,10 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
         column_headers.append("Precinct Audit Batch")
     header_rows.append(column_headers)
 
-    total_reported_results: dict = {
+    total_reported_results: dict[str, dict[str, int]] = {
         contest.id: {choice.id: 0 for choice in contest.choices} for contest in contests
     }
-    total_audit_results: dict = {
+    total_audit_results: dict[str, dict[str, int]] = {
         contest.id: {choice.id: 0 for choice in contest.choices} for contest in contests
     }
 

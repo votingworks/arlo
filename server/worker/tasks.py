@@ -3,7 +3,7 @@ import traceback
 import logging
 from inspect import signature
 from datetime import datetime
-from typing import Callable
+from typing import Any, Callable, TypeVar
 from sqlalchemy.orm import Session
 import sentry_sdk
 
@@ -24,12 +24,15 @@ class UserError(Exception):
     pass
 
 
-task_dispatch: dict[str, Callable] = {}
+task_dispatch: dict[str, Callable[..., Any]] = {}
+
+
+F = TypeVar("F", bound=Callable[..., Any])
 
 
 # Decorator to register background task handlers. We use the handler's function
 # name as the key.
-def background_task(task_handler: Callable):
+def background_task(task_handler: F) -> F:
     task_dispatch[task_handler.__name__] = task_handler
     assert "election_id" in signature(task_handler).parameters, (
         f"Payload for task {task_handler.__name__} must include 'election_id' to easily identify all task logs for a single audit."
@@ -38,7 +41,7 @@ def background_task(task_handler: Callable):
 
 
 def create_background_task(
-    task_handler: Callable,
+    task_handler: Callable[..., Any],
     payload: JSONDict,
     # Use the global db_session by default, but allow it to be overridden for testing.
     db_session=db_session,

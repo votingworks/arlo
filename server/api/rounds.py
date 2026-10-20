@@ -1,4 +1,5 @@
 import uuid
+from typing import Any
 from datetime import datetime
 from flask import jsonify, request
 from jsonschema import validate
@@ -465,7 +466,7 @@ def create_round_schema(audit_type: AuditType):
 
 
 # Raises if invalid
-def validate_round(round: dict, election: Election):
+def validate_round(round: dict[str, Any], election: Election):
     validate(round, create_round_schema(AuditType(election.audit_type)))
 
     current_round = get_current_round(election)
@@ -483,7 +484,7 @@ def validate_round(round: dict, election: Election):
         raise Conflict("Cannot start a round while any file upload is processing.")
 
 
-def validate_sample_size(round: dict, election: Election):
+def validate_sample_size(round: dict[str, Any], election: Election):
     targeted_contests = active_targeted_contests(election)
     if set(round["sampleSizes"].keys()) != {c.id for c in targeted_contests}:
         raise BadRequest("Sample sizes provided do not match targeted contest ids")
@@ -657,7 +658,7 @@ def finish_round(election: Election):
     return jsonify(status="ok")
 
 
-def serialize_round(round: Round) -> dict:
+def serialize_round(round: Round) -> dict[str, Any]:
     return {
         "id": round.id,
         "roundNum": round.round_num,

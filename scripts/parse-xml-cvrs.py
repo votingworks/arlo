@@ -1,6 +1,7 @@
 import sys
 import os
 import csv
+from typing import Any
 from defusedxml.ElementTree import parse as parse_xml
 from collections import defaultdict
 
@@ -137,7 +138,7 @@ if __name__ == "__main__":
     print(f"Found {len(cvr_file_paths)} CVR files")
 
     cvrs = []
-    contest_choices: dict = defaultdict(set)
+    contest_choices: dict[str, Any] = defaultdict(set)
     for cvr_file_path in cvr_file_paths:
         try:
             cvr = parse_cvr_file(
@@ -160,7 +161,7 @@ if __name__ == "__main__":
             print(f"Parsed {len(cvrs)} files")
 
     print("Parsing ballot information files...")
-    cvr_workstation_mapping: dict = {}
+    cvr_workstation_mapping: dict[str, Any] = {}
     for scanned_ballot_path in scanned_ballot_file_paths:
         try:
             cvr_workstation_mapping = parse_scanned_ballot_file(

@@ -42,7 +42,8 @@ def make_arlo_contest(tally, num_winners=1, votes_allowed=1):
 
 
 def make_sample_results(
-    contest: Contest, votes_per_round: list[list]
+    contest: Contest,
+    votes_per_round: list[list[int]],
 ) -> BALLOT_POLLING_SAMPLE_RESULTS:
     """Make up sample_results for testing given Arlo contest based on votes.
     Note that athena's API relies on Python requiring dictionaries (of candidates and sample results)

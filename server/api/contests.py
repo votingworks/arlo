@@ -84,11 +84,11 @@ CONTEST_SCHEMA = {
 BALLOT_POLLING_CONTEST_SCHEMA = {
     "type": "object",
     "properties": {
-        **typing.cast(dict, CONTEST_SCHEMA["properties"]),
+        **typing.cast(dict[str, typing.Any], CONTEST_SCHEMA["properties"]),
         "totalBallotsCast": {"type": "integer", "minimum": 0},
     },
     "additionalProperties": False,
-    "required": typing.cast(list, CONTEST_SCHEMA["required"]) + ["totalBallotsCast"],
+    "required": CONTEST_SCHEMA["required"] + ["totalBallotsCast"],
 }
 
 # In ballot comparison audits, the AA selects contests from the standardized
@@ -574,7 +574,9 @@ def get_contest_name_standardizations(election: Election):
         },
         cvrContestNames={
             jurisdiction.id: list(
-                typing.cast(dict, jurisdiction.cvr_contests_metadata).keys()
+                typing.cast(
+                    dict[str, typing.Any], jurisdiction.cvr_contests_metadata
+                ).keys()
             )
             for jurisdiction, jurisdiction_standardizations in standardizations_by_jurisdiction.items()
             if jurisdiction_standardizations

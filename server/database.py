@@ -1,4 +1,5 @@
 import re
+from typing import TYPE_CHECKING, Any
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import scoped_session, sessionmaker, Query
 from sqlalchemy.ext.declarative import as_declarative, declared_attr
@@ -23,6 +24,11 @@ meta = MetaData(
 @as_declarative(metadata=meta)
 class Base:
     query: Query = db_session.query_property()
+
+    if TYPE_CHECKING:
+        metadata: MetaData
+
+        def __init__(self, **kwargs: Any) -> None: ...
 
     @declared_attr
     def __tablename__(cls):

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Type, Callable, Any, Literal, TypedDict
+from typing import Callable, Any, Literal, TypedDict
 import numpy as np
 
 from .sampler_contest import Contest
@@ -186,7 +186,7 @@ class NEBAssertion(RaireAssertion):
 
         return 1 if l_idx and (not w_idx or l_idx < w_idx) else 0
 
-    def subsumes(self, other: Type[RaireAssertion]) -> bool:
+    def subsumes(self, other: RaireAssertion) -> bool:
         """
         An NEBAssertion 'A' subsumes an assertion 'other' if:
         - 'other' is not an NEBAssertion and one of the following is true:
@@ -417,7 +417,7 @@ def find_best_audit(
     ballots: list[dict[str, int]],
     neb_matrix,
     node: RaireNode,
-    asn_func: Callable,
+    asn_func: Callable[[float], float],
 ):
     """
     Input:
@@ -515,7 +515,7 @@ def perform_dive(
     contest: Contest,
     ballots: list[dict[str, int]],
     neb_matrix,
-    asn_func: Callable,
+    asn_func: Callable[[float], float],
 ):
     """
     Input:

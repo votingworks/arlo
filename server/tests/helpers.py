@@ -27,7 +27,7 @@ DEFAULT_SUPPORT_EMAIL = "support@example.org"
 DEFAULT_AA_EMAIL = "admin@example.com"
 
 
-def default_ja_email(election_id: str):
+def default_ja_email(election_id: str) -> str:
     return f"jurisdiction.admin-{election_id}@example.com"
 
 

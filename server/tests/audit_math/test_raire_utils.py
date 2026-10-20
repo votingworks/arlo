@@ -7,7 +7,7 @@ from ...audit_math import raire_utils
 from ...audit_math.raire_utils import NEBAssertion, NENAssertion, CVRS
 
 # TODO: update this type def
-AsnFunc = Callable
+AsnFunc = Callable[[float], float]
 
 
 def test_ranking_not_on_ballots():

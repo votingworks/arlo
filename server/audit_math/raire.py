@@ -91,7 +91,7 @@ def find_assertions(
     contest: Contest,
     ballots: list[dict[str, int]],
     nebs: NEBMatrix,
-    asn_func: Callable,
+    asn_func: Callable[[float], float],
     frontier: RaireFrontier,
     lowerbound: float,
     agap: float,
@@ -193,7 +193,7 @@ def find_assertions(
 def compute_raire_assertions(
     contest: Contest,
     cvrs: CVRS,
-    asn_func: Callable,
+    asn_func: Callable[[float], float],
     agap: float = 0.0,
 ) -> list[RaireAssertion]:
     """

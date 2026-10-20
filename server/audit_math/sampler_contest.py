@@ -4,7 +4,7 @@ computations.
 """
 
 import operator
-from typing import TypedDict
+from typing import Any, TypedDict
 
 
 def from_db_contest(db_contest):
@@ -53,7 +53,7 @@ class Contest:
     losers: dict[str, int]  # list of all the losers
 
     diluted_margin: float  # The smallest diluted margin in this contest
-    margins: dict[str, dict]  # dict of the margins for this contest
+    margins: dict[str, dict[str, Any]]  # dict of the margins for this contest
 
     def __init__(self, name: str, contest_info_dict: dict[str, int]):
         """

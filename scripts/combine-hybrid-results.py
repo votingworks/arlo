@@ -53,7 +53,7 @@ def ballot_polling_stratum(contest, remap):
         for loser in sampler_contest.from_db_contest(contest).losers:
             sample_results[round_id][loser] += num_not_found
 
-    sample_size = sum(round_sizes(contest).values())
+    sample_size = sum(info.round_size for info in round_sizes(contest).values())
 
     return suite.BallotPollingStratum(
         contest.total_ballots_cast, vote_counts, sample_results, sample_size

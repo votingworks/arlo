@@ -2,6 +2,7 @@ import io
 import uuid
 import json
 import urllib.parse
+from typing import Any
 import pytest
 from flask.testing import FlaskClient
 
@@ -470,7 +471,7 @@ def test_full_hand_tally_results_validation(
     contest = json.loads(rv.data)["contests"][0]
 
     # Record invalid results
-    invalid_results: list[tuple[dict, str]] = [
+    invalid_results: list[tuple[dict[str, Any], str]] = [
         (
             {
                 "batchName": "",

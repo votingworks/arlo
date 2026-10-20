@@ -21,7 +21,7 @@ def jurisdiction_timestamp_name(election: Election, jurisdiction: Jurisdiction) 
     return f"{jurisdiction_name}-{election_name}-{now}"
 
 
-def csv_response(csv_file: IO, filename: str) -> Response:
+def csv_response(csv_file: IO[str] | IO[bytes], filename: str) -> Response:
     return Response(
         csv_file,
         mimetype="text/csv",

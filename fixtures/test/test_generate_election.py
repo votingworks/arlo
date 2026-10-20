@@ -18,7 +18,8 @@ def test_random_numbers_that_sum_to_total(snapshot, rand):
             assert len(result) == num_numbers
             assert all(number >= 0 for number in result)
 
-    assert pytest.raises(ValueError, random_numbers_that_sum_to_total, 0, 0, rand)
+    with pytest.raises(ValueError):
+        random_numbers_that_sum_to_total(0, 0, rand)
     assert random_numbers_that_sum_to_total(0, 1, rand) == [0]
     assert random_numbers_that_sum_to_total(0, 2, rand) == [0, 0]
     assert random_numbers_that_sum_to_total(1, 1, rand) == [1]

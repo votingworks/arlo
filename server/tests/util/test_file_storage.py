@@ -243,56 +243,56 @@ def test_validate_and_get_standard_file_upload_request_params_errors(mock_reques
             mock_request, "test_dir", "test_file", [FileType.CSV]
         )
 
-    file_type_error_tests: tuple[FileType, str, list[FileType], str] = [
+    file_type_error_tests: list[tuple[FileType, str, list[FileType], str]] = [
         # test file type, test file mimetype, [allowed types], expected error message
-        [
+        (
             FileType.CSV,
             "text/csv",
             [FileType.ZIP],
             "Please submit a valid file. Expected: zip",
-        ],
-        [
+        ),
+        (
             FileType.ZIP,
             "application/zip",
             [FileType.XML],
             "Please submit a valid file. Expected: xml",
-        ],
-        [
+        ),
+        (
             FileType.XML,
             "text/xml",
             [FileType.CSV],
             "Please submit a valid CSV. If you are working with an Excel spreadsheet, make sure you export it as a .csv file before uploading.",
-        ],
-        [
+        ),
+        (
             FileType.XML,
             "text/xml",
             [FileType.CSV, FileType.ZIP],
             "Please submit a valid file. Expected: csv or zip",
-        ],
-        [
+        ),
+        (
             FileType.ZIP,
             "application/x-zip-compressed",
             [FileType.CSV, FileType.XML],
             "Please submit a valid file. Expected: csv or xml",
-        ],
-        [
+        ),
+        (
             FileType.CSV,
             "application/vnd.ms-excel",
             [FileType.ZIP, FileType.XML],
             "Please submit a valid file. Expected: zip or xml",
-        ],
-        [
+        ),
+        (
             FileType.CSV,
             "invalid",
             [FileType.ZIP, FileType.CSV, FileType.XML],
             "Please submit a valid file. Expected: zip or csv or xml",
-        ],
-        [
+        ),
+        (
             FileType.XML,
             "text/xaml",
             [FileType.ZIP, FileType.CSV, FileType.XML],
             "Please submit a valid file. Expected: zip or csv or xml",
-        ],
+        ),
     ]
     for (
         test_file_type,

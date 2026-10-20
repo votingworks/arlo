@@ -163,7 +163,7 @@ class BalancedBucketList:
         self.buckets = []
 
         # first get all the batches in a list, and initialize our buckets
-        batches: tuple[str, int] = []
+        batches: list[tuple[str, int]] = []
         for bucket in buckets:
             self.buckets.append(Bucket(bucket.name))
             for batch_name in bucket.batches:

@@ -1,13 +1,14 @@
 import io
 import json
 import uuid
+from typing import Any
 from flask.testing import FlaskClient
 
 from ...models import *
 from ..helpers import *
 
 
-def _runoff_contest(jurisdiction_ids: list[str], **overrides) -> dict:
+def _runoff_contest(jurisdiction_ids: list[str], **overrides) -> dict[str, Any]:
     contest = {
         "id": str(uuid.uuid4()),
         "name": "Runoff Contest",
@@ -309,7 +310,7 @@ def test_end_to_end_runoff_majority_threshold_drives_round_1_failure(
 
     choice_ids = [choice["id"] for choice in contest["choices"]]
 
-    def submit_batch_results(round_id: str, results_by_batch: dict):
+    def submit_batch_results(round_id: str, results_by_batch: dict[Any, Any]):
         set_logged_in_user(
             client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
         )

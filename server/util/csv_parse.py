@@ -307,7 +307,7 @@ def validate_and_parse_values(
         }
 
 
-def format_tuple(tup: tuple) -> str:
+def format_tuple(tup: tuple[object, ...]) -> str:
     return str(tup[0]) if len(tup) == 1 else str(tup)
 
 

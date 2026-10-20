@@ -3,6 +3,7 @@
 # that are relevant for database-backed storage, then simplifying for just our use case.
 
 import secrets
+from typing import Any
 from datetime import datetime, timezone
 
 from flask import Flask, Request
@@ -13,7 +14,7 @@ from .database import db_session
 from . import config
 
 
-class ArloSession(CallbackDict, SessionMixin):
+class ArloSession(CallbackDict[str, Any], SessionMixin):
     def __init__(self, sid=None, initial=None):
         def on_update(self):
             self.modified = True

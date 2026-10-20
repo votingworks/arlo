@@ -1,7 +1,7 @@
 import functools
 import enum
 from datetime import datetime, timezone
-from typing import Callable
+from typing import Callable, TypeVar
 from flask import session
 from flask.sessions import SessionMixin
 from werkzeug.exceptions import Forbidden, Unauthorized
@@ -9,6 +9,8 @@ from sqlalchemy.orm import Query
 
 from ..models import *
 from .. import config
+
+T = TypeVar("T")
 
 
 class UserType(str, enum.Enum):
@@ -166,12 +168,14 @@ def check_access(
             )
 
 
-def restrict_access(user_types: list[UserType]):
+def restrict_access(
+    user_types: list[UserType],
+) -> Callable[[Callable[..., T]], Callable[..., T]]:
     """
     Flask route decorator that restricts access to a route to the given user types.
     """
 
-    def restrict_access_decorator(route: Callable):
+    def restrict_access_decorator(route: Callable[..., T]) -> Callable[..., T]:
         @functools.wraps(route)
         def wrapper(*args, **kwargs):
             if "jurisdiction_id" in kwargs and "election_id" not in kwargs:
@@ -237,7 +241,7 @@ def restrict_access(user_types: list[UserType]):
     return restrict_access_decorator
 
 
-def restrict_access_support(route: Callable):
+def restrict_access_support(route: Callable[..., T]) -> Callable[..., T]:
     """
     Flask route decorator that restricts access to a route to a support user.
     """
@@ -254,7 +258,7 @@ def restrict_access_support(route: Callable):
     return wrapper
 
 
-def allow_public_access(route: Callable):
+def allow_public_access(route: Callable[..., T]) -> Callable[..., T]:
     """
     Flask route decorator that allows public access to a route.
     """
@@ -268,7 +272,7 @@ def allow_public_access(route: Callable):
     return wrapper
 
 
-def allow_any_logged_in_user_access(route: Callable):
+def allow_any_logged_in_user_access(route: Callable[..., T]) -> Callable[..., T]:
     """
     Flask route decorator that allows public access to a route.
     """
