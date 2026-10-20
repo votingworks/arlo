@@ -36,7 +36,6 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "basedpyright>=1.31.4,<2",
     "filelock>=3.20.3,<4",
     "pytest>=6.2.4,<7",
     "pytest-cov>=2.12.1,<3",
@@ -47,6 +46,7 @@ dev = [
     "sqlalchemy-stubs>=0.3,<0.4",
     "noauth",
     "ruff>=0.12.12,<0.13",
+    "ty==0.0.90",
     "watchdog>=6.0.0,<7",
     "types-chardet>=5.0.4.6,<6",
     "types-boto3>=1.40.51,<2",
@@ -63,12 +63,42 @@ athena = { git = "https://github.com/filipzz/athena.git", rev = "9e07d15aff20982
 consistent-sampler = { git = "https://github.com/votingworks/consistent_sampler.git", rev = "46f6f0a6761adc7172e2c3e844bee359e6bd11bf" }
 r2b2 = { git = "https://github.com/gwexploratoryaudits/r2b2.git", rev = "43479256a349c5ffea061d1b8dcc8fac5d9a64de" }
 
-[tool.basedpyright]
-stubPath = "stubs"
+[tool.ty.environment]
+extra-paths = ["stubs"]
+
+[tool.ty.src]
+exclude = ["stubs", "server/tests/arlo-extra-tests"]
+
+[tool.ty.terminal]
+error-on-warning = true
+
+[tool.ty.rules]
+blanket-ignore-comment = "error"
+division-by-zero = "error"
+dynamic-function-decorator-return = "error"
+missing-override-decorator = "error"
+missing-type-argument = "error"
+possibly-missing-attribute = "error"
+possibly-missing-import = "error"
+possibly-unresolved-reference = "error"
+unsound-assignment = "error"
+unsound-return-statement = "error"
+unsound-yield = "error"
+
+# Audit math tests build loosely typed fixtures (e.g. `int` keys for `str` IDs).
+[[tool.ty.overrides]]
+include = ["server/tests/audit_math/**"]
+rules = { invalid-argument-type = "ignore", invalid-assignment = "ignore" }
 
 [tool.ruff.lint]
+extend-select = ["ANN001", "ANN002", "ANN003"]
 ignore = [
   # TODO: stop using * imports, then re-enable these
   "F405",
   "F403",
 ]
+
+[tool.ruff.lint.per-file-ignores]
+"server/migrations/**" = ["ANN"]
+"fixtures/test/**" = ["ANN"]
+"server/tests/**" = ["ANN"]
