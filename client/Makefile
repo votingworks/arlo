@@ -1,13 +1,13 @@
 .PHONY: install lint test build
 
 install:
-	yarn install
+	pnpm install
 
 lint:
-	yarn lint
+	pnpm lint
 
 test:
-	yarn test
+	pnpm test
 
 build:
-	yarn build
+	pnpm build

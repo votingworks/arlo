@@ -28,10 +28,9 @@ dev-environment:
 	@# Install uv: https://docs.astral.sh/uv/getting-started/installation/
 	curl -LsSf https://astral.sh/uv/install.sh | sh
 
-	@# Install Yarn
-	sudo npm install -g yarn
-	yarn install
-	yarn prepare # Set up Git hooks
+	@# Install pnpm and Node packages (also sets up Git hooks)
+	sudo npm install -g pnpm
+	pnpm install
 
 	@echo
 	@echo '⚠️  User action required: Make uv available in your PATH.'
