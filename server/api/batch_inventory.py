@@ -108,7 +108,7 @@ class ElectionResults(TypedDict):
     # { batch_key: { choice_id: count } }
     batch_tallies: dict[BatchKey, dict[str, int]]
     # { batch_key: { contest_id: count } }
-    contest_ballot_count_by_batch: NotRequired[dict[BatchKey, dict[str, int]]]
+    contest_ballot_counts_by_batch: NotRequired[dict[BatchKey, dict[str, int]]]
 
 
 def dict_to_items_list(dictionary):  # noqa: ANN001
@@ -238,7 +238,7 @@ def process_batch_inventory_cvr_file(
         batch_tallies: dict[BatchKey, dict[str, int]] = defaultdict(
             lambda: defaultdict(int)
         )
-        contest_ballot_count_by_batch: dict[BatchKey, dict[str, int]] = defaultdict(
+        contest_ballot_counts_by_batch: dict[BatchKey, dict[str, int]] = defaultdict(
             lambda: defaultdict(int)
         )
 
@@ -291,7 +291,7 @@ def process_batch_inventory_cvr_file(
                 }
                 # Blank cells mean the contest wasn't on the card
                 if all(value != "" for value in contest_choice_values.values()):
-                    contest_ballot_count_by_batch[batch_key][contest.id] += 1
+                    contest_ballot_counts_by_batch[batch_key][contest.id] += 1
                 contest_choice_votes: dict[str, int] = {
                     choice_id: parse_vote(value)
                     for choice_id, value in contest_choice_values.items()
@@ -309,8 +309,8 @@ def process_batch_inventory_cvr_file(
             ballot_count_by_group=dict(ballot_count_by_group),
             batch_to_counting_group=dict_to_items_list(batch_to_counting_group),
             batch_tallies=dict_to_items_list(batch_tallies),
-            contest_ballot_count_by_batch=dict_to_items_list(
-                contest_ballot_count_by_batch
+            contest_ballot_counts_by_batch=dict_to_items_list(
+                contest_ballot_counts_by_batch
             ),
         )
         batch_inventory_data.election_results = election_results  # ty: ignore[invalid-assignment]
@@ -1357,18 +1357,18 @@ def download_batch_inventory_ballot_manifest(
 
     # Only card style data audits read per-contest counts, and only Dominion
     # CVRs processed since the counts were added have them
-    column_contests = (
+    contests_with_ballot_count_column = (
         list(jurisdiction.contests)
         if election.audit_math_type == AuditMathType.MACRO_CARD_STYLE_DATA
-        and "contest_ballot_count_by_batch" in election_results
+        and "contest_ballot_counts_by_batch" in election_results
         else []
     )
-    contest_ballot_count_by_batch = items_list_to_dict(
-        election_results.get("contest_ballot_count_by_batch", [])
+    contest_ballot_counts_by_batch = items_list_to_dict(
+        election_results.get("contest_ballot_counts_by_batch", [])
     )
     contest_headers = [
         f"{contest.name}{ballot_manifest.CONTEST_NUMBER_OF_BALLOTS_SUFFIX}"
-        for contest in column_contests
+        for contest in contests_with_ballot_count_column
     ]
 
     if should_include_container_column:
@@ -1385,8 +1385,8 @@ def download_batch_inventory_ballot_manifest(
             batch_key, batch_inventory_data.tabulator_id_to_name
         )
         contest_ballot_counts = [
-            contest_ballot_count_by_batch.get(batch_key, {}).get(contest.id, 0)
-            for contest in column_contests
+            contest_ballot_counts_by_batch.get(batch_key, {}).get(contest.id, 0)
+            for contest in contests_with_ballot_count_column
         ]
         if should_include_container_column:
             counting_group = batch_to_counting_group.get(batch_key)

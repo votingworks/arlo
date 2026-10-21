@@ -2817,7 +2817,7 @@ def test_batch_inventory_counts_ballots_per_contest(
     election_results = BatchInventoryData.query.get(
         jurisdiction_ids[0]
     ).election_results
-    assert items_list_to_dict(election_results["contest_ballot_count_by_batch"]) == {
+    assert items_list_to_dict(election_results["contest_ballot_counts_by_batch"]) == {
         ("TABULATOR1", "BATCH1"): {contest_1_id: 3, contest_2_id: 3},
         ("TABULATOR1", "BATCH2"): {contest_1_id: 3, contest_2_id: 3},
         ("TABULATOR2", "BATCH1"): {contest_1_id: 3, contest_2_id: 3},
