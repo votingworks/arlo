@@ -332,8 +332,9 @@ def test_card_style_data_end_to_end(
         assert len(round_1_draws[name]) == sample_sizes[contest_id]["size"]
     assert_draws_only_where_contest_has_cards(round_1_draws)
 
-    # The nested district still stays within its own cards while reusing more
-    # of the parent's batches than an independent draw would have
+    # US House District 7 is nested under Governor, so it should share more
+    # batches with Governor's sample than an independent District 7 draw would,
+    # while still never drawing a batch that has no District 7 cards
     parent_batches = {(j, b) for j, b, _ in round_1_draws["Governor"]}
     child_batches = {(j, b) for j, b, _ in round_1_draws["US House District 7"]}
     child_contest = Contest.query.get(contest_ids["US House District 7"])
@@ -416,8 +417,8 @@ def test_card_style_data_end_to_end(
     }
 
     #
-    # Round 2: only the nested district continues, with its draws still
-    # derived from Governor's
+    # Round 2: Governor met its risk limit, so only US House District 7 is
+    # sampled
     #
 
     district_7_id = contest_ids["US House District 7"]
