@@ -89,7 +89,7 @@ describe('JA setup', () => {
       screen.getByText(/not on every ballot/)
       expect(
         screen.getAllByRole('button', { name: 'Download Template' })[0]
-      ).toHaveAttribute('href', '/sample_manifest_CSD.csv')
+      ).toHaveAttribute('href', '/sample_ballot_manifest_CSD.csv')
     })
   })
 

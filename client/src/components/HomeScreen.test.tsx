@@ -493,9 +493,7 @@ describe('Home screen', () => {
         'November Presidential Election 2020'
       )
       userEvent.click(screen.getByRole('radio', { name: 'Batch Comparison' }))
-      userEvent.click(
-        screen.getByRole('radio', { name: 'Card Style Data (Beta)' })
-      )
+      userEvent.click(screen.getByRole('radio', { name: 'Card Style Data' }))
       userEvent.click(createAuditButton)
       await screen.findByText('The audit has not started.')
     })

@@ -614,7 +614,7 @@ const CreateAudit = ({ organizations }: { organizations: IOrganization[] }) => {
                       >
                         <Radio value="MACRO">Default</Radio>
                         <Radio value="MACRO_CARD_STYLE_DATA">
-                          Card Style Data (Beta)
+                          Card Style Data
                         </Radio>
                       </RadioGroup>
                     </label>
@@ -634,7 +634,7 @@ const CreateAudit = ({ organizations }: { organizations: IOrganization[] }) => {
                       >
                         <Radio value="SUPERSIMPLE">Default</Radio>
                         <Radio value="SUPERSIMPLE_CARD_STYLE_DATA">
-                          Card Style Data (Beta)
+                          Card Style Data
                         </Radio>
                       </RadioGroup>
                     </label>

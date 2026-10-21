@@ -159,8 +159,8 @@ const JurisdictionAdminView: React.FC = () => {
                   in each container.${
                     isBatchComparisonCardStyleData
                       ? ` For each contest that is not on every ballot, add a
-                  column with how many of the ballot cards in each container
-                  include that contest, as shown in the template.`
+                  column indicating how many ballot cards include that
+                  contest, as shown in the template.`
                       : ''
                   }`
                   }
@@ -172,7 +172,7 @@ const JurisdictionAdminView: React.FC = () => {
                         return '/sample_manifest_hybrid.csv'
                       default:
                         return isBatchComparisonCardStyleData
-                          ? '/sample_manifest_CSD.csv'
+                          ? '/sample_ballot_manifest_CSD.csv'
                           : '/sample_ballot_manifest.csv'
                     }
                   })(auditSettings.auditType)}

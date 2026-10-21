@@ -400,7 +400,7 @@ def download_batch_tallies_summed_by_jurisdiction_csv(election: Election):
 
     contest_choice_csv_headers = construct_contest_choice_csv_headers(election)
     # In card style data audits, each contest also has its own ballot count
-    contests_with_total_ballots = (
+    contests_with_ballot_count_column = (
         list(election.contests)
         if election.audit_math_type == AuditMathType.MACRO_CARD_STYLE_DATA
         else []
@@ -409,12 +409,15 @@ def download_batch_tallies_summed_by_jurisdiction_csv(election: Election):
         "Jurisdiction",
         *contest_choice_csv_headers.values(),
         "Total Ballots",
-        *[f"{contest.name} - Total Ballots" for contest in contests_with_total_ballots],
+        *[
+            f"{contest.name} - Total Ballots"
+            for contest in contests_with_ballot_count_column
+        ],
     ]
     csv_writer.writerow(csv_headers)
 
     running_totals = [0] * (
-        len(contest_choice_csv_headers) + 1 + len(contests_with_total_ballots)
+        len(contest_choice_csv_headers) + 1 + len(contests_with_ballot_count_column)
     )
     for jurisdiction in election.jurisdictions:
         # Sum vote counts across batches
@@ -435,7 +438,7 @@ def download_batch_tallies_summed_by_jurisdiction_csv(election: Election):
             sum(batch.num_ballots_for_contest(contest.id) for batch in batches)
             if len(batches) > 0 and jurisdiction in contest.jurisdictions
             else None
-            for contest in contests_with_total_ballots
+            for contest in contests_with_ballot_count_column
         ]
 
         counts = [
