@@ -11,6 +11,8 @@ from . import api
 from ..database import db_session
 from ..models import *
 from .shared import (
+    sampled_contest_ids,
+    tally_sheets_for_contests,
     BallotDraw,
     SampleSize,
     active_targeted_contests,
@@ -709,6 +711,21 @@ def undo_round_start(election: Election):
         raise Conflict(
             "Cannot undo starting this round because some jurisdictions have already created audit boards."
         )
+
+    # Batch results entered this round are for the round's contests only
+    if election.audit_type == AuditType.BATCH_COMPARISON:
+        for jurisdiction in election.jurisdictions:
+            for batch in (
+                Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
+                .join(SampledBatchDraw)
+                .filter_by(round_id=current_round.id)
+            ):
+                for tally_sheet in tally_sheets_for_contests(
+                    jurisdiction,
+                    batch,
+                    sampled_contest_ids(jurisdiction, current_round, batch),
+                ):
+                    db_session.delete(tally_sheet)
 
     delete_round_and_corresponding_sampled_ballots(current_round)
 

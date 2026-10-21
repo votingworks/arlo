@@ -29,6 +29,7 @@ def test_list_batches(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: list[str],
+    contest_ids: list[str],
     round_1_id: str,
 ):
     set_logged_in_user(
@@ -48,6 +49,7 @@ def test_list_batches(
             "name": "Batch 1",
             "numBallots": 500,
             "resultTallySheets": [],
+            "contestIds": contest_ids,
         },
     )
 
@@ -64,6 +66,7 @@ def test_list_batches(
             "name": "Batch 1",
             "numBallots": 500,
             "resultTallySheets": [],
+            "contestIds": contest_ids,
         },
     )
 
@@ -188,6 +191,7 @@ def test_record_batch_results(
         ]
         assert batch["lastEditedBy"] == default_ja_email(election_id)
     assert resp["resultsFinalizedAt"] is None
+    assert resp["roundNum"] == 1
 
     # Update results for one batch
     updated_batch_2_results = {
@@ -894,6 +898,23 @@ def test_record_batch_results_bad_round(
                 "message": "Batch was already audited in a previous round",
             }
         ]
+    }
+
+    # Try a batch that was never sampled
+    unsampled_batch_id = (
+        Batch.query.filter_by(jurisdiction_id=jurisdiction_ids[0])
+        .filter(~Batch.draws.any())
+        .first()
+        .id
+    )
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/batches/{unsampled_batch_id}/results",
+        [{choice_id: 0 for choice_id in choice_ids}],
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [{"errorType": "Conflict", "message": "Batch was not sampled"}]
     }
 
     rv = client.get(
