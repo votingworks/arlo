@@ -941,7 +941,7 @@ def compute_sample_ballots(
             .count()
         )
 
-        if election.audit_math_type == AuditMathType.CARD_STYLE_DATA:
+        if election.audit_math_type == AuditMathType.SUPERSIMPLE_CARD_STYLE_DATA:
             # The sampling pool will be all ballots in the audit with the contest
             manifest: dict[tuple[str, str | None, str], list[int]] = defaultdict(
                 list  # { batch_key: [ballot_position] }

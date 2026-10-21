@@ -140,7 +140,8 @@ class AuditMathType(str, enum.Enum):
     SUPERSIMPLE = "SUPERSIMPLE"
     MACRO = "MACRO"
     SUITE = "SUITE"
-    CARD_STYLE_DATA = "CARD_STYLE_DATA"
+    SUPERSIMPLE_CARD_STYLE_DATA = "SUPERSIMPLE_CARD_STYLE_DATA"
+    MACRO_CARD_STYLE_DATA = "MACRO_CARD_STYLE_DATA"
 
 
 # Election is a slight misnomer - this model represents an audit.
@@ -422,6 +423,10 @@ class Batch(BaseModel):
     tabulator = Column(String(200))
     name = Column(String(200), nullable=False)
     num_ballots = Column(Integer, nullable=False)
+    # For batch comparison audits with card style data, the manifest can give
+    # the number of ballots carrying a specific contest in this batch. Contests
+    # not listed here are assumed to be on num_ballots
+    num_ballots_by_contest_id = Column(JSON)
 
     # For ballot polling and ballot comparison audits, a batch is associated
     # with a group of ballots sampled from this batch

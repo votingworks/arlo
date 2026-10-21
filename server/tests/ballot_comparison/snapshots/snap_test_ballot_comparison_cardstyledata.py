@@ -34,7 +34,7 @@ Contest 2,Opportunistic,1,2,28,Choice 2-1: 24; Choice 2-2: 10; Choice 2-3: 14\r
 \r
 ######## AUDIT SETTINGS ########\r
 Audit Name,Audit Type,Audit Math Type,Risk Limit,Random Seed,Online Data Entry?\r
-Test Audit test_ballot_comparison_cardstyledata_two_rounds[election_id0],BALLOT_COMPARISON,CARD_STYLE_DATA,10%,1234567890,Yes\r
+Test Audit test_ballot_comparison_cardstyledata_two_rounds[election_id0],BALLOT_COMPARISON,SUPERSIMPLE_CARD_STYLE_DATA,10%,1234567890,Yes\r
 \r
 ######## AUDIT BOARDS ########\r
 Jurisdiction Name,Audit Board Name,Member 1 Name,Member 1 Affiliation,Member 2 Name,Member 2 Affiliation\r
@@ -130,7 +130,7 @@ Contest 2,Opportunistic,1,2,28,Choice 2-1: 24; Choice 2-2: 10; Choice 2-3: 14\r
 \r
 ######## AUDIT SETTINGS ########\r
 Audit Name,Audit Type,Audit Math Type,Risk Limit,Random Seed,Online Data Entry?\r
-Test Audit test_ballot_comparison_cardstyledata_two_rounds[election_id0],BALLOT_COMPARISON,CARD_STYLE_DATA,10%,1234567890,Yes\r
+Test Audit test_ballot_comparison_cardstyledata_two_rounds[election_id0],BALLOT_COMPARISON,SUPERSIMPLE_CARD_STYLE_DATA,10%,1234567890,Yes\r
 \r
 ######## AUDIT BOARDS ########\r
 Jurisdiction Name,Audit Board Name,Member 1 Name,Member 1 Affiliation,Member 2 Name,Member 2 Affiliation\r

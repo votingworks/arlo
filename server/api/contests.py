@@ -7,6 +7,7 @@ from . import api
 from ..auth import restrict_access, UserType, get_loggedin_user, get_support_user
 from ..database import db_session
 from ..models import *
+from ..util.collections import find_first_duplicate
 from ..util.jsonschema import validate, JSONDict
 from . import cvrs
 from . import ballot_manifest
@@ -269,6 +270,18 @@ def validate_contests(contests: list[JSONDict], election: Election):
     if not any(contest["isTargeted"] for contest in contests):
         raise BadRequest("Must have at least one targeted contest")
 
+    # Batch comparison card style data manifests have a column per contest
+    # named after the contest, so contest names must be unique
+    if election.audit_math_type == AuditMathType.MACRO_CARD_STYLE_DATA:
+        duplicate_name = find_first_duplicate(
+            contest["name"].strip().lower() for contest in contests
+        )
+        if duplicate_name is not None:
+            raise BadRequest(
+                "Contest names must be unique in card style data audits."
+                f' Duplicate contest name: "{duplicate_name}"'
+            )
+
     # TODO some validation for Hybrid?
     if election.audit_type == AuditType.BALLOT_POLLING:
         for contest in contests:
@@ -338,13 +351,13 @@ def set_contest_metadata(election: Election):
     for contest in election.contests:
         if (
             election.audit_type != AuditType.BALLOT_POLLING
-            and election.audit_math_type != AuditMathType.CARD_STYLE_DATA
+            and election.audit_math_type != AuditMathType.SUPERSIMPLE_CARD_STYLE_DATA
         ):
             ballot_manifest.set_total_ballots_from_manifests(contest)
 
         if election.audit_type == AuditType.BALLOT_COMPARISON:
             cvrs.set_contest_metadata_from_cvrs(contest)
-            if election.audit_math_type == AuditMathType.CARD_STYLE_DATA:
+            if election.audit_math_type == AuditMathType.SUPERSIMPLE_CARD_STYLE_DATA:
                 cvrs.set_total_ballots_from_cvrs(contest)
 
 

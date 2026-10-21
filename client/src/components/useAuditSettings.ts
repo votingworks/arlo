@@ -27,7 +27,7 @@ export interface IAuditSettings {
     | 'SUPERSIMPLE'
     | 'MACRO'
     | 'SUITE'
-    | 'CARD_STYLE_DATA'
+    | 'SUPERSIMPLE_CARD_STYLE_DATA'
   auditName: string
 }
 
