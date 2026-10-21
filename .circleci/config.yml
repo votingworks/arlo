@@ -40,6 +40,15 @@ commands:
             sudo sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
             sudo locale-gen
 
+  install-node-packages:
+    steps:
+      - node/install:
+          install-pnpm: true
+      - node/install-packages:
+          pkg-manager: pnpm
+          cache-path: ~/.local/share/pnpm/store
+          override-ci-command: CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
+
 jobs:
   preflight:
     executor: arlo
@@ -92,10 +101,7 @@ jobs:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
-      - node/install
-      - node/install-packages:
-          pkg-manager: yarn
-          app-dir: client
+      - install-node-packages
       - run:
           name: install-graphicsmagick
           command: |
@@ -127,21 +133,18 @@ jobs:
           pkg-manager: uv
           args: --locked
           cache-version: v7
-      - node/install
-      - node/install-packages:
-          pkg-manager: yarn
-          app-dir: client
-          cache-version: v10
+      - install-node-packages
       - restore_cache:
           name: "Restoring Cypress cache"
-          key: v4-cypress-cache-{{ checksum "client/yarn.lock" }}
+          key: v5-cypress-cache-{{ checksum "pnpm-lock.yaml" }}
       - run:
-          name: "Verifying Cypress installation"
+          name: "Installing Cypress"
           command: |
-            yarn --cwd client cypress verify || yarn --cwd client cypress install
+            pnpm --dir client exec cypress install
+            pnpm --dir client exec cypress verify
       - save_cache:
           name: "Saving Cypress cache"
-          key: v4-cypress-cache-{{ checksum "client/yarn.lock" }}
+          key: v5-cypress-cache-{{ checksum "pnpm-lock.yaml" }}
           paths:
             - /home/circleci/.cache/Cypress
       - browser-tools/install-chrome

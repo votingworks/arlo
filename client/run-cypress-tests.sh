@@ -19,4 +19,4 @@ until $(curl --output /dev/null --silent --head --fail http://localhost:3000/api
 done
 echo 'Dev server ready'
 
-yarn run cypress run
+pnpm exec cypress run
