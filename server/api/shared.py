@@ -88,11 +88,13 @@ BatchTallies = dict[macro.BatchKey, macro.BatchResults]
 
 def batch_tallies(contest: Contest) -> BatchTallies:
     # Key each batch by jurisdiction name and batch name since batch names
-    # are only guaranteed unique within a jurisdiction
+    # are only guaranteed unique within a jurisdiction. Batches with no ballots
+    # for the contest are left out so the contest's sample never includes them.
     return {
         (jurisdiction.name, batch_name): tally
         for jurisdiction in contest.jurisdictions
         for batch_name, tally in jurisdiction.batch_tallies.items()
+        if tally[contest.id]["ballots"] > 0
     }
 
 
@@ -131,15 +133,18 @@ def group_combined_batches(all_sub_batches: list[Batch]) -> list[CombinedBatch]:
     ]
 
 
-def combined_batch_keys(election_id: str) -> list[set[sampler.BatchKey]]:
+def combined_batch_keys(contest: Contest) -> list[set[sampler.BatchKey]]:
     sub_batches = (
         Batch.query.join(Jurisdiction)
-        .filter_by(election_id=election_id)
+        .filter_by(election_id=contest.election_id)
         .filter(Batch.combined_batch_name.isnot(None))
         .all()
     )
+    # Sub-batches with no ballots for the contest aren't in its batch tallies
+    contest_batch_keys = batch_tallies(contest).keys()
     return [
         {(sub_batch.jurisdiction.name, sub_batch.name) for sub_batch in sub_batches}
+        & contest_batch_keys
         for _, sub_batches in group_by(
             sub_batches, lambda batch: batch.combined_batch_name
         ).items()
@@ -240,7 +245,13 @@ def sampled_batch_results(
             if batch_key not in (extra_batch_keys - rla_sampled_batch_keys)
         }
 
-    return results
+    # A batch audited for another contest may have no ballots for this one
+    contest_batch_keys = batch_tallies(contest).keys()
+    return {
+        batch_key: result
+        for batch_key, result in results.items()
+        if batch_key in contest_batch_keys
+    }
 
 
 def sampled_batches_by_ticket_number(contest: Contest) -> dict[str, sampler.BatchKey]:
@@ -578,14 +589,20 @@ def batch_vote_deltas(
 def full_hand_tally_sizes(election: Election):
     contests_query = Contest.query.filter_by(election_id=election.id, is_targeted=True)
     if election.audit_type == AuditType.BATCH_COMPARISON:
-        return dict(
-            contests_query.join(Contest.jurisdictions)
-            .group_by(Contest.id)
-            .values(
-                Contest.id,
-                func.coalesce(func.sum(Jurisdiction.manifest_num_batches), 0),
+        return {
+            contest.id: Batch.query.join(Jurisdiction)
+            .join(Jurisdiction.contests)
+            .filter(Contest.id == contest.id)
+            .filter(
+                func.coalesce(
+                    Batch.num_ballots_by_contest_id[contest.id].as_integer(),
+                    Batch.num_ballots,
+                )
+                > 0
             )
-        )
+            .count()
+            for contest in contests_query
+        }
     return dict(contests_query.values(Contest.id, Contest.total_ballots_cast))
 
 
