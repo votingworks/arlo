@@ -140,7 +140,8 @@ class AuditMathType(str, enum.Enum):
     SUPERSIMPLE = "SUPERSIMPLE"
     MACRO = "MACRO"
     SUITE = "SUITE"
-    CARD_STYLE_DATA = "CARD_STYLE_DATA"
+    SUPERSIMPLE_CARD_STYLE_DATA = "SUPERSIMPLE_CARD_STYLE_DATA"
+    MACRO_CARD_STYLE_DATA = "MACRO_CARD_STYLE_DATA"
 
 
 # Election is a slight misnomer - this model represents an audit.

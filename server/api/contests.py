@@ -272,10 +272,7 @@ def validate_contests(contests: list[JSONDict], election: Election):
 
     # Batch comparison card style data manifests have a column per contest
     # named after the contest, so contest names must be unique
-    if (
-        election.audit_type == AuditType.BATCH_COMPARISON
-        and election.audit_math_type == AuditMathType.CARD_STYLE_DATA
-    ):
+    if election.audit_math_type == AuditMathType.MACRO_CARD_STYLE_DATA:
         duplicate_name = find_first_duplicate(
             contest["name"].strip().lower() for contest in contests
         )
@@ -351,20 +348,16 @@ def validate_nesting(contests: list[JSONDict], election: Election):
 # contest changes or when those data sources change, we need to recompute the
 # metadata.
 def set_contest_metadata(election: Election):
-    uses_cvr_ballot_totals = (
-        election.audit_type == AuditType.BALLOT_COMPARISON
-        and election.audit_math_type == AuditMathType.CARD_STYLE_DATA
-    )
     for contest in election.contests:
         if (
             election.audit_type != AuditType.BALLOT_POLLING
-            and not uses_cvr_ballot_totals
+            and election.audit_math_type != AuditMathType.SUPERSIMPLE_CARD_STYLE_DATA
         ):
             ballot_manifest.set_total_ballots_from_manifests(contest)
 
         if election.audit_type == AuditType.BALLOT_COMPARISON:
             cvrs.set_contest_metadata_from_cvrs(contest)
-            if uses_cvr_ballot_totals:
+            if election.audit_math_type == AuditMathType.SUPERSIMPLE_CARD_STYLE_DATA:
                 cvrs.set_total_ballots_from_cvrs(contest)
 
 

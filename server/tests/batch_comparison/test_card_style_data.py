@@ -16,7 +16,7 @@ def election_id(client: FlaskClient, org_id: str, request) -> str:
         client,
         audit_name=f"Test Audit {request.node.name}",
         audit_type=AuditType.BATCH_COMPARISON,
-        audit_math_type=getattr(request, "param", AuditMathType.CARD_STYLE_DATA),
+        audit_math_type=getattr(request, "param", AuditMathType.MACRO_CARD_STYLE_DATA),
         organization_id=org_id,
     )
 

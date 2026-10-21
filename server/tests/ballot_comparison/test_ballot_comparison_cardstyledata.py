@@ -18,7 +18,7 @@ from .conftest import (
 
 @pytest.mark.parametrize(
     "election_id",
-    [{"audit_math_type": AuditMathType.CARD_STYLE_DATA}],
+    [{"audit_math_type": AuditMathType.SUPERSIMPLE_CARD_STYLE_DATA}],
     indirect=True,
 )
 def test_ballot_comparison_cardstyledata_two_rounds(

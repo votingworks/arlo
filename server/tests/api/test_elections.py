@@ -102,13 +102,14 @@ def test_create_election_new_batch_comparison_card_style_data_audit(
             "auditName": "Test Audit Batch Comparison Card Style Data",
             "organizationId": org_id,
             "auditType": "BATCH_COMPARISON",
-            "auditMathType": AuditMathType.CARD_STYLE_DATA,
+            "auditMathType": AuditMathType.MACRO_CARD_STYLE_DATA,
         },
     )
     assert rv.status_code == 200
     election_id = json.loads(rv.data)["electionId"]
     assert (
-        Election.query.get(election_id).audit_math_type == AuditMathType.CARD_STYLE_DATA
+        Election.query.get(election_id).audit_math_type
+        == AuditMathType.MACRO_CARD_STYLE_DATA
     )
 
 
@@ -269,7 +270,7 @@ def test_create_election_bad_bp_type(client: FlaskClient, org_id: str):
     assert json.loads(rv.data) == {
         "errors": [
             {
-                "message": "'NOT A REAL TYPE' is not one of ['BRAVO', 'MINERVA', 'PROVIDENCE', 'SUPERSIMPLE', 'MACRO', 'SUITE', 'CARD_STYLE_DATA']",
+                "message": "'NOT A REAL TYPE' is not one of ['BRAVO', 'MINERVA', 'PROVIDENCE', 'SUPERSIMPLE', 'MACRO', 'SUITE', 'SUPERSIMPLE_CARD_STYLE_DATA', 'MACRO_CARD_STYLE_DATA']",
                 "errorType": "Bad Request",
             }
         ]

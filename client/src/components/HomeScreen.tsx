@@ -614,7 +614,7 @@ const CreateAudit = ({ organizations }: { organizations: IOrganization[] }) => {
                         selectedValue={values.auditMathType}
                       >
                         <Radio value="SUPERSIMPLE">Default</Radio>
-                        <Radio value="CARD_STYLE_DATA">
+                        <Radio value="SUPERSIMPLE_CARD_STYLE_DATA">
                           Card Style Data (Beta)
                         </Radio>
                       </RadioGroup>

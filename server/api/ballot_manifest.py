@@ -109,10 +109,7 @@ def construct_contest_number_of_ballots_headers(
     jurisdiction: Jurisdiction,
 ) -> dict[str, str]:
     election = jurisdiction.election
-    if not (
-        election.audit_type == AuditType.BATCH_COMPARISON
-        and election.audit_math_type == AuditMathType.CARD_STYLE_DATA
-    ):
+    if election.audit_math_type != AuditMathType.MACRO_CARD_STYLE_DATA:
         return {}
     return {
         contest.id: f"{contest.name}{CONTEST_NUMBER_OF_BALLOTS_SUFFIX}"

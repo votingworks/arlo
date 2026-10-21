@@ -1690,7 +1690,7 @@ def clear_cvrs(
         #   election, so this task is guaranteed to be completed before a newly
         #   uploaded CVR file will be processed.
         File.query.filter_by(id=jurisdiction.cvr_file_id).delete()
-        if election.audit_math_type == AuditMathType.CARD_STYLE_DATA:
+        if election.audit_math_type == AuditMathType.SUPERSIMPLE_CARD_STYLE_DATA:
             clear_contests_total_ballots_cast(election)
         clear_cvr_contests_metadata(jurisdiction)
         create_background_task(
