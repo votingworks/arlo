@@ -269,3 +269,74 @@ def test_multiple_targeted_contests_full_hand_tally_error(
             }
         ]
     }
+
+
+def test_multiple_targeted_contests_contest_completes_in_later_round(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
+    election_settings,
+    manifests,
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+
+    def start_round(
+        round_num: int,
+        custom_sample_sizes: dict[str, dict[str, str | int | None]] | None = None,
+    ) -> str:
+        rv = client.get(f"/api/election/{election_id}/sample-sizes/{round_num}")
+        sample_sizes = json.loads(rv.data)["sampleSizes"]
+        rv = post_json(
+            client,
+            f"/api/election/{election_id}/round",
+            {
+                "roundNum": round_num,
+                "sampleSizes": {
+                    **{
+                        contest_id: options[0]
+                        for contest_id, options in sample_sizes.items()
+                    },
+                    **(custom_sample_sizes or {}),
+                },
+            },
+        )
+        assert_ok(rv)
+        return (
+            Round.query.filter_by(election_id=election_id, round_num=round_num).one().id
+        )
+
+    def finish_round(round_id: str) -> dict[str, bool]:
+        rv = client.post(f"/api/election/{election_id}/round/current/finish")
+        assert_ok(rv)
+        return dict(
+            RoundContest.query.filter_by(round_id=round_id).values(
+                RoundContest.contest_id, RoundContest.is_complete
+            )
+        )
+
+    round_1_id = start_round(1)
+    run_audit_round(round_1_id, contest_ids[0], contest_ids, 0.55)
+    is_complete = finish_round(round_1_id)
+    assert is_complete[contest_ids[0]] is False
+    assert is_complete[contest_ids[1]] is False
+
+    # Keep Contest 2's sample small so it doesn't run out of ballots by round 3
+    round_2_id = start_round(
+        2, {contest_ids[1]: {"key": "custom", "size": 10, "prob": None}}
+    )
+    run_audit_round(round_2_id, contest_ids[0], contest_ids, 0.7)
+    is_complete = finish_round(round_2_id)
+    assert is_complete[contest_ids[0]] is True
+    assert is_complete[contest_ids[1]] is False
+
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/3")
+    sample_sizes = json.loads(rv.data)["sampleSizes"]
+    assert list(sample_sizes.keys()) == [contest_ids[1]]
+
+    round_3_id = start_round(3)
+    round_contest_ids = {
+        round_contest.contest_id
+        for round_contest in RoundContest.query.filter_by(round_id=round_3_id)
+    }
+    assert contest_ids[0] not in round_contest_ids

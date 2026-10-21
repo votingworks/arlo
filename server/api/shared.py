@@ -53,10 +53,18 @@ def active_targeted_contests(election: Election) -> list[Contest]:
     targeted_contests = Contest.query.filter_by(
         election_id=election.id, is_targeted=True
     )
+    last_ended_round = (
+        Round.query.filter_by(election_id=election.id)
+        .filter(Round.ended_at.isnot(None))
+        .order_by(Round.round_num.desc())
+        .first()
+    )
     return list(
         targeted_contests.all()
-        if len(list(election.rounds)) == 0
-        else targeted_contests.join(RoundContest).filter_by(is_complete=False).all()
+        if last_ended_round is None
+        else targeted_contests.join(RoundContest)
+        .filter_by(round_id=last_ended_round.id, is_complete=False)
+        .all()
     )
 
 
