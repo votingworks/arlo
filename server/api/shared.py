@@ -89,7 +89,7 @@ BatchTallies = dict[macro.BatchKey, macro.BatchResults]
 def batch_tallies(contest: Contest) -> BatchTallies:
     # Key each batch by jurisdiction name and batch name since batch names
     # are only guaranteed unique within a jurisdiction. Batches with no ballots
-    # for the contest are left out so they are never sampled for it.
+    # for the contest are left out so the contest's sample never includes them.
     return {
         (jurisdiction.name, batch_name): tally
         for jurisdiction in contest.jurisdictions
