@@ -61,10 +61,7 @@ run: # Used for development, not during production deployment. Defaults to 3 por
 #
 
 typecheck:
-	uv run basedpyright
-
-typecheck-update-baseline:
-	uv run basedpyright --writebaseline
+	uv run ty check
 
 format:
 	uv run ruff format .

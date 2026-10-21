@@ -2,6 +2,7 @@ import enum
 from typing import Type
 from datetime import datetime as dt, timezone
 from werkzeug.exceptions import NotFound
+from typing_extensions import override
 import sqlalchemy
 from sqlalchemy import (
     Table,
@@ -66,12 +67,13 @@ COMMIT;
 )
 
 
-class UTCDateTime(TypeDecorator):
+class UTCDateTime(TypeDecorator):  # ty: ignore[missing-type-argument]
     # Store with no timezone
     impl = DateTime
 
     # Ensure UTC timezone on write
-    def process_bind_param(self, value, dialect):
+    @override
+    def process_bind_param(self, value, dialect):  # noqa: ANN001
         if value:
             assert value.tzinfo == timezone.utc, (
                 "All datetimes must have UTC timezone - use datetime.now(timezone.utc)"
@@ -79,7 +81,8 @@ class UTCDateTime(TypeDecorator):
         return value
 
     # Repopulate UTC timezone on read
-    def process_result_value(self, value, dialect):
+    @override
+    def process_result_value(self, value, dialect):  # noqa: ANN001
         return value and value.replace(tzinfo=timezone.utc)
 
 
@@ -356,8 +359,8 @@ class User(BaseModel):
     login_code_requested_at = Column(UTCDateTime)
     login_code_attempts = Column(Integer)
 
-    @validates("email")
-    def lowercase_email(self, _key, email):
+    @validates("email")  # ty: ignore[dynamic-function-decorator-return]
+    def lowercase_email(self, _key, email):  # noqa: ANN001
         return email.lower()
 
 

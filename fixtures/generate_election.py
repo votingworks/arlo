@@ -88,17 +88,17 @@ def generate_contest_votes(
             yield {
                 choice_name: 1 if choice_name == voted_choice_name else 0
                 for choice_name in choice_names
-            }  # type: ignore
+            }
 
     overvotes = round(jurisdiction_tally["invalid_votes"] / 2)
     undervotes = jurisdiction_tally["invalid_votes"] - overvotes
     for _ in range(overvotes):
-        yield {choice_name: 1 for choice_name in choice_names}  # type: ignore
+        yield {choice_name: 1 for choice_name in choice_names}
     for _ in range(undervotes):
-        yield {choice_name: 0 for choice_name in choice_names}  # type: ignore
+        yield {choice_name: 0 for choice_name in choice_names}
 
 
-def safe_dict(*args):
+def safe_dict(*args):  # noqa: ANN002
     return dict(filter(lambda x: x is not None, *args))
 
 
@@ -154,7 +154,7 @@ def generate_cvrs(
         )
 
 
-def write_dominion_cvrs(election_spec: ElectionSpec, cvrs: Cvrs, output_file: IO):
+def write_dominion_cvrs(election_spec: ElectionSpec, cvrs: Cvrs, output_file: IO[str]):
     metadata_columns = [
         "CvrNumber",
         "TabulatorNum",
@@ -227,7 +227,7 @@ def cvrs_to_manifest(cvrs: Cvrs) -> Manifest:
     ]
 
 
-def write_manifest(manifest: Manifest, output_file: IO):
+def write_manifest(manifest: Manifest, output_file: IO[str]):
     writer = csv.writer(output_file)
     writer.writerow(["Tabulator", "Batch Name", "Number of Ballots"])
     for batch, num_ballots in manifest:
@@ -259,7 +259,9 @@ def cvrs_to_batch_tallies(cvrs: Cvrs, contest: ContestSpec) -> BatchTallies:
 
 
 def write_batch_tallies(
-    batch_tallies: BatchTallies, contest: ContestSpec, output_file: IO
+    batch_tallies: BatchTallies,
+    contest: ContestSpec,
+    output_file: IO[str],
 ):
     choice_names = list(contest["tally"].keys())
     writer = csv.writer(output_file)
@@ -330,7 +332,9 @@ def generate_jurisdiction_admins(
     }
 
 
-def write_jurisdictions(jurisdiction_admins: dict[str, list[str]], output_file: IO):
+def write_jurisdictions(
+    jurisdiction_admins: dict[str, list[str]], output_file: IO[str]
+):
     writer = csv.writer(output_file)
     writer.writerow(["Jurisdiction", "Admin Email"])
     for jurisdiction_name, admins in jurisdiction_admins.items():
@@ -338,7 +342,7 @@ def write_jurisdictions(jurisdiction_admins: dict[str, list[str]], output_file: 
             writer.writerow([jurisdiction_name, admin])
 
 
-def write_standardized_contests(election_spec: ElectionSpec, output_file: IO):
+def write_standardized_contests(election_spec: ElectionSpec, output_file: IO[str]):
     writer = csv.writer(output_file)
     writer.writerow(["Contest Name", "Jurisdictions"])
     for contest in election_spec["contests"]:

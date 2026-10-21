@@ -189,7 +189,7 @@ def test_contest_rows_runoff_columns(org_id: str):
         total_ballots_cast=100,
         is_subject_to_runoff=True,
     )
-    flagged.choices = [
+    flagged.choices = [  # ty: ignore[invalid-assignment]
         ContestChoice(id=str(uuid.uuid4()), name="Alice", num_votes=55),
         ContestChoice(id=str(uuid.uuid4()), name="Bob", num_votes=25),
         ContestChoice(id=str(uuid.uuid4()), name="Carla", num_votes=20),
@@ -204,11 +204,11 @@ def test_contest_rows_runoff_columns(org_id: str):
         total_ballots_cast=100,
         is_subject_to_runoff=False,
     )
-    unflagged.choices = [
+    unflagged.choices = [  # ty: ignore[invalid-assignment]
         ContestChoice(id=str(uuid.uuid4()), name="X", num_votes=60),
         ContestChoice(id=str(uuid.uuid4()), name="Y", num_votes=40),
     ]
-    election.contests = [flagged, unflagged]
+    election.contests = [flagged, unflagged]  # ty: ignore[invalid-assignment]
     db_session.add(election)
     db_session.commit()
 

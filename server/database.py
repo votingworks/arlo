@@ -1,4 +1,5 @@
 import re
+from typing import TYPE_CHECKING, Any
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import scoped_session, sessionmaker, Query
 from sqlalchemy.ext.declarative import as_declarative, declared_attr
@@ -22,16 +23,21 @@ meta = MetaData(
 
 @as_declarative(metadata=meta)
 class Base:
-    query: Query = db_session.query_property()
+    query: Query = db_session.query_property()  # ty: ignore[unsound-assignment]
+
+    if TYPE_CHECKING:
+        metadata: MetaData
+
+        def __init__(self, **kwargs: Any) -> None: ...
 
     @declared_attr
     def __tablename__(cls):
         # Convert CamelCase model name to snake_case table name
         # https://stackoverflow.com/a/1176023
-        return re.sub(r"(?<!^)(?=[A-Z])", "_", cls.__name__).lower()
+        return re.sub(r"(?<!^)(?=[A-Z])", "_", cls.__name__).lower()  # ty: ignore[unresolved-attribute]
 
 
-def init_db(engine=engine):
+def init_db(engine=engine):  # noqa: ANN001
     import server.models  # noqa: F401
 
     Base.metadata.create_all(bind=engine)

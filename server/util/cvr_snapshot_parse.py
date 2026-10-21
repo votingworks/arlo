@@ -55,4 +55,4 @@ def read_cvr_snapshots(
         assert last_row is not None
 
         assert first_file_containing_row is not None
-        yield (first_file_containing_row, last_row)
+        yield (first_file_containing_row, last_row)  # ty: ignore[unsound-yield]

@@ -243,7 +243,7 @@ def validate_and_get_standard_file_upload_request_params(
     if not pattern.match(storage_path):
         raise BadRequest("Invalid storage path")
 
-    return (get_full_storage_path(storage_path), filename, file_type)
+    return (get_full_storage_path(storage_path), filename, file_type)  # ty: ignore[unsound-return-statement]
 
 
 def is_filetype_zip_mimetype(mime_type: str) -> bool:

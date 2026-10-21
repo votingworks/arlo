@@ -25,7 +25,7 @@ if FLASK_ENV not in ["development", "test"]:
     Request.trusted_hosts = [str(urlparse(HTTP_ORIGIN).hostname)]  # pragma: no cover
 
 app = Flask("arlo", static_folder=None, template_folder=STATIC_FOLDER)
-app.wsgi_app = ProxyFix(app.wsgi_app)  # type: ignore
+app.wsgi_app = ProxyFix(app.wsgi_app)  # ty: ignore[invalid-assignment]
 app.testing = FLASK_ENV == "test"
 app.config["MAX_CONTENT_LENGTH"] = MAX_UPLOAD_FILE_SIZE_BYTES
 Talisman(
@@ -63,7 +63,7 @@ from . import errors  # noqa: E402, F401
 
 
 @app.teardown_appcontext
-def shutdown_session(exception=None):
+def shutdown_session(exception=None):  # noqa: ANN001
     db_session.remove()
 
 

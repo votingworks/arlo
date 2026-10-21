@@ -97,7 +97,7 @@ def draw_ppeb_positions(
     seed: str, weights: list[float], sample_size: int
 ) -> tuple[list[int], list[float]]:
     # Convert seed into something numpy can use
-    int_seed = int(consistent_sampler.sha256_hex(seed), 16)  # type: ignore
+    int_seed = int(consistent_sampler.sha256_hex(seed), 16)  # ty: ignore[unresolved-attribute]
     generator = default_rng(int_seed)
     # Mirror numpy's Generator.choice(p=weights) step for step so the batches
     # drawn are identical to what it produced.
@@ -122,7 +122,7 @@ def draw_ppeb_positions(
     # which is required in the nesting step to determine whether the child
     # contest can reuse the parent draw or needs to redirect it.
     offsets = random_draws - np.array(sampled_range_starts)
-    return sampled_batch_indexes.tolist(), offsets.tolist()
+    return sampled_batch_indexes.tolist(), offsets.tolist()  # ty: ignore[unsound-return-statement]
 
 
 def draw_nested_ppeb_positions(
@@ -210,7 +210,7 @@ def draw_nested_ppeb_positions(
         child_offsets.append(
             parent_weights[fall_through_sampled_batch_index] + fall_through_offset
         )
-    return child_sampled_batch_indexes, child_offsets
+    return child_sampled_batch_indexes, child_offsets  # ty: ignore[unsound-return-statement]
 
 
 def full_hand_tally_batch_keys(
@@ -237,13 +237,13 @@ def assign_ticket_numbers(
         count = counts.get(batch_key, 0) + 1
 
         ticket = (
-            consistent_sampler.first_fraction(batch_key, seed)  # type: ignore
+            consistent_sampler.first_fraction(batch_key, seed)  # ty: ignore[unresolved-attribute]
             if count == 1
-            else consistent_sampler.next_fraction(tickets.get(batch_key)[-1])  # type: ignore
+            else consistent_sampler.next_fraction(tickets.get(batch_key)[-1])  # ty: ignore[not-subscriptable, unresolved-attribute]
         )
 
         # Trim the ticket number
-        ticket = consistent_sampler.trim(ticket, 18)  # type: ignore
+        ticket = consistent_sampler.trim(ticket, 18)  # ty: ignore[unresolved-attribute]
 
         batch_keys_with_ticket_numbers.append((ticket, batch_key))
         counts[batch_key] = count

@@ -33,7 +33,7 @@ def get_current_round(election: Election) -> Round | None:
 def get_previous_round(election: Election, round: Round) -> Round | None:
     if round.round_num == 1:
         return None
-    return next(r for r in election.rounds if r.round_num == round.round_num - 1)
+    return next(r for r in election.rounds if r.round_num == round.round_num - 1)  # ty: ignore[unsound-return-statement]
 
 
 def contest_results_by_round(
@@ -92,7 +92,7 @@ def batch_tallies(contest: Contest) -> BatchTallies:
     return {
         (jurisdiction.name, batch_name): tally
         for jurisdiction in contest.jurisdictions
-        for batch_name, tally in jurisdiction.batch_tallies.items()  # type: ignore
+        for batch_name, tally in jurisdiction.batch_tallies.items()
     }
 
 
@@ -147,7 +147,8 @@ def combined_batch_keys(election_id: str) -> list[set[sampler.BatchKey]]:
 
 
 def sampled_batch_results(
-    contest: Contest, include_non_rla_batches=False
+    contest: Contest,
+    include_non_rla_batches=False,  # noqa: ANN001
 ) -> BatchTallies:
     results_by_batch_and_choice = (
         Batch.query.filter(
@@ -554,7 +555,7 @@ def ballot_vote_deltas(
     if all(delta == 0 for delta in deltas.values()):
         return None
 
-    return deltas
+    return deltas  # ty: ignore[unsound-return-statement]
 
 
 def batch_vote_deltas(
@@ -764,7 +765,8 @@ def compute_extra_batches_for_round(
             min_percentage_of_jurisdiction_ballots_selected = 0.02
 
             def compute_percentage_of_jurisdiction_ballots_selected(
-                selected_batch_keys, num_jurisdiction_ballots
+                selected_batch_keys,  # noqa: ANN001
+                num_jurisdiction_ballots,  # noqa: ANN001
             ):
                 num_jurisdiction_ballots_selected = sum(
                     batch_key_to_num_ballots[batch_key]

@@ -10,7 +10,7 @@ import math
 from decimal import Decimal
 from collections import defaultdict
 import logging
-from typing import TypedDict
+from typing import Any, TypedDict
 from scipy import stats
 
 from .sampler_contest import Contest
@@ -113,7 +113,8 @@ def get_expected_sample_size(
 
 
 def get_test_statistics(
-    margins: dict[str, dict], sample_results: dict[str, int]
+    margins: dict[str, dict[str, Any]],
+    sample_results: dict[str, int],
 ) -> dict[tuple[str, str], Decimal]:
     """
     Computes T*, the test statistic from an existing sample.
@@ -327,7 +328,7 @@ def expected_prob(
     return round(float(stats.norm.cdf(float(-z))), 2)
 
 
-def compute_cumulative_sample(sample_results):
+def compute_cumulative_sample(sample_results):  # noqa: ANN001
     """
     Computes a cumulative sample given a round-by-round sample
     """

@@ -268,7 +268,7 @@ def test_record_batch_results(
     )
     assert rv.status_code == 200
     batches = json.loads(rv.data)["batches"]
-    assert batches[0]["resultTallySheets"] == tally_sheets
+    assert batches[0]["resultTallySheets"] == tally_sheets  # ty: ignore[possibly-unresolved-reference]
     assert batches[0]["lastEditedBy"] == "Alice, Bob"
 
     # Finalize results
@@ -764,7 +764,7 @@ def test_record_batch_results_other_jurisdiction(
     )
     j2_url = f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches"
     rv = client.get(j2_url)
-    j2_batch_id: str = json.loads(rv.data)["batches"][0]["id"]
+    j2_batch_id: str = json.loads(rv.data)["batches"][0]["id"]  # ty: ignore[unsound-assignment]
     j2_results = [
         {
             "name": "Tally Sheet #1",
@@ -883,7 +883,7 @@ def test_record_batch_results_bad_round(
     # Try a batch from the previous round
     rv = put_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_2_id}/batches/{batches[0]['id']}/results",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_2_id}/batches/{batches[0]['id']}/results",  # ty: ignore[possibly-unresolved-reference]
         [{choice_id: 0 for choice_id in choice_ids}],
     )
     assert rv.status_code == 409

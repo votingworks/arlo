@@ -1,6 +1,7 @@
 from __future__ import annotations
-from typing import Type, Callable, Any, Literal, TypedDict
+from typing import Callable, Any, Literal, TypedDict
 import numpy as np
+from typing_extensions import override
 
 from .sampler_contest import Contest
 
@@ -123,7 +124,7 @@ class RaireAssertion:
             loser, and 0 otherwise.
         """
 
-    def subsumes(self, other):
+    def subsumes(self, other):  # noqa: ANN001
         """
         Returns true if this assertion 'subsumes' the input assertion 'other'.
         An assertion 'A' subsumes assertion 'B' if the alternate outcomes
@@ -137,19 +138,21 @@ class RaireAssertion:
         Returns true if this assertion subsumes assertion 'other'.
         """
 
-    def __eq__(self, other):
+    @override
+    def __eq__(self, other):  # noqa: ANN001
         """
         Returns True if this assertion is equal to 'other' (i.e., they
         are the same assertion), and False otherwise.
         """
 
     # Assertions are ordered from greatest to least difficulty.
-    def __lt__(self, other):
+    def __lt__(self, other):  # noqa: ANN001
         return self.difficulty > other.difficulty
 
-    def __gt__(self, other):
+    def __gt__(self, other):  # noqa: ANN001
         return self.difficulty < other.difficulty
 
+    @override
     def __repr__(self):
         return f"{self.contest} {self.winner} {self.loser} {self.difficulty}"
 
@@ -171,6 +174,7 @@ class NEBAssertion(RaireAssertion):
     prior to 'loser'.
     """
 
+    @override
     def is_vote_for_winner(self, cvr: CVR) -> Literal[0, 1]:
         return (
             1
@@ -178,6 +182,7 @@ class NEBAssertion(RaireAssertion):
             else 0
         )
 
+    @override
     def is_vote_for_loser(self, cvr: CVR) -> Literal[0, 1]:
         if self.contest not in cvr:
             return 0
@@ -186,7 +191,8 @@ class NEBAssertion(RaireAssertion):
 
         return 1 if l_idx and (not w_idx or l_idx < w_idx) else 0
 
-    def subsumes(self, other: Type[RaireAssertion]) -> bool:
+    @override
+    def subsumes(self, other: RaireAssertion) -> bool:
         """
         An NEBAssertion 'A' subsumes an assertion 'other' if:
         - 'other' is not an NEBAssertion and one of the following is true:
@@ -221,7 +227,8 @@ class NEBAssertion(RaireAssertion):
 
         return False
 
-    def __eq__(self, other) -> bool:
+    @override
+    def __eq__(self, other) -> bool:  # noqa: ANN001
         return (
             isinstance(other, NEBAssertion)
             and self.contest == other.contest
@@ -229,9 +236,11 @@ class NEBAssertion(RaireAssertion):
             and self.loser == other.loser
         )
 
+    @override
     def __hash__(self) -> int:
         return hash((self.contest, self.winner, self.loser))
 
+    @override
     def __repr__(self) -> str:
         return f"NEB,Winner,{self.winner},Loser,{self.loser},Eliminated"
 
@@ -258,18 +267,21 @@ class NENAssertion(RaireAssertion):
 
         self.eliminated = eliminated
 
+    @override
     def is_vote_for_winner(self, cvr: CVR) -> Literal[0, 1]:
         if self.contest not in cvr:
             return 0
 
         return vote_for_cand(self.winner, self.eliminated, cvr[self.contest])
 
+    @override
     def is_vote_for_loser(self, cvr: CVR) -> Literal[0, 1]:
         if self.contest not in cvr:
             return 0
 
         return vote_for_cand(self.loser, self.eliminated, cvr[self.contest])
 
+    @override
     def subsumes(self, other: RaireAssertion) -> bool:
         """
         An NENAssertion 'A' subsumes an assertion 'other' if 'other' is
@@ -285,7 +297,8 @@ class NENAssertion(RaireAssertion):
 
         return False
 
-    def __eq__(self, other) -> bool:
+    @override
+    def __eq__(self, other) -> bool:  # noqa: ANN001
         return (
             isinstance(other, NENAssertion)
             and self.contest == other.contest
@@ -294,9 +307,11 @@ class NENAssertion(RaireAssertion):
             and self.eliminated == other.eliminated
         )
 
+    @override
     def __hash__(self) -> int:
         return hash((self.contest, self.winner, self.loser, tuple(self.eliminated)))
 
+    @override
     def __repr__(self) -> str:
         return f"NEN,Winner,{self.winner},Loser,{self.loser},Eliminated," + ",".join(
             self.eliminated
@@ -345,7 +360,8 @@ class RaireNode:
 
         return self.tail[len1 - len2 :] == node.tail
 
-    def __eq__(self, other):
+    @override
+    def __eq__(self, other):  # noqa: ANN001
         return (
             self.estimate == other.estimate
             and self.best_assertion == other.best_assertion
@@ -353,6 +369,7 @@ class RaireNode:
             and self.tail == other.tail
         )
 
+    @override
     def __repr__(self):
         return f"tail: {self.tail}\nestimate: {self.estimate}\nbest_assertion: {self.best_assertion}\nbest_ancestor:\n\n{self.best_ancestor}"
 
@@ -405,9 +422,11 @@ class RaireFrontier:
         ]
         self.insert_node(node)
 
-    def __eq__(self, other):
+    @override
+    def __eq__(self, other):  # noqa: ANN001
         return self.nodes == other.nodes
 
+    @override
     def __repr__(self):
         return str(self.nodes)
 
@@ -415,9 +434,9 @@ class RaireFrontier:
 def find_best_audit(
     contest: Contest,
     ballots: list[dict[str, int]],
-    neb_matrix,
+    neb_matrix,  # noqa: ANN001
     node: RaireNode,
-    asn_func: Callable,
+    asn_func: Callable[[float], float],
 ):
     """
     Input:
@@ -514,8 +533,8 @@ def perform_dive(
     node: RaireNode,
     contest: Contest,
     ballots: list[dict[str, int]],
-    neb_matrix,
-    asn_func: Callable,
+    neb_matrix,  # noqa: ANN001
+    asn_func: Callable[[float], float],
 ):
     """
     Input:

@@ -36,7 +36,7 @@ def validate_all_manifests_uploaded(contest: Contest):
         raise UserError("Some jurisdictions haven't uploaded their manifests yet")
 
 
-def validate_batch_tallies(contest):
+def validate_batch_tallies(contest):  # noqa: ANN001
     total_votes_by_choice: dict[str, int] = defaultdict(int)
     for jurisdiction in contest.jurisdictions:
         batch_tallies = typing_cast(BatchTallies, jurisdiction.batch_tallies)
@@ -246,7 +246,7 @@ def autoselect_sample_size(options: dict[str, SampleSizeOption], audit_type: Aud
         return options["suite"]
 
 
-def serialize_sample_size_options(sample_size_options):
+def serialize_sample_size_options(sample_size_options):  # noqa: ANN001
     if sample_size_options is None:
         return None
     return {
@@ -289,8 +289,8 @@ def get_sample_sizes(election: Election, round_num: int):
     if round_num == next_round_num and (
         not sample_sizes.task or existing_options_expired
     ):
-        sample_sizes.sample_size_options = None
-        sample_sizes.task = create_background_task(
+        sample_sizes.sample_size_options = None  # ty: ignore[invalid-assignment]
+        sample_sizes.task = create_background_task(  # ty: ignore[invalid-assignment]
             next_round_sample_size_options, dict(election_id=election.id)
         )
 
@@ -323,7 +323,7 @@ def get_sample_sizes(election: Election, round_num: int):
             contest_id: {
                 "_": autoselect_sample_size(options, AuditType(election.audit_type))
             }
-            for contest_id, options in sample_sizes.sample_size_options.items()
+            for contest_id, options in sample_sizes.sample_size_options.items()  # ty: ignore[unresolved-attribute]
         }
     )
 

@@ -12,7 +12,7 @@ TODO: if necessary pull out risks for individual contests
 
 import logging
 
-from athena.audit import Audit as AthenaAudit  # type: ignore
+from athena.audit import Audit as AthenaAudit
 from .sampler_contest import Contest
 from .ballot_polling_types import (
     SampleSizeOption,
@@ -22,7 +22,7 @@ from .ballot_polling_types import (
 from ..config import MINERVA_MULTIPLE
 
 
-def make_arlo_contest(tally, num_winners=1, votes_allowed=1):
+def make_arlo_contest(tally, num_winners=1, votes_allowed=1):  # noqa: ANN001
     """Return an Arlo Contest with the given tally (a dictionary of candidate_name:vote_counts)
     Treat "_undervote_" candidate as undervotes
     For testing purposes.
@@ -42,7 +42,8 @@ def make_arlo_contest(tally, num_winners=1, votes_allowed=1):
 
 
 def make_sample_results(
-    contest: Contest, votes_per_round: list[list]
+    contest: Contest,
+    votes_per_round: list[list[int]],
 ) -> BALLOT_POLLING_SAMPLE_RESULTS:
     """Make up sample_results for testing given Arlo contest based on votes.
     Note that athena's API relies on Python requiring dictionaries (of candidates and sample results)
@@ -56,7 +57,7 @@ def make_sample_results(
     return sample_results
 
 
-def make_athena_audit(arlo_contest, alpha):
+def make_athena_audit(arlo_contest, alpha):  # noqa: ANN001
     """Make an Athena audit object, with associated contest and election, from an Arlo contest
 
     >>> c3 = make_arlo_contest({"a": 600, "b": 400, "c": 100, "_undervote_": 100})
@@ -94,7 +95,7 @@ def get_sample_size(
     contest: Contest,
     sample_results: BALLOT_POLLING_SAMPLE_RESULTS | None,
     round_sizes: BALLOT_POLLING_ROUND_SIZES | None,
-) -> dict[str, SampleSizeOption]:  # type: ignore
+) -> dict[str, SampleSizeOption]:
     """
     Computes sample size for the next round, parameterized by likelihood that the
     sample will confirm the election result, assuming accurate results.
@@ -209,7 +210,7 @@ def collect_risks(
     }
     logging.debug(f"minerva  collect_risks return: {risks=}")
 
-    return risks
+    return risks  # ty: ignore[unsound-return-statement]
 
 
 def compute_risk(

@@ -173,7 +173,7 @@ def serialize_jurisdiction(
                     for choice in contest.choices
                 )
                 / contest.votes_allowed
-            )
+            )  # ty: ignore[unsound-return-statement]
 
         min_num_ballots = None
         contests = list(jurisdiction.contests)
@@ -356,12 +356,12 @@ def ballot_round_status(election: Election, round: Round) -> dict[str, JSONDict]
         # ballots from the manifest
         if full_hand_tally:
             return jurisdiction.manifest_num_ballots or 0
-        return sample_count_by_jurisdiction.get(jurisdiction.id, 0)
+        return sample_count_by_jurisdiction.get(jurisdiction.id, 0)  # ty: ignore[unsound-return-statement]
 
     def num_ballots(jurisdiction: Jurisdiction) -> int:
         if full_hand_tally:
             return jurisdiction.manifest_num_ballots or 0
-        return ballot_count_by_jurisdiction.get(jurisdiction.id, 0)
+        return ballot_count_by_jurisdiction.get(jurisdiction.id, 0)  # ty: ignore[unsound-return-statement]
 
     # NOT_STARTED = the jurisdiction hasn’t set up any audit boards
     # IN_PROGRESS = the audit boards are set up
@@ -398,9 +398,9 @@ def ballot_round_status(election: Election, round: Round) -> dict[str, JSONDict]
 
     def num_samples_audited(jurisdiction: Jurisdiction) -> int:
         if election.online:
-            return audited_sample_count_by_jurisdiction.get(jurisdiction.id, 0)
+            return audited_sample_count_by_jurisdiction.get(jurisdiction.id, 0)  # ty: ignore[unsound-return-statement]
         elif full_hand_tally:
-            return jurisdiction_full_hand_tally_result_totals.get(jurisdiction.id, 0)
+            return jurisdiction_full_hand_tally_result_totals.get(jurisdiction.id, 0)  # ty: ignore[unsound-return-statement]
         else:
             return (
                 num_samples(jurisdiction)
@@ -410,9 +410,9 @@ def ballot_round_status(election: Election, round: Round) -> dict[str, JSONDict]
 
     def num_ballots_audited(jurisdiction: Jurisdiction) -> int:
         if election.online:
-            return audited_ballot_count_by_jurisdiction.get(jurisdiction.id, 0)
+            return audited_ballot_count_by_jurisdiction.get(jurisdiction.id, 0)  # ty: ignore[unsound-return-statement]
         elif full_hand_tally:
-            return jurisdiction_full_hand_tally_result_totals.get(jurisdiction.id, 0)
+            return jurisdiction_full_hand_tally_result_totals.get(jurisdiction.id, 0)  # ty: ignore[unsound-return-statement]
         else:
             return (
                 num_ballots(jurisdiction)
@@ -512,16 +512,16 @@ def batch_round_status(election: Election, round: Round) -> dict[str, JSONDict]:
     }
 
     def num_samples(jurisdiction_id: str) -> int:
-        return sample_count_by_jurisdiction.get(jurisdiction_id, 0)
+        return sample_count_by_jurisdiction.get(jurisdiction_id, 0)  # ty: ignore[unsound-return-statement]
 
     def num_samples_audited(jurisdiction_id: str) -> int:
-        return audited_sample_count_by_jurisdiction.get(jurisdiction_id, 0)
+        return audited_sample_count_by_jurisdiction.get(jurisdiction_id, 0)  # ty: ignore[unsound-return-statement]
 
     def num_batches(jurisdiction_id: str) -> int:
-        return batch_count_by_jurisdiction.get(jurisdiction_id, 0)
+        return batch_count_by_jurisdiction.get(jurisdiction_id, 0)  # ty: ignore[unsound-return-statement]
 
     def num_batches_audited(jurisdiction_id: str) -> int:
-        return audited_batch_count_by_jurisdiction.get(jurisdiction_id, 0)
+        return audited_batch_count_by_jurisdiction.get(jurisdiction_id, 0)  # ty: ignore[unsound-return-statement]
 
     # NOT_STARTED = the jurisdiction hasn’t audited any batches yet
     # IN_PROGRESS = the jurisdiction is auditing batches
@@ -671,13 +671,13 @@ def complete_upload_for_jurisdictions_file(election: Election):
         [FileType.CSV],
     )
 
-    election.jurisdictions_file = File(
+    election.jurisdictions_file = File(  # ty: ignore[invalid-assignment]
         id=str(uuid.uuid4()),
         name=filename,
         storage_path=storage_path,
         uploaded_at=datetime.datetime.now(timezone.utc),
     )
-    election.jurisdictions_file.task = create_background_task(
+    election.jurisdictions_file.task = create_background_task(  # ty: ignore[invalid-assignment]
         process_jurisdictions_file, dict(election_id=election.id)
     )
     db_session.commit()

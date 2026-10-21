@@ -153,4 +153,4 @@ def compute_risk(
     # since other audits only return a single p_value,
     # and rounds.py throws it out right away p_value = max(p_values.values())
     risk = audit.get_risk_level()
-    return {("winner", "loser"): risk}, risk <= alpha
+    return {("winner", "loser"): risk}, risk <= alpha  # ty: ignore[unsound-return-statement]

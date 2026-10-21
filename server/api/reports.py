@@ -1,6 +1,6 @@
 import io
 import csv
-from typing import cast as typing_cast
+from typing import Mapping, cast as typing_cast
 from collections import defaultdict, Counter
 from sqlalchemy import func, and_
 from sqlalchemy.dialects.postgresql import aggregate_order_by
@@ -201,7 +201,7 @@ def pretty_cvr_interpretation(
         choice_id_to_name[choice_id]
         for choice_id, interpretation in cvrs_by_choice.items()
         if interpretation == "1"
-    )
+    )  # ty: ignore[unsound-return-statement]
 
 
 def add_sign(value: int) -> str:
@@ -236,7 +236,7 @@ def pretty_discrepancy(
 
 
 def pretty_choice_votes(
-    choice_votes: dict[str, int | str], not_found: int | None = None
+    choice_votes: Mapping[str, int | str], not_found: int | None = None
 ) -> str:
     return "; ".join(
         [f"{name}: {votes}" for name, votes in choice_votes.items()]
@@ -330,7 +330,7 @@ def contest_rows(election: Election):
         if election.audit_type == AuditType.HYBRID:
             total_ballots = hybrid_contest_total_ballots(contest)
             vote_counts = hybrid_contest_choice_vote_counts(contest)
-            if total_ballots and vote_counts:
+            if vote_counts:
                 choice_id_to_name = {
                     choice.id: choice.name for choice in contest.choices
                 }
@@ -382,7 +382,8 @@ def contest_name_standardization_rows(election: Election):
         for jurisdiction in election.jurisdictions
         if jurisdiction.contest_name_standardizations
         for contest_name, cvr_contest_name in typing_cast(
-            dict, jurisdiction.contest_name_standardizations
+            dict[str, str],
+            jurisdiction.contest_name_standardizations,
         ).items()
     ]
     if len(standardization_rows) == 0:
@@ -514,11 +515,11 @@ def round_rows(election: Election):
             choice_id_to_name = {choice.id: choice.name for choice in contest.choices}
             cvr_choice_votes = Counter({choice.name: 0 for choice in contest.choices})
             for ballot in sampled_ballot_interpretations_to_cvrs(contest).values():
-                choice_votes = ballot["cvr"] and ballot["cvr"].get(contest.id)  # type: ignore
+                choice_votes = ballot["cvr"] and ballot["cvr"].get(contest.id)
                 if choice_votes:
                     cvr_choice_votes.update(
                         {
-                            choice_id_to_name[choice_id]: int(count)
+                            choice_id_to_name[choice_id]: int(count)  # ty: ignore[invalid-argument-type]
                             for choice_id, count in choice_votes.items()
                         }
                     )
@@ -572,7 +573,9 @@ def round_rows(election: Election):
             )
 
             # Get the reported votes aggregated across batches
-            reported_results: dict = {choice.id: 0 for choice in contest.choices}
+            reported_results: dict[str, int] = {
+                choice.id: 0 for choice in contest.choices
+            }
             for batch in sampled_batches:
                 reported_results_for_batch = batch.jurisdiction.batch_tallies[
                     batch.name
@@ -601,17 +604,17 @@ def round_rows(election: Election):
             ]
             + (
                 [
-                    pretty_choice_votes(dict(cvr_choice_votes)),
-                    pretty_choice_votes(non_cvr_choice_vote),
+                    pretty_choice_votes(dict(cvr_choice_votes)),  # ty: ignore[possibly-unresolved-reference]
+                    pretty_choice_votes(non_cvr_choice_vote),  # ty: ignore[possibly-unresolved-reference]
                 ]
                 if election.audit_type == AuditType.HYBRID
                 else []
             )
             + (
                 [
-                    num_sampled_batches,
-                    num_ballots_in_sampled_batches,
-                    pretty_choice_votes(reported_results_by_name),
+                    num_sampled_batches,  # ty: ignore[possibly-unresolved-reference]
+                    num_ballots_in_sampled_batches,  # ty: ignore[possibly-unresolved-reference]
+                    pretty_choice_votes(reported_results_by_name),  # ty: ignore[possibly-unresolved-reference]
                 ]
                 if election.audit_type == AuditType.BATCH_COMPARISON
                 else []
@@ -638,7 +641,7 @@ def full_hand_tally_result_rows(
 
     # For now, we only support one contest
     contest = list(election.contests)[0]
-    results_by_batch: dict = defaultdict(
+    results_by_batch: dict[tuple[str, str, str], dict[str, int | None]] = defaultdict(
         lambda: {choice.id: None for choice in contest.choices}
     )
     for jurisdiction_name, result in results:
@@ -859,7 +862,7 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction | None = 
         if election.online:
             if (
                 is_ballot_comparison
-                and not show_discrepancies_by_jurisdiction[batch.jurisdiction_id]
+                and not show_discrepancies_by_jurisdiction[batch.jurisdiction_id]  # ty: ignore[possibly-unresolved-reference]
             ):
                 result_values = ["NOT_AUDITED"] + ([""] * (len(result_columns) - 1))
             else:
@@ -867,25 +870,28 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction | None = 
                 for contest in election.contests:
                     if show_cvrs:
                         cvr_interpretation = pretty_cvr_interpretation(
-                            ballot, contest, cvrs_by_contest[contest.id]
+                            ballot,
+                            contest,
+                            cvrs_by_contest[contest.id],  # ty: ignore[possibly-unresolved-reference]
                         )
                         result_values.append(cvr_interpretation)
                     result_values.append(
                         pretty_ballot_interpretation(interpretations, contest)
                     )
                     if show_cvrs:
-                        audited_result = audited_cvrs_by_contest[contest.id].get(
+                        audited_result = audited_cvrs_by_contest[contest.id].get(  # ty: ignore[possibly-unresolved-reference]
                             ballot.id
                         )
                         vote_deltas = audited_result and ballot_vote_deltas(
                             contest,
-                            cvrs_by_contest[contest.id].get(ballot.id),
+                            cvrs_by_contest[contest.id].get(ballot.id),  # ty: ignore[possibly-unresolved-reference]
                             audited_result["cvr"],
                         )
                         result_values.append(pretty_vote_deltas(contest, vote_deltas))
                         result_values.append(
                             pretty_discrepancy(
-                                ballot, discrepancies_by_contest[contest.id]
+                                ballot,
+                                discrepancies_by_contest[contest.id],  # ty: ignore[possibly-unresolved-reference]
                             )
                         )
 
@@ -987,10 +993,10 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
         column_headers.append("Precinct Audit Batch")
     header_rows.append(column_headers)
 
-    total_reported_results: dict = {
+    total_reported_results: dict[str, dict[str, int]] = {
         contest.id: {choice.id: 0 for choice in contest.choices} for contest in contests
     }
-    total_audit_results: dict = {
+    total_audit_results: dict[str, dict[str, int]] = {
         contest.id: {choice.id: 0 for choice in contest.choices} for contest in contests
     }
 
@@ -1035,7 +1041,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
         combined_batch_row += [pretty_boolean(is_audited)]
         for contest in contests:
             sub_batch_reported_results = list(
-                sub_batch.jurisdiction.batch_tallies[sub_batch.name].get(contest.id)  # type: ignore
+                sub_batch.jurisdiction.batch_tallies[sub_batch.name].get(contest.id)
                 for sub_batch in sub_batches
             )
             reported_results = {

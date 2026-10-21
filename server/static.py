@@ -11,7 +11,7 @@ from .auth.auth_helpers import allow_public_access
 @app.route("/")
 @app.route("/<path:path>")
 @allow_public_access
-def serve(path="index.html"):
+def serve(path="index.html"):  # noqa: ANN001
     if path != "index.html" and os.path.exists(os.path.join(STATIC_FOLDER, path)):
         return send_from_directory(STATIC_FOLDER, path)
     return render_template(

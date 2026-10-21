@@ -1,7 +1,7 @@
 import functools
 import enum
 from datetime import datetime, timezone
-from typing import Callable
+from typing import Callable, TypeVar
 from flask import session
 from flask.sessions import SessionMixin
 from werkzeug.exceptions import Forbidden, Unauthorized
@@ -9,6 +9,8 @@ from sqlalchemy.orm import Query
 
 from ..models import *
 from .. import config
+
+T = TypeVar("T")
 
 
 class UserType(str, enum.Enum):
@@ -39,7 +41,10 @@ _LAST_REQUEST_AT = "_last_request_at"
 
 
 def set_loggedin_user(
-    session, user_type: UserType, user_key: str, from_support_user: bool = False
+    session,  # noqa: ANN001
+    user_type: UserType,
+    user_key: str,
+    from_support_user: bool = False,
 ):
     session[_USER] = {"type": user_type, "key": user_key}
     # We don't want to set the created time when a support user logs in as
@@ -49,17 +54,17 @@ def set_loggedin_user(
     session[_LAST_REQUEST_AT] = datetime.now(timezone.utc).isoformat()
 
 
-def get_loggedin_user(session) -> tuple[UserType, str] | tuple[None, None]:
+def get_loggedin_user(session) -> tuple[UserType, str] | tuple[None, None]:  # noqa: ANN001
     check_session_expiration(session)
     user = session.get(_USER, None)
-    return (user["type"], user["key"]) if user else (None, None)
+    return (user["type"], user["key"]) if user else (None, None)  # ty: ignore[unsound-return-statement]
 
 
-def clear_loggedin_user(session):
+def clear_loggedin_user(session):  # noqa: ANN001
     session[_USER] = None
 
 
-def check_session_expiration(session):
+def check_session_expiration(session):  # noqa: ANN001
     if (
         _CREATED_AT not in session
         or _LAST_REQUEST_AT not in session
@@ -98,7 +103,7 @@ def clear_support_user(session: SessionMixin):
 
 def get_support_user(session: SessionMixin) -> str | None:
     check_session_expiration(session)
-    support_user_email: str | None = session.get(_SUPPORT_USER)
+    support_user_email: str | None = session.get(_SUPPORT_USER)  # ty: ignore[unsound-assignment]
     return support_user_email
 
 
@@ -166,14 +171,16 @@ def check_access(
             )
 
 
-def restrict_access(user_types: list[UserType]):
+def restrict_access(
+    user_types: list[UserType],
+) -> Callable[[Callable[..., T]], Callable[..., T]]:
     """
     Flask route decorator that restricts access to a route to the given user types.
     """
 
-    def restrict_access_decorator(route: Callable):
+    def restrict_access_decorator(route: Callable[..., T]) -> Callable[..., T]:
         @functools.wraps(route)
-        def wrapper(*args, **kwargs):
+        def wrapper(*args, **kwargs):  # noqa: ANN002, ANN003
             if "jurisdiction_id" in kwargs and "election_id" not in kwargs:
                 raise Exception(
                     "election_id required in route params"
@@ -201,7 +208,8 @@ def restrict_access(user_types: list[UserType]):
             if "jurisdiction_id" in kwargs:
                 jurisdiction = find_or_404(
                     Jurisdiction.query.filter_by(
-                        id=kwargs.pop("jurisdiction_id"), election_id=election.id
+                        id=kwargs.pop("jurisdiction_id"),
+                        election_id=election.id,  # ty: ignore[possibly-unresolved-reference]
                     )
                 )
                 kwargs["jurisdiction"] = jurisdiction
@@ -210,7 +218,8 @@ def restrict_access(user_types: list[UserType]):
             if "round_id" in kwargs:
                 round = find_or_404(
                     Round.query.filter_by(
-                        id=kwargs.pop("round_id"), election_id=election.id
+                        id=kwargs.pop("round_id"),
+                        election_id=election.id,  # ty: ignore[possibly-unresolved-reference]
                     )
                 )
                 kwargs["round"] = round
@@ -220,66 +229,66 @@ def restrict_access(user_types: list[UserType]):
                 audit_board = find_or_404(
                     AuditBoard.query.filter_by(
                         id=kwargs.pop("audit_board_id"),
-                        round_id=round.id,
-                        jurisdiction_id=jurisdiction.id,
+                        round_id=round.id,  # ty: ignore[unresolved-attribute]
+                        jurisdiction_id=jurisdiction.id,  # ty: ignore[unresolved-attribute]
                     )
                 )
                 kwargs["audit_board"] = audit_board
 
-            check_access(user_types, election, jurisdiction, audit_board)
+            check_access(user_types, election, jurisdiction, audit_board)  # ty: ignore[possibly-unresolved-reference]
 
             return route(*args, **kwargs)
 
-        wrapper.has_access_control = True  # type: ignore
+        wrapper.has_access_control = True  # ty: ignore[unresolved-attribute]
 
         return wrapper
 
     return restrict_access_decorator
 
 
-def restrict_access_support(route: Callable):
+def restrict_access_support(route: Callable[..., T]) -> Callable[..., T]:
     """
     Flask route decorator that restricts access to a route to a support user.
     """
 
     @functools.wraps(route)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs):  # noqa: ANN002, ANN003
         if not get_support_user(session):
             raise Forbidden(description="requires support privileges")
 
         return route(*args, **kwargs)
 
-    wrapper.has_access_control = True  # type: ignore
+    wrapper.has_access_control = True  # ty: ignore[unresolved-attribute]
 
     return wrapper
 
 
-def allow_public_access(route: Callable):
+def allow_public_access(route: Callable[..., T]) -> Callable[..., T]:
     """
     Flask route decorator that allows public access to a route.
     """
 
     @functools.wraps(route)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs):  # noqa: ANN002, ANN003
         return route(*args, **kwargs)
 
-    wrapper.has_access_control = True  # type: ignore
+    wrapper.has_access_control = True  # ty: ignore[unresolved-attribute]
 
     return wrapper
 
 
-def allow_any_logged_in_user_access(route: Callable):
+def allow_any_logged_in_user_access(route: Callable[..., T]) -> Callable[..., T]:
     """
     Flask route decorator that allows public access to a route.
     """
 
     @functools.wraps(route)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs):  # noqa: ANN002, ANN003
         _, user_key = get_loggedin_user(session)
         if not user_key:
             raise Unauthorized("Please log in to access Arlo")
         return route(*args, **kwargs)
 
-    wrapper.has_access_control = True  # type: ignore
+    wrapper.has_access_control = True  # ty: ignore[unresolved-attribute]
 
     return wrapper

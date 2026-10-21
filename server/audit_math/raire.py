@@ -17,7 +17,7 @@ from .raire_utils import (
 NEBMatrix = dict[str, dict[str, NEBAssertion | None]]
 
 
-def make_neb_matrix(contest: Contest, cvrs: CVRS, asn_func) -> NEBMatrix:
+def make_neb_matrix(contest: Contest, cvrs: CVRS, asn_func) -> NEBMatrix:  # noqa: ANN001
     """
     Builds the NEB matrix for use by find_best_audit.
 
@@ -59,7 +59,7 @@ def make_frontier(
     contest: Contest,
     ballots: list[dict[str, int]],
     nebs: NEBMatrix,
-    asn_func,
+    asn_func,  # noqa: ANN001
 ) -> RaireFrontier:
     """
     Constructs the frontier for the search for the best audit
@@ -91,7 +91,7 @@ def find_assertions(
     contest: Contest,
     ballots: list[dict[str, int]],
     nebs: NEBMatrix,
-    asn_func: Callable,
+    asn_func: Callable[[float], float],
     frontier: RaireFrontier,
     lowerbound: float,
     agap: float,
@@ -143,7 +143,7 @@ def find_assertions(
         # We can use our new knowledge of the "best" way to rule out
         # the branch to update our "lowerbound" on the overall "difficulty"
         # of the eventual audit.
-        lowerbound = max(lowerbound, dive_lb)
+        lowerbound = max(lowerbound, dive_lb)  # ty: ignore[unsound-assignment]
 
         if to_expand.best_ancestor and to_expand.best_ancestor.estimate <= lowerbound:
             frontier.replace_descendents(to_expand.best_ancestor)
@@ -183,7 +183,7 @@ def find_assertions(
                     ):
                         return False
 
-                    lowerbound = max(lowerbound, newn.best_ancestor.estimate)
+                    lowerbound = max(lowerbound, newn.best_ancestor.estimate)  # ty: ignore[unsound-assignment]
                     frontier.replace_descendents(newn.best_ancestor)
                 else:
                     frontier.insert_node(newn)
@@ -193,7 +193,7 @@ def find_assertions(
 def compute_raire_assertions(
     contest: Contest,
     cvrs: CVRS,
-    asn_func: Callable,
+    asn_func: Callable[[float], float],
     agap: float = 0.0,
 ) -> list[RaireAssertion]:
     """

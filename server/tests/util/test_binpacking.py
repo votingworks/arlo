@@ -386,7 +386,7 @@ class TestBucketList:
 class TestBalancedBucketList:
     def test_init(self, balancedbucketlist):
         assert balancedbucketlist.avg_size == 200, (
-            "Expected avg_size of {}, got {}".format(200, bucketlist.avg_size)
+            "Expected avg_size of {}, got {}".format(200, balancedbucketlist.avg_size)
         )
 
     def test_is_balanced(self, bucketlist, balancedbucketlist):

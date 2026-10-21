@@ -15,11 +15,23 @@
         "remotePort": 3000
       }
     ],
-    "typescript.tsdk": "client/node_modules/@typescript/old/lib",
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true,
     "[python]": {
-      "editor.defaultFormatter": "ms-python.black-formatter"
-    }
+      "editor.defaultFormatter": "charliermarsh.ruff"
+    },
+    "python.languageServer": "None"
+  },
+  "extensions": {
+    "recommendations": [
+      "astral-sh.ty",
+      "charliermarsh.ruff",
+      "esbenp.prettier-vscode"
+    ],
+    "unwantedRecommendations": [
+      "detachhead.basedpyright",
+      "ms-python.black-formatter",
+      "ms-python.vscode-pylance"
+    ]
   }
 }

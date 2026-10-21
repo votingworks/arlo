@@ -7,7 +7,7 @@ from ...audit_math import raire_utils
 from ...audit_math.raire_utils import NEBAssertion, NENAssertion, CVRS
 
 # TODO: update this type def
-AsnFunc = Callable
+AsnFunc = Callable[[float], float]
 
 
 def test_ranking_not_on_ballots():
@@ -354,7 +354,7 @@ def test_find_best_audit_simple():
     expected = raire_utils.NEBAssertion("Contest A", "winner", "loser")
 
     assert tree.best_assertion == expected
-    assert not tree.best_assertion.subsumes(expected)
+    assert not tree.best_assertion.subsumes(expected)  # ty: ignore[unresolved-attribute]
     assert not expected.subsumes(tree.best_assertion)
 
     assert tree.estimate == expected.difficulty

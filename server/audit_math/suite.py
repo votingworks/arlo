@@ -123,7 +123,7 @@ class BallotPollingStratum:
             + np.sum(np.log(v_u - np.arange(n_u)))
         )
 
-        def null_logLR(Nw):
+        def null_logLR(Nw):  # noqa: ANN001
             return (
                 (n_w > 0) * np.sum(np.log(Nw - np.arange(n_w)))
                 + (n_l > 0) * np.sum(np.log(Nw - null_margin - np.arange(n_l)))
@@ -141,7 +141,7 @@ class BallotPollingStratum:
         if upper_n_w_limit < n_w or (upper_n_w_limit - null_margin) < n_l:
             return 0
 
-        def LR_derivative(Nw):
+        def LR_derivative(Nw):  # noqa: ANN001
             return (
                 np.sum([1 / (Nw - i) for i in range(n_w)])
                 + np.sum([1 / (Nw - null_margin - i) for i in range(n_l)])
@@ -226,7 +226,7 @@ class BallotComparisonStratum:
         self.misstatements = misstatements
         self.sample_size = sample_size
 
-    def compute_pvalue(self, reported_margin, winner, loser, null_lambda) -> float:
+    def compute_pvalue(self, reported_margin, winner, loser, null_lambda) -> float:  # noqa: ANN001
         """
         Compute a p-value for a winner-loser pair for this strata based on its math type.
 
@@ -344,7 +344,7 @@ def maximize_fisher_combined_pvalue(
     assert Ln >= 0, f"{Wn, Ln, Un}"
     assert Un >= 0, f"{Wn, Ln, Un}"
 
-    def T2(delta):
+    def T2(delta):  # noqa: ANN001
         return (
             2
             * cvr_stratum.sample_size
@@ -353,7 +353,7 @@ def maximize_fisher_combined_pvalue(
             )
         )
 
-    def modulus(delta):
+    def modulus(delta):  # noqa: ANN001
         return (
             2 * Wn * np.log(1 + reported_margin * delta)
             + 2 * Ln * np.log(1 + reported_margin * delta)
@@ -364,7 +364,7 @@ def maximize_fisher_combined_pvalue(
     while True:
         test_lambdas = np.arange(lambda_lower, lambda_upper + stepsize, stepsize)
         if len(test_lambdas) < 5:
-            stepsize = (lambda_upper + 1 - lambda_lower) / 5
+            stepsize = (lambda_upper + 1 - lambda_lower) / 5  # ty: ignore[unsound-assignment]
             test_lambdas = np.arange(lambda_lower, lambda_upper + stepsize, stepsize)
 
         fisher_pvalues = np.empty_like(test_lambdas)
@@ -376,7 +376,7 @@ def maximize_fisher_combined_pvalue(
                         reported_margin, winner, loser, test_lambda
                     ),
                 ]
-            )
+            )  # ty: ignore[unsound-assignment]
             pvalue2: float = np.min(
                 [
                     1,
@@ -384,7 +384,7 @@ def maximize_fisher_combined_pvalue(
                         reported_margin, winner, loser, 1 - test_lambda
                     ),
                 ]
-            )
+            )  # ty: ignore[unsound-assignment]
 
             pvalues = [pvalue1, pvalue2]
             if np.any(np.array(pvalues) == 0):
@@ -394,7 +394,7 @@ def maximize_fisher_combined_pvalue(
                 fisher_pvalues[i] = 1 - sp.stats.chi2.cdf(obs, df=2 * len(pvalues))
 
         pvalue = np.max(fisher_pvalues)
-        alloc_lambda: float = test_lambdas[np.argmax(fisher_pvalues)]  # type: ignore
+        alloc_lambda: float = test_lambdas[np.argmax(fisher_pvalues)]  # ty: ignore[unsound-assignment]
 
         # If p-value is over the risk limit, then there's no need to refine the
         # maximization. We have a lower bound on the maximum.
@@ -418,9 +418,9 @@ def maximize_fisher_combined_pvalue(
         # to make it faster.
         lambda_lower = alloc_lambda - 2 * stepsize
         lambda_upper = alloc_lambda + 2 * stepsize
-        stepsize /= 10
+        stepsize /= 10  # ty: ignore[unsound-assignment]
 
-    return min(maximized_pvalue, 1.0)
+    return min(maximized_pvalue, 1.0)  # ty: ignore[unsound-return-statement]
 
 
 def try_n(
@@ -657,14 +657,14 @@ def get_sample_size(
     # the p-values for the first round.
 
     if bp_stratum.sample_size == 0 and cvr_stratum.sample_size == 0:
-        worst_winner = min(  # type: ignore
+        worst_winner = min(
             {winner: contest.candidates[winner] for winner in contest.winners},
             key=contest.candidates.get,
-        )
-        best_loser = max(  # type: ignore
+        )  # ty: ignore[no-matching-overload]
+        best_loser = max(
             {loser: contest.candidates[loser] for loser in contest.losers},
             key=contest.candidates.get,
-        )
+        )  # ty: ignore[no-matching-overload]
 
         sample_size = get_sample_size_for_wl_pair(
             alpha, contest, bp_stratum, cvr_stratum, worst_winner, best_loser
@@ -690,7 +690,10 @@ def get_sample_size(
 
 
 def compute_risk(
-    risk_limit: int, contest: Contest, bp_stratum, cvr_stratum
+    risk_limit: int,
+    contest: Contest,
+    bp_stratum,  # noqa: ANN001
+    cvr_stratum,  # noqa: ANN001
 ) -> tuple[float, bool]:
     """
     Computes a risk measurement for a given sample, using fisher's combining
@@ -745,7 +748,7 @@ def compute_risk(
             max_p <= alpha,
         )
 
-    return max_p, max_p <= alpha
+    return max_p, max_p <= alpha  # ty: ignore[unsound-return-statement]
 
 
 def misstatements(

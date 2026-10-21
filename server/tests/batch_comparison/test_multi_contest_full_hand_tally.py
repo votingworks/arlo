@@ -151,7 +151,7 @@ def audit_round(
             loser["id"]: 30 + overstatement,
         }
 
-    sampled_batch_contests = []
+    sampled_batch_contests: list[dict[str, set[str]]] = []
     for i, jurisdiction_id in enumerate(jurisdiction_ids):
         set_logged_in_user(
             client, UserType.JURISDICTION_ADMIN, ja_email(election_id, i)
@@ -165,7 +165,7 @@ def audit_round(
             for contest_id, contest_jurisdiction_ids in jurisdiction_ids_by_contest_id.items()
             if jurisdiction_id in contest_jurisdiction_ids
         ]
-        jurisdiction_batch_contests = {}
+        jurisdiction_batch_contests: dict[str, set[str]] = {}
         for batch in batches:
             batch_contest_ids = batch.get("contestIds", jurisdiction_contest_ids)
             jurisdiction_batch_contests[batch["name"]] = {

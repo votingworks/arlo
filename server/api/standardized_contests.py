@@ -165,7 +165,7 @@ def process_standardized_contests_file(election_id: str):
                 # 3. The selected choice name is still a valid option
                 if (
                     cvr_choice_name not in standardized_contest_choice_names
-                    and choice_name in standardized_contest_choice_names
+                    and choice_name in standardized_contest_choice_names  # ty: ignore[unsupported-operator]
                 ):
                     updated_contest_choice_name_standardizations[contest.id][
                         cvr_choice_name
@@ -223,14 +223,14 @@ def complete_upload_for_standardized_contests_file(election: Election):
         [FileType.CSV],
     )
 
-    election.standardized_contests = None
-    election.standardized_contests_file = File(
+    election.standardized_contests = None  # ty: ignore[invalid-assignment]
+    election.standardized_contests_file = File(  # ty: ignore[invalid-assignment]
         id=str(uuid.uuid4()),
         name=filename,
         storage_path=storage_path,
         uploaded_at=datetime.now(timezone.utc),
     )
-    election.standardized_contests_file.task = create_background_task(
+    election.standardized_contests_file.task = create_background_task(  # ty: ignore[invalid-assignment]
         process_standardized_contests_file, dict(election_id=election.id)
     )
     db_session.commit()

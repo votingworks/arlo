@@ -17,13 +17,13 @@ from server.websession import cleanup_sessions
 from server import api  # noqa
 
 
-def run_worker(worker_id: str, db_session, pause_between_tasks_seconds):
+def run_worker(worker_id: str, db_session, pause_between_tasks_seconds):  # noqa: ANN001
     # Heroku dynos are sent one or more SIGTERM signals when they are shut down,
     # then a SIGKILL if they don't exit after 30 seconds. If we're interrupted
     # in the middle of a task, reset it before exiting so it can be picked up by
     # another worker. The reset happens after unwinding, since the signal may
     # arrive while the session is mid-transaction.
-    def interrupt_handler(*_args):
+    def interrupt_handler(*_args):  # noqa: ANN002
         signal.signal(signal.SIGTERM, signal.SIG_IGN)
         signal.signal(signal.SIGINT, signal.SIG_IGN)
         sys.exit(1)

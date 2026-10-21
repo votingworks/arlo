@@ -3,19 +3,21 @@
 # that are relevant for database-backed storage, then simplifying for just our use case.
 
 import secrets
+from typing import Any
 from datetime import datetime, timezone
 
 from flask import Flask, Request
 from flask.sessions import SessionInterface, SessionMixin
 from werkzeug.datastructures import CallbackDict
+from typing_extensions import override
 from .models import WebSession
 from .database import db_session
 from . import config
 
 
-class ArloSession(CallbackDict, SessionMixin):
-    def __init__(self, sid=None, initial=None):
-        def on_update(self):
+class ArloSession(CallbackDict[str, Any], SessionMixin):
+    def __init__(self, sid=None, initial=None):  # noqa: ANN001
+        def on_update(self):  # noqa: ANN001
             self.modified = True
 
         CallbackDict.__init__(self, initial, on_update)
@@ -28,6 +30,7 @@ class ArloSessionInterface(SessionInterface):
     def _generate_sid(self):
         return secrets.token_urlsafe(50)
 
+    @override
     def open_session(self, app: Flask, request: Request):
         sid = request.cookies.get(app.config["SESSION_COOKIE_NAME"])
         if not sid:
@@ -40,7 +43,8 @@ class ArloSessionInterface(SessionInterface):
         else:
             return ArloSession(sid=self._generate_sid())
 
-    def save_session(self, app, session, response):
+    @override
+    def save_session(self, app, session, response):  # noqa: ANN001
         if not session.modified:
             return
 
@@ -88,7 +92,7 @@ class ArloSessionInterface(SessionInterface):
         )
 
 
-def cleanup_sessions(db_session):
+def cleanup_sessions(db_session):  # noqa: ANN001
     """
     Because we keep session freshness information in fields embedded inside the data column,
     the only marker in the database that we can safely and cleanly use to clean up a session is the updated_at field.

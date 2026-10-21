@@ -120,7 +120,7 @@ def create_election():
 @api.route("/election/<election_id>", methods=["DELETE"])
 @restrict_access([UserType.AUDIT_ADMIN])
 def delete_election(election: Election):
-    election.deleted_at = datetime.now(timezone.utc)
+    election.deleted_at = datetime.now(timezone.utc)  # ty: ignore[invalid-assignment]
 
     record_activity(
         DeleteAudit(timestamp=election.deleted_at, base=activity_base(election))

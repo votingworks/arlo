@@ -84,11 +84,11 @@ CONTEST_SCHEMA = {
 BALLOT_POLLING_CONTEST_SCHEMA = {
     "type": "object",
     "properties": {
-        **typing.cast(dict, CONTEST_SCHEMA["properties"]),
+        **typing.cast(dict[str, typing.Any], CONTEST_SCHEMA["properties"]),
         "totalBallotsCast": {"type": "integer", "minimum": 0},
     },
     "additionalProperties": False,
-    "required": typing.cast(list, CONTEST_SCHEMA["required"]) + ["totalBallotsCast"],
+    "required": CONTEST_SCHEMA["required"] + ["totalBallotsCast"],
 }
 
 # In ballot comparison audits, the AA selects contests from the standardized
@@ -163,7 +163,7 @@ def serialize_contest(contest: Contest) -> JSONDict:
                         jurisdiction_id_with_most_cvr_choices
                     ]
                 ):
-                    jurisdiction_id_with_most_cvr_choices = jurisdiction.id
+                    jurisdiction_id_with_most_cvr_choices = jurisdiction.id  # ty: ignore[unsound-assignment]
 
         if len(cvr_choice_names_by_jurisdiction) > 1:
             assert jurisdiction_id_with_most_cvr_choices is not None
@@ -360,7 +360,7 @@ def should_reprocess_batch_tallies(
     if len(previous_contests) != len(new_contests):
         return True
 
-    def normalize_contest(contest):
+    def normalize_contest(contest):  # noqa: ANN001
         contest = contest.copy()
         # This field isn't sent from the client, its computed on the backend, so
         # new_contests won't have it
@@ -414,7 +414,7 @@ def create_or_update_all_contests(election: Election):
 
     for contest in election.contests:
         db_session.delete(contest)
-    election.contests = [
+    election.contests = [  # ty: ignore[invalid-assignment]
         deserialize_contest(json_contest, election.id) for json_contest in json_contests
     ]
 
@@ -422,7 +422,7 @@ def create_or_update_all_contests(election: Election):
 
     if (
         election.audit_type == AuditType.BATCH_COMPARISON
-        and should_reprocess_batch_tallies(previous_contests, json_contests)
+        and should_reprocess_batch_tallies(previous_contests, json_contests)  # ty: ignore[possibly-unresolved-reference]
     ):
         user = get_loggedin_user(session)
         assert user[0] is not None
@@ -539,7 +539,7 @@ def put_contest_name_standardizations(election: Election):
 @api.route("/election/<election_id>/contest/standardizations", methods=["GET"])
 @restrict_access([UserType.AUDIT_ADMIN])
 def get_contest_name_standardizations(election: Election):
-    def standardizations(jurisdiction):
+    def standardizations(jurisdiction):  # noqa: ANN001
         if jurisdiction.cvr_contests_metadata is None:
             return None
         contests_needing_standardization = [
@@ -574,7 +574,9 @@ def get_contest_name_standardizations(election: Election):
         },
         cvrContestNames={
             jurisdiction.id: list(
-                typing.cast(dict, jurisdiction.cvr_contests_metadata).keys()
+                typing.cast(
+                    dict[str, typing.Any], jurisdiction.cvr_contests_metadata
+                ).keys()
             )
             for jurisdiction, jurisdiction_standardizations in standardizations_by_jurisdiction.items()
             if jurisdiction_standardizations
@@ -616,7 +618,7 @@ def put_contest_choice_name_standardizations(election: Election):  # pragma: no 
 )
 @restrict_access([UserType.AUDIT_ADMIN])
 def get_contest_choice_name_standardizations(election: Election):  # pragma: no cover
-    def get_standardizations_for_jurisdiction_and_contest(jurisdiction, contest):
+    def get_standardizations_for_jurisdiction_and_contest(jurisdiction, contest):  # noqa: ANN001
         # Get metadata with contest name standardizations applied but not contest choice name
         # standardizations applied
         metadata = cvrs.cvr_contests_metadata(

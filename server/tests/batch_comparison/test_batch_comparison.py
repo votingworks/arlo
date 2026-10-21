@@ -340,11 +340,11 @@ def test_batch_comparison_round_2(
             .first()
         )
         assert record is not None
-        return record
+        return record  # ty: ignore[unsound-return-statement]
 
     finalize_record = latest_finalize_record()
-    assert finalize_record.info["jurisdiction_id"] == jurisdiction_ids[0]
-    assert finalize_record.info["num_batches_with_discrepancies"] == len(
+    assert finalize_record.info["jurisdiction_id"] == jurisdiction_ids[0]  # ty: ignore[invalid-argument-type]
+    assert finalize_record.info["num_batches_with_discrepancies"] == len(  # ty: ignore[invalid-argument-type]
         expected_discrepancies_j1
     )
 
@@ -438,8 +438,8 @@ def test_batch_comparison_round_2(
     assert_ok(rv)
 
     finalize_record = latest_finalize_record()
-    assert finalize_record.info["jurisdiction_id"] == jurisdiction_ids[1]
-    assert finalize_record.info["num_batches_with_discrepancies"] == len(
+    assert finalize_record.info["jurisdiction_id"] == jurisdiction_ids[1]  # ty: ignore[invalid-argument-type]
+    assert finalize_record.info["num_batches_with_discrepancies"] == len(  # ty: ignore[invalid-argument-type]
         expected_discrepancies_j2
     )
 

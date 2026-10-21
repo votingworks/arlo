@@ -262,7 +262,7 @@ def validate_and_parse_values(
 ) -> CSVDictIterator:
     columns_by_header = {column.name: column for column in columns}
 
-    def parse_and_validate_value(header, value, r):
+    def parse_and_validate_value(header, value, r):  # noqa: ANN001
         where = f"column {header}, row {r + 2}"
         column = columns_by_header[header]
 
@@ -307,7 +307,7 @@ def validate_and_parse_values(
         }
 
 
-def format_tuple(tup: tuple) -> str:
+def format_tuple(tup: tuple[object, ...]) -> str:
     return str(tup[0]) if len(tup) == 1 else str(tup)
 
 

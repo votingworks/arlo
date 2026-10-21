@@ -44,14 +44,14 @@ def start_candidate_totals_bundle_generation(election: Election):
     db_session.add(bundle)
 
     # Create a File record that will be populated by the background task
-    bundle.file = File(
+    bundle.file = File(  # ty: ignore[invalid-assignment]
         id=str(uuid.uuid4()),
         name="",
         storage_path="",  # Will be set by background task
         uploaded_at=datetime.now(timezone.utc),
     )
 
-    bundle.file.task = create_background_task(
+    bundle.file.task = create_background_task(  # ty: ignore[invalid-assignment]
         generate_batch_files_bundle,
         dict(
             election_id=election.id,
@@ -88,14 +88,14 @@ def start_manifests_bundle_generation(election: Election):
     db_session.add(bundle)
 
     # Create a File record that will be populated by the background task
-    bundle.file = File(
+    bundle.file = File(  # ty: ignore[invalid-assignment]
         id=str(uuid.uuid4()),
         name="",
         storage_path="",  # Will be set by background task
         uploaded_at=datetime.now(timezone.utc),
     )
 
-    bundle.file.task = create_background_task(
+    bundle.file.task = create_background_task(  # ty: ignore[invalid-assignment]
         generate_batch_files_bundle,
         dict(
             election_id=election.id,
@@ -166,7 +166,7 @@ def _get_bundle_download_url(bundle: BatchFileBundle) -> str:
             Params={"Bucket": bucket_name, "Key": key},
             ExpiresIn=3600,  # 1 hour
         )
-        return url
+        return url  # ty: ignore[unsound-return-statement]
     else:
         # For local storage, return API endpoint
         return f"/api/election/{bundle.election_id}/batch-files/bundle/{bundle.id}/download"

@@ -442,7 +442,7 @@ def test_audit_board_contests_list_order(
     )
     db_contests[0].name = "ZZZ Contest"
     db_contests[1].name = "AAA Contest"
-    db_choices = sorted(db_contests[0].choices, key=lambda c: c.created_at)  # type: ignore
+    db_choices = sorted(db_contests[0].choices, key=lambda c: c.created_at)
     db_choices[0].name = "ZZZ Choice"
     db_choices[1].name = "AAA Choice"
     db_session.commit()
@@ -460,7 +460,7 @@ def test_audit_board_contests_list_order(
         .order_by(Contest.created_at)
         .all()
     )
-    db_choices = sorted(db_contests[0].choices, key=lambda c: c.created_at)  # type: ignore
+    db_choices = sorted(db_contests[0].choices, key=lambda c: c.created_at)
 
     assert contests[0]["name"] == db_contests[0].name
     assert contests[1]["name"] == db_contests[1].name

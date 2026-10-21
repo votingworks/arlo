@@ -8,7 +8,7 @@ from ..helpers import *
 from ... import config
 
 
-def copy_dict_and_remove_key(input: dict, key: str):
+def copy_dict_and_remove_key(input: dict[str, Any], key: str):
     return {k: input[k] for k in input if k != key}
 
 

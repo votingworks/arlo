@@ -4,10 +4,11 @@ computations.
 """
 
 import operator
-from typing import TypedDict
+from typing import Any, TypedDict
+from typing_extensions import override
 
 
-def from_db_contest(db_contest):
+def from_db_contest(db_contest):  # noqa: ANN001
     """
     Builds sampler_contest object from the database
 
@@ -53,7 +54,7 @@ class Contest:
     losers: dict[str, int]  # list of all the losers
 
     diluted_margin: float  # The smallest diluted margin in this contest
-    margins: dict[str, dict]  # dict of the margins for this contest
+    margins: dict[str, dict[str, Any]]  # dict of the margins for this contest
 
     def __init__(self, name: str, contest_info_dict: dict[str, int]):
         """
@@ -177,6 +178,7 @@ class Contest:
         else:
             self.diluted_margin = -1.0
 
+    @override
     def __repr__(self) -> str:
         """
         Generates a string representation of this object, for debugging.

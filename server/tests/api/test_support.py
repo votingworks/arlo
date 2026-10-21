@@ -649,7 +649,7 @@ def test_support_log_in_as_audit_admin(
 ):
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)
 
-    with client.session_transaction() as session:  # type: ignore
+    with client.session_transaction() as session:
         original_created_at = session["_created_at"]
         original_last_request_at = session["_last_request_at"]
 
@@ -658,7 +658,7 @@ def test_support_log_in_as_audit_admin(
     assert urlparse(rv.location).path == "/"
     assert urlparse(rv.location).port == urlparse(HTTP_ORIGIN).port
 
-    with client.session_transaction() as session:  # type: ignore
+    with client.session_transaction() as session:
         assert session["_user"]["type"] == UserType.AUDIT_ADMIN
         assert session["_user"]["key"] == DEFAULT_AA_EMAIL
         assert session["_created_at"] == original_created_at
@@ -671,7 +671,7 @@ def test_support_log_in_as_jurisdiction_admin(
 ):
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)
 
-    with client.session_transaction() as session:  # type: ignore
+    with client.session_transaction() as session:
         original_created_at = session["_created_at"]
         original_last_request_at = session["_last_request_at"]
 
@@ -682,7 +682,7 @@ def test_support_log_in_as_jurisdiction_admin(
     assert urlparse(rv.location).path == "/"
     assert urlparse(rv.location).port == urlparse(HTTP_ORIGIN).port
 
-    with client.session_transaction() as session:  # type: ignore
+    with client.session_transaction() as session:
         assert session["_user"]["type"] == UserType.JURISDICTION_ADMIN
         assert session["_user"]["key"] == default_ja_email(election_id)
         assert session["_created_at"] == original_created_at
@@ -692,7 +692,7 @@ def test_support_log_in_as_jurisdiction_admin(
 def test_support_log_in_to_audit_as_audit_admin(client: FlaskClient, election_id: str):
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)
 
-    with client.session_transaction() as session:  # type: ignore
+    with client.session_transaction() as session:
         original_created_at = session["_created_at"]
         original_last_request_at = session["_last_request_at"]
 
@@ -701,7 +701,7 @@ def test_support_log_in_to_audit_as_audit_admin(client: FlaskClient, election_id
     assert urlparse(rv.location).path == f"/election/{election_id}"
     assert urlparse(rv.location).port == urlparse(HTTP_ORIGIN).port
 
-    with client.session_transaction() as session:  # type: ignore
+    with client.session_transaction() as session:
         assert session["_user"]["type"] == UserType.AUDIT_ADMIN
         assert session["_user"]["key"] == DEFAULT_AA_EMAIL
         assert session["_created_at"] == original_created_at
@@ -713,7 +713,7 @@ def test_support_log_in_to_audit_as_jurisdiction_admin(
 ):
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)
 
-    with client.session_transaction() as session:  # type: ignore
+    with client.session_transaction() as session:
         original_created_at = session["_created_at"]
         original_last_request_at = session["_last_request_at"]
 
@@ -725,7 +725,7 @@ def test_support_log_in_to_audit_as_jurisdiction_admin(
     )
     assert urlparse(rv.location).port == urlparse(HTTP_ORIGIN).port
 
-    with client.session_transaction() as session:  # type: ignore
+    with client.session_transaction() as session:
         assert session["_user"]["type"] == UserType.JURISDICTION_ADMIN
         assert session["_user"]["key"] == default_ja_email(election_id)
         assert session["_created_at"] == original_created_at

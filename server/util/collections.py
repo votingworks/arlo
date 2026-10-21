@@ -5,12 +5,12 @@ import itertools
 T = TypeVar("T")
 
 
-def group_by_iter(items: Iterable[T], key=None):
-    return itertools.groupby(sorted(items, key=key), key=key)
+def group_by_iter(items: Iterable[T], key=None):  # noqa: ANN001
+    return itertools.groupby(sorted(items, key=key), key=key)  # ty: ignore[no-matching-overload]
 
 
 # group_by groups items in a collection according to a key function.
-def group_by(items: Iterable[T], key=None):
+def group_by(items: Iterable[T], key=None):  # noqa: ANN001
     return {k: list(vs) for k, vs in group_by_iter(items, key=key)}
 
 

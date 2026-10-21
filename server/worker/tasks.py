@@ -3,7 +3,7 @@ import traceback
 import logging
 from inspect import signature
 from datetime import datetime
-from typing import Callable
+from typing import Any, Callable, TypeVar
 from sqlalchemy.orm import Session
 import sentry_sdk
 
@@ -24,27 +24,30 @@ class UserError(Exception):
     pass
 
 
-task_dispatch: dict[str, Callable] = {}
+task_dispatch: dict[str, Callable[..., Any]] = {}
+
+
+F = TypeVar("F", bound=Callable[..., Any])
 
 
 # Decorator to register background task handlers. We use the handler's function
 # name as the key.
-def background_task(task_handler: Callable):
-    task_dispatch[task_handler.__name__] = task_handler
+def background_task(task_handler: F) -> F:
+    task_dispatch[task_handler.__name__] = task_handler  # ty: ignore[unresolved-attribute]
     assert "election_id" in signature(task_handler).parameters, (
-        f"Payload for task {task_handler.__name__} must include 'election_id' to easily identify all task logs for a single audit."
+        f"Payload for task {task_handler.__name__} must include 'election_id' to easily identify all task logs for a single audit."  # ty: ignore[unresolved-attribute]
     )
     return task_handler
 
 
 def create_background_task(
-    task_handler: Callable,
+    task_handler: Callable[..., Any],
     payload: JSONDict,
     # Use the global db_session by default, but allow it to be overridden for testing.
-    db_session=db_session,
+    db_session=db_session,  # noqa: ANN001
 ) -> BackgroundTask:
-    assert task_handler.__name__ in task_dispatch, (
-        f"No task handler registered for {task_handler.__name__}."
+    assert task_handler.__name__ in task_dispatch, (  # ty: ignore[unresolved-attribute]
+        f"No task handler registered for {task_handler.__name__}."  # ty: ignore[unresolved-attribute]
         " Did you forget to use the @background_task decorator?"
     )
     task_parameters = set(signature(task_handler).parameters.keys()) - {
@@ -52,14 +55,14 @@ def create_background_task(
         "db_session",
     }
     assert task_parameters == set(payload.keys()), (
-        f"Payload for task {task_handler.__name__} must match the handler's parameters.\n"
+        f"Payload for task {task_handler.__name__} must match the handler's parameters.\n"  # ty: ignore[unresolved-attribute]
         f"Expected: {task_parameters}\n"
         f"Got: {set(payload.keys())}\n"
     )
 
     task = BackgroundTask(
         id=str(uuid.uuid4()),
-        task_name=task_handler.__name__,
+        task_name=task_handler.__name__,  # ty: ignore[unresolved-attribute]
         payload=payload,
         # Only allow one task per audit to run at a time. This ensures that
         # tasks won't try to access the same db resources at the same time.
@@ -69,7 +72,7 @@ def create_background_task(
 
     # For testing, we often prefer tasks to run immediately, instead of asynchronously.
     if config.RUN_BACKGROUND_TASKS_IMMEDIATELY:
-        task.started_at = datetime.now(timezone.utc)
+        task.started_at = datetime.now(timezone.utc)  # ty: ignore[invalid-assignment]
         db_session.commit()
         run_task(task, db_session)
 
@@ -97,7 +100,7 @@ def emit_progress_for_task(task_id: str):
     return emit_progress
 
 
-def run_task(task: BackgroundTask, db_session):
+def run_task(task: BackgroundTask, db_session):  # noqa: ANN001
     task_handler = task_dispatch.get(task.task_name)
     assert task_handler, (
         f"No task handler registered for {task.task_name}."
@@ -118,7 +121,7 @@ def run_task(task: BackgroundTask, db_session):
     try:
         task_handler(**task_args)
 
-        task.completed_at = datetime.now(timezone.utc)
+        task.completed_at = datetime.now(timezone.utc)  # ty: ignore[invalid-assignment]
 
         db_session.commit()
 
@@ -127,11 +130,11 @@ def run_task(task: BackgroundTask, db_session):
     except Exception as error:
         db_session.rollback()
 
-        task.completed_at = datetime.now(timezone.utc)
+        task.completed_at = datetime.now(timezone.utc)  # ty: ignore[invalid-assignment]
 
         # Some exceptions stringify nicely, some don't (e.g. StopIteration) so
         # we just print the exception class name.
-        task.error = str(error) or str(error.__class__.__name__)
+        task.error = str(error) or str(error.__class__.__name__)  # ty: ignore[invalid-assignment]
 
         db_session.commit()
 
@@ -148,7 +151,7 @@ def run_task(task: BackgroundTask, db_session):
             sentry_sdk.capture_exception(error)
 
 
-def claim_next_task(worker_id: str, db_session) -> BackgroundTask | None:
+def claim_next_task(worker_id: str, db_session) -> BackgroundTask | None:  # noqa: ANN001
     # Use SELECT ... FOR UPDATE to lock all queued tasks, ensuring that only a
     # single worker can claim a single task at a time. This ensures that we get
     # an accurate view of which tasks are available to claim. If another worker has
@@ -202,17 +205,17 @@ def claim_next_task(worker_id: str, db_session) -> BackgroundTask | None:
         .order_by(BackgroundTask.created_at)
         .limit(1)
         .one_or_none()
-    )
+    )  # ty: ignore[unsound-assignment]
     if task:
-        task.worker_id = worker_id
-        task.started_at = datetime.now(timezone.utc)
+        task.worker_id = worker_id  # ty: ignore[invalid-assignment]
+        task.started_at = datetime.now(timezone.utc)  # ty: ignore[invalid-assignment]
     # Commit the transaction to release the table lock, regardless of whether we
     # claimed a task.
     db_session.commit()
     return task
 
 
-def reset_task(task: BackgroundTask, db_session):
+def reset_task(task: BackgroundTask, db_session):  # noqa: ANN001
     # If a task got interrupted during processing, rollback any database changes
     # it made so far.
     db_session.rollback()
@@ -225,12 +228,12 @@ def reset_task(task: BackgroundTask, db_session):
         return
 
     logger.info(f"TASK_RESET {task_log_data(task)}")
-    task.worker_id = None
-    task.started_at = None
+    task.worker_id = None  # ty: ignore[invalid-assignment]
+    task.started_at = None  # ty: ignore[invalid-assignment]
     db_session.commit()
 
 
-def reset_worker_tasks(worker_id: str, db_session):
+def reset_worker_tasks(worker_id: str, db_session):  # noqa: ANN001
     db_session.rollback()
     in_progress_tasks = (
         db_session.query(BackgroundTask)

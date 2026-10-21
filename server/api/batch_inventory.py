@@ -108,11 +108,11 @@ class ElectionResults(TypedDict):
     batch_tallies: dict[BatchKey, dict[str, int]]
 
 
-def dict_to_items_list(dictionary):
+def dict_to_items_list(dictionary):  # noqa: ANN001
     return [dict(key=key, value=value) for key, value in dictionary.items()]
 
 
-def items_list_to_dict(items):
+def items_list_to_dict(items):  # noqa: ANN001
     return {
         (tuple(item["key"]) if isinstance(item["key"], list) else item["key"]): item[
             "value"
@@ -148,7 +148,7 @@ def validate_choice_name_and_get_choice_id(
         and choice_name.lower() != "write-in"
     ):
         raise UserError(f"Unrecognized choice in CVR file: {choice_name}")
-    return choice_id
+    return choice_id  # ty: ignore[unsound-return-statement]
 
 
 @background_task
@@ -167,7 +167,7 @@ def process_batch_inventory_cvr_file(
     jurisdiction = Jurisdiction.query.get(jurisdiction_id)
     batch_inventory_data: BatchInventoryData = BatchInventoryData.query.get(
         jurisdiction_id
-    )
+    )  # ty: ignore[unsound-assignment]
     contests = list(jurisdiction.contests)
     cvr_file = retrieve_file_to_buffer(batch_inventory_data.cvr_file, working_directory)
 
@@ -299,12 +299,12 @@ def process_batch_inventory_cvr_file(
             batch_to_counting_group=dict_to_items_list(batch_to_counting_group),
             batch_tallies=dict_to_items_list(batch_tallies),
         )
-        batch_inventory_data.election_results = election_results
+        batch_inventory_data.election_results = election_results  # ty: ignore[invalid-assignment]
 
         # If tabulator status file already uploaded, try reprocessing it, since it
         # validates tabulator names against the CVR file.
         if batch_inventory_data.tabulator_status_file:
-            batch_inventory_data.tabulator_id_to_name = None
+            batch_inventory_data.tabulator_id_to_name = None  # ty: ignore[invalid-assignment]
             batch_inventory_data.tabulator_status_file.task = create_background_task(
                 process_batch_inventory_tabulator_status_file,
                 dict(
@@ -396,7 +396,7 @@ def process_batch_inventory_cvr_file(
                         f"Unable to find batch for CVR number {cvr_number} in ballots files"
                     )
                 batch = cvr_number_to_batch[cvr_number]
-                batch_key: BatchKey = ("", batch)
+                batch_key: BatchKey = ("", batch)  # ty: ignore[unsound-assignment]
                 ballot_count_by_batch[batch_key] += 1
 
                 for contest in contests:
@@ -448,7 +448,7 @@ def process_batch_inventory_cvr_file(
                         required=False,
                     )
 
-                    batch_key: BatchKey = ("", batch)
+                    batch_key: BatchKey = ("", batch)  # ty: ignore[unsound-assignment]
                     choice_id = validate_choice_name_and_get_choice_id(
                         contest, choice_name
                     )
@@ -470,11 +470,11 @@ def process_batch_inventory_cvr_file(
 
         election_results: ElectionResults = dict(
             ballot_count_by_batch=dict_to_items_list(ballot_count_by_batch),
-            ballot_count_by_group=None,
-            batch_to_counting_group=None,
+            ballot_count_by_group=None,  # ty: ignore[invalid-argument-type]
+            batch_to_counting_group=None,  # ty: ignore[invalid-argument-type]
             batch_tallies=dict_to_items_list(batch_tallies),
         )
-        batch_inventory_data.election_results = election_results
+        batch_inventory_data.election_results = election_results  # ty: ignore[invalid-assignment]
 
     def process_ess_md():
         """Process CVR files from an older version of ES&S that's currently in use in Maryland.
@@ -545,7 +545,7 @@ def process_batch_inventory_cvr_file(
             batch = column_value(
                 row, "Precinct", row_index + 1, header_indices, required=True
             )
-            batch_key: BatchKey = (source_name, batch)
+            batch_key: BatchKey = (source_name, batch)  # ty: ignore[unsound-assignment]
             ballot_count_by_batch[batch_key] += 1
             batch_to_counting_group.setdefault(batch_key, source_name)
 
@@ -575,11 +575,11 @@ def process_batch_inventory_cvr_file(
 
         election_results: ElectionResults = dict(
             ballot_count_by_batch=dict_to_items_list(ballot_count_by_batch),
-            ballot_count_by_group=None,
+            ballot_count_by_group=None,  # ty: ignore[invalid-argument-type]
             batch_to_counting_group=dict_to_items_list(batch_to_counting_group),
             batch_tallies=dict_to_items_list(batch_tallies),
         )
-        batch_inventory_data.election_results = election_results
+        batch_inventory_data.election_results = election_results  # ty: ignore[invalid-assignment]
 
     def process_hart():
         ballot_count_by_batch: dict[BatchKey, int] = defaultdict(int)
@@ -610,7 +610,7 @@ def process_batch_inventory_cvr_file(
             batch_key: BatchKey = (
                 "",
                 batch_key_value,
-            )  # Tabulator ID is not present in Hart CVRs
+            )  # Tabulator ID is not present in Hart CVRs  # ty: ignore[unsound-assignment]
 
             ballot_count_by_batch[batch_key] += 1
             contest_results = {
@@ -647,11 +647,11 @@ def process_batch_inventory_cvr_file(
 
         election_results: ElectionResults = dict(
             ballot_count_by_batch=dict_to_items_list(ballot_count_by_batch),
-            ballot_count_by_group=None,
-            batch_to_counting_group=None,
+            ballot_count_by_group=None,  # ty: ignore[invalid-argument-type]
+            batch_to_counting_group=None,  # ty: ignore[invalid-argument-type]
             batch_tallies=dict_to_items_list(batch_tallies),
         )
-        batch_inventory_data.election_results = election_results
+        batch_inventory_data.election_results = election_results  # ty: ignore[invalid-assignment]
 
     def process():
         logging.info(
@@ -787,7 +787,8 @@ def process_batch_inventory_tabulator_status_file(
 
         root = cvr_xml.getroot()
         is_ms_excel_file = re.match(
-            r"\{urn:schemas-microsoft-com:office:spreadsheet\}", root.tag
+            r"\{urn:schemas-microsoft-com:office:spreadsheet\}",
+            root.tag,  # ty: ignore[unresolved-attribute]
         )
         tabulator_id_to_name = (
             get_tabulator_id_to_name_dict_for_excel_file(cvr_xml)
@@ -867,7 +868,7 @@ def set_batch_inventory_system_type(
         File.query.filter_by(id=batch_inventory_data.cvr_file_id).delete()
     if batch_inventory_data.tabulator_status_file_id:
         File.query.filter_by(id=batch_inventory_data.tabulator_status_file_id).delete()
-    batch_inventory_data.election_results = None
+    batch_inventory_data.election_results = None  # ty: ignore[invalid-assignment]
     clear_sign_off(batch_inventory_data)
 
     db_session.commit()
@@ -964,7 +965,7 @@ def complete_upload_for_batch_inventory_cvr(
         storage_path=storage_path,
         uploaded_at=datetime.now(timezone.utc),
     )
-    batch_inventory_data.cvr_file.task = create_background_task(
+    batch_inventory_data.cvr_file.task = create_background_task(  # ty: ignore[invalid-assignment]
         process_batch_inventory_cvr_file,
         dict(
             election_id=election.id,
@@ -1093,7 +1094,7 @@ def complete_upload_for_batch_inventory_tabulator_status(
         storage_path=storage_path,
         uploaded_at=datetime.now(timezone.utc),
     )
-    batch_inventory_data.tabulator_status_file.task = create_background_task(
+    batch_inventory_data.tabulator_status_file.task = create_background_task(  # ty: ignore[invalid-assignment]
         process_batch_inventory_tabulator_status_file,
         dict(
             election_id=election.id,
@@ -1177,7 +1178,7 @@ def download_batch_inventory_tabulator_status(
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def download_batch_inventory_worksheet(election: Election, jurisdiction: Jurisdiction):
     batch_inventory_data = get_or_404(BatchInventoryData, jurisdiction.id)
-    election_results: ElectionResults = batch_inventory_data.election_results
+    election_results: ElectionResults = batch_inventory_data.election_results  # ty: ignore[unsound-assignment]
 
     csv_io = io.StringIO()
     worksheet = csv.writer(csv_io)
@@ -1252,8 +1253,8 @@ def batch_inventory_sign_off_status(
 
 
 def clear_sign_off(batch_inventory_data: BatchInventoryData):
-    batch_inventory_data.signed_off_at = None
-    batch_inventory_data.sign_off_user_id = None
+    batch_inventory_data.signed_off_at = None  # ty: ignore[invalid-assignment]
+    batch_inventory_data.sign_off_user_id = None  # ty: ignore[invalid-assignment]
 
 
 @api.route(
@@ -1298,7 +1299,7 @@ def download_batch_inventory_ballot_manifest(
     election: Election, jurisdiction: Jurisdiction
 ):
     batch_inventory_data = get_or_404(BatchInventoryData, jurisdiction.id)
-    election_results: ElectionResults = batch_inventory_data.election_results
+    election_results: ElectionResults = batch_inventory_data.election_results  # ty: ignore[unsound-assignment]
 
     csv_io = io.StringIO()
     ballot_manifest = csv.writer(csv_io)
@@ -1346,7 +1347,7 @@ def download_batch_inventory_batch_tallies(
     election: Election, jurisdiction: Jurisdiction
 ):
     batch_inventory_data = get_or_404(BatchInventoryData, jurisdiction.id)
-    election_results: ElectionResults = batch_inventory_data.election_results
+    election_results: ElectionResults = batch_inventory_data.election_results  # ty: ignore[unsound-assignment]
 
     contest_choice_csv_headers = construct_contest_choice_csv_headers(
         election, jurisdiction
