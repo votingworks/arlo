@@ -702,6 +702,7 @@ def test_standardized_contests_cannot_change_after_audit_started(
     sampled_ballots = (
         SampledBallot.query.join(SampledBallotDraw)
         .filter_by(round_id=round_1_id)
+        .distinct()
         .limit(3)
         .all()
     )
