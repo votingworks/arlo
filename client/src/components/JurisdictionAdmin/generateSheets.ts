@@ -21,6 +21,7 @@ const headingFontSize = 18
 const largeFontSize = 40
 const extraLargeFontSize = 80
 const subHeadingFontSize = 16
+const tallySheetContestNameFontSize = 14
 const sectionBottomMargin = 24
 const pBottomMargin = 10
 const drawingLineWidth = 1
@@ -518,6 +519,8 @@ export const downloadBatchTallySheets = async (
           if (data.cell.section === 'head' && data.row.index === 0) {
             // eslint-disable-next-line no-param-reassign
             data.cell.styles.fillColor = Colors.LIGHT_GRAY1
+            // eslint-disable-next-line no-param-reassign
+            data.cell.styles.fontSize = tallySheetContestNameFontSize
           }
         },
         willDrawCell(data) {
@@ -803,7 +806,6 @@ export const downloadTallyEntryLoginLinkPrintout = async (
   return doc.output() // returned for test snapshots
 }
 
-const STACK_LABEL_MAX_CONTEST_NAME_LENGTH = 40
 const STACK_LABEL_MAX_CANDIDATE_NAME_LENGTH = 20
 const STACK_LABEL_TITLE_LENGTH_XL_FONT_CUTOFF = 12
 const STACK_LABEL_TEXT_COLOR = Colors.GRAY2
@@ -819,9 +821,22 @@ const STACK_LABEL_TITLE_COLORS = [
   Colors.DARK_GRAY1,
   Colors.INDIGO1,
 ]
-const DEFAULT_STACK_LABELS = [
-  { title: 'No Vote', subtitle: 'Undervote, overvote, blank, etc.' },
-  { title: 'For Review', subtitle: 'Undetermined, duplicated, etc.' },
+interface IStackLabel {
+  title: string
+  contestName: string
+  detail?: string
+}
+const DEFAULT_STACK_LABELS: IStackLabel[] = [
+  {
+    title: 'No Vote',
+    contestName: 'All contests',
+    detail: 'Undervote, overvote, blank, etc.',
+  },
+  {
+    title: 'For Review',
+    contestName: 'All contests',
+    detail: 'Undetermined, duplicated, etc.',
+  },
 ]
 
 function formCandidateLabelTitle(candidateFullName: string): string {
@@ -845,19 +860,11 @@ function formCandidateLabelTitle(candidateFullName: string): string {
     : nameToUse
 }
 
-function formCandidateLabelSubtitle(contestName: string): string {
-  return contestName.length > STACK_LABEL_MAX_CONTEST_NAME_LENGTH
-    ? `${contestName.slice(0, STACK_LABEL_MAX_CONTEST_NAME_LENGTH)}…`
-    : contestName
-}
-
-function formCandidateLabels(
-  contests: IMinimalContest[]
-): { title: string; subtitle: string }[] {
+function formCandidateLabels(contests: IMinimalContest[]): IStackLabel[] {
   return contests.flatMap(contest =>
     contest.choices.map(choice => ({
       title: formCandidateLabelTitle(choice.name),
-      subtitle: formCandidateLabelSubtitle(contest.name),
+      contestName: contest.name,
     }))
   )
 }
@@ -869,8 +876,7 @@ export const downloadStackLabels = async (
 ): Promise<string> => {
   const doc = new jsPDF({ format: 'letter', unit: 'pt' })
 
-  const candidateSigns = formCandidateLabels(contests)
-  const allSigns = DEFAULT_STACK_LABELS.concat(candidateSigns)
+  const allSigns = DEFAULT_STACK_LABELS.concat(formCandidateLabels(contests))
   for (let i = 0; i < allSigns.length; i += 1) {
     if (i !== 0) {
       doc.addPage()
@@ -883,14 +889,13 @@ export const downloadStackLabels = async (
     doc.setFont('Helvetica', 'normal').setFontSize(defaultFontSize)
     doc.setTextColor(STACK_LABEL_TEXT_COLOR)
     const foldCaption = 'Fold here and place at edge or table or tray'
-    let x = pageMargin / 2
+    const x = pageMargin / 2
     let y = pageHeight / 2
     doc.text(foldCaption, x, y)
     doc.setLineDashPattern([1, 1], 0)
     y += pBottomMargin
     doc.line(x, y, pageWidth - pageMargin / 2, y)
 
-    // Right-side up (bottom half of page)
     const titleText = sign.title
     const titleFontSize =
       titleText.length > STACK_LABEL_TITLE_LENGTH_XL_FONT_CUTOFF
@@ -899,30 +904,48 @@ export const downloadStackLabels = async (
     doc.setFont('Helvetica', 'bold').setFontSize(titleFontSize)
     doc.setTextColor(titleColor)
     const titleDimensions = doc.getTextDimensions(titleText)
-    x = (pageWidth - titleDimensions.w) / 2
-    y = (pageHeight * 3) / 4 - titleDimensions.h / 2
-    doc.text(titleText, x, y)
 
-    doc.setFont('Helvetica', 'normal').setFontSize(defaultFontSize)
-    doc.setTextColor(STACK_LABEL_TEXT_COLOR)
-    const subtitleText = sign.subtitle
-    const subtitleDimensions = doc.getTextDimensions(subtitleText)
-    x = (pageWidth - subtitleDimensions.w) / 2
-    y += sectionBottomMargin * 2
-    doc.text(subtitleText, x, y)
+    // Contest name above the title and detail below it
+    const renderHalf = (titleBaselineY: number, mirrored: boolean) => {
+      const dir = mirrored ? -1 : 1
+      const centered = (text: string, lineY: number) => {
+        const w = doc.getTextWidth(text)
+        if (mirrored) {
+          doc.text(text, (pageWidth + w) / 2, lineY, { angle: 180 })
+        } else {
+          doc.text(text, (pageWidth - w) / 2, lineY)
+        }
+      }
 
-    // Mirrored (top half of page)
-    doc.setFont('Helvetica', 'bold').setFontSize(titleFontSize)
-    doc.setTextColor(titleColor)
-    x = (pageWidth + titleDimensions.w) / 2
-    y = pageHeight / 4 - titleDimensions.h / 2
-    doc.text(titleText, x, y, { angle: 180 })
+      doc.setFont('Helvetica', 'bold').setFontSize(subHeadingFontSize)
+      doc.setTextColor(Colors.DARK_GRAY1)
+      const contestLines: string[] = doc.splitTextToSize(
+        sign.contestName,
+        pageContentWidth
+      )
+      const lineHeight = doc.getLineHeight()
+      contestLines.forEach((line, lineIndex) => {
+        const linesBelow = contestLines.length - 1 - lineIndex
+        centered(
+          line,
+          titleBaselineY -
+            dir * (titleDimensions.h + sectionBottomMargin / 2) -
+            dir * linesBelow * lineHeight
+        )
+      })
 
-    doc.setFont('Helvetica', 'normal').setFontSize(defaultFontSize)
-    doc.setTextColor(STACK_LABEL_TEXT_COLOR)
-    x = (pageWidth + subtitleDimensions.w) / 2
-    y -= sectionBottomMargin * 2
-    doc.text(subtitleText, x, y, { angle: 180 })
+      doc.setFont('Helvetica', 'bold').setFontSize(titleFontSize)
+      doc.setTextColor(titleColor)
+      centered(titleText, titleBaselineY)
+
+      if (sign.detail) {
+        doc.setFont('Helvetica', 'normal').setFontSize(defaultFontSize)
+        doc.setTextColor(STACK_LABEL_TEXT_COLOR)
+        centered(sign.detail, titleBaselineY + dir * sectionBottomMargin * 2)
+      }
+    }
+    renderHalf((pageHeight * 3) / 4 - titleDimensions.h / 2, false)
+    renderHalf(pageHeight / 4 - titleDimensions.h / 2, true)
   }
 
   await doc.save(`Stack Labels - ${jurisdictionName} - ${auditName}.pdf`, {

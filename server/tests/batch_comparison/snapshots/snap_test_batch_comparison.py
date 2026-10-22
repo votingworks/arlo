@@ -153,7 +153,9 @@ snapshots["test_batch_comparison_round_2 11"] = {
     "status": "NOT_STARTED",
 }
 
-snapshots["test_batch_comparison_round_2 12"] = """Batch Name,Container,Tabulator
+snapshots[
+    "test_batch_comparison_round_2 12"
+] = """Batch Name,Container,Tabulator,Contests
 """
 
 snapshots["test_batch_comparison_round_2 13"] = """######## ELECTION INFO ########\r

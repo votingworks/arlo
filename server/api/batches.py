@@ -90,9 +90,15 @@ def batches_to_audit_in_round(
 def get_batch_retrieval_list(
     election: Election, jurisdiction: Jurisdiction, round: Round
 ):
-    retrieval_list_rows = [["Batch Name", "Container", "Tabulator"]] + [
-        [batch.name, batch.container, batch.tabulator]
-        for batch, _ in batches_to_audit_in_round(jurisdiction, round)
+    contest_names = {contest.id: contest.name for contest in jurisdiction.contests}
+    retrieval_list_rows = [["Batch Name", "Container", "Tabulator", "Contests"]] + [
+        [
+            batch.name,
+            batch.container,
+            batch.tabulator,
+            "; ".join(contest_names[contest_id] for contest_id in contest_ids),
+        ]
+        for batch, contest_ids in batches_to_audit_in_round(jurisdiction, round)
     ]
 
     csv_io = io.StringIO()
