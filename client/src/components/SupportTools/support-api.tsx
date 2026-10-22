@@ -46,6 +46,7 @@ export interface IRound {
   id: string
   endedAt: string | null
   roundNum: number
+  endedWithFullTallyEscalation: boolean
 }
 
 export interface IElectionWithOrg extends IElectionBase {

@@ -203,6 +203,14 @@ const apiCalls = {
         user: mockAuditAdmin,
         info: {},
       },
+      {
+        id: nextId(),
+        activityName: 'FullHandTallyRequired',
+        timestamp: nextTimestamp(),
+        election: mockElection,
+        user: mockAuditAdmin,
+        info: { round_num: 1 },
+      },
     ].reverse(),
   },
 }
@@ -289,6 +297,7 @@ describe('Activity Log', () => {
       expect(fileBlob.type).toEqual('text/csv')
       expect(await readBlobAsText(fileBlob)).toMatchInlineSnapshot(`
         ""Timestamp","User","Action","Audit","Jurisdiction"
+        "8/31/2021, 11:07:49 PM","admin@example.gov","Round 1 ended, another round is required but escalates to the size of a full hand tally","Test Audit",""
         "8/31/2021, 11:06:49 PM","admin@example.gov","Deleted audit","Test Audit",""
         "8/31/2021, 11:05:49 PM","","Ended round 1","Test Audit",""
         "8/31/2021, 11:04:49 PM","","Audit Board #1 signed off","Test Audit","Jurisdiction 1"

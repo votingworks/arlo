@@ -32,6 +32,7 @@ if __name__ == "__main__":
 
     print("Reopening round")
     round.ended_at = None  # ty: ignore[invalid-assignment]
+    round.ended_with_full_tally_escalation = None  # ty: ignore[invalid-assignment]
     for round_contest in round.round_contests:
         round_contest.results = []
         round_contest.end_p_value = None

@@ -225,6 +225,7 @@ def test_batch_comparison_round_1(
                 "isAuditComplete": None,
                 "needsFullHandTally": False,
                 "isFullHandTally": False,
+                "endedWithFullTallyEscalation": False,
                 "drawSampleTask": {
                     "status": "PROCESSED",
                     "startedAt": assert_is_date,

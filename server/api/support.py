@@ -51,6 +51,9 @@ def get_current_round_info(election):  # noqa: ANN001
         id=current_round.id,
         endedAt=isoformat(current_round.ended_at),
         roundNum=current_round.round_num,
+        endedWithFullTallyEscalation=bool(
+            current_round.ended_with_full_tally_escalation
+        ),
     )
 
 
@@ -327,7 +330,14 @@ def get_election(election_id: str):
             for jurisdiction in election.jurisdictions
         ],
         rounds=[
-            dict(id=round.id, endedAt=round.ended_at, roundNum=round.round_num)
+            dict(
+                id=round.id,
+                endedAt=round.ended_at,
+                roundNum=round.round_num,
+                endedWithFullTallyEscalation=bool(
+                    round.ended_with_full_tally_escalation
+                ),
+            )
             for round in election.rounds
         ],
         deletedAt=isoformat(election.deleted_at),
@@ -637,6 +647,7 @@ def reopen_current_round(election_id: str):
         raise Conflict("Round is in progress.")
 
     current_round.ended_at = None  # ty: ignore[invalid-assignment]
+    current_round.ended_with_full_tally_escalation = None  # ty: ignore[invalid-assignment]
     for round_contest in current_round.round_contests:
         round_contest.end_p_value = None
         round_contest.is_complete = None

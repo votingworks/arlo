@@ -857,20 +857,23 @@ def test_tied_contest():
     assert p > ALPHA
     assert not res
 
-    # Do a full hand recount with no discrepancies
+    # A comparison audit can't confirm a tie, even after sampling every ballot
+    # with no discrepancies, since there's no margin to measure risk against.
+    # (Arlo doesn't let a ballot comparison round sample every ballot.)
     sample_cvr = {}
     for ballot in cvr:
         sample_cvr[ballot] = {"times_sampled": 1, "cvr": cvr[ballot]}
 
     p, res = supersimple.compute_risk(RISK_LIMIT, contest, cvr, sample_cvr)
 
-    assert not p
-    assert res
+    assert p == 1.0
+    assert not res
 
 
-def test_supersimple_full_hand_tally():
+def test_supersimple_draws_equal_to_ballot_count():
     # Simulate a sample drawn with replacement where the sample size is equal to
-    # the total ballots cast but the number of unique ballots drawn is less
+    # the total ballots cast but the number of unique ballots drawn is less.
+    # This isn't a full hand tally, so the risk comes from the sample.
     contest = Contest(
         "Full Hand Tally",
         {
@@ -902,8 +905,136 @@ def test_supersimple_full_hand_tally():
     }
     p, res = supersimple.compute_risk(RISK_LIMIT, contest, cvr, sample_cvr)
 
-    assert p == 0
+    assert p > ALPHA
+    assert res is False
+
+
+def test_get_sample_sizes_from_discrepancies():
+    contest = Contest(
+        "Contest A",
+        {
+            "winner": 525,
+            "loser": 475,
+            "ballots": 1000,
+            "numWinners": 1,
+            "votesAllowed": 1,
+        },
+    )
+
+    def discrepancies(*counted_as: int) -> dict[str, supersimple.Discrepancy]:
+        return {
+            f"ballot-{i}": {"counted_as": c, "weighted_error": Decimal(c) / 50}
+            for i, c in enumerate(counted_as)
+        }
+
+    # Each kind of discrepancy is counted as its matching misstatement
+    for counted_as, counts in [
+        ((1, 1, 1), {"1-over": 3}),
+        ((2, 2), {"2-over": 2}),
+        ((-1,), {"1-under": 1}),
+        ((-2,), {"2-under": 1}),
+        ((1, 2, -1, -2), {"1-over": 1, "2-over": 1, "1-under": 1, "2-under": 1}),
+    ]:
+        expected_counts = {
+            "sample_size": 100,
+            "1-over": 0,
+            "2-over": 0,
+            "1-under": 0,
+            "2-under": 0,
+            **counts,
+        }
+        assert supersimple.get_sample_sizes_from_discrepancies(
+            RISK_LIMIT, contest, discrepancies(*counted_as), 100
+        ) == supersimple.get_sample_sizes(RISK_LIMIT, contest, expected_counts)
+
+    # 12 one-vote overstatements in 300 samples sizes the next round to bring the
+    # total up to N
+    assert (
+        supersimple.get_sample_sizes_from_discrepancies(
+            RISK_LIMIT, contest, discrepancies(*[1] * 12), 300
+        )
+        == 700
+    )
+    # With no discrepancies, the sample so far is enough
+    assert (
+        supersimple.get_sample_sizes_from_discrepancies(RISK_LIMIT, contest, {}, 300)
+        == 0
+    )
+
+
+def test_compute_risk_when_draws_reach_ballot_count():
+    # N = 1000, 5% margin. Round 1 draws 300 ballots and finds 12 one-vote
+    # overstatements, so the next round is sized to bring the total number of
+    # draws up to N.
+    num_ballots = 1000
+    contest = Contest(
+        "Contest A",
+        {
+            "winner": 525,
+            "loser": 475,
+            "ballots": num_ballots,
+            "numWinners": 1,
+            "votesAllowed": 1,
+        },
+    )
+    assert (
+        supersimple.get_sample_sizes(
+            RISK_LIMIT,
+            contest,
+            {
+                "sample_size": 300,
+                "1-over": 12,
+                "2-over": 0,
+                "1-under": 0,
+                "2-under": 0,
+            },
+        )
+        == 700
+    )
+
+    cvrs: CVRS = {
+        f"ballot-{i}": {
+            "Contest A": {"winner": "1", "loser": "0"}
+            if i < 525
+            else {"winner": "0", "loser": "1"}
+        }
+        for i in range(num_ballots)
+    }
+
+    # 1000 draws with replacement: 600 distinct ballots, 400 of them drawn twice
+    def sample_with_one_vote_overstatements(
+        num_overstatements: int,
+    ) -> SAMPLECVRS:
+        sample_cvr: SAMPLECVRS = {
+            f"ballot-{i}": {
+                "times_sampled": 2 if i < 400 else 1,
+                "cvr": cvrs[f"ballot-{i}"],
+            }
+            for i in range(600)
+        }
+        # Reported winner votes that the audit board found blank
+        for i in range(400, 400 + num_overstatements):
+            sample_cvr[f"ballot-{i}"]["cvr"] = {
+                "Contest A": {"winner": "0", "loser": "0"}
+            }
+        return sample_cvr
+
+    # If the later draws find no new discrepancies, the sample confirms the
+    # outcome on its own evidence
+    p, res = supersimple.compute_risk(
+        RISK_LIMIT, contest, cvrs, sample_with_one_vote_overstatements(12)
+    )
+    assert 0 < p < ALPHA
     assert res is True
+
+    # If discrepancies continue at the round 1 rate, the sample does not
+    # confirm the outcome, even though the number of draws equals N
+    p_with_more_overstatements, res = supersimple.compute_risk(
+        RISK_LIMIT, contest, cvrs, sample_with_one_vote_overstatements(40)
+    )
+    assert p_with_more_overstatements > ALPHA
+    assert p_with_more_overstatements > p
+    assert res is False
 
 
 def test_snapshot_test():
@@ -961,8 +1092,9 @@ def test_snapshot_test():
 
     p, res = supersimple.compute_risk(RISK_LIMIT, contest, cvr, sample_cvr)
 
+    expected_p = 0.0468634
+    assert abs(expected_p - p) < 0.0001
     assert res
-    assert p < 0.000000001
 
 
 def test_multiplicity():

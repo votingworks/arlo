@@ -28,6 +28,21 @@ exports[`Activity Log > shows a table of activity for the org 1`] = `
   <tbody>
     <tr>
       <td>
+        8/31/2021, 11:07:49 PM
+      </td>
+      <td>
+        admin@example.gov
+      </td>
+      <td>
+        Round 1 ended, another round is required but escalates to the size of a full hand tally
+      </td>
+      <td>
+        Test Audit
+      </td>
+      <td />
+    </tr>
+    <tr>
+      <td>
         8/31/2021, 11:06:49 PM
       </td>
       <td>

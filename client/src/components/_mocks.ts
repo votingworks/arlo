@@ -168,6 +168,7 @@ export const roundMocks = mocksOfType<IRound[]>()({
       id: 'round-1',
       needsFullHandTally: false,
       isFullHandTally: false,
+      endedWithFullTallyEscalation: false,
       drawSampleTask: {
         status: FileProcessingStatus.PROCESSED,
         startedAt: '2020-09-14T17:35:19.482Z',
@@ -185,6 +186,7 @@ export const roundMocks = mocksOfType<IRound[]>()({
       id: 'round-1',
       needsFullHandTally: false,
       isFullHandTally: false,
+      endedWithFullTallyEscalation: false,
       drawSampleTask: {
         status: FileProcessingStatus.PROCESSED,
         startedAt: '2019-07-18T16:34:07.000+00:00',
@@ -200,6 +202,7 @@ export const roundMocks = mocksOfType<IRound[]>()({
       id: 'round-2',
       needsFullHandTally: false,
       isFullHandTally: false,
+      endedWithFullTallyEscalation: false,
       drawSampleTask: {
         status: FileProcessingStatus.PROCESSED,
         startedAt: '2019-07-18T16:34:07.000+00:00',
@@ -217,6 +220,7 @@ export const roundMocks = mocksOfType<IRound[]>()({
       id: 'round-1',
       needsFullHandTally: false,
       isFullHandTally: false,
+      endedWithFullTallyEscalation: false,
       drawSampleTask: {
         status: FileProcessingStatus.PROCESSED,
         startedAt: '2019-07-18T16:34:07.000+00:00',
@@ -234,6 +238,7 @@ export const roundMocks = mocksOfType<IRound[]>()({
       id: 'round-1',
       needsFullHandTally: false,
       isFullHandTally: false,
+      endedWithFullTallyEscalation: false,
       drawSampleTask: {
         status: FileProcessingStatus.PROCESSED,
         startedAt: '2020-09-14T17:35:19.482Z',
@@ -251,6 +256,7 @@ export const roundMocks = mocksOfType<IRound[]>()({
       id: 'round-1',
       needsFullHandTally: false,
       isFullHandTally: false,
+      endedWithFullTallyEscalation: false,
       drawSampleTask: {
         status: FileProcessingStatus.PROCESSING,
         startedAt: '2020-09-14T17:35:19.482Z',
@@ -268,6 +274,7 @@ export const roundMocks = mocksOfType<IRound[]>()({
       id: 'round-1',
       needsFullHandTally: false,
       isFullHandTally: false,
+      endedWithFullTallyEscalation: false,
       drawSampleTask: {
         status: FileProcessingStatus.ERRORED,
         startedAt: '2020-09-14T17:35:19.482Z',

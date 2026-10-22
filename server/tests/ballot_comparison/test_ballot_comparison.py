@@ -1,10 +1,12 @@
 import io
 import json
 import csv
+from unittest.mock import patch
 from flask.testing import FlaskClient
 from sqlalchemy import and_
 
 from ...models import *
+from ...audit_math import supersimple
 from ..helpers import *
 from .conftest import (
     TEST_CVRS,
@@ -913,21 +915,88 @@ def test_ballot_comparison_two_rounds(
     )
     check_discrepancies(discrepancy_report, round_1_audit_results)
 
-    # Start a second round
+    # The default round 2 sample size brings the total sample up to the number
+    # of ballots in the contest, which requires a full hand tally
     rv = client.get(f"/api/election/{election_id}/sample-sizes/2")
     sample_size_options = json.loads(rv.data)["sampleSizes"]
+    default_sample_size = sample_size_options[target_contest_id][0]
+    assert default_sample_size["size"] == 10
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {"roundNum": 2, "sampleSizes": {target_contest_id: default_sample_size}},
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "For contest Contest 1, 20 ballots have already been sampled,"
+                " so this round would bring the total sample size to 30, which escalates"
+                " to the size of a full hand tally (30 ballots cast in the contest)."
+                " For a full hand tally, use the ballot polling or batch comparison"
+                " audit type.",
+            }
+        ]
+    }
+
+    # Round 1 is marked as ending with a full hand tally escalation, and
+    # finishing it recorded that in the activity log
+    rv = client.get(f"/api/election/{election_id}/round")
+    assert json.loads(rv.data)["rounds"][0]["endedWithFullTallyEscalation"] is True
+
+    def full_hand_tally_activities():
+        return [
+            record
+            for record in ActivityLogRecord.query.filter_by(
+                activity_name="FullHandTallyRequired"
+            )
+            if record.info["base"]["election_id"] == election_id
+        ]
+
+    activities = full_hand_tally_activities()
+    assert len(activities) == 1
+    assert activities[0].info["round_num"] == 1
+    assert activities[0].info["base"]["user_key"] == DEFAULT_AA_EMAIL
+
+    # Support tools show it too
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
+    rv = client.get(f"/api/support/elections/{election_id}")
+    assert json.loads(rv.data)["rounds"][0]["endedWithFullTallyEscalation"] is True
+    rv = client.get("/api/support/elections/active")
+    active_election = next(
+        election for election in json.loads(rv.data) if election["id"] == election_id
+    )
+    assert active_election["currentRound"]["endedWithFullTallyEscalation"] is True
+
+    # Reopening round 1 and finishing it again records it again
+    rv = client.patch(f"/api/support/elections/{election_id}/reopen-current-round")
+    assert_ok(rv)
+    rv = client.get(f"/api/support/elections/{election_id}")
+    assert json.loads(rv.data)["rounds"][0]["endedWithFullTallyEscalation"] is False
+    clear_support_user(client)
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
+    assert_ok(rv)
+    assert len(full_hand_tally_activities()) == 2
+
+    # Start a smaller second round so the rest of this test can audit it. With
+    # 9 more draws, the total sample (29) stays below the ballot count (30).
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
         {
             "roundNum": 2,
             "sampleSizes": {
-                contest_id: options[0]
-                for contest_id, options in sample_size_options.items()
+                target_contest_id: {"key": "custom", "size": 9, "prob": None}
             },
         },
     )
     assert_ok(rv)
+
+    # Starting round 2 means round 1 is no longer blocked
+    rv = client.get(f"/api/election/{election_id}/round")
+    assert json.loads(rv.data)["rounds"][0]["endedWithFullTallyEscalation"] is False
 
     rv = client.get(
         f"/api/election/{election_id}/round",
@@ -952,8 +1021,7 @@ def test_ballot_comparison_two_rounds(
         )
         assert_ok(rv)
 
-    # For round 2, audit results should not have any positive discrepancies so
-    # the audit can complete.
+    # For round 2, audit results should not have any positive discrepancies.
     round_2_audit_results = {
         ("J2", "TABULATOR1", "BATCH1", 2): ("1,0,1,0,1", (None, None)),
         ("J2", "TABULATOR1", "BATCH2", 3): ("1,0,1,0,1", (None, None)),
@@ -982,6 +1050,16 @@ def test_ballot_comparison_two_rounds(
     # End the round
     rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert_ok(rv)
+
+    # The risk limit still isn't met, and with 29 of the 30 ballots sampled,
+    # another round would escalate to the size of a full hand tally
+    rv = client.get(f"/api/election/{election_id}/round")
+    round_2 = json.loads(rv.data)["rounds"][1]
+    assert round_2["isAuditComplete"] is False
+    assert round_2["endedWithFullTallyEscalation"] is True
+    activities = full_hand_tally_activities()
+    assert len(activities) == 3
+    assert activities[-1].info["round_num"] == 2
 
     # Check the discrepancies
     rv = client.get(f"/api/election/{election_id}/discrepancy")
@@ -1216,7 +1294,6 @@ def test_ballot_comparison_multiple_targeted_contests_sample_size(
     election_settings,
     manifests,
     cvrs,
-    snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
 
@@ -1286,6 +1363,15 @@ def test_ballot_comparison_multiple_targeted_contests_sample_size(
 
     rv = client.get(f"/api/election/{election_id}/sample-sizes/2")
     sample_size_options = json.loads(rv.data)["sampleSizes"]
+    assert sample_size_options == {
+        contest_1_id: [{"key": "default", "prob": None, "size": 10}],
+        contest_2_id: [{"key": "default", "prob": None, "size": 14}],
+    }
+    rv = client.get(f"/api/election/{election_id}/round")
+    assert json.loads(rv.data)["rounds"][0]["endedWithFullTallyEscalation"] is True
+
+    # Each round 2 sample size brings the contest's total sample up to the
+    # number of ballots in the contest, which requires a full hand tally
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
@@ -1297,20 +1383,94 @@ def test_ballot_comparison_multiple_targeted_contests_sample_size(
             },
         },
     )
-    assert_ok(rv)
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "For contest Contest 1, 20 ballots have already been sampled,"
+                " so this round would bring the total sample size to 30, which escalates"
+                " to the size of a full hand tally (30 ballots cast in the contest)."
+                " For a full hand tally, use the ballot polling or batch comparison"
+                " audit type.",
+            }
+        ]
+    }
 
-    rv = client.get(
+    # Start a smaller round 2 for both contests
+    rv = post_json(
+        client,
         f"/api/election/{election_id}/round",
+        {
+            "roundNum": 2,
+            "sampleSizes": {
+                contest_1_id: {"key": "custom", "size": 5, "prob": None},
+                contest_2_id: {"key": "custom", "size": 5, "prob": None},
+            },
+        },
     )
+    assert_ok(rv)
+    rv = client.get(f"/api/election/{election_id}/round")
     round_2_id = json.loads(rv.data)["rounds"][1]["id"]
+    contest_1 = Contest.query.get(contest_1_id)
+    contest_2 = Contest.query.get(contest_2_id)
+    for ballot in (
+        SampledBallot.query.filter_by(status=BallotStatus.NOT_AUDITED)
+        .join(SampledBallotDraw)
+        .filter_by(round_id=round_2_id)
+        .all()
+    ):
+        audit_ballot(ballot, contest_1_id, Interpretation.VOTE, [contest_1.choices[0]])
+        audit_ballot(ballot, contest_2_id, Interpretation.VOTE, [contest_2.choices[0]])
 
-    round_2_sample_sizes = list(
-        RoundContest.query.filter_by(round_id=round_2_id)
-        .join(Contest)
-        .order_by(Contest.name)
-        .values(RoundContest.sample_size)
-    )
-    snapshot.assert_match(round_2_sample_sizes)
+    def finish_round_with_complete_contests(complete_contest_ids: set[str]):
+        compute_risk = supersimple.compute_risk
+
+        def compute_risk_with_complete_contests(  # noqa: ANN202
+            risk_limit, contest, cvrs, sample_cvr, discrepancies=None
+        ):
+            if contest.name in complete_contest_ids:
+                return 0.01, True
+            return compute_risk(risk_limit, contest, cvrs, sample_cvr, discrepancies)
+
+        with patch.object(
+            supersimple, "compute_risk", compute_risk_with_complete_contests
+        ):
+            rv = client.post(f"/api/election/{election_id}/round/current/finish")
+        assert_ok(rv)
+        rv = client.get(f"/api/election/{election_id}/round")
+        return json.loads(rv.data)["rounds"][1]["endedWithFullTallyEscalation"]
+
+    def reopen_round():
+        set_support_user(client, DEFAULT_SUPPORT_EMAIL)
+        rv = client.patch(f"/api/support/elections/{election_id}/reopen-current-round")
+        assert_ok(rv)
+        clear_support_user(client)
+        set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+
+    # Contest 1 meets the risk limit in round 2, so only contest 2 is still
+    # being audited, even though contest 1 didn't meet it in round 1. Its next
+    # round doesn't count toward a full hand tally escalation.
+    with patch(
+        "server.api.rounds.next_round_requires_full_hand_tally",
+        side_effect=lambda risk_limit, contest, discrepancies, num_sampled_so_far: (
+            contest.name == contest_1_id
+        ),
+    ):
+        assert finish_round_with_complete_contests({contest_1_id}) is False
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/3")
+    assert list(json.loads(rv.data)["sampleSizes"].keys()) == [contest_2_id]
+
+    # Contest 2 escalating still flags the round
+    reopen_round()
+    assert finish_round_with_complete_contests({contest_1_id}) is True
+
+    # If every contest meets the risk limit, the audit is complete and the round
+    # isn't flagged
+    reopen_round()
+    assert finish_round_with_complete_contests({contest_1_id, contest_2_id}) is False
+    rv = client.get(f"/api/election/{election_id}/round")
+    assert json.loads(rv.data)["rounds"][1]["isAuditComplete"] is True
 
 
 def test_ballot_comparison_ess(
