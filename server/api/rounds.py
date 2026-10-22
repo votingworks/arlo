@@ -31,6 +31,7 @@ from .shared import (
     sampled_batch_results,
     sampled_batches_by_ticket_number,
     samples_not_found_by_round,
+    validate_batch_tallies,
 )
 from ..auth import restrict_access, UserType
 from ..util.isoformat import isoformat
@@ -45,6 +46,7 @@ from ..audit_math import (
 )
 from .ballot_manifest import hybrid_contest_total_ballots
 from ..worker.tasks import (
+    UserError,
     background_task,
     create_background_task,
     serialize_background_task,
@@ -482,6 +484,13 @@ def validate_round(round: dict[str, Any], election: Election):
         for jurisdiction in election.jurisdictions
     ):
         raise Conflict("Cannot start a round while any file upload is processing.")
+
+    if election.audit_type == AuditType.BATCH_COMPARISON:
+        for contest in election.contests:
+            try:
+                validate_batch_tallies(contest)
+            except UserError as error:
+                raise Conflict(str(error)) from error
 
 
 def validate_sample_size(round: dict[str, Any], election: Election):

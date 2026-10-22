@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
-from typing import cast as typing_cast
-from collections import Counter, defaultdict
+from collections import Counter
 from flask import jsonify
 from werkzeug.exceptions import BadRequest
 
@@ -8,7 +7,11 @@ from werkzeug.exceptions import BadRequest
 from . import api
 from ..models import *
 from ..database import db_session
-from .shared import BatchTallies, combined_batch_keys, samples_not_found_by_round
+from .shared import (
+    combined_batch_keys,
+    samples_not_found_by_round,
+    validate_batch_tallies,
+)
 from ..auth import restrict_access, UserType
 from ..audit_math import (
     ballot_polling,
@@ -34,28 +37,6 @@ from ..util.string import format_count
 def validate_all_manifests_uploaded(contest: Contest):
     if not all_manifests_uploaded(contest):
         raise UserError("Some jurisdictions haven't uploaded their manifests yet")
-
-
-def validate_batch_tallies(contest):  # noqa: ANN001
-    total_votes_by_choice: dict[str, int] = defaultdict(int)
-    for jurisdiction in contest.jurisdictions:
-        batch_tallies = typing_cast(BatchTallies, jurisdiction.batch_tallies)
-        if batch_tallies is None:
-            raise UserError(
-                "Some jurisdictions haven't uploaded their batch tallies files yet."
-            )
-        for tally in batch_tallies.values():
-            for choice_id, votes in tally[contest.id].items():
-                total_votes_by_choice[choice_id] += votes
-
-    for choice in contest.choices:
-        if total_votes_by_choice[choice.id] > choice.num_votes:
-            raise UserError(
-                f"Total votes in batch tallies files for contest choice {choice.name}"
-                f" ({format_count(total_votes_by_choice[choice.id], 'vote', 'votes')})"
-                " is greater than the reported number of votes for that choice"
-                f" ({format_count(choice.num_votes, 'vote', 'votes')})."
-            )
 
 
 def validate_hybrid_manifests_and_cvrs(contest: Contest):
