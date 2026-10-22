@@ -389,8 +389,7 @@ def test_ballot_comparison_cardstyledata_two_rounds(
         )
         assert_ok(rv)
 
-    # For round 2, audit results should not have any positive discrepancies so
-    # the audit can complete.
+    # For round 2, audit results should not have any positive discrepancies.
     round_2_audit_results = {
         ("J1", "TABULATOR1", "BATCH1", 2): ("1,0,1,0,1", (None, None)),
         ("J1", "TABULATOR2", "BATCH1", 2): ("1,0,1,0,1", (None, None)),
