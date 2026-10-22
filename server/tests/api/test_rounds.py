@@ -1,8 +1,11 @@
 import json
+from datetime import datetime, timezone
 from flask.testing import FlaskClient
 
 from ...models import *
 from ...auth import UserType
+from ...api.shared import active_targeted_contests
+from ...database import db_session
 from ..helpers import *
 
 
@@ -182,6 +185,30 @@ def test_rounds_create_two(
         draw.sampled_ballot.batch.jurisdiction_id for draw in ballot_draws
     }
     assert sorted(sampled_jurisdictions) == sorted(jurisdiction_ids[:2])
+
+
+def test_active_targeted_contests_uses_latest_ended_round(
+    election_id: str,
+    contest_ids: list[str],
+    round_2_id: str,
+):
+    election = Election.query.get(election_id)
+    round_2 = Round.query.get(round_2_id)
+
+    # While round 2 is in progress, the contest that didn't meet the risk limit
+    # in round 1 is still being audited
+    assert [contest.id for contest in active_targeted_contests(election)] == [
+        contest_ids[0]
+    ]
+
+    # Once the contest meets the risk limit in round 2, it's no longer being
+    # audited, even though it didn't meet the risk limit in round 1
+    round_2.ended_at = datetime.now(timezone.utc)
+    RoundContest.query.filter_by(
+        round_id=round_2_id, contest_id=contest_ids[0]
+    ).one().is_complete = True
+    db_session.commit()
+    assert active_targeted_contests(election) == []
 
 
 def test_rounds_complete_audit(
