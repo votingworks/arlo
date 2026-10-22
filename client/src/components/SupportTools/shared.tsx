@@ -44,19 +44,33 @@ export const Table = styled(HTMLTable)`
   }
 `
 
+// Keep the tag from being truncated next to long audit names
+const auditStatusTagStyle = { flexShrink: 0 }
+
 export const AuditStatusTag = ({
   currentRound,
 }: {
   currentRound: IRound | null
 }) => {
   if (!currentRound) {
-    return <StatusTag>Not Started</StatusTag>
+    return <StatusTag style={auditStatusTagStyle}>Not Started</StatusTag>
+  }
+  if (currentRound.endedWithFullTallyEscalation) {
+    return (
+      <StatusTag intent="danger" style={auditStatusTagStyle}>
+        Blocked
+      </StatusTag>
+    )
   }
   if (currentRound.endedAt) {
-    return <StatusTag intent="success">Completed</StatusTag>
+    return (
+      <StatusTag intent="success" style={auditStatusTagStyle}>
+        Completed
+      </StatusTag>
+    )
   }
   return (
-    <StatusTag intent="warning">
+    <StatusTag intent="warning" style={auditStatusTagStyle}>
       Round {currentRound.roundNum} In Progress
     </StatusTag>
   )

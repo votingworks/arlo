@@ -959,10 +959,21 @@ def test_ballot_comparison_two_rounds(
     assert activities[0].info["round_num"] == 1
     assert activities[0].info["base"]["user_key"] == DEFAULT_AA_EMAIL
 
-    # Reopening round 1 and finishing it again records it again
+    # Support tools show it too
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)
+    rv = client.get(f"/api/support/elections/{election_id}")
+    assert json.loads(rv.data)["rounds"][0]["endedWithFullTallyEscalation"] is True
+    rv = client.get("/api/support/elections/active")
+    active_election = next(
+        election for election in json.loads(rv.data) if election["id"] == election_id
+    )
+    assert active_election["currentRound"]["endedWithFullTallyEscalation"] is True
+
+    # Reopening round 1 and finishing it again records it again
     rv = client.patch(f"/api/support/elections/{election_id}/reopen-current-round")
     assert_ok(rv)
+    rv = client.get(f"/api/support/elections/{election_id}")
+    assert json.loads(rv.data)["rounds"][0]["endedWithFullTallyEscalation"] is False
     clear_support_user(client)
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.post(f"/api/election/{election_id}/round/current/finish")

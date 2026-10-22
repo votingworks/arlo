@@ -114,7 +114,12 @@ def test_support_get_organization_round(
                         "name": "Test Org test_support_get_organization_round",
                     },
                     "createdAt": assert_is_date,
-                    "currentRound": {"id": round_1_id, "endedAt": None, "roundNum": 1},
+                    "currentRound": {
+                        "id": round_1_id,
+                        "endedAt": None,
+                        "roundNum": 1,
+                        "endedWithFullTallyEscalation": False,
+                    },
                 }
             ],
             "auditAdmins": [
@@ -345,7 +350,14 @@ def test_support_get_election(
                     "name": "J3",
                 },
             ],
-            "rounds": [{"id": round_1_id, "endedAt": None, "roundNum": 1}],
+            "rounds": [
+                {
+                    "id": round_1_id,
+                    "endedAt": None,
+                    "roundNum": 1,
+                    "endedWithFullTallyEscalation": False,
+                }
+            ],
             "deletedAt": None,
         },
     )
