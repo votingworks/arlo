@@ -906,6 +906,59 @@ def test_supersimple_full_hand_tally():
     assert res is True
 
 
+def test_get_sample_sizes_from_discrepancies():
+    contest = Contest(
+        "Contest A",
+        {
+            "winner": 525,
+            "loser": 475,
+            "ballots": 1000,
+            "numWinners": 1,
+            "votesAllowed": 1,
+        },
+    )
+
+    def discrepancies(*counted_as: int) -> dict[str, supersimple.Discrepancy]:
+        return {
+            f"ballot-{i}": {"counted_as": c, "weighted_error": Decimal(c) / 50}
+            for i, c in enumerate(counted_as)
+        }
+
+    # Each kind of discrepancy is counted as its matching misstatement
+    for counted_as, counts in [
+        ((1, 1, 1), {"1-over": 3}),
+        ((2, 2), {"2-over": 2}),
+        ((-1,), {"1-under": 1}),
+        ((-2,), {"2-under": 1}),
+        ((1, 2, -1, -2), {"1-over": 1, "2-over": 1, "1-under": 1, "2-under": 1}),
+    ]:
+        expected_counts = {
+            "sample_size": 100,
+            "1-over": 0,
+            "2-over": 0,
+            "1-under": 0,
+            "2-under": 0,
+            **counts,
+        }
+        assert supersimple.get_sample_sizes_from_discrepancies(
+            RISK_LIMIT, contest, discrepancies(*counted_as), 100
+        ) == supersimple.get_sample_sizes(RISK_LIMIT, contest, expected_counts)
+
+    # 12 one-vote overstatements in 300 samples sizes the next round to bring the
+    # total up to N
+    assert (
+        supersimple.get_sample_sizes_from_discrepancies(
+            RISK_LIMIT, contest, discrepancies(*[1] * 12), 300
+        )
+        == 700
+    )
+    # With no discrepancies, the sample so far is enough
+    assert (
+        supersimple.get_sample_sizes_from_discrepancies(RISK_LIMIT, contest, {}, 300)
+        == 0
+    )
+
+
 def test_snapshot_test():
     contest_data = {
         "winner": 16,
