@@ -19,6 +19,7 @@ from .shared import (
     compute_sample_ballots,
     compute_sample_batches,
     contest_results_by_round,
+    cumulative_sample_sizes,
     cvrs_for_contest,
     full_hand_tally_sizes,
     get_current_round,
@@ -59,6 +60,7 @@ from ..activity_log import (
 )
 from ..feature_flags import is_enabled_automatically_end_audit_after_one_round
 from ..util.get_json import safe_get_json_dict
+from ..util.string import format_count
 
 
 def is_round_ready_to_finish(election: Election, round: Round) -> bool:
@@ -499,6 +501,13 @@ def validate_sample_size(round: dict[str, Any], election: Election):
         raise BadRequest("Sample sizes provided do not match targeted contest ids")
 
     full_hand_tally_size = full_hand_tally_sizes(election)
+    # Ballot comparison samples are drawn with replacement across rounds, so
+    # count previous rounds' samples toward the total
+    previous_sample_sizes = (
+        cumulative_sample_sizes(election.id)
+        if election.audit_type == AuditType.BALLOT_COMPARISON
+        else {}
+    )
 
     for contest in targeted_contests:
         sample_size = round["sampleSizes"][contest.id]
@@ -545,13 +554,26 @@ def validate_sample_size(round: dict[str, Any], election: Election):
                     f" {full_hand_tally_size[contest.id]} (the total number of {ballots_or_batches} in the contest)"
                 )
 
-        if sample_size["size"] >= full_hand_tally_size[contest.id]:
+        num_previous_samples = previous_sample_sizes.get(contest.id, 0)
+        total_sample_size = num_previous_samples + sample_size["size"]
+        if total_sample_size >= full_hand_tally_size[contest.id]:
             if election.audit_type not in [
                 AuditType.BALLOT_POLLING,
                 AuditType.BATCH_COMPARISON,
             ]:
                 raise BadRequest(
-                    "For a full hand tally, use the ballot polling or batch comparison audit type."
+                    (
+                        f"For contest {contest.name},"
+                        f" {format_count(num_previous_samples, 'ballot has', 'ballots have')}"
+                        f" already been sampled, so this round would bring the total"
+                        f" sample size to {total_sample_size:,}, which escalates to the"
+                        f" size of a full hand tally"
+                        f" ({format_count(full_hand_tally_size[contest.id], 'ballot', 'ballots')}"
+                        " cast in the contest). "
+                        if num_previous_samples
+                        else ""
+                    )
+                    + "For a full hand tally, use the ballot polling or batch comparison audit type."
                 )
             if (
                 election.audit_type == AuditType.BALLOT_POLLING

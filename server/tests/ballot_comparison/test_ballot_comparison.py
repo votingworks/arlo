@@ -913,17 +913,40 @@ def test_ballot_comparison_two_rounds(
     )
     check_discrepancies(discrepancy_report, round_1_audit_results)
 
-    # Start a second round
+    # The default round 2 sample size brings the total sample up to the number
+    # of ballots in the contest, which requires a full hand tally
     rv = client.get(f"/api/election/{election_id}/sample-sizes/2")
     sample_size_options = json.loads(rv.data)["sampleSizes"]
+    default_sample_size = sample_size_options[target_contest_id][0]
+    assert default_sample_size["size"] == 10
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {"roundNum": 2, "sampleSizes": {target_contest_id: default_sample_size}},
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "For contest Contest 1, 20 ballots have already been sampled,"
+                " so this round would bring the total sample size to 30, which escalates"
+                " to the size of a full hand tally (30 ballots cast in the contest)."
+                " For a full hand tally, use the ballot polling or batch comparison"
+                " audit type.",
+            }
+        ]
+    }
+
+    # Start a smaller second round so the rest of this test can audit it. With
+    # 9 more draws, the total sample (29) stays below the ballot count (30).
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
         {
             "roundNum": 2,
             "sampleSizes": {
-                contest_id: options[0]
-                for contest_id, options in sample_size_options.items()
+                target_contest_id: {"key": "custom", "size": 9, "prob": None}
             },
         },
     )
@@ -1215,7 +1238,6 @@ def test_ballot_comparison_multiple_targeted_contests_sample_size(
     election_settings,
     manifests,
     cvrs,
-    snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
 
@@ -1285,6 +1307,13 @@ def test_ballot_comparison_multiple_targeted_contests_sample_size(
 
     rv = client.get(f"/api/election/{election_id}/sample-sizes/2")
     sample_size_options = json.loads(rv.data)["sampleSizes"]
+    assert sample_size_options == {
+        contest_1_id: [{"key": "default", "prob": None, "size": 10}],
+        contest_2_id: [{"key": "default", "prob": None, "size": 14}],
+    }
+
+    # Each round 2 sample size brings the contest's total sample up to the
+    # number of ballots in the contest, which requires a full hand tally
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
@@ -1296,20 +1325,19 @@ def test_ballot_comparison_multiple_targeted_contests_sample_size(
             },
         },
     )
-    assert_ok(rv)
-
-    rv = client.get(
-        f"/api/election/{election_id}/round",
-    )
-    round_2_id = json.loads(rv.data)["rounds"][1]["id"]
-
-    round_2_sample_sizes = list(
-        RoundContest.query.filter_by(round_id=round_2_id)
-        .join(Contest)
-        .order_by(Contest.name)
-        .values(RoundContest.sample_size)
-    )
-    snapshot.assert_match(round_2_sample_sizes)
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "For contest Contest 1, 20 ballots have already been sampled,"
+                " so this round would bring the total sample size to 30, which escalates"
+                " to the size of a full hand tally (30 ballots cast in the contest)."
+                " For a full hand tally, use the ballot polling or batch comparison"
+                " audit type.",
+            }
+        ]
+    }
 
 
 def test_ballot_comparison_ess(

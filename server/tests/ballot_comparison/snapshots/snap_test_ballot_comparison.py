@@ -60,11 +60,6 @@ J2,0002,BATCH2,2,0002000172,Round 1: 0.064290634474137509,AUDITED,Choice 1-1,Cho
 J2,0002,BATCH2,5,0002000175,Round 1: 0.212277542626930704,AUDITED,Choice 1-1,Choice 1-1,,,Choice 2-3,Choice 2-3,,\r
 """
 
-snapshots["test_ballot_comparison_multiple_targeted_contests_sample_size 1"] = [
-    ({"key": "default", "prob": None, "size": 10},),
-    ({"key": "default", "prob": None, "size": 14},),
-]
-
 snapshots["test_ballot_comparison_sample_preview 1"] = [
     {"name": "J1", "numSamples": 9, "numUnique": 8},
     {"name": "J2", "numSamples": 11, "numUnique": 9},
@@ -78,10 +73,10 @@ snapshots["test_ballot_comparison_two_rounds 1"] = {
 }
 
 snapshots["test_ballot_comparison_two_rounds 10"] = {
-    "numSamples": 6,
-    "numSamplesAudited": 6,
-    "numUnique": 5,
-    "numUniqueAudited": 5,
+    "numSamples": 5,
+    "numSamplesAudited": 5,
+    "numUnique": 4,
+    "numUniqueAudited": 4,
     "status": "COMPLETE",
 }
 
@@ -109,8 +104,8 @@ J2,Audit Board #1,,,,\r
 Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes\r
 1,Contest 1,Targeted,20,No,1.0,DATETIME,DATETIME,Choice 1-1: 10; Choice 1-2: 7\r
 1,Contest 2,Opportunistic,,No,1.0,DATETIME,DATETIME,Choice 2-1: 12; Choice 2-2: 7; Choice 2-3: 8\r
-2,Contest 1,Targeted,10,No,1.0,DATETIME,DATETIME,Choice 1-1: 6; Choice 1-2: 2\r
-2,Contest 2,Opportunistic,,No,1.0,DATETIME,DATETIME,Choice 2-1: 6; Choice 2-2: 3; Choice 2-3: 6\r
+2,Contest 1,Targeted,9,No,1.0,DATETIME,DATETIME,Choice 1-1: 5; Choice 1-2: 2\r
+2,Contest 2,Opportunistic,,No,1.0,DATETIME,DATETIME,Choice 2-1: 5; Choice 2-2: 3; Choice 2-3: 5\r
 \r
 ######## SAMPLED BALLOTS ########\r
 Jurisdiction Name,Tabulator,Batch Name,Ballot Position,Imprinted ID,Ticket Numbers: Contest 1,Audited?,CVR Result: Contest 1,Audit Result: Contest 1,Change in Results: Contest 1,Change in Margin: Contest 1,CVR Result: Contest 2,Audit Result: Contest 2,Change in Results: Contest 2,Change in Margin: Contest 2\r
@@ -124,7 +119,7 @@ J1,TABULATOR2,BATCH2,5,2-2-6,"Round 1: 0.442956417641278897, Round 2: 0.49263883
 J1,TABULATOR2,BATCH2,6,,"Round 1: 0.300053574780458718, Round 2: 0.539920212714138536",NOT_FOUND,,,Ballot not found,2,,,Ballot not found,2\r
 J2,TABULATOR1,BATCH1,1,1-1-1,Round 1: 0.476019554092109137,AUDITED,Choice 1-2,"Choice 1-1, INVALID_WRITE_IN",Choice 1-1: -1; Choice 1-2: +1,-2,"Choice 2-1, Choice 2-2","Choice 2-1, INVALID_WRITE_IN",Choice 2-2: +1,-1\r
 J2,TABULATOR1,BATCH1,3,1-1-3,Round 1: 0.242392535590495322,AUDITED,Choice 1-2,Choice 1-2,,,"Choice 2-1, Choice 2-2","Choice 2-1, Choice 2-2",,\r
-J2,TABULATOR1,BATCH2,1,1-2-1,"Round 1: 0.200269401620671924, Round 2: 0.588219390083415326",AUDITED,Choice 1-1,Choice 1-1,,,"Choice 2-1, Choice 2-3","Choice 2-1, Choice 2-3",,\r
+J2,TABULATOR1,BATCH2,1,1-2-1,Round 1: 0.200269401620671924,AUDITED,Choice 1-1,Choice 1-1,,,"Choice 2-1, Choice 2-3","Choice 2-1, Choice 2-3",,\r
 J2,TABULATOR2,BATCH1,1,2-1-1,Round 1: 0.174827909206366766,AUDITED,Choice 1-1,Choice 1-1,,,"Choice 2-1, Choice 2-2","Choice 2-1, Choice 2-2",,\r
 J2,TABULATOR2,BATCH2,1,2-2-1,Round 1: 0.185417954749015145,AUDITED,Choice 1-1,Choice 1-1,,,"Choice 2-1, Choice 2-3","Choice 2-1, Choice 2-3",,\r
 J2,TABULATOR2,BATCH2,2,2-2-2,"Round 1: 0.252054739518646128, 0.297145021317217438",AUDITED,"Choice 1-1, Choice 1-2","Choice 1-1, Choice 1-2",,,"Choice 2-1, Choice 2-2, Choice 2-3","Choice 2-1, Choice 2-2, Choice 2-3",,\r

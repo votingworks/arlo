@@ -350,17 +350,28 @@ def test_ballot_comparison_cardstyledata_two_rounds(
     )
     check_discrepancies(discrepancy_report, round_1_audit_results)
 
-    # Start a second round
+    # The default round 2 sample size brings the total sample up to the number
+    # of ballots in the contest, which requires a full hand tally
     rv = client.get(f"/api/election/{election_id}/sample-sizes/2")
     sample_size_options = json.loads(rv.data)["sampleSizes"]
+    default_sample_size = sample_size_options[target_contest_id][0]
+    assert default_sample_size["size"] == 7
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {"roundNum": 2, "sampleSizes": {target_contest_id: default_sample_size}},
+    )
+    assert rv.status_code == 400
+
+    # Start a smaller second round so the rest of this test can audit it. With
+    # 6 more draws, the total sample stays below the ballot count.
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
         {
             "roundNum": 2,
             "sampleSizes": {
-                contest_id: options[0]
-                for contest_id, options in sample_size_options.items()
+                target_contest_id: {"key": "custom", "size": 6, "prob": None}
             },
         },
     )
