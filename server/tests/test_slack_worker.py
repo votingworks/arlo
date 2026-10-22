@@ -253,6 +253,13 @@ def test_slack_worker_message_format(snapshot):
         )
     )
 
+    base.user_type = "audit_admin"
+    snapshot.assert_match(
+        slack_worker.slack_message(
+            activity_log.FullHandTallyRequired(timestamp, base, round_num=1)
+        )
+    )
+
 
 def test_slack_worker_state_flag_emoji():
     timestamp = datetime.fromisoformat("2021-05-19T18:31:13.576657+00:00")

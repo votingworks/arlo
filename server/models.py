@@ -687,6 +687,7 @@ class Round(BaseModel):
 
     round_num = Column(Integer, nullable=False)
     ended_at = Column(UTCDateTime)
+    ended_with_full_tally_escalation = Column(Boolean)
 
     draw_sample_task_id = Column(
         String(200), ForeignKey("background_task.id", ondelete="set null")

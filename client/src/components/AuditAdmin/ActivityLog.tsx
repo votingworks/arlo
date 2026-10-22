@@ -35,6 +35,8 @@ const prettyAction = (activity: IActivity) => {
       return `Started round ${activity.info.round_num}`
     case 'EndRound':
       return `Ended round ${activity.info.round_num}`
+    case 'FullHandTallyRequired':
+      return `Round ${activity.info.round_num} ended, another round is required but escalates to the size of a full hand tally`
     case 'CalculateSampleSizes':
       return `Calculated sample sizes`
     case 'UploadFile': {
