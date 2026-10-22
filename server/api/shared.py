@@ -634,21 +634,30 @@ def full_hand_tally_sizes(election: Election):
 # indicates that a full hand tally is needed
 def needs_full_hand_tally(round: Round, election: Election) -> bool:
     full_hand_tally_size = full_hand_tally_sizes(election)
-    cumulative_sample_sizes = dict(
-        RoundContest.query.join(Round)
-        .filter_by(election_id=round.election_id)
-        .filter(Round.round_num <= round.round_num)
-        .join(RoundContest.contest)
+    return any(
+        size >= full_hand_tally_size[contest_id]
+        for contest_id, size in cumulative_sample_sizes(
+            election.id, round.round_num
+        ).items()
+    )
+
+
+# Returns the total sample size across rounds (up to and including the
+# specified round, if given) for each targeted contest
+def cumulative_sample_sizes(
+    election_id: str, round_num: int | None = None
+) -> dict[str, int]:
+    query = RoundContest.query.join(Round).filter_by(election_id=election_id)
+    if round_num is not None:
+        query = query.filter(Round.round_num <= round_num)
+    return dict(
+        query.join(RoundContest.contest)
         .filter_by(is_targeted=True)
         .group_by(RoundContest.contest_id)
         .values(
             RoundContest.contest_id,
             func.sum(RoundContest.sample_size["size"].as_integer()),
         )
-    )
-    return any(
-        size >= full_hand_tally_size[contest_id]
-        for contest_id, size in cumulative_sample_sizes.items()
     )
 
 
