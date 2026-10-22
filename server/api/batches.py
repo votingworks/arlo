@@ -4,14 +4,19 @@ import csv
 import uuid
 from flask import jsonify, request, session
 from werkzeug.exceptions import BadRequest, Conflict
-from sqlalchemy.orm import Query, joinedload
+from sqlalchemy.orm import joinedload
 from sqlalchemy import func
 
 from . import api
 from ..auth import get_loggedin_user, get_support_user, restrict_access, UserType
 from ..database import db_session
 from ..models import *
-from .shared import get_current_round, group_combined_batches
+from .shared import (
+    get_current_round,
+    group_combined_batches,
+    sampled_contest_ids,
+    tally_sheets_for_contests,
+)
 from ..util.csv_download import csv_response, jurisdiction_timestamp_name
 from ..util.jsonschema import JSONDict, validate
 from ..util.isoformat import isoformat
@@ -46,18 +51,6 @@ def replace_combined_batches_with_representative_batches(
     return regular_batches + representative_batches  # ty: ignore[unsound-return-statement]
 
 
-def already_audited_batches(jurisdiction: Jurisdiction, round: Round) -> Query:
-    query: Query = (
-        Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
-        .join(SampledBatchDraw)
-        .join(Round)
-        .filter(Round.round_num < round.round_num)
-        .with_entities(Batch.id)
-        .subquery()
-    )  # ty: ignore[unsound-assignment]
-    return query
-
-
 @api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/batches/retrieval-list",
     methods=["GET"],
@@ -70,13 +63,14 @@ def get_batch_retrieval_list(
         Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
         .join(SampledBatchDraw)
         .filter_by(round_id=round.id)
-        .filter(Batch.id.notin_(already_audited_batches(jurisdiction, round)))
         .group_by(Batch.id)
         .order_by(func.human_sort(Batch.name))
-        .values(Batch.name, Batch.container, Batch.tabulator)
+        .all()
     )
     retrieval_list_rows = [["Batch Name", "Container", "Tabulator"]] + [
-        list(batch_tuple) for batch_tuple in batches
+        [batch.name, batch.container, batch.tabulator]
+        for batch in batches
+        if sampled_contest_ids(jurisdiction, round, batch)
     ]
 
     csv_io = io.StringIO()
@@ -90,7 +84,9 @@ def get_batch_retrieval_list(
     )
 
 
-def serialize_batch(batch: Batch) -> JSONDict:
+def serialize_batch(
+    batch: Batch, tally_sheets: list[BatchResultTallySheet] | None = None
+) -> JSONDict:
     return {
         "id": batch.id,
         "name": batch.name,
@@ -103,7 +99,9 @@ def serialize_batch(batch: Batch) -> JSONDict:
                     for result in tally_sheet.results
                 },
             }
-            for tally_sheet in batch.result_tally_sheets
+            for tally_sheet in (
+                batch.result_tally_sheets if tally_sheets is None else tally_sheets
+            )
         ],
         "lastEditedBy": construct_batch_last_edited_by_string(batch),
     }
@@ -142,7 +140,6 @@ def list_batches_for_jurisdiction(
         Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
         .join(SampledBatchDraw)
         .filter_by(round_id=round.id)
-        .filter(Batch.id.notin_(already_audited_batches(jurisdiction, round)))
         .order_by(func.human_sort(Batch.name))
         .options(
             joinedload(Batch.result_tally_sheets).joinedload(
@@ -160,14 +157,22 @@ def list_batches_for_jurisdiction(
     return jsonify(
         {
             "batches": [
-                serialize_batch(batch)
+                {
+                    **serialize_batch(
+                        batch,
+                        tally_sheets_for_contests(jurisdiction, batch, contest_ids),
+                    ),
+                    "contestIds": contest_ids,
+                }
                 for batch in replace_combined_batches_with_representative_batches(
                     batches
                 )
+                if (contest_ids := sampled_contest_ids(jurisdiction, round, batch))
             ],
             "resultsFinalizedAt": isoformat(
                 results_finalized and results_finalized.created_at
             ),
+            "roundNum": round.round_num,
         }
     )
 
@@ -208,12 +213,19 @@ def validate_batch_results(
     ):
         raise Conflict("Results have already been finalized")
 
-    if any(draw.round_id != current_round.id for draw in batch.draws):
-        raise Conflict("Batch was already audited in a previous round")
+    contest_ids = sampled_contest_ids(jurisdiction, round, batch)
+    if not contest_ids:
+        raise Conflict(
+            "Batch was already audited in a previous round"
+            if batch.draws
+            else "Batch was not sampled"
+        )
 
     validate(batch_results, BATCH_RESULT_TALLY_SHEETS_SCHEMA)
 
-    contests = list(jurisdiction.contests)
+    contests = [
+        contest for contest in jurisdiction.contests if contest.id in contest_ids
+    ]
     choice_ids_across_contests = set(
         choice.id for contest in contests for choice in contest.choices
     )
@@ -224,8 +236,15 @@ def validate_batch_results(
         if tally_sheet["results"].keys() != choice_ids_across_contests:
             raise BadRequest("Missing choice ids")
 
+    # Tally sheets from earlier rounds stay, so their names are taken too
+    kept_tally_sheet_names = [
+        tally_sheet.name
+        for tally_sheet in batch.result_tally_sheets
+        if tally_sheet
+        not in tally_sheets_for_contests(jurisdiction, batch, contest_ids)
+    ]
     duplicate_tally_sheet_name = find_first_duplicate(
-        [tally_sheet["name"] for tally_sheet in batch_results]
+        [tally_sheet["name"] for tally_sheet in batch_results] + kept_tally_sheet_names
     )
     if duplicate_tally_sheet_name:
         raise BadRequest(
@@ -264,6 +283,7 @@ def validate_batch_results(
                 f"{allowed_votes} - the number of ballots in the batch ({num_ballots}) "
                 f"times the number of votes allowed ({contest.votes_allowed})."
             )
+    return contest_ids
 
 
 @api.route(
@@ -281,10 +301,19 @@ def record_batch_results(
     if batch is None or batch.jurisdiction_id != jurisdiction.id:
         raise NotFound()
     batch_results = safe_get_json_list(request)
-    validate_batch_results(election, jurisdiction, round, batch, batch_results)
+    contest_ids = validate_batch_results(
+        election, jurisdiction, round, batch, batch_results
+    )
 
-    BatchResultTallySheet.query.filter_by(batch_id=batch.id).delete()
+    replaced_tally_sheets = tally_sheets_for_contests(jurisdiction, batch, contest_ids)
+    BatchResultTallySheet.query.filter(
+        BatchResultTallySheet.id.in_([sheet.id for sheet in replaced_tally_sheets])
+    ).delete(synchronize_session="fetch")
     batch.result_tally_sheets = [
+        tally_sheet
+        for tally_sheet in batch.result_tally_sheets
+        if tally_sheet not in replaced_tally_sheets
+    ] + [
         BatchResultTallySheet(
             id=str(uuid.uuid4()),
             name=tally_sheet["name"],
@@ -319,20 +348,27 @@ def record_batch_results(
             Batch.jurisdiction_id == jurisdiction.id,
             Batch.id != batch.id,
         )
-        # Delete existing sub batch tallies if any
-        BatchResultTallySheet.query.filter(
-            BatchResultTallySheet.batch_id.in_(
-                non_representative_sub_batches.with_entities(Batch.id)
-            )
-        ).delete(synchronize_session="fetch")
         for sub_batch in non_representative_sub_batches:
+            replaced_sub_batch_tally_sheets = tally_sheets_for_contests(
+                jurisdiction, sub_batch, contest_ids
+            )
+            BatchResultTallySheet.query.filter(
+                BatchResultTallySheet.id.in_(
+                    [sheet.id for sheet in replaced_sub_batch_tally_sheets]
+                )
+            ).delete(synchronize_session="fetch")
             sub_batch.result_tally_sheets = [
+                tally_sheet
+                for tally_sheet in sub_batch.result_tally_sheets
+                if tally_sheet not in replaced_sub_batch_tally_sheets
+            ] + [
                 BatchResultTallySheet(
                     id=str(uuid.uuid4()),
                     name="Combined Batch Zero Tally",
                     results=[
                         BatchResult(contest_choice_id=choice.id, result=0)
                         for contest in list(jurisdiction.contests)
+                        if contest.id in contest_ids
                         for choice in contest.choices
                     ],
                 )
@@ -368,16 +404,17 @@ def finalize_batch_results(
     ):
         raise Conflict("Results have already been finalized")
 
-    num_batches_without_results = (
+    batches = (
         Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
         .join(SampledBatchDraw)
         .filter_by(round_id=round.id)
-        .outerjoin(BatchResultTallySheet)
-        .group_by(Batch.id)
-        .having(func.count(BatchResultTallySheet.batch_id) == 0)
-        .count()
+        .all()
     )
-    if num_batches_without_results > 0:
+    if any(
+        not tally_sheets_for_contests(jurisdiction, batch, contest_ids)
+        for batch in batches
+        if (contest_ids := sampled_contest_ids(jurisdiction, round, batch))
+    ):
         raise Conflict(
             "Cannot finalize batch results until all batches have audit results recorded."
         )

@@ -21,6 +21,7 @@ from ..auth.auth_helpers import UserType
 from ..auth import auth_helpers
 from ..database import db_session
 from ..models import *
+from ..api.shared import sampled_contest_ids
 
 
 DEFAULT_SUPPORT_EMAIL = "support@example.org"
@@ -718,10 +719,38 @@ def enter_reported_results(
             for candidate, count in votes.items()
         }
         rv = put_batch_results(
-            client, election_id, jurisdiction_id, round_id, batch["id"], [results]
+            client,
+            election_id,
+            jurisdiction_id,
+            round_id,
+            batch["id"],
+            only_sampled_contests(batch["id"], round_id, [results]),
         )
         assert_ok(rv)
     rv = client.post(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/batches/finalize"
     )
     assert_ok(rv)
+
+
+def only_sampled_contests(
+    batch_id: str, round_id: str, tally_sheets: list[dict[str, int]]
+) -> list[dict[str, int]]:
+    batch = Batch.query.get(batch_id)
+    contest_ids = sampled_contest_ids(
+        batch.jurisdiction, Round.query.get(round_id), batch
+    )
+    choice_ids = {
+        choice.id
+        for contest in batch.jurisdiction.contests
+        if contest.id in contest_ids
+        for choice in contest.choices
+    }
+    return [
+        {
+            choice_id: votes
+            for choice_id, votes in sheet.items()
+            if choice_id in choice_ids
+        }
+        for sheet in tally_sheets
+    ]
