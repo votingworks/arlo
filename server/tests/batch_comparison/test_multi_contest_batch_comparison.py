@@ -1,3 +1,6 @@
+import csv
+import io
+
 import pytest
 from flask.testing import FlaskClient
 
@@ -551,6 +554,22 @@ def test_multi_contest_batch_comparison_end_to_end(
         "Batch 8",
         "Batch 10",
     ]
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/retrieval-list"
+    )
+    assert rv.status_code == 200
+    retrieval_list = list(csv.reader(io.StringIO(rv.data.decode("utf-8"))))
+    assert retrieval_list[0] == ["Batch Name", "Container", "Tabulator", "Contests"]
+    contest_names = {contest_ids[0]: "Contest 1", contest_ids[1]: "Contest 2"}
+    assert [[row[0], row[3]] for row in retrieval_list[1:]] == [
+        [
+            batch["name"],
+            "; ".join(contest_names[contest_id] for contest_id in batch["contestIds"]),
+        ]
+        for batch in jurisdiction_1_batches
+    ]
+    assert "Contest 1; Contest 2" in [row[3] for row in retrieval_list[1:]]
 
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)

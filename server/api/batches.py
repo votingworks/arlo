@@ -67,10 +67,16 @@ def get_batch_retrieval_list(
         .order_by(func.human_sort(Batch.name))
         .all()
     )
-    retrieval_list_rows = [["Batch Name", "Container", "Tabulator"]] + [
-        [batch.name, batch.container, batch.tabulator]
+    contest_names = {contest.id: contest.name for contest in jurisdiction.contests}
+    retrieval_list_rows = [["Batch Name", "Container", "Tabulator", "Contests"]] + [
+        [
+            batch.name,
+            batch.container,
+            batch.tabulator,
+            "; ".join(contest_names[contest_id] for contest_id in contest_ids),
+        ]
         for batch in batches
-        if sampled_contest_ids(jurisdiction, round, batch)
+        if (contest_ids := sampled_contest_ids(jurisdiction, round, batch))
     ]
 
     csv_io = io.StringIO()
