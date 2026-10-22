@@ -942,12 +942,8 @@ def test_ballot_comparison_two_rounds(
 
     # Round 1 is marked as ending with a full hand tally escalation, and
     # finishing it recorded that in the activity log
-    assert (
-        Round.query.filter_by(election_id=election_id, round_num=1)
-        .one()
-        .ended_with_full_tally_escalation
-        is True
-    )
+    rv = client.get(f"/api/election/{election_id}/round")
+    assert json.loads(rv.data)["rounds"][0]["endedWithFullTallyEscalation"] is True
 
     def full_hand_tally_activities():
         return [
@@ -988,12 +984,8 @@ def test_ballot_comparison_two_rounds(
     assert_ok(rv)
 
     # Starting round 2 means round 1 is no longer blocked
-    assert (
-        Round.query.filter_by(election_id=election_id, round_num=1)
-        .one()
-        .ended_with_full_tally_escalation
-        is False
-    )
+    rv = client.get(f"/api/election/{election_id}/round")
+    assert json.loads(rv.data)["rounds"][0]["endedWithFullTallyEscalation"] is False
 
     rv = client.get(
         f"/api/election/{election_id}/round",
@@ -1051,13 +1043,9 @@ def test_ballot_comparison_two_rounds(
     # The risk limit still isn't met, and with 29 of the 30 ballots sampled,
     # another round would escalate to the size of a full hand tally
     rv = client.get(f"/api/election/{election_id}/round")
-    assert json.loads(rv.data)["rounds"][1]["isAuditComplete"] is False
-    assert (
-        Round.query.filter_by(election_id=election_id, round_num=2)
-        .one()
-        .ended_with_full_tally_escalation
-        is True
-    )
+    round_2 = json.loads(rv.data)["rounds"][1]
+    assert round_2["isAuditComplete"] is False
+    assert round_2["endedWithFullTallyEscalation"] is True
     activities = full_hand_tally_activities()
     assert len(activities) == 3
     assert activities[-1].info["round_num"] == 2
@@ -1368,12 +1356,8 @@ def test_ballot_comparison_multiple_targeted_contests_sample_size(
         contest_1_id: [{"key": "default", "prob": None, "size": 10}],
         contest_2_id: [{"key": "default", "prob": None, "size": 14}],
     }
-    assert (
-        Round.query.filter_by(election_id=election_id, round_num=1)
-        .one()
-        .ended_with_full_tally_escalation
-        is True
-    )
+    rv = client.get(f"/api/election/{election_id}/round")
+    assert json.loads(rv.data)["rounds"][0]["endedWithFullTallyEscalation"] is True
 
     # Each round 2 sample size brings the contest's total sample up to the
     # number of ballots in the contest, which requires a full hand tally
@@ -1443,11 +1427,8 @@ def test_ballot_comparison_multiple_targeted_contests_sample_size(
         ):
             rv = client.post(f"/api/election/{election_id}/round/current/finish")
         assert_ok(rv)
-        return (
-            Round.query.filter_by(election_id=election_id, round_num=2)
-            .one()
-            .ended_with_full_tally_escalation
-        )
+        rv = client.get(f"/api/election/{election_id}/round")
+        return json.loads(rv.data)["rounds"][1]["endedWithFullTallyEscalation"]
 
     def reopen_round():
         set_support_user(client, DEFAULT_SUPPORT_EMAIL)
