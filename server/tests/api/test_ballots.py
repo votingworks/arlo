@@ -905,7 +905,29 @@ def test_ab_audit_ballot_invalid(
                     },
                 ],
             },
-            "Contest not found: 12345",
+            "Must include an interpretation for each contest.",
+        ),
+        (
+            {
+                "status": "AUDITED",
+                "interpretations": [
+                    {
+                        "contestId": contest_ids[0],
+                        "interpretation": "VOTE",
+                        "choiceIds": [choice_id],
+                        "comment": None,
+                        "hasInvalidWriteIn": False,
+                    },
+                    {
+                        "contestId": contest_ids[0],
+                        "interpretation": "VOTE",
+                        "choiceIds": [choice_id],
+                        "comment": None,
+                        "hasInvalidWriteIn": False,
+                    },
+                ],
+            },
+            "Must include an interpretation for each contest.",
         ),
         (
             {
