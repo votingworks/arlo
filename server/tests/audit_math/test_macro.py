@@ -915,6 +915,69 @@ def test_combined_batches_sampled_and_unsampled():
     assert res is (expected_p < ALPHA)
 
 
+@pytest.mark.parametrize(
+    "sampled_batches", [["Batch 1"], ["Batch 1", "Batch 2"]], ids=["odd", "even"]
+)
+def test_combined_batch_error_exceeds_max_error(sampled_batches: list[str]):
+    contest = Contest(
+        "Combined Batches Contest",
+        {
+            "winner": 320,
+            "loser": 80,
+            "ballots": 400,
+            "numWinners": 1,
+            "votesAllowed": 1,
+        },
+    )
+    batches = {
+        "Batch 1": {contest.name: {"winner": 100, "loser": 0, "ballots": 100}},
+        "Batch 2": {contest.name: {"winner": 100, "loser": 0, "ballots": 100}},
+        "Batch 3": {contest.name: {"winner": 60, "loser": 40, "ballots": 100}},
+        "Batch 4": {contest.name: {"winner": 60, "loser": 40, "ballots": 100}},
+    }
+    # The audited results for the combined batch cover both sub-batches, so
+    # the error (400) exceeds the max error of either sub-batch (200)
+    combined_batch_results = {contest.name: {"winner": 0, "loser": 200}}
+    sample_results = {batch: combined_batch_results for batch in sampled_batches}
+    sample_ticket_numbers = {
+        str(i): batch for i, batch in enumerate(sampled_batches, start=1)
+    }
+
+    assert macro.compute_risk(
+        RISK_LIMIT,
+        contest,
+        batches,
+        sample_results,
+        sample_ticket_numbers,
+        [{"Batch 1", "Batch 2"}],
+    ) == (1.0, False)
+
+
+def test_multi_vote_error_exceeds_max_error():
+    contest = Contest(
+        "Multi-Vote Contest",
+        {
+            "winner": 300,
+            "loser": 100,
+            "ballots": 300,
+            "numWinners": 1,
+            "votesAllowed": 2,
+        },
+    )
+    batches = {
+        "Batch 1": {contest.name: {"winner": 100, "loser": 0, "ballots": 100}},
+        "Batch 2": {contest.name: {"winner": 100, "loser": 50, "ballots": 100}},
+        "Batch 3": {contest.name: {"winner": 100, "loser": 50, "ballots": 100}},
+    }
+    # The loser's audited votes equal ballots * votes_allowed, so the error
+    # (300) exceeds the batch's max error (200)
+    sample_results = {"Batch 1": {contest.name: {"winner": 0, "loser": 200}}}
+
+    assert macro.compute_risk(
+        RISK_LIMIT, contest, batches, sample_results, {"1": "Batch 1"}, []
+    ) == (1.0, False)
+
+
 def test_pending_ballots(snapshot):
     num_pending_ballots = 2
     contest_data = {

@@ -497,9 +497,10 @@ def compute_risk(
 
         taint = e_p / u_p
 
-        if taint == 1:
-            p = Decimal("inf")  # Our p-value blows up
-        else:
-            p *= (1 - 1 / U) / (1 - taint)
+        # If the error reaches the max error, we need a full hand recount
+        if taint >= 1:
+            return 1.0, False
+
+        p *= (1 - 1 / U) / (1 - taint)
 
     return min(float(p), 1.0), p <= alpha
