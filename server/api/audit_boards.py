@@ -337,6 +337,11 @@ def set_audit_board_members(
     round: Round,
     audit_board: AuditBoard,
 ):
+    if audit_board.signed_off_at is not None:
+        raise Conflict("Audit board has already signed off.")
+    if round.ended_at is not None:
+        raise Conflict(f"Round {round.round_num} has ended.")
+
     members = safe_get_json_list(request)
     validate_members(members)
 
@@ -394,6 +399,9 @@ def sign_off_audit_board(
     round: Round,
     audit_board: AuditBoard,
 ):
+    if audit_board.signed_off_at is not None:
+        raise Conflict("Audit board has already signed off.")
+
     validate_sign_off(safe_get_json_dict(request), audit_board)
 
     audit_board.signed_off_at = datetime.now(timezone.utc)  # ty: ignore[invalid-assignment]
