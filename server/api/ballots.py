@@ -350,10 +350,6 @@ AUDIT_BALLOT_SCHEMA = {
 
 
 def validate_interpretation(interpretation: JSONDict):
-    contest = Contest.query.get(interpretation["contestId"])
-    if not contest:
-        raise BadRequest(f"Contest not found: {interpretation['contestId']}")
-
     if interpretation["interpretation"] == Interpretation.VOTE:
         if len(interpretation["choiceIds"]) == 0:
             raise BadRequest(
@@ -389,7 +385,10 @@ def validate_audit_ballot(ballot_audit: JSONDict, jurisdiction: Jurisdiction):
     validate(ballot_audit, AUDIT_BALLOT_SCHEMA)
 
     if ballot_audit["status"] == BallotStatus.AUDITED:
-        if len(ballot_audit["interpretations"]) != len(list(jurisdiction.contests)):
+        if sorted(
+            interpretation["contestId"]
+            for interpretation in ballot_audit["interpretations"]
+        ) != sorted(contest.id for contest in jurisdiction.contests):
             raise BadRequest("Must include an interpretation for each contest.")
         for interpretation in ballot_audit["interpretations"]:
             validate_interpretation(interpretation)
