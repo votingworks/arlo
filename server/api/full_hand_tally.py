@@ -240,6 +240,8 @@ def finalize_full_hand_tally_batch_results(
     jurisdiction: Jurisdiction,
     round: Round,
 ):
+    validate_full_hand_tally_batch_result_request(election, jurisdiction, round)
+
     jurisdiction.finalized_full_hand_tally_results_at = datetime.now(timezone.utc)  # ty: ignore[invalid-assignment]
 
     sum_results_by_choice = (
