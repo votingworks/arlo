@@ -133,8 +133,9 @@ def run_task(task: BackgroundTask, db_session):  # noqa: ANN001
         task.completed_at = datetime.now(timezone.utc)  # ty: ignore[invalid-assignment]
 
         # Some exceptions stringify nicely, some don't (e.g. StopIteration) so
-        # we just print the exception class name.
-        task.error = str(error) or str(error.__class__.__name__)  # ty: ignore[invalid-assignment]
+        # we just print the exception class name. Postgres can't store NUL
+        # characters in text columns, so we strip them.
+        task.error = str(error).replace("\x00", "") or str(error.__class__.__name__)  # ty: ignore[invalid-assignment]
 
         db_session.commit()
 
