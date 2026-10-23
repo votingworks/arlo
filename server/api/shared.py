@@ -32,6 +32,15 @@ def get_current_round(election: Election) -> Round | None:
     return max(election.rounds, key=lambda r: r.round_num)
 
 
+def is_sample_drawn(round: Round) -> bool:
+    draw_sample_task = round.draw_sample_task
+    return (
+        draw_sample_task is not None
+        and draw_sample_task.completed_at is not None
+        and draw_sample_task.error is None
+    )
+
+
 def get_previous_round(election: Election, round: Round) -> Round | None:
     if round.round_num == 1:
         return None
