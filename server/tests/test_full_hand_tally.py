@@ -738,6 +738,75 @@ def test_full_hand_tally_results_validation(
         ]
     }
 
+    # Can't finalize again
+    num_jurisdiction_results = JurisdictionResult.query.filter_by(
+        jurisdiction_id=jurisdiction_ids[0]
+    ).count()
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/full-hand-tally/finalize",
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {"errorType": "Conflict", "message": "Results have already been finalized"}
+        ]
+    }
+    assert (
+        JurisdictionResult.query.filter_by(jurisdiction_id=jurisdiction_ids[0]).count()
+        == num_jurisdiction_results
+    )
+
+
+def test_full_hand_tally_finalize_in_sampled_round(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
+    election_settings,
+    manifests,
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 1,
+            "sampleSizes": {
+                contest_ids[0]: {"key": "custom", "size": 100, "prob": None}
+            },
+        },
+    )
+    assert_ok(rv)
+    rv = client.get(f"/api/election/{election_id}/round")
+    round_1 = json.loads(rv.data)["rounds"][0]
+    assert round_1["isFullHandTally"] is False
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1['id']}/full-hand-tally/finalize",
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Full hand tally only supported if all ballots are sampled",
+            }
+        ]
+    }
+    assert (
+        JurisdictionResult.query.filter_by(jurisdiction_id=jurisdiction_ids[0]).count()
+        == 0
+    )
+    assert (
+        Jurisdiction.query.get(jurisdiction_ids[0]).finalized_full_hand_tally_results_at
+        is None
+    )
+
 
 def test_full_hand_tally_results_unfinalize(
     client: FlaskClient,
