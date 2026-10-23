@@ -418,6 +418,8 @@ def audit_ballot(
     ).first()
     if not ballot:
         raise NotFound()
+    if audit_board.signed_off_at is not None:
+        raise Conflict("Audit board has already signed off.")
     current_round = get_current_round(election)
     assert current_round is not None  # Otherwise ballot would be not found above
     if any(draw.round_id != current_round.id for draw in ballot.draws):
