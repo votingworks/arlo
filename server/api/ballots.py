@@ -416,9 +416,12 @@ def audit_ballot(
     audit_board: AuditBoard,
     ballot_id: str,
 ):
-    ballot = SampledBallot.query.filter_by(
-        id=ballot_id, audit_board_id=audit_board.id
-    ).first()
+    # Lock the ballot so concurrent requests to audit it are serialized
+    ballot = (
+        SampledBallot.query.filter_by(id=ballot_id, audit_board_id=audit_board.id)
+        .with_for_update()
+        .first()
+    )
     if not ballot:
         raise NotFound()
     if audit_board.signed_off_at is not None:
