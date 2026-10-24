@@ -389,7 +389,10 @@ def validate_audit_ballot(ballot_audit: JSONDict, jurisdiction: Jurisdiction):
     validate(ballot_audit, AUDIT_BALLOT_SCHEMA)
 
     if ballot_audit["status"] == BallotStatus.AUDITED:
-        if len(ballot_audit["interpretations"]) != len(list(jurisdiction.contests)):
+        if sorted(
+            interpretation["contestId"]
+            for interpretation in ballot_audit["interpretations"]
+        ) != sorted(contest.id for contest in jurisdiction.contests):
             raise BadRequest("Must include an interpretation for each contest.")
         for interpretation in ballot_audit["interpretations"]:
             validate_interpretation(interpretation)
@@ -413,11 +416,16 @@ def audit_ballot(
     audit_board: AuditBoard,
     ballot_id: str,
 ):
-    ballot = SampledBallot.query.filter_by(
-        id=ballot_id, audit_board_id=audit_board.id
-    ).first()
+    # Lock the ballot so concurrent requests to audit it are serialized
+    ballot = (
+        SampledBallot.query.filter_by(id=ballot_id, audit_board_id=audit_board.id)
+        .with_for_update()
+        .first()
+    )
     if not ballot:
         raise NotFound()
+    if audit_board.signed_off_at is not None:
+        raise Conflict("Audit board has already signed off.")
     current_round = get_current_round(election)
     assert current_round is not None  # Otherwise ballot would be not found above
     if any(draw.round_id != current_round.id for draw in ballot.draws):

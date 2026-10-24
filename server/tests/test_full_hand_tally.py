@@ -738,6 +738,25 @@ def test_full_hand_tally_results_validation(
         ]
     }
 
+    # Can't finalize again
+    num_jurisdiction_results = JurisdictionResult.query.filter_by(
+        jurisdiction_id=jurisdiction_ids[0]
+    ).count()
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/full-hand-tally/finalize",
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {"errorType": "Conflict", "message": "Results have already been finalized"}
+        ]
+    }
+    assert (
+        JurisdictionResult.query.filter_by(jurisdiction_id=jurisdiction_ids[0]).count()
+        == num_jurisdiction_results
+    )
+
 
 def test_full_hand_tally_results_unfinalize(
     client: FlaskClient,

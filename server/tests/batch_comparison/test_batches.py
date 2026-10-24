@@ -1195,3 +1195,53 @@ def test_batch_tallies_cannot_change_after_audit_started(
     jurisdiction = Jurisdiction.query.get(jurisdiction_ids[0])
     assert jurisdiction.batch_tallies_file_id == batch_tallies_file_id
     assert jurisdiction.batch_tallies == batch_tallies
+
+
+def test_finalize_batch_results_before_sample_drawn(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
+    election_settings,
+    manifests,
+    batch_tallies,
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
+    sample_size_options = json.loads(rv.data)["sampleSizes"]
+    with no_automatic_task_execution():
+        rv = post_json(
+            client,
+            f"/api/election/{election_id}/round",
+            {
+                "roundNum": 1,
+                "sampleSizes": {
+                    contest_id: sample_size_options_for_contest[0]
+                    for contest_id, sample_size_options_for_contest in sample_size_options.items()
+                },
+            },
+        )
+        assert_ok(rv)
+    round = Round.query.filter_by(election_id=election_id).one()
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.post(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round.id}/batches/finalize"
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Cannot finalize batch results until the sample has been drawn.",
+            }
+        ]
+    }
+    assert (
+        BatchResultsFinalized.query.filter_by(
+            jurisdiction_id=jurisdiction_ids[0], round_id=round.id
+        ).count()
+        == 0
+    )

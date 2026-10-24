@@ -710,6 +710,9 @@ def undo_round_start(election: Election):
             "Cannot undo starting this round because some jurisdictions have already created audit boards."
         )
 
+    if current_round.ended_at is not None:
+        raise Conflict("Cannot undo starting this round because it has ended.")
+
     delete_round_and_corresponding_sampled_ballots(current_round)
 
     return jsonify(status="ok")

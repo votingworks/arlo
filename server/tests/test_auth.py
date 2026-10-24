@@ -780,6 +780,26 @@ def test_tally_entry_login(
     tally_entry_me_response = json.loads(rv.data)
     assert_is_date(tally_entry_me_response["user"]["loginConfirmedAt"])
 
+    # Tally entry user can't change their details after login is confirmed
+    rv = post_json(
+        tally_entry_client,
+        "/auth/tallyentry/code",
+        dict(members=[dict(name="Carol", affiliation=None)]),
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "message": "Login code has already been confirmed.",
+                "errorType": "Conflict",
+            }
+        ]
+    }
+    rv = tally_entry_client.get("/api/me")
+    tally_entry_me_response = json.loads(rv.data)
+    assert tally_entry_me_response["user"]["members"] == members
+    assert tally_entry_me_response["user"]["loginCode"] == login_code
+
 
 def test_tally_entry_reject_login_request(
     client: FlaskClient,

@@ -360,6 +360,14 @@ def finalize_batch_results(
     jurisdiction: Jurisdiction,
     round: Round,
 ):
+    draw_sample_task = round.draw_sample_task
+    if (
+        draw_sample_task is None
+        or draw_sample_task.completed_at is None
+        or draw_sample_task.error is not None
+    ):
+        raise Conflict("Cannot finalize batch results until the sample has been drawn.")
+
     if (
         BatchResultsFinalized.query.filter_by(
             jurisdiction_id=jurisdiction.id, round_id=round.id

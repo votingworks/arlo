@@ -337,6 +337,9 @@ def set_audit_board_members(
     round: Round,
     audit_board: AuditBoard,
 ):
+    if audit_board.signed_off_at is not None:
+        raise Conflict("Audit board has already signed off.")
+
     members = safe_get_json_list(request)
     validate_members(members)
 
