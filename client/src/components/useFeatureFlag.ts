@@ -50,7 +50,6 @@ const BATCH_INVENTORY_CONFIGS: {
   },
 }
 
-// eslint-disable-next-line import/prefer-default-export
 export const useBatchInventoryFeatureFlag = (
   jurisdictionId: string
 ): BatchInventoryConfig | undefined => {

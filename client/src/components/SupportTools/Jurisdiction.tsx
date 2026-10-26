@@ -212,8 +212,8 @@ const CombinedBatchesForm = ({
                 value,
                 onChange,
               }: {
-                value: string[] // eslint-disable-line react/no-unused-prop-types
-                onChange: (value: string[]) => void // eslint-disable-line react/no-unused-prop-types
+                value: string[]
+                onChange: (value: string[]) => void
               }) => (
                 <BatchMultiSelect
                   batches={batches}

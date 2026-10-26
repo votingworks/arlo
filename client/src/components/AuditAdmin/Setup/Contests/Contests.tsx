@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react'
 import ContestForm from './ContestForm'
 import ContestSelect from './ContestSelect'

@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React, { useState } from 'react'
 import Participants from './Participants/Participants'
 import Contests from './Contests/Contests'

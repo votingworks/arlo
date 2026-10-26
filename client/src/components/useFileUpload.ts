@@ -12,11 +12,6 @@ import { jurisdictionsQueryKey } from './useJurisdictions'
 import { contestChoiceNameStandardizationsQueryKey } from './useContestChoiceNameStandardizations'
 import { contestsQueryKey } from './useContests'
 
-interface IUseFileUploadProps {
-  url: string
-  formKey: string
-}
-
 export interface IFileUpload {
   uploadedFile: UseQueryResult<IFileInfo, ApiError>
   uploadFiles: (files: File[]) => Promise<void>
@@ -33,7 +28,6 @@ export interface IFileUpload {
  * or when a file is deleted). It is not called when the file state is first
  * loaded from the server, nor when a file is processing.
  */
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const useUploadedFile = (
   key: string[],
   url: string,
@@ -131,7 +125,6 @@ export const useUploadFiles = (key: string[], url: string) => {
           },
         })
       )
-      return
     } catch (e) {
       const error = e as any
       const errors = error.response?.data.errors

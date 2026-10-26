@@ -70,7 +70,7 @@ const useAuditBoards = (
         await getAuditBoards(electionId, jurisdictionId, roundId)
       )
     })()
-  }, [electionId, jurisdictionId, roundsHash]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [electionId, jurisdictionId, roundsHash])
 
   const createAuditBoards = async (
     boards: { name: string }[]

@@ -55,7 +55,6 @@ const MemberForm: React.FC<IProps> = ({
           <form>
             {[0, 1].map(i => (
               <FormSection label="Audit Board Member" key={i}>
-                {/* eslint-disable jsx-a11y/label-has-associated-control */}
                 <LabelText htmlFor={`[${i}]name`}>Full Name</LabelText>
                 <NameField name={`[${i}]name`} id={`[${i}]name`} />
                 <LabelText htmlFor={`[${i}]affiliation`}>

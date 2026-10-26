@@ -23,7 +23,6 @@ export interface IBatches {
   resultsFinalizedAt: string | null
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const useBatches = (
   electionId: string,
   jurisdictionId: string,
@@ -35,7 +34,6 @@ export const useBatches = (
     )
   )
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const useRecordBatchResults = (
   electionId: string,
   jurisdictionId: string,
@@ -64,7 +62,6 @@ export const useRecordBatchResults = (
   })
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const useFinalizeBatchResults = (
   electionId: string,
   jurisdictionId: string,

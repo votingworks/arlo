@@ -16,7 +16,6 @@
       }
     ],
     "editor.defaultFormatter": "oxc.oxc-vscode",
-    "oxc.enable.oxlint": false,
     "editor.formatOnSave": true,
     "[python]": {
       "editor.defaultFormatter": "charliermarsh.ruff"

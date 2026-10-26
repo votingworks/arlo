@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-types
 export function groupBy<T extends object>(
   arr: T[],
   keyFn: (obj: T) => string

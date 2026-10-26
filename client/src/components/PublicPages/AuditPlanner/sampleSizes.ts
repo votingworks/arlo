@@ -17,11 +17,6 @@ export type SampleSizes = {
   BATCH_COMPARISON: { [riskLimitPercentage: string]: number }
 }
 
-interface UseSampleSizesOptions {
-  /** Allow overriding the global onError behavior of showing a toast */
-  showToastOnError?: boolean
-}
-
 export const useSampleSizes = (
   electionResults: IElectionResults
 ): UseQueryResult<SampleSizes, Error> =>

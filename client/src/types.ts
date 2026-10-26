@@ -1,5 +1,5 @@
 export type ElementType<T extends readonly unknown[]> =
-  T extends readonly (infer ElementType)[] ? ElementType : never
+  T extends readonly (infer E)[] ? E : never
 
 export interface IErrorResponse {
   errors: {

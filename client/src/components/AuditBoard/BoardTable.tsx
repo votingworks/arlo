@@ -1,5 +1,3 @@
-/* eslint-disable react/display-name */
-/* eslint-disable react/prop-types */
 import React from 'react'
 import styled from 'styled-components'
 import { H3, H4, Colors, OL, Icon } from '@blueprintjs/core'
@@ -152,7 +150,6 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
     },
     {
       Header: 'Status',
-      // eslint-disable-next-line react/display-name
       accessor: ballot => {
         return ballot.status !== BallotStatus.NOT_AUDITED ? (
           <>

@@ -46,7 +46,7 @@ const generateUrl = <Params extends MatchParameter<Params>>(
 }
 
 /** Credit to https://stackoverflow.com/a/56452779 for solution to mocking React Router props */
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/ban-types
+// eslint-disable-next-line @typescript-eslint/ban-types
 export const routerTestProps = <Params extends MatchParameter<Params> = {}>(
   path: string,
   params: Params
@@ -97,7 +97,6 @@ export function renderWithRouter(
 interface FetchRequest {
   url: string
   options?: RequestInit
-  // eslint-disable-next-line @typescript-eslint/ban-types
   response: object | null
   error?: {
     status: number
@@ -261,7 +260,6 @@ export const findAndCloseToast = async (
 // Example: const mockNumbers = mocksOfType<number>()({ 'one': 1, 'two': 2 })
 export const mocksOfType =
   <T,>() =>
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   <Mock,>(mock: { [K in keyof Mock]: T }) =>
     mock
 
