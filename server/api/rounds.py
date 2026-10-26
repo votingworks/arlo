@@ -5,12 +5,16 @@ from flask import jsonify, request
 from jsonschema import validate
 from werkzeug.exceptions import BadRequest, Conflict
 from sqlalchemy import and_, func, not_
+from sqlalchemy.orm import selectinload
 
 
 from . import api
 from ..database import db_session
 from ..models import *
 from .shared import (
+    contest_ids_to_audit_in_round,
+    tally_sheets_for_contests,
+    with_combined_sub_batches,
     BallotDraw,
     SampleSize,
     active_targeted_contests,
@@ -625,6 +629,24 @@ def validate_sample_size(round: dict[str, Any], election: Election):
 
 
 def delete_round_and_corresponding_sampled_ballots(round: Round):
+    # Batch results entered this round are for the round's contests only
+    if round.election.audit_type == AuditType.BATCH_COMPARISON:
+        for batch in with_combined_sub_batches(
+            Batch.query.join(SampledBatchDraw)
+            .filter_by(round_id=round.id)
+            .options(selectinload(Batch.draws))
+            .options(
+                selectinload(Batch.result_tally_sheets).selectinload(
+                    BatchResultTallySheet.results
+                )
+            )
+            .all()
+        ):
+            for tally_sheet in tally_sheets_for_contests(
+                batch, contest_ids_to_audit_in_round(round, batch)
+            ):
+                db_session.delete(tally_sheet)
+
     db_session.delete(round)
 
     # Delete any sampled ballots that were created this round (they will have no associated

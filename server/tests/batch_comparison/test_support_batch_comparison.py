@@ -226,6 +226,47 @@ def test_support_combined_batches(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     assert count_num_batches_audited() == 0
 
+    # Undoing the round start clears a combined batch's tallies, including the
+    # zero tally on its unsampled sub-batch
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches"
+    )
+    combined_batch_2 = next(
+        batch
+        for batch in json.loads(rv.data)["batches"]
+        if batch["name"] == "Combined Batch 2"
+    )
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/{combined_batch_2['id']}/results",
+        [
+            {
+                "name": "Tally Sheet #1",
+                "results": {choice["id"]: 1 for choice in contest["choices"]},
+            }
+        ],
+    )
+    assert_ok(rv)
+    assert (
+        BatchResultTallySheet.query.filter(
+            BatchResultTallySheet.batch_id.in_(combined_batch_2_sub_batch_ids)
+        ).count()
+        == 2
+    )
+
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
+    rv = client.delete(f"/api/support/rounds/{round_1_id}")
+    assert_ok(rv)
+    assert (
+        BatchResultTallySheet.query.filter(
+            BatchResultTallySheet.batch_id.in_(combined_batch_2_sub_batch_ids)
+        ).count()
+        == 0
+    )
+
 
 def test_support_invalid_combined_batches(
     client: FlaskClient,
