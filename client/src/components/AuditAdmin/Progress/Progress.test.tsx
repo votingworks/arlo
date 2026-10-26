@@ -231,8 +231,8 @@ describe('Progress screen', () => {
   it('sorts difference from expected ballots with discrepancies first, then zeros, then empty rows', async () => {
     const expectedCalls = getDefaultExpectedCalls()
     await withMockFetch(expectedCalls, async () => {
-      const numBallots = jurisdictionMocks.allManifests[0].ballotManifest!
-        .numBallots!
+      const numBallots =
+        jurisdictionMocks.allManifests[0].ballotManifest!.numBallots!
       render({
         jurisdictions: [
           {
@@ -464,9 +464,8 @@ describe('Progress screen', () => {
       ).closest('.bp3-dialog')! as HTMLElement
       within(dialog).getByText('ballot1 - Contest 1')
 
-      const discrepancyTableHeaders = within(dialog).getAllByRole(
-        'columnheader'
-      )
+      const discrepancyTableHeaders =
+        within(dialog).getAllByRole('columnheader')
       expect(discrepancyTableHeaders).toHaveLength(8) // 4 headers * 2 tables
       expect(discrepancyTableHeaders[0]).toHaveTextContent('Choice')
       expect(discrepancyTableHeaders[1]).toHaveTextContent('Reported Votes')
@@ -606,9 +605,8 @@ describe('Progress screen', () => {
         })
       ).closest('.bp3-dialog')! as HTMLElement
       within(dialog).getByText('batch1 - Contest 1')
-      const discrepancyTableHeaders = within(dialog).getAllByRole(
-        'columnheader'
-      )
+      const discrepancyTableHeaders =
+        within(dialog).getAllByRole('columnheader')
       expect(discrepancyTableHeaders).toHaveLength(4)
       expect(discrepancyTableHeaders[0]).toHaveTextContent('Choice')
       expect(discrepancyTableHeaders[1]).toHaveTextContent('Reported Votes')

@@ -142,7 +142,7 @@ const useCSV = (
 ): [
   IFileInfo | null,
   (csv: File) => Promise<boolean>,
-  () => Promise<boolean>
+  () => Promise<boolean>,
 ] => {
   const [csv, setCSV] = useState<IFileInfo | null>(null)
   const [upload, setUpload] = useState<IUpload | null>(null)
@@ -247,7 +247,7 @@ export const useBallotManifest = (
 ): [
   IFileInfo | null,
   (csv: File) => Promise<boolean>,
-  () => Promise<boolean>
+  () => Promise<boolean>,
 ] =>
   useCSV(
     `/election/${electionId}/jurisdiction/${jurisdictionId}/ballot-manifest`,
@@ -262,7 +262,7 @@ export const useBatchTallies = (
 ): [
   IFileInfo | null,
   (csv: File) => Promise<boolean>,
-  () => Promise<boolean>
+  () => Promise<boolean>,
 ] =>
   useCSV(
     `/election/${electionId}/jurisdiction/${jurisdictionId}/batch-tallies`,
@@ -279,7 +279,7 @@ export const useCVRs = (
 ): [
   IFileInfo | null,
   (csv: File) => Promise<boolean>,
-  () => Promise<boolean>
+  () => Promise<boolean>,
 ] =>
   useCSV(
     `/election/${electionId}/jurisdiction/${jurisdictionId}/cvrs`,

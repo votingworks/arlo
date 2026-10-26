@@ -4,7 +4,8 @@ import { fetchApi } from '../../../utils/api'
 import { IElectionResults } from './electionResults'
 
 const BALLOT_POLLING_SAMPLE_SIZE_KEYS = ['asn', '0.7', '0.8', '0.9'] as const
-export type BallotPollingSampleSizeKey = typeof BALLOT_POLLING_SAMPLE_SIZE_KEYS[number]
+export type BallotPollingSampleSizeKey =
+  (typeof BALLOT_POLLING_SAMPLE_SIZE_KEYS)[number]
 
 export type SampleSizes = {
   BALLOT_POLLING: {

@@ -119,13 +119,8 @@ const FullHandTallyDataEntry: React.FC<IProps> = ({ round }) => {
     jurisdictionId: string
   }>()
   const contestsQuery = useContestsJurisdictionAdmin(electionId, jurisdictionId)
-  const [
-    batchResults,
-    addResult,
-    updateResult,
-    removeResult,
-    finalizeResults,
-  ] = useFullHandTallyResults(electionId, jurisdictionId, round.id)
+  const [batchResults, addResult, updateResult, removeResult, finalizeResults] =
+    useFullHandTallyResults(electionId, jurisdictionId, round.id)
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
 
   if (!contestsQuery.isSuccess || !batchResults) return null

@@ -19,13 +19,11 @@ describe('Batch Comparison', () => {
 
     cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet.csv').then(
       fileContent => {
-        cy.get('input[type="file"]')
-          .first()
-          .attachFile({
-            fileContent: fileContent.toString(),
-            fileName: 'sample_jurisdiction_filesheet.csv',
-            mimeType: 'text/csv',
-          })
+        cy.get('input[type="file"]').first().attachFile({
+          fileContent: fileContent.toString(),
+          fileName: 'sample_jurisdiction_filesheet.csv',
+          mimeType: 'text/csv',
+        })
       }
     )
     cy.findByText('Upload File').click()
@@ -56,13 +54,11 @@ describe('Batch Comparison', () => {
     cy.findAllByText('Upload File').should('have.length', 2)
     cy.fixture('CSVs/manifest/batch_comparison_manifest.csv').then(
       fileContent => {
-        cy.get('input[type="file"]')
-          .first()
-          .attachFile({
-            fileContent: fileContent.toString(),
-            fileName: 'batch_comparison_manifest.csv',
-            mimeType: 'text/csv',
-          })
+        cy.get('input[type="file"]').first().attachFile({
+          fileContent: fileContent.toString(),
+          fileName: 'batch_comparison_manifest.csv',
+          mimeType: 'text/csv',
+        })
       }
     )
     cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
@@ -73,13 +69,11 @@ describe('Batch Comparison', () => {
     cy.fixture(
       'CSVs/candidate-total-batch/sample_candidate_totals_by_batch.csv'
     ).then(fileContent => {
-      cy.get('input[type="file"]')
-        .last()
-        .attachFile({
-          fileContent: fileContent.toString(),
-          fileName: 'sample_candidate_totals_by_batch.csv',
-          mimeType: 'text/csv',
-        })
+      cy.get('input[type="file"]').last().attachFile({
+        fileContent: fileContent.toString(),
+        fileName: 'sample_candidate_totals_by_batch.csv',
+        mimeType: 'text/csv',
+      })
     })
     cy.findAllByText('Upload File').click()
     cy.findAllByText(/Uploaded/).should('have.length', 2)
@@ -115,12 +109,8 @@ describe('Batch Comparison', () => {
         // code).
         cy.getCookie('session').then(tallyEntryCookie => {
           cy.findByRole('heading', { name: 'Tally Entry Login' })
-          cy.findAllByLabelText('Name')
-            .eq(0)
-            .type('John Snow')
-          cy.findAllByLabelText('Name')
-            .eq(1)
-            .type('Frodo Baggins')
+          cy.findAllByLabelText('Name').eq(0).type('John Snow')
+          cy.findAllByLabelText('Name').eq(1).type('Frodo Baggins')
           cy.findByRole('button', { name: 'Log In' }).click()
 
           cy.findByRole('heading', { name: 'Login Code' })
@@ -159,12 +149,8 @@ describe('Batch Comparison', () => {
     const auditBatch = (batchName, { vader, palpatine }) => {
       cy.findByRole('button', { name: batchName }).click()
       cy.findByRole('button', { name: /Edit Tallies/ }).click()
-      cy.findAllByRole('spinbutton')
-        .eq(0)
-        .type(vader)
-      cy.findAllByRole('spinbutton')
-        .eq(1)
-        .type(palpatine)
+      cy.findAllByRole('spinbutton').eq(0).type(vader)
+      cy.findAllByRole('spinbutton').eq(1).type(palpatine)
       cy.findByRole('button', { name: /Save Tallies/ })
         .click()
         // Wait for save to complete

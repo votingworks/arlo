@@ -188,9 +188,7 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
             <AsyncButton onClick={undoRoundStart} intent="primary">
               Undo Audit Launch
             </AsyncButton>
-          ) : (
-            undefined
-          )
+          ) : undefined
         }
       >
         {children}
@@ -241,9 +239,7 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
             <AsyncButton onClick={undoRoundStart}>
               Undo Audit Launch
             </AsyncButton>
-          ) : (
-            undefined
-          )
+          ) : undefined
         }
       >
         <>

@@ -40,11 +40,13 @@ export const dummyBoards = (): IAuditBoard[] => [
 ]
 
 export const dummyColumnBallots: {
-  [keys in
-    | 'ballotsNoTabulatorNoContainer'
-    | 'ballotsNoContainer'
-    | 'ballotsNoTabulator'
-    | 'ballotsBoth']: { ballots: IBallot[] }
+  [
+    keys in
+      | 'ballotsNoTabulatorNoContainer'
+      | 'ballotsNoContainer'
+      | 'ballotsNoTabulator'
+      | 'ballotsBoth'
+  ]: { ballots: IBallot[] }
 } = {
   ballotsNoTabulatorNoContainer: {
     ballots: [

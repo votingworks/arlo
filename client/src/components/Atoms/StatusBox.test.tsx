@@ -316,9 +316,8 @@ describe('StatusBox', () => {
         expect(startRound2Button).toBeDisabled()
         await waitFor(() => expect(startNextRoundMock).toHaveBeenCalledTimes(1))
         expect(startNextRoundMock).toHaveBeenCalledWith({
-          'contest-id': sampleSizeMock.ballotComparison.sampleSizes![
-            'contest-id'
-          ][0],
+          'contest-id':
+            sampleSizeMock.ballotComparison.sampleSizes!['contest-id'][0],
         })
       })
       vi.useRealTimers()

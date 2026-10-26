@@ -81,8 +81,7 @@ const apiCalls = {
     },
   },
   putAuditBoardMembers: {
-    url:
-      '/api/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/members',
+    url: '/api/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/members',
     options: {
       method: 'PUT',
       body: JSON.stringify([
@@ -96,18 +95,15 @@ const apiCalls = {
     response: { status: 'ok' },
   },
   getContests: {
-    url:
-      '/api/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/contest',
+    url: '/api/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/contest',
     response: { contests: contestMocks.oneTargeted },
   },
   getBallotsInitial: {
-    url:
-      '/api/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/ballots',
+    url: '/api/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/ballots',
     response: dummyBallots,
   },
   getBallotsNotAudited: {
-    url:
-      '/api/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/ballots',
+    url: '/api/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/ballots',
     response: dummyBallotsNotAudited,
   },
   putAuditBallot: (
@@ -128,8 +124,7 @@ const apiCalls = {
     response: { status: 'ok' },
   }),
   getBallotsOneAudited: {
-    url:
-      '/api/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/ballots',
+    url: '/api/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/ballots',
     response: {
       ballots: [
         dummyBallots.ballots[0],
@@ -140,7 +135,8 @@ const apiCalls = {
   },
 }
 
-const confirmSelectionsHeading = /^Confirm the Ballot Selections\s*Tabulator 11 · Batch 0003-04-Precinct 19 \(Jonesboro Fire Department\) · Ballot Number 2112$/
+const confirmSelectionsHeading =
+  /^Confirm the Ballot Selections\s*Tabulator 11 · Batch 0003-04-Precinct 19 \(Jonesboro Fire Department\) · Ballot Number 2112$/
 
 describe('AuditBoardView', () => {
   describe('member form', () => {
@@ -765,12 +761,10 @@ describe('AuditBoardView', () => {
         userEvent.click(
           (await screen.findAllByRole('button', { name: 'Re-Audit' }))[1]
         )
-        ;[
-          contest1InvalidWriteInButton,
-          contest2InvalidWriteInButton,
-        ] = screen.getAllByRole('checkbox', {
-          name: 'Invalid Write-In',
-        })
+        ;[contest1InvalidWriteInButton, contest2InvalidWriteInButton] =
+          screen.getAllByRole('checkbox', {
+            name: 'Invalid Write-In',
+          })
         contest2ChoiceButton = screen.getByRole('checkbox', {
           name: 'Choice Three',
         })

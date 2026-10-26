@@ -599,9 +599,8 @@ export const downloadBatchTallySheets = async (
     doc.setFont('Helvetica', 'normal').setFontSize(signatureLineLabelFontSize)
 
     const signatureLineLabel = '(Audit Board Member)'
-    const signatureLineLabelDimensions = doc.getTextDimensions(
-      signatureLineLabel
-    )
+    const signatureLineLabelDimensions =
+      doc.getTextDimensions(signatureLineLabel)
     const signatureLine1LabelX =
       // Center the signature line label below the signature line
       pageMargin +

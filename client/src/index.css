@@ -4,6 +4,7 @@
 
 @font-face {
   font-family: 'ProximaNova-Condensed-Regular';
-  src: local('ProximaNova-Condensed-Regular'),
+  src:
+    local('ProximaNova-Condensed-Regular'),
     url('./fonts/Proxima-Nova-Condensed-Regular.otf') format('opentype');
 }

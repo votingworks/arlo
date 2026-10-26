@@ -410,9 +410,7 @@ describe('JurisdictionDetail', () => {
         screen.getByRole('button', { name: /Download Placeholder Sheets/ })
       )
       await waitFor(() =>
-        expect(
-          mockSavePDF
-        ).toHaveBeenCalledWith(
+        expect(mockSavePDF).toHaveBeenCalledWith(
           'Round 1 Placeholders - Jurisdiction 1 - Test Audit.pdf',
           { returnPromise: true }
         )
@@ -422,9 +420,7 @@ describe('JurisdictionDetail', () => {
         screen.getByRole('button', { name: /Download Ballot Labels/ })
       )
       await waitFor(() =>
-        expect(
-          mockSavePDF
-        ).toHaveBeenCalledWith(
+        expect(mockSavePDF).toHaveBeenCalledWith(
           'Round 1 Labels - Jurisdiction 1 - Test Audit.pdf',
           { returnPromise: true }
         )
@@ -434,9 +430,7 @@ describe('JurisdictionDetail', () => {
         screen.getByRole('button', { name: /Download Audit Board Credentials/ })
       )
       await waitFor(() =>
-        expect(
-          mockSavePDF
-        ).toHaveBeenCalledWith(
+        expect(mockSavePDF).toHaveBeenCalledWith(
           'Audit Board Credentials - Jurisdiction 1 - Test Audit.pdf',
           { returnPromise: true }
         )
@@ -530,9 +524,7 @@ describe('JurisdictionDetail', () => {
         screen.getByRole('button', { name: /Download Batch Tally Sheets/ })
       )
       await waitFor(() =>
-        expect(
-          mockSavePDF
-        ).toHaveBeenCalledWith(
+        expect(mockSavePDF).toHaveBeenCalledWith(
           'Batch Tally Sheets - Jurisdiction 1 - Test Audit.pdf',
           { returnPromise: true }
         )

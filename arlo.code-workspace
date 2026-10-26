@@ -15,7 +15,8 @@
         "remotePort": 3000
       }
     ],
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.defaultFormatter": "oxc.oxc-vscode",
+    "oxc.enable.oxlint": false,
     "editor.formatOnSave": true,
     "[python]": {
       "editor.defaultFormatter": "charliermarsh.ruff"
@@ -26,7 +27,7 @@
     "recommendations": [
       "astral-sh.ty",
       "charliermarsh.ruff",
-      "esbenp.prettier-vscode"
+      "oxc.oxc-vscode"
     ],
     "unwantedRecommendations": [
       "detachhead.basedpyright",

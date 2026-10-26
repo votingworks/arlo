@@ -187,8 +187,10 @@ const NumericInput = forwardRef<HTMLInputElement, INumericInputProps>(
   }
 )
 
-interface INumericInputFormGroupProps
-  extends Omit<INumericInputProps, 'idReadOnly'> {
+interface INumericInputFormGroupProps extends Omit<
+  INumericInputProps,
+  'idReadOnly'
+> {
   helperText?: ReactNode
   label?: string
 }

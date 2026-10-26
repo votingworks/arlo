@@ -5,7 +5,7 @@ type SearchParams = Record<string, string | undefined>
 
 const useSearchParams = <T extends SearchParams>(): [
   T | undefined,
-  (newState: T) => void
+  (newState: T) => void,
 ] => {
   const history = useHistory()
   const { search } = useLocation()

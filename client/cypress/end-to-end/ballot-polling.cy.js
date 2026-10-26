@@ -23,13 +23,11 @@ describe('Ballot Polling', () => {
   it('offline audit', () => {
     cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet.csv').then(
       fileContent => {
-        cy.get('input[type="file"]')
-          .first()
-          .attachFile({
-            fileContent: fileContent.toString(),
-            fileName: 'sample_jurisdiction_filesheet.csv',
-            mimeType: 'text/csv',
-          })
+        cy.get('input[type="file"]').first().attachFile({
+          fileContent: fileContent.toString(),
+          fileName: 'sample_jurisdiction_filesheet.csv',
+          mimeType: 'text/csv',
+        })
       }
     )
     cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
@@ -60,13 +58,11 @@ describe('Ballot Polling', () => {
     cy.loginJurisdictionAdmin(jurisdictionAdmin)
     cy.fixture('CSVs/manifest/ballot_polling_manifest.csv').then(
       fileContent => {
-        cy.get('input[type="file"]')
-          .first()
-          .attachFile({
-            fileContent: fileContent.toString(),
-            fileName: 'ballot_polling_manifest.csv',
-            mimeType: 'text/csv',
-          })
+        cy.get('input[type="file"]').first().attachFile({
+          fileContent: fileContent.toString(),
+          fileName: 'ballot_polling_manifest.csv',
+          mimeType: 'text/csv',
+        })
       }
     )
     cy.findByText('Upload File').click()
@@ -108,13 +104,11 @@ describe('Ballot Polling', () => {
   it('online audit', () => {
     cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet.csv').then(
       fileContent => {
-        cy.get('input[type="file"]')
-          .first()
-          .attachFile({
-            fileContent: fileContent.toString(),
-            fileName: 'sample_jurisdiction_filesheet.csv',
-            mimeType: 'text/csv',
-          })
+        cy.get('input[type="file"]').first().attachFile({
+          fileContent: fileContent.toString(),
+          fileName: 'sample_jurisdiction_filesheet.csv',
+          mimeType: 'text/csv',
+        })
       }
     )
     cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
@@ -152,13 +146,11 @@ describe('Ballot Polling', () => {
     cy.loginJurisdictionAdmin(jurisdictionAdmin)
     cy.fixture('CSVs/manifest/ballot_polling_manifest.csv').then(
       fileContent => {
-        cy.get('input[type="file"]')
-          .first()
-          .attachFile({
-            fileContent: fileContent.toString(),
-            fileName: 'ballot_polling_manifest.csv',
-            mimeType: 'text/csv',
-          })
+        cy.get('input[type="file"]').first().attachFile({
+          fileContent: fileContent.toString(),
+          fileName: 'ballot_polling_manifest.csv',
+          mimeType: 'text/csv',
+        })
       }
     )
     cy.findByText('Upload File').click()
@@ -187,7 +179,7 @@ describe('Ballot Polling', () => {
     ).then(content => {
       function urlify(text) {
         var urlRegex = /(((https?:\/\/)|(www\.))[^\s]+)/g
-        return text.match(urlRegex, function(url) {
+        return text.match(urlRegex, function (url) {
           return url
         })
       }
@@ -208,27 +200,21 @@ describe('Ballot Polling', () => {
         if (index == 0) {
           cy.findByText('Audit First Ballot').click()
         }
-        cy.get('input[type="checkbox"]')
-          .first()
-          .click({ force: true })
+        cy.get('input[type="checkbox"]').first().click({ force: true })
         cy.findByRole('button', { name: 'Submit Selections' }).click()
         cy.findByText('Confirm Selections').click()
         cy.findByText('Change Selections').should('not.exist')
       })
       cy.findByText(/Not Audited/).should('have.length', 1)
       cy.contains('Ballots for Audit Board #1')
-      cy.findAllByText('Submit Audited Ballots')
-        .eq(1)
-        .click({ force: true })
+      cy.findAllByText('Submit Audited Ballots').eq(1).click({ force: true })
       cy.findAllByText('Audit Board Member: Board Member 1')
         .siblings('input')
         .type('Board Member 1')
       cy.findAllByText('Audit Board Member: Board Member 2')
         .siblings('input')
         .type('Board Member 2')
-      cy.findByText('Sign Off')
-        .should('not.be.disabled')
-        .click()
+      cy.findByText('Sign Off').should('not.be.disabled').click()
       cy.contains(/Auditing Complete/)
       cy.findByRole('link', { name: 'Log out' }).click()
 

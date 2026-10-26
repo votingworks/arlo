@@ -129,9 +129,8 @@ interface TParams {
 }
 
 const Header: React.FC = () => {
-  const electionMatch:
-    | RouteComponentProps<TParams>['match']
-    | null = useRouteMatch('/election/:electionId')
+  const electionMatch: RouteComponentProps<TParams>['match'] | null =
+    useRouteMatch('/election/:electionId')
   const supportMatch = useRouteMatch('/support')
   const auth = useAuthDataContext()
   const electionId = electionMatch ? electionMatch.params.electionId : undefined

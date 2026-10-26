@@ -104,7 +104,7 @@ describe('FileUpload + useFileUpload', () => {
         url: '/test/upload-complete',
         options: {
           method: 'POST',
-          body: (uploadCompleteJSONData as unknown) as BodyInit,
+          body: uploadCompleteJSONData as unknown as BodyInit,
           headers: { 'Content-Type': 'application/json' },
         },
         response: { status: 'ok' },
@@ -185,7 +185,7 @@ describe('FileUpload + useFileUpload', () => {
         url: '/test/upload-complete',
         options: {
           method: 'POST',
-          body: (uploadCompleteJSONData as unknown) as BodyInit,
+          body: uploadCompleteJSONData as unknown as BodyInit,
           headers: { 'Content-Type': 'application/json' },
         },
         response: { status: 'ok' },
@@ -239,7 +239,7 @@ describe('FileUpload + useFileUpload', () => {
         url: '/test/upload-complete',
         options: {
           method: 'POST',
-          body: (uploadCompleteJSONData as unknown) as BodyInit,
+          body: uploadCompleteJSONData as unknown as BodyInit,
           headers: { 'Content-Type': 'application/json' },
         },
         response: { status: 'ok' },
@@ -377,7 +377,7 @@ describe('FileUpload + useFileUpload', () => {
         url: '/test/upload-complete',
         options: {
           method: 'POST',
-          body: (uploadCompleteJSONData as unknown) as BodyInit,
+          body: uploadCompleteJSONData as unknown as BodyInit,
           headers: { 'Content-Type': 'application/json' },
         },
       }),

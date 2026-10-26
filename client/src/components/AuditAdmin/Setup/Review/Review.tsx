@@ -109,17 +109,11 @@ const Review: React.FC<IProps> = ({
   const contestsQuery = useContests(electionId)
   const computeSamplePreview = useComputeSamplePreview(electionId)
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
-  const [isSamplePreviewModalOpen, setIsSamplePreviewModalOpen] = useState(
-    false
-  )
+  const [isSamplePreviewModalOpen, setIsSamplePreviewModalOpen] =
+    useState(false)
 
-  const [
-    contestNameStandardizations,
-    updateContestNameStandardizations,
-  ] = useContestNameStandardizations(
-    electionId,
-    auditSettingsQuery.data || null
-  )
+  const [contestNameStandardizations, updateContestNameStandardizations] =
+    useContestNameStandardizations(electionId, auditSettingsQuery.data || null)
   const [
     isContestNameStandardizationDialogOpen,
     setIsContestNameStandardizationDialogOpen,
@@ -148,12 +142,10 @@ const Review: React.FC<IProps> = ({
     }
   }, [candidateTotalsBundle.isComplete, candidateTotalsBundle.downloadUrl])
 
-  const contestChoiceNameStandardizationsQuery = useContestChoiceNameStandardizations(
-    electionId
-  )
-  const updateContestChoiceNameStandardizations = useUpdateContestChoiceNameStandardizations(
-    electionId
-  )
+  const contestChoiceNameStandardizationsQuery =
+    useContestChoiceNameStandardizations(electionId)
+  const updateContestChoiceNameStandardizations =
+    useUpdateContestChoiceNameStandardizations(electionId)
   const [
     contestIdForChoiceNameStandardizationDialog,
     setContestIdForChoiceNameStandardizationDialog,
@@ -174,12 +166,11 @@ const Review: React.FC<IProps> = ({
     Object.values(contestNameStandardizations.standardizations).length > 0
   const isContestNameStandardizationOutstanding =
     !!contestNameStandardizations &&
-    Object.values(
-      contestNameStandardizations.standardizations
-    ).some(jurisdictionStandardizations =>
-      Object.values(jurisdictionStandardizations).some(
-        cvrContestName => cvrContestName === null
-      )
+    Object.values(contestNameStandardizations.standardizations).some(
+      jurisdictionStandardizations =>
+        Object.values(jurisdictionStandardizations).some(
+          cvrContestName => cvrContestName === null
+        )
     )
   const isContestNameStandardizationComplete =
     !!contestNameStandardizations &&

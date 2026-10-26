@@ -111,14 +111,8 @@ const Settings: React.FC<IProps> = ({
   if (!auditSettingsQuery.isSuccess) return null
   const auditSettings = auditSettingsQuery.data
 
-  const {
-    state,
-    electionName,
-    randomSeed,
-    riskLimit,
-    online,
-    auditType,
-  } = auditSettings
+  const { state, electionName, randomSeed, riskLimit, online, auditType } =
+    auditSettings
 
   const saveSettings = async (values: IValues) => {
     await updateAuditSettingsMutation.mutateAsync({

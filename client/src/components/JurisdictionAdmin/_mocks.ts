@@ -195,146 +195,143 @@ export const batchesMocks = mocksOfType<IBatches>()({
   },
 })
 
-export const fullHandTallyBatchResultMock = mocksOfType<
-  IFullHandTallyBatchResults
->()({
-  empty: {
-    finalizedAt: '',
-    results: [],
-  },
-  complete: {
-    finalizedAt: '',
-    results: [
-      {
-        batchName: 'Batch1',
-        batchType: 'Other',
-        choiceResults: {
-          'choice-id-1': 10,
-          'choice-id-2': 20,
-        },
-      },
-    ],
-  },
-  completeWithMultipleBatch: {
-    finalizedAt: '',
-    results: [
-      {
-        batchName: 'Batch1',
-        batchType: 'Other',
-        choiceResults: {
-          'choice-id-1': 5,
-          'choice-id-2': 15,
-        },
-      },
-      {
-        batchName: 'Batch2',
-        batchType: 'Provisional',
-        choiceResults: {
-          'choice-id-1': 5,
-          'choice-id-2': 5,
-        },
-      },
-    ],
-  },
-  updated: {
-    finalizedAt: '',
-    results: [
-      {
-        batchName: 'Batch12',
-        batchType: 'Other',
-        choiceResults: {
-          'choice-id-1': 10,
-          'choice-id-2': 20,
-        },
-      },
-    ],
-  },
-  finalized: {
-    finalizedAt: '2021-04-13T15:01:00.383031+00:00',
-    results: [
-      {
-        batchName: 'Batch12',
-        batchType: 'Other',
-        choiceResults: {
-          'choice-id-1': 10,
-          'choice-id-2': 20,
-        },
-      },
-    ],
-  },
-})
-
-export const fullHandTallyBatchResultsMock = mocksOfType<
-  IFullHandTallyBatchResult
->()({
-  empty: {
-    batchName: '',
-    batchType: '',
-    choiceResults: {},
-  },
-  complete: {
-    batchName: 'Batch1',
-    batchType: 'Other',
-    choiceResults: {
-      'choice-id-1': 10,
-      'choice-id-2': 20,
+export const fullHandTallyBatchResultMock =
+  mocksOfType<IFullHandTallyBatchResults>()({
+    empty: {
+      finalizedAt: '',
+      results: [],
     },
-  },
-  updated: {
-    batchName: 'Batch12',
-    batchType: 'Other',
-    choiceResults: {
-      'choice-id-1': 10,
-      'choice-id-2': 20,
+    complete: {
+      finalizedAt: '',
+      results: [
+        {
+          batchName: 'Batch1',
+          batchType: 'Other',
+          choiceResults: {
+            'choice-id-1': 10,
+            'choice-id-2': 20,
+          },
+        },
+      ],
     },
-  },
-})
+    completeWithMultipleBatch: {
+      finalizedAt: '',
+      results: [
+        {
+          batchName: 'Batch1',
+          batchType: 'Other',
+          choiceResults: {
+            'choice-id-1': 5,
+            'choice-id-2': 15,
+          },
+        },
+        {
+          batchName: 'Batch2',
+          batchType: 'Provisional',
+          choiceResults: {
+            'choice-id-1': 5,
+            'choice-id-2': 5,
+          },
+        },
+      ],
+    },
+    updated: {
+      finalizedAt: '',
+      results: [
+        {
+          batchName: 'Batch12',
+          batchType: 'Other',
+          choiceResults: {
+            'choice-id-1': 10,
+            'choice-id-2': 20,
+          },
+        },
+      ],
+    },
+    finalized: {
+      finalizedAt: '2021-04-13T15:01:00.383031+00:00',
+      results: [
+        {
+          batchName: 'Batch12',
+          batchType: 'Other',
+          choiceResults: {
+            'choice-id-1': 10,
+            'choice-id-2': 20,
+          },
+        },
+      ],
+    },
+  })
 
-export const tallyEntryAccountStatusMocks = mocksOfType<
-  ITallyEntryAccountStatus
->()({
-  turnedOff: {
-    passphrase: null,
-    loginRequests: [],
-  },
-  noLoginRequests: {
-    passphrase: 'fake-passphrase-four-words',
-    loginRequests: [],
-  },
-  loginRequestsUnconfirmed: {
-    passphrase: 'fake-passphrase-four-words',
-    loginRequests: [
-      {
-        tallyEntryUserId: 'tally-entry-user-id-1',
-        members: [
-          { name: 'John Doe', affiliation: 'DEM' },
-          { name: 'Jane Smith', affiliation: null },
-        ],
-        loginConfirmedAt: null,
+export const fullHandTallyBatchResultsMock =
+  mocksOfType<IFullHandTallyBatchResult>()({
+    empty: {
+      batchName: '',
+      batchType: '',
+      choiceResults: {},
+    },
+    complete: {
+      batchName: 'Batch1',
+      batchType: 'Other',
+      choiceResults: {
+        'choice-id-1': 10,
+        'choice-id-2': 20,
       },
-      {
-        tallyEntryUserId: 'tally-entry-user-id-2',
-        members: [{ name: 'Kevin Jones', affiliation: 'IND' }],
-        loginConfirmedAt: null,
+    },
+    updated: {
+      batchName: 'Batch12',
+      batchType: 'Other',
+      choiceResults: {
+        'choice-id-1': 10,
+        'choice-id-2': 20,
       },
-    ],
-  },
-  loginRequestsOneConfirmed: {
-    passphrase: 'fake-passphrase-four-words',
-    loginRequests: [
-      {
-        tallyEntryUserId: 'tally-entry-user-id-1',
-        members: [
-          { name: 'John Doe', affiliation: 'DEM' },
-          { name: 'Jane Smith', affiliation: null },
-        ],
-        loginConfirmedAt: '2022-10-19T15:01:00+00:00',
-      },
-      {
-        tallyEntryUserId: 'tally-entry-user-id-2',
-        members: [{ name: 'Kevin Jones', affiliation: 'IND' }],
-        loginConfirmedAt: null,
-      },
-    ],
-  },
-})
+    },
+  })
+
+export const tallyEntryAccountStatusMocks =
+  mocksOfType<ITallyEntryAccountStatus>()({
+    turnedOff: {
+      passphrase: null,
+      loginRequests: [],
+    },
+    noLoginRequests: {
+      passphrase: 'fake-passphrase-four-words',
+      loginRequests: [],
+    },
+    loginRequestsUnconfirmed: {
+      passphrase: 'fake-passphrase-four-words',
+      loginRequests: [
+        {
+          tallyEntryUserId: 'tally-entry-user-id-1',
+          members: [
+            { name: 'John Doe', affiliation: 'DEM' },
+            { name: 'Jane Smith', affiliation: null },
+          ],
+          loginConfirmedAt: null,
+        },
+        {
+          tallyEntryUserId: 'tally-entry-user-id-2',
+          members: [{ name: 'Kevin Jones', affiliation: 'IND' }],
+          loginConfirmedAt: null,
+        },
+      ],
+    },
+    loginRequestsOneConfirmed: {
+      passphrase: 'fake-passphrase-four-words',
+      loginRequests: [
+        {
+          tallyEntryUserId: 'tally-entry-user-id-1',
+          members: [
+            { name: 'John Doe', affiliation: 'DEM' },
+            { name: 'Jane Smith', affiliation: null },
+          ],
+          loginConfirmedAt: '2022-10-19T15:01:00+00:00',
+        },
+        {
+          tallyEntryUserId: 'tally-entry-user-id-2',
+          members: [{ name: 'Kevin Jones', affiliation: 'IND' }],
+          loginConfirmedAt: null,
+        },
+      ],
+    },
+  })

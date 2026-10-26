@@ -38,13 +38,15 @@ const prettyAction = (activity: IActivity) => {
     case 'CalculateSampleSizes':
       return `Calculated sample sizes`
     case 'UploadFile': {
-      const fileType = ({
-        ballot_manifest: 'ballot manifest',
-        batch_inventory_cvrs: 'batch inventory CVRs',
-        batch_inventory_tabulator_status: 'batch inventory tabulator status',
-        batch_tallies: 'candidate totals by batch',
-        cvrs: 'CVRs',
-      } as { [k: string]: string })[activity.info.file_type]
+      const fileType = (
+        {
+          ballot_manifest: 'ballot manifest',
+          batch_inventory_cvrs: 'batch inventory CVRs',
+          batch_inventory_tabulator_status: 'batch inventory tabulator status',
+          batch_tallies: 'candidate totals by batch',
+          cvrs: 'CVRs',
+        } as { [k: string]: string }
+      )[activity.info.file_type]
       return activity.info.error
         ? `Uploaded invalid ${fileType}`
         : `Successfully uploaded ${fileType}`

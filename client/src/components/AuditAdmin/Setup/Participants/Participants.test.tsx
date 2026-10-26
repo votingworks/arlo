@@ -314,9 +314,8 @@ describe('Audit Setup > Participants', () => {
       screen.getByText('file name')
       screen.getByText('something went wrong')
 
-      const standardizedContestsFileInput = screen.getByLabelText(
-        'Select a file...'
-      )
+      const standardizedContestsFileInput =
+        screen.getByLabelText('Select a file...')
       const standardizedContestsFileUploadButton = screen.getByRole('button', {
         name: 'Upload File',
       })
@@ -337,9 +336,8 @@ describe('Audit Setup > Participants', () => {
       screen.getByText('file name')
       screen.getByText('something went wrong')
 
-      const standardizedContestsFileInput = screen.getByLabelText(
-        'Select a file...'
-      )
+      const standardizedContestsFileInput =
+        screen.getByLabelText('Select a file...')
       const standardizedContestsFileUploadButton = screen.getByRole('button', {
         name: 'Upload File',
       })

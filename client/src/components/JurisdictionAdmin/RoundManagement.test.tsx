@@ -78,8 +78,7 @@ const apiCalls = {
     response,
   }),
   getFullHandTallyBatchResults: (response: IFullHandTallyBatchResults) => ({
-    url:
-      '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/full-hand-tally/batch',
+    url: '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/full-hand-tally/batch',
     response,
   }),
 }

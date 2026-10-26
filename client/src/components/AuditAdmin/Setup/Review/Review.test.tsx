@@ -151,7 +151,7 @@ const renderView = (props = {}) => {
 }
 
 const getLabeledText = (
-  container: { getByText: typeof screen['getByText'] },
+  container: { getByText: (typeof screen)['getByText'] },
   label: string
 ) => {
   return container.getByText(label).nextSibling!
@@ -1050,9 +1050,8 @@ describe('Audit Setup > Review & Launch', () => {
         ...sampleSizeMock.ballotPolling,
         sampleSizes: {
           ...sampleSizeMock.ballotPolling.sampleSizes,
-          'contest-id-2': sampleSizeMock.ballotPolling.sampleSizes![
-            'contest-id'
-          ],
+          'contest-id-2':
+            sampleSizeMock.ballotPolling.sampleSizes!['contest-id'],
         },
       }),
     ]
@@ -1199,9 +1198,8 @@ describe('Audit Setup > Review & Launch', () => {
         ...sampleSizeMock.ballotPolling,
         sampleSizes: {
           ...sampleSizeMock.ballotPolling.sampleSizes,
-          'contest-id-2': sampleSizeMock.ballotPolling.sampleSizes![
-            'contest-id'
-          ],
+          'contest-id-2':
+            sampleSizeMock.ballotPolling.sampleSizes!['contest-id'],
         },
       }),
     ]
@@ -1244,9 +1242,8 @@ describe('Audit Setup > Review & Launch', () => {
       apiCalls.getContestChoiceNameStandardizations(),
       apiCalls.getSampleSizeOptions(sampleSizeMock.ballotPolling),
       apiCalls.postComputeSamplePreview({
-        'contest-id': sampleSizeMock.ballotPolling.sampleSizes![
-          'contest-id'
-        ][0],
+        'contest-id':
+          sampleSizeMock.ballotPolling.sampleSizes!['contest-id'][0],
       }),
       apiCalls.getSamplePreview({
         jurisdictions: null,

@@ -200,7 +200,7 @@ describe('Audit Setup > Contests', () => {
   it('is able to submit the form successfully', async () => {
     const uuids = ['contest-id', 'choice-id-1', 'choice-id-2']
     let uuidIndex = -1
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ;(uuidv4 as any).mockImplementation(() => {
       uuidIndex += 1
       return uuids[uuidIndex] || 'missing-uuid-in-mock'
@@ -441,7 +441,7 @@ describe('Audit Setup > Contests', () => {
   it('sends all contests to server (both targeted and opportunistic) even though form only edits one set at a time', async () => {
     const uuids = ['contest-id', 'choice-id-1', 'choice-id-2']
     let uuidIndex = -1
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ;(uuidv4 as any).mockImplementation(() => {
       uuidIndex += 1
       return uuids[uuidIndex] || 'missing-uuid-in-mock'
@@ -586,7 +586,7 @@ describe('Audit Setup > Contests', () => {
   it('allows entering pending ballots for batch comparison audits', async () => {
     const uuids = ['contest-id', 'choice-id-1', 'choice-id-2']
     let uuidIndex = -1
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ;(uuidv4 as any).mockImplementation(() => {
       uuidIndex += 1
       return uuids[uuidIndex] || 'missing-uuid-in-mock'

@@ -1,0 +1,21 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "arrowParens": "avoid",
+  "printWidth": 80,
+  "semi": false,
+  "singleQuote": true,
+  "trailingComma": "es5",
+  "ignorePatterns": [
+    // Not previously formatted.
+    "**/*.html",
+    "**/*.toml",
+    "*.code-workspace",
+    "pnpm-lock.yaml",
+    "server/tests/arlo-extra-tests/**",
+    "**/*.min.js",
+
+    // Data files.
+    "client/public/us-states-counties.json",
+    "server/tests/audit_math/raire_data/**",
+  ],
+}

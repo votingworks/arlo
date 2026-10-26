@@ -46,10 +46,8 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
     reset: resetCreateAdmin,
     formState: formStateCreateAdmin,
   } = useForm<IAuditAdmin>()
-  const {
-    register: registerEditOrg,
-    handleSubmit: handleSubmitEditOrg,
-  } = useForm<{ name: string; defaultState?: string | null }>()
+  const { register: registerEditOrg, handleSubmit: handleSubmitEditOrg } =
+    useForm<{ name: string; defaultState?: string | null }>()
 
   if (!organization.isSuccess) return null
 
@@ -63,13 +61,8 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
     }
   }
 
-  const {
-    name,
-    defaultState,
-    archivedAt,
-    elections,
-    auditAdmins,
-  } = organization.data
+  const { name, defaultState, archivedAt, elections, auditAdmins } =
+    organization.data
 
   const sortedElections = sortBy(elections, a =>
     new Date(a.createdAt).getTime()

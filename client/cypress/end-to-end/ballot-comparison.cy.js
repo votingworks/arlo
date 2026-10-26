@@ -22,13 +22,11 @@ describe('Ballot Comparison Test Cases', () => {
     cy.fixture(
       'CSVs/jurisdiction/sample_jurisdiction_filesheet_jurisdiction_col_error.csv'
     ).then(fileContent => {
-      cy.get('input[type="file"]')
-        .first()
-        .attachFile({
-          fileContent: fileContent.toString(),
-          fileName: 'sample_jurisdiction_filesheet_jurisdiction_col_error.csv',
-          mimeType: 'text/csv',
-        })
+      cy.get('input[type="file"]').first().attachFile({
+        fileContent: fileContent.toString(),
+        fileName: 'sample_jurisdiction_filesheet_jurisdiction_col_error.csv',
+        mimeType: 'text/csv',
+      })
     })
     cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
       firstButton.click()
@@ -39,13 +37,11 @@ describe('Ballot Comparison Test Cases', () => {
     cy.findByRole('button', { name: 'Replace File' }).click()
     cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet.csv').then(
       fileContent => {
-        cy.get('input[type="file"]')
-          .first()
-          .attachFile({
-            fileContent: fileContent.toString(),
-            fileName: 'sample_jurisdiction_filesheet.csv',
-            mimeType: 'text/csv',
-          })
+        cy.get('input[type="file"]').first().attachFile({
+          fileContent: fileContent.toString(),
+          fileName: 'sample_jurisdiction_filesheet.csv',
+          mimeType: 'text/csv',
+        })
       }
     )
     cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
@@ -57,13 +53,11 @@ describe('Ballot Comparison Test Cases', () => {
     cy.fixture(
       'CSVs/contest/sample_standardized_contests_contest_name_col_error.csv'
     ).then(fileContent => {
-      cy.get('input[type="file"]')
-        .last()
-        .attachFile({
-          fileContent: fileContent.toString(),
-          fileName: 'sample_standardized_contests_contest_name_col_error.csv',
-          mimeType: 'text/csv',
-        })
+      cy.get('input[type="file"]').last().attachFile({
+        fileContent: fileContent.toString(),
+        fileName: 'sample_standardized_contests_contest_name_col_error.csv',
+        mimeType: 'text/csv',
+      })
     })
     cy.findAllByText('Upload File').click()
     cy.contains('Missing required column: Contest Name.')
@@ -74,13 +68,11 @@ describe('Ballot Comparison Test Cases', () => {
     })
     cy.fixture('CSVs/contest/ballot_comparison_contests.csv').then(
       fileContent => {
-        cy.get('input[type="file"]')
-          .last()
-          .attachFile({
-            fileContent: fileContent.toString(),
-            fileName: 'ballot_comparison_contests.csv',
-            mimeType: 'text/csv',
-          })
+        cy.get('input[type="file"]').last().attachFile({
+          fileContent: fileContent.toString(),
+          fileName: 'ballot_comparison_contests.csv',
+          mimeType: 'text/csv',
+        })
       }
     )
     cy.findAllByText('Upload File').click()
@@ -95,9 +87,7 @@ describe('Ballot Comparison Test Cases', () => {
     cy.findAndCloseToast('Must have at least one targeted contest')
 
     // select targeted contest
-    cy.get('input[type="checkbox"]')
-      .first()
-      .check({ force: true })
+    cy.get('input[type="checkbox"]').first().check({ force: true })
     cy.findByText('Save & Next').click()
     cy.findAllByText('Opportunistic Contests').should('have.length', 2)
     cy.findByText('Save & Next').click()
@@ -119,13 +109,11 @@ describe('Ballot Comparison Test Cases', () => {
     // upload invalid manifest
     cy.fixture('CSVs/manifest/ballot_comparison_manifest_col_error.csv').then(
       fileContent => {
-        cy.get('input[type="file"]')
-          .first()
-          .attachFile({
-            fileContent: fileContent.toString(),
-            fileName: 'ballot_comparison_manifest_col_error.csv',
-            mimeType: 'text/csv',
-          })
+        cy.get('input[type="file"]').first().attachFile({
+          fileContent: fileContent.toString(),
+          fileName: 'ballot_comparison_manifest_col_error.csv',
+          mimeType: 'text/csv',
+        })
       }
     )
     cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
@@ -138,13 +126,11 @@ describe('Ballot Comparison Test Cases', () => {
     cy.findAllByText('Upload File').should('have.length', 2)
     cy.fixture('CSVs/manifest/ballot_comparison_manifest.csv').then(
       fileContent => {
-        cy.get('input[type="file"]')
-          .first()
-          .attachFile({
-            fileContent: fileContent.toString(),
-            fileName: 'ballot_comparison_manifest.csv',
-            mimeType: 'text/csv',
-          })
+        cy.get('input[type="file"]').first().attachFile({
+          fileContent: fileContent.toString(),
+          fileName: 'ballot_comparison_manifest.csv',
+          mimeType: 'text/csv',
+        })
       }
     )
     cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
@@ -155,18 +141,14 @@ describe('Ballot Comparison Test Cases', () => {
     // upload invalid cvr
     cy.fixture('CSVs/cvr/ballot_comparison_cvr_col_error.csv').then(
       fileContent => {
-        cy.get('input[type="file"]')
-          .last()
-          .attachFile({
-            fileContent: fileContent.toString(),
-            fileName: 'ballot_comparison_cvr_col_error.csv',
-            mimeType: 'text/csv',
-          })
+        cy.get('input[type="file"]').last().attachFile({
+          fileContent: fileContent.toString(),
+          fileName: 'ballot_comparison_cvr_col_error.csv',
+          mimeType: 'text/csv',
+        })
       }
     )
-    cy.findAllByText('Upload File')
-      .last()
-      .click()
+    cy.findAllByText('Upload File').last().click()
     cy.contains(/Invalid contest name/)
 
     // now upload valid cvr
@@ -175,13 +157,11 @@ describe('Ballot Comparison Test Cases', () => {
     })
     cy.findByText('Upload File')
     cy.fixture('CSVs/cvr/ballot_comparison_cvr.csv').then(fileContent => {
-      cy.get('input[type="file"]')
-        .last()
-        .attachFile({
-          fileContent: fileContent.toString(),
-          fileName: 'ballot_comparison_cvr.csv',
-          mimeType: 'text/csv',
-        })
+      cy.get('input[type="file"]').last().attachFile({
+        fileContent: fileContent.toString(),
+        fileName: 'ballot_comparison_cvr.csv',
+        mimeType: 'text/csv',
+      })
     })
     cy.findAllByText('Upload File').click()
     cy.findAllByText(/Uploaded/).should('have.length', 2)
@@ -192,9 +172,7 @@ describe('Ballot Comparison Test Cases', () => {
     cy.findByText(`TestAudit${id}`).click()
     cy.findByText('Review & Launch').click()
 
-    cy.get('input[type="radio"]')
-      .first()
-      .click({ force: true })
+    cy.get('input[type="radio"]').first().click({ force: true })
     cy.findByRole('button', { name: 'Launch Audit' })
       .should('be.enabled')
       .click()
@@ -217,7 +195,7 @@ describe('Ballot Comparison Test Cases', () => {
     ).then(content => {
       function urlify(text) {
         var urlRegex = /(((https?:\/\/)|(www\.))[^\s]+)/g
-        return text.match(urlRegex, function(url) {
+        return text.match(urlRegex, function (url) {
           return url
         })
       }
@@ -244,9 +222,7 @@ describe('Ballot Comparison Test Cases', () => {
       )
 
       // submit a proper ballot review
-      cy.get('input[type="checkbox"]')
-        .first()
-        .click({ force: true })
+      cy.get('input[type="checkbox"]').first().click({ force: true })
       cy.findByRole('button', { name: 'Submit Selections' }).click()
       cy.findByText('Confirm Selections').click()
       cy.findByText('Change Selections').should('not.exist')
@@ -266,9 +242,7 @@ describe('Ballot Comparison Test Cases', () => {
       }
       // since the first ballot is already audited
       if (index < list.length - 1) {
-        cy.get('input[type="checkbox"]')
-          .first()
-          .click({ force: true })
+        cy.get('input[type="checkbox"]').first().click({ force: true })
         cy.findByRole('button', { name: 'Submit Selections' }).click()
         cy.findByText('Confirm Selections').click()
         cy.findAndCloseToast('Success! Now showing the next ballot to audit.')
@@ -278,12 +252,8 @@ describe('Ballot Comparison Test Cases', () => {
     cy.contains('Ballots for Audit Board #1')
 
     // test Re-Audit button
-    cy.findAllByText('Re-Audit')
-      .first()
-      .click()
-    cy.get('input[type="checkbox"]')
-      .eq(1)
-      .click({ force: true })
+    cy.findAllByText('Re-Audit').first().click()
+    cy.get('input[type="checkbox"]').eq(1).click({ force: true })
     cy.findByRole('button', { name: 'Submit Selections' }).click()
     cy.findByText('Confirm Selections').click()
     cy.findByText('Change Selections').should('not.exist')
@@ -292,9 +262,7 @@ describe('Ballot Comparison Test Cases', () => {
     cy.findByText(/Not Audited/).should('have.length', 1)
     cy.contains('Ballots for Audit Board #1')
     // submit ballots
-    cy.findAllByText('Submit Audited Ballots')
-      .eq(1)
-      .click({ force: true })
+    cy.findAllByText('Submit Audited Ballots').eq(1).click({ force: true })
 
     cy.contains('Audit Board #1: Board Member Sign-off')
 
@@ -305,9 +273,7 @@ describe('Ballot Comparison Test Cases', () => {
     cy.findAllByText('Audit Board Member: Board Member 2')
       .siblings('input')
       .type('Board Member 2')
-    cy.findByText('Sign Off')
-      .should('not.be.disabled')
-      .click()
+    cy.findByText('Sign Off').should('not.be.disabled').click()
     cy.findAndCloseToast('Audit board member name did not match: Member 1')
 
     // correct the audit board member name and signoff
@@ -315,9 +281,7 @@ describe('Ballot Comparison Test Cases', () => {
       .siblings('input')
       .clear()
       .type('Board Member 1')
-    cy.findByText('Sign Off')
-      .should('not.be.disabled')
-      .click()
+    cy.findByText('Sign Off').should('not.be.disabled').click()
     cy.contains(/Auditing Complete/)
     cy.findByRole('link', { name: 'Log out' }).click()
 

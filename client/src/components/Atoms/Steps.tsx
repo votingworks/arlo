@@ -167,5 +167,5 @@ export const stepState = (
   stepNumber < currentStepNumber
     ? 'complete'
     : stepNumber === currentStepNumber
-    ? 'current'
-    : 'incomplete'
+      ? 'current'
+      : 'incomplete'
