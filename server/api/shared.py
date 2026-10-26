@@ -192,6 +192,82 @@ def combined_batch_keys(contest: Contest) -> list[set[sampler.BatchKey]]:
     ]
 
 
+# A combined batch's results are entered on one sub-batch, with zero tallies
+# written to the others, drawn or not
+def with_combined_sub_batches(batches: list[Batch]) -> list[Batch]:
+    combined_batch_keys = {
+        (batch.jurisdiction_id, batch.combined_batch_name)
+        for batch in batches
+        if batch.combined_batch_name is not None
+    }
+    sub_batches = [
+        sub_batch
+        for jurisdiction_id, combined_batch_name in combined_batch_keys
+        for sub_batch in Batch.query.filter_by(
+            jurisdiction_id=jurisdiction_id, combined_batch_name=combined_batch_name
+        )
+    ]
+    return list({batch.id: batch for batch in batches + sub_batches}.values())
+
+
+def replace_tally_sheets_for_contests(
+    batch: Batch, contest_ids: list[str], new_tally_sheets: list[BatchResultTallySheet]
+):
+    old_tally_sheets = tally_sheets_for_contests(batch, contest_ids)
+    # Deleted before the new sheets are added, since a new sheet may reuse a name
+    BatchResultTallySheet.query.filter(
+        BatchResultTallySheet.id.in_(
+            [tally_sheet.id for tally_sheet in old_tally_sheets]
+        )
+    ).delete(synchronize_session="fetch")
+    batch.result_tally_sheets = [  # ty: ignore[invalid-assignment]
+        tally_sheet
+        for tally_sheet in batch.result_tally_sheets
+        if tally_sheet not in old_tally_sheets
+    ] + new_tally_sheets
+
+
+def contest_ids_to_audit_in_round(round: Round, batch: Batch) -> list[str]:
+    round_num_by_id = {r.id: r.round_num for r in round.election.rounds}
+    # A combined batch is audited for all of its sub-batches' contests
+    draws = [
+        draw
+        for sub_batch in with_combined_sub_batches([batch])
+        for draw in sub_batch.draws
+    ]
+    audited = {
+        draw.contest_id
+        for draw in draws
+        if round_num_by_id[draw.round_id] < round.round_num
+    }
+    sampled = {draw.contest_id for draw in draws if draw.round_id == round.id}
+    # A contest audited for the batch in an earlier round isn't audited again
+    return [
+        contest.id
+        for contest in batch.jurisdiction.contests
+        if contest.id in sampled - audited
+    ]
+
+
+def tally_sheets_for_contests(
+    batch: Batch, contest_ids: list[str]
+) -> list[BatchResultTallySheet]:
+    contest_choice_ids = {
+        choice.id
+        for contest in batch.jurisdiction.contests
+        if contest.id in contest_ids
+        for choice in contest.choices
+    }
+    return [
+        tally_sheet
+        for tally_sheet in batch.result_tally_sheets
+        if any(
+            result.contest_choice_id in contest_choice_ids
+            for result in tally_sheet.results
+        )
+    ]
+
+
 def sampled_batch_results(
     contest: Contest,
     include_non_rla_batches=False,  # noqa: ANN001
@@ -209,9 +285,8 @@ def sampled_batch_results(
         .join(Jurisdiction.contests)
         .filter(Contest.id == contest.id)
         .join(ContestChoice)
-        .outerjoin(BatchResultTallySheet)
-        .filter(BatchResultTallySheet.batch_id.isnot(None))
-        .outerjoin(
+        .join(BatchResultTallySheet)
+        .join(
             BatchResult,
             and_(
                 BatchResult.tally_sheet_id == BatchResultTallySheet.id,
@@ -223,7 +298,7 @@ def sampled_batch_results(
             Jurisdiction.name,
             Batch.name,
             ContestChoice.id,
-            func.sum(func.coalesce(BatchResult.result, 0)),
+            func.sum(BatchResult.result),
         )
     )
     results_by_batch = group_by(

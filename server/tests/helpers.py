@@ -658,7 +658,10 @@ def put_batch_results(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/batches/{batch_id}/results",
         [
-            {"name": f"Tally Sheet #{i}", "results": sheet_results}
+            {
+                "name": f"Round {Round.query.get(round_id).round_num} Tally Sheet #{i}",
+                "results": sheet_results,
+            }
             for i, sheet_results in enumerate(results)
         ],
     )
@@ -718,10 +721,34 @@ def enter_reported_results(
             for candidate, count in votes.items()
         }
         rv = put_batch_results(
-            client, election_id, jurisdiction_id, round_id, batch["id"], [results]
+            client,
+            election_id,
+            jurisdiction_id,
+            round_id,
+            batch["id"],
+            results_for_batch_contests(batch, [results]),
         )
         assert_ok(rv)
     rv = client.post(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/batches/finalize"
     )
     assert_ok(rv)
+
+
+# Filters tally sheets to the contests a batch is audited for in a round
+def results_for_batch_contests(
+    batch: dict[str, Any], tally_sheets: list[dict[str, int]]
+) -> list[dict[str, int]]:
+    choice_ids = {
+        choice.id
+        for contest_id in batch["contestIdsToAudit"]
+        for choice in Contest.query.get(contest_id).choices
+    }
+    return [
+        {
+            choice_id: votes
+            for choice_id, votes in sheet.items()
+            if choice_id in choice_ids
+        }
+        for sheet in tally_sheets
+    ]

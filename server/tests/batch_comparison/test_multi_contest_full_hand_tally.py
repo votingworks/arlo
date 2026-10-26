@@ -139,9 +139,6 @@ def audit_round(
     rv = client.get(f"/api/election/{election_id}/contest")
     contests = json.loads(rv.data)["contests"]
     contest_names = {contest["id"]: contest["name"] for contest in contests}
-    jurisdiction_ids_by_contest_id = {
-        contest["id"]: contest["jurisdictionIds"] for contest in contests
-    }
     results_by_contest_id = {}
     for contest in contests:
         overstatement = overstatements.get(contest["name"], 0)
@@ -160,14 +157,9 @@ def audit_round(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/batches"
         )
         batches = json.loads(rv.data)["batches"]
-        jurisdiction_contest_ids = [
-            contest_id
-            for contest_id, contest_jurisdiction_ids in jurisdiction_ids_by_contest_id.items()
-            if jurisdiction_id in contest_jurisdiction_ids
-        ]
         jurisdiction_batch_contests: dict[str, set[str]] = {}
         for batch in batches:
-            batch_contest_ids = batch.get("contestIds", jurisdiction_contest_ids)
+            batch_contest_ids = batch["contestIdsToAudit"]
             jurisdiction_batch_contests[batch["name"]] = {
                 contest_names[contest_id] for contest_id in batch_contest_ids
             }

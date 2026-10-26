@@ -1039,6 +1039,9 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
 
         is_audited = representative_batch.id in audit_results_by_batch
         combined_batch_row += [pretty_boolean(is_audited)]
+        audited_choice_ids = set(
+            audit_results_by_batch.get(representative_batch.id, {})
+        )
         for contest in contests:
             sub_batch_reported_results = list(
                 sub_batch.jurisdiction.batch_tallies[sub_batch.name].get(contest.id)
@@ -1061,6 +1064,9 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
                 choice.name: reported_results[choice.id] for choice in contest.choices
             }
 
+            is_contest_audited = all(
+                choice.id in audited_choice_ids for choice in contest.choices
+            )
             audit_results = (
                 {
                     choice.id: audit_results_by_batch[representative_batch.id].get(
@@ -1068,7 +1074,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
                     )
                     for choice in contest.choices
                 }
-                if is_audited
+                if is_contest_audited
                 else None
             )
             if audit_results is not None:
@@ -1151,6 +1157,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
 
         is_audited = batch.id in audit_results_by_batch
         row += [pretty_boolean(is_audited)]
+        audited_choice_ids = set(audit_results_by_batch.get(batch.id, {}))
 
         for contest in contests:
             reported_results = batch.jurisdiction.batch_tallies[batch.name].get(
@@ -1166,12 +1173,15 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
                 choice.name: reported_results[choice.id] for choice in contest.choices
             }
 
+            is_contest_audited = all(
+                choice.id in audited_choice_ids for choice in contest.choices
+            )
             audit_results = (
                 {
                     choice.id: audit_results_by_batch[batch.id].get(choice.id, 0)
                     for choice in contest.choices
                 }
-                if is_audited and reported_results
+                if reported_results and is_contest_audited
                 else None
             )
             if audit_results is not None:
