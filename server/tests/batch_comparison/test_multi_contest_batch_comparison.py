@@ -2,6 +2,7 @@ import pytest
 from flask.testing import FlaskClient
 
 from ...models import *
+from ...api.shared import SampleSize, compute_extra_batches_for_round
 from ..helpers import *
 
 
@@ -1042,6 +1043,84 @@ def test_multi_contest_batch_comparison_round_2(
     rv = client.get(f"/api/election/{election_id}/report")
     assert rv.status_code == 200
     assert_match_report(rv.data, snapshot)
+
+
+@pytest.fixture
+def org_id(client: FlaskClient, request) -> str:
+    if not hasattr(request, "param"):
+        org_id, _ = create_org_and_admin(
+            f"Test Org {request.node.name}", DEFAULT_AA_EMAIL
+        )
+        return org_id
+    create_org(request.param)
+    return request.param  # ty: ignore[unsound-return-statement]
+
+
+@pytest.mark.parametrize("org_id", ["TEST-ORG/required-batches"], indirect=True)
+def test_multi_contest_batch_comparison_extra_batch(
+    client: FlaskClient,
+    org_id: str,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
+    election_settings,
+    manifests,
+    batch_tallies,
+):
+    # A required batch that isn't randomly sampled is added as an extra batch
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
+    batch_9_id = (
+        Batch.query.filter_by(jurisdiction_id=jurisdiction_ids[0], name="Batch 9")
+        .one()
+        .id
+    )
+    rv = put_json(
+        client,
+        f"/api/support/jurisdictions/{jurisdiction_ids[0]}/required-batches",
+        {"batchIds": [batch_9_id]},
+    )
+    assert_ok(rv)
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
+    sample_size_options = json.loads(rv.data)["sampleSizes"]
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 1,
+            "sampleSizes": {
+                contest_id: options[0]
+                for contest_id, options in sample_size_options.items()
+            },
+        },
+    )
+    assert_ok(rv)
+
+    # Confirm that the extra batch is drawn for the first contest J1 is in, even
+    # though J1 is in both contests
+    assert [
+        (draw.ticket_number, draw.contest_id)
+        for draw in SampledBatchDraw.query.filter_by(batch_id=batch_9_id)
+    ] == [(EXTRA_TICKET_NUMBER, contest_ids[0])]
+
+    # In a later round, an extra batch is still drawn for the first contest,
+    # even once that contest is no longer being sampled
+    extra_batches = compute_extra_batches_for_round(
+        Election.query.get(election_id),
+        2,
+        [
+            (
+                Contest.query.get(contest_ids[1]),
+                SampleSize(size=1, key="custom", prob=None, sizeCvr=0, sizeNonCvr=0),
+            )
+        ],
+        [],
+    )
+    assert [
+        (extra_batch["ticket_number"], extra_batch["contest_id"])
+        for extra_batch in extra_batches
+    ] == [(EXTRA_TICKET_NUMBER, contest_ids[0])]
 
 
 def test_multi_contest_batch_comparison_batch_tallies_template_csv_generation(

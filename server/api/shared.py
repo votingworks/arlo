@@ -751,9 +751,13 @@ def compute_extra_batches_for_round(
         {j for contest, _ in contest_sample_sizes for j in contest.jurisdictions},
         key=lambda j: j.name,
     )
-    # Each unique jurisdiction mapped to the first audited contest it appears in.
-    jurisdiction_id_to_contest_id = {}
-    for contest, _ in contest_sample_sizes:
+    # Each unique jurisdiction mapped to the first contest it appears in, in the
+    # order the contests were entered (election.contests is ordered by
+    # created_at). That is the top of the ticket for the jurisdiction, which is
+    # the intended contest for an extra batch, whether or not that contest is
+    # still being sampled this round.
+    jurisdiction_id_to_contest_id: dict[str, str] = {}
+    for contest in election.contests:
         for jurisdiction in contest.jurisdictions:
             jurisdiction_id_to_contest_id.setdefault(jurisdiction.id, contest.id)
 
