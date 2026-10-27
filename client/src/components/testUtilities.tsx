@@ -142,11 +142,11 @@ function maybeMockAxios() {
         } as RequestInit)
         if (response.status >= 400) {
           const error = new Error() as AxiosError
-          error.response = ({
+          error.response = {
             config: {},
             ...response,
             data: JSON.parse(await response.text()),
-          } as unknown) as AxiosResponse
+          } as unknown as AxiosResponse
           throw error
         }
         return {
@@ -259,9 +259,11 @@ export const findAndCloseToast = async (
 // inferring the keys. This allows for good autocompletion of mocks in tests
 // while still enforcing their type.
 // Example: const mockNumbers = mocksOfType<number>()({ 'one': 1, 'two': 2 })
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export const mocksOfType = <T,>() => <Mock,>(mock: { [K in keyof Mock]: T }) =>
-  mock
+export const mocksOfType =
+  <T,>() =>
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  <Mock,>(mock: { [K in keyof Mock]: T }) =>
+    mock
 
 // Create a react-query query client with the same defaults as the app (and a few test-specific exceptions).
 export const createQueryClient = (): QueryClient =>

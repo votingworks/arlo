@@ -56,7 +56,7 @@ const useAuditBoards = (
   rounds: IRound[] | null
 ): [
   IAuditBoard[] | null,
-  (auditBoards: { name: string }[]) => Promise<boolean>
+  (auditBoards: { name: string }[]) => Promise<boolean>,
 ] => {
   const [auditBoards, setAuditBoards] = useState<IAuditBoard[] | null>(null)
 

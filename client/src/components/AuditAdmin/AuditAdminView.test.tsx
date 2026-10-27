@@ -255,9 +255,8 @@ describe('AA setup flow', () => {
       aaApiCalls.getContestChoiceNameStandardizations(),
       aaApiCalls.getSampleSizes(sampleSizeMock.ballotPolling),
       aaApiCalls.postRound({
-        'contest-id': sampleSizeMock.ballotPolling.sampleSizes![
-          'contest-id'
-        ][0],
+        'contest-id':
+          sampleSizeMock.ballotPolling.sampleSizes!['contest-id'][0],
       }),
       aaApiCalls.getRounds(roundMocks.singleIncomplete),
       aaApiCalls.getJurisdictions,

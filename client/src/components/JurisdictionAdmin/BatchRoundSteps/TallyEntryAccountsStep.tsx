@@ -138,10 +138,9 @@ interface ITurnOnTallyEntryAccountsPromptProps {
   jurisdiction: IJurisdiction
 }
 
-const TurnOnTallyEntryAccountsPrompt: React.FC<ITurnOnTallyEntryAccountsPromptProps> = ({
-  nextStepUrl,
-  jurisdiction,
-}) => {
+const TurnOnTallyEntryAccountsPrompt: React.FC<
+  ITurnOnTallyEntryAccountsPromptProps
+> = ({ nextStepUrl, jurisdiction }) => {
   const turnOnTallyEntryAccounts = useTurnOnTallyEntryAccounts(
     jurisdiction.election.id,
     jurisdiction.id
@@ -193,16 +192,10 @@ const ConfirmTallyEntryLoginModal: React.FC<IConfirmTallyEntryLoginProps> = ({
     jurisdiction.election.id,
     jurisdiction.id
   )
-  const {
-    handleSubmit,
-    errors,
-    formState,
-    setError,
-    control,
-    reset,
-  } = useForm<{
-    loginCode: string
-  }>({ reValidateMode: 'onSubmit' })
+  const { handleSubmit, errors, formState, setError, control, reset } =
+    useForm<{
+      loginCode: string
+    }>({ reValidateMode: 'onSubmit' })
   const [isConfirmed, setIsConfirmed] = useState(false)
 
   // If there's no login request, the modal is closed. We return a closed Dialog
@@ -352,10 +345,8 @@ const ManageTallyEntryAccounts: React.FC<IManageTallyEntryAccountsProps> = ({
   loginRequests,
 }) => {
   const loginLinkUrl = `${window.location.origin}/tallyentry/${passphrase}`
-  const [
-    confirmingLoginRequest,
-    setConfirmingLoginRequest,
-  ] = useState<ITallyEntryLoginRequest | null>(null)
+  const [confirmingLoginRequest, setConfirmingLoginRequest] =
+    useState<ITallyEntryLoginRequest | null>(null)
   const rejectTallyEntryLogin = useRejectTallyEntryLogin(
     jurisdiction.election.id,
     jurisdiction.id

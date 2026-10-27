@@ -36,16 +36,10 @@ const JurisdictionAdminView: React.FC = () => {
     jurisdictionId
   )
   const rounds = useRoundsJurisdictionAdmin(electionId, jurisdictionId)
-  const [
-    ballotManifest,
-    uploadBallotManifest,
-    deleteBallotManifest,
-  ] = useBallotManifest(electionId, jurisdictionId)
-  const [
-    batchTallies,
-    uploadBatchTallies,
-    deleteBatchTallies,
-  ] = useBatchTallies(electionId, jurisdictionId, auditSettings, ballotManifest)
+  const [ballotManifest, uploadBallotManifest, deleteBallotManifest] =
+    useBallotManifest(electionId, jurisdictionId)
+  const [batchTallies, uploadBatchTallies, deleteBatchTallies] =
+    useBatchTallies(electionId, jurisdictionId, auditSettings, ballotManifest)
   const [cvrs, uploadCVRS, deleteCVRS] = useCVRs(
     electionId,
     jurisdictionId,

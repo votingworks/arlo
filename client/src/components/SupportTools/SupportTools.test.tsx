@@ -229,8 +229,7 @@ const apiCalls = {
     response: { status: 'ok' },
   },
   removeAuditAdmin: {
-    url:
-      '/api/support/organizations/organization-id-1/audit-admins/audit-admin-1-id',
+    url: '/api/support/organizations/organization-id-1/audit-admins/audit-admin-1-id',
     options: { method: 'DELETE' },
     response: { status: 'ok' },
   },
@@ -263,8 +262,7 @@ const apiCalls = {
     response: { status: 'ok' },
   },
   deleteCombinedBatch: {
-    url:
-      '/api/support/jurisdictions/jurisdiction-id-1/combined-batches/Combined Batch 1',
+    url: '/api/support/jurisdictions/jurisdiction-id-1/combined-batches/Combined Batch 1',
     options: { method: 'DELETE' },
     response: { status: 'ok' },
   },
@@ -997,9 +995,10 @@ describe('Support Tools', () => {
       const jurisdictionLink = screen.getByRole('link', {
         name: /Jurisdiction 1/,
       })
-      const jurisdictionLoginButton = within(
-        jurisdictionLink
-      ).getByRole('button', { name: /Log in/ })
+      const jurisdictionLoginButton = within(jurisdictionLink).getByRole(
+        'button',
+        { name: /Log in/ }
+      )
       expect(jurisdictionLoginButton).toHaveAttribute(
         'href',
         '/api/support/jurisdictions/jurisdiction-id-1/login'

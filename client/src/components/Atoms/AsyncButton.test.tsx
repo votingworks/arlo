@@ -7,7 +7,7 @@ import AsyncButton from './AsyncButton'
 const asyncMock = (): [
   () => Promise<unknown>,
   () => unknown,
-  () => unknown
+  () => unknown,
 ] => {
   let resolvePromise = () => {
     // do nothing

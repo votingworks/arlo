@@ -9,12 +9,9 @@ interface IDownloadBatchRetrievalListButtonProps extends IButtonProps {
   roundId: string
 }
 
-const DownloadBatchRetrievalListButton: React.FC<IDownloadBatchRetrievalListButtonProps> = ({
-  electionId,
-  jurisdictionId,
-  roundId,
-  ...buttonProps
-}) => (
+const DownloadBatchRetrievalListButton: React.FC<
+  IDownloadBatchRetrievalListButtonProps
+> = ({ electionId, jurisdictionId, roundId, ...buttonProps }) => (
   <AsyncButton
     icon="download"
     {...buttonProps}

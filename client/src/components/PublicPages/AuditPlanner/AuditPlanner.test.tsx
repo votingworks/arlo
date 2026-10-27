@@ -388,9 +388,8 @@ test('Entering election results - adding and removing candidates', async () => {
   await withMockFetch([], async () => {
     renderAuditPlanner()
     await screen.findByRole('heading', { name: 'Audit Planner' })
-    const {
-      addCandidateButton,
-    } = await checkThatElectionResultsCardIsInInitialState()
+    const { addCandidateButton } =
+      await checkThatElectionResultsCardIsInInitialState()
     // 1 header row + 2 candidate rows + 1 row for 'Add Candidate' button + 1 row for additional
     // inputs
     const initialNumRows = 5

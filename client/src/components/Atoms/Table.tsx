@@ -190,9 +190,10 @@ export const sortByRank = <T extends object>(
   // react-table requires the sortBy function be memoized, but the linter only
   // expects useCallback to be called directly within a component/hook.
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  React.useCallback((rowA, rowB) => rank(rowA.original) - rank(rowB.original), [
-    rank,
-  ])
+  React.useCallback(
+    (rowA, rowB) => rank(rowA.original) - rank(rowB.original),
+    [rank]
+  )
 
 // FlexTable uses flexbox styling to compute thead/tbody height.
 // This allows us to create a scrollable table body when there's overflow.

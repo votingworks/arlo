@@ -76,7 +76,7 @@ function areAllFilesUploaded({
 }
 
 const DATA_TYPES = ['systemType', 'cvr', 'tabulatorStatus', 'signOff'] as const
-type DataType = typeof DATA_TYPES[number]
+type DataType = (typeof DATA_TYPES)[number]
 
 function batchInventoryQueryKey(
   jurisdictionId: string,
@@ -544,10 +544,10 @@ const BatchInventorySteps: React.FC<{
   const initialStep = !systemType
     ? 'Select System Type'
     : !areAllFilesUploaded({ systemType, cvrUpload, tabulatorStatusUpload })
-    ? 'Upload Election Results'
-    : batchInventoryConfig.showBallotManifest && !isSignedOff
-    ? 'Inventory Batches'
-    : 'Download Audit Files'
+      ? 'Upload Election Results'
+      : batchInventoryConfig.showBallotManifest && !isSignedOff
+        ? 'Inventory Batches'
+        : 'Download Audit Files'
 
   const [currentStep, setCurrentStep] = useState<Step>(initialStep)
   const currentStepNumber = steps.indexOf(currentStep) + 1

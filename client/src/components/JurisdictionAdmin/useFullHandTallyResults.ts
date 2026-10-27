@@ -107,7 +107,7 @@ const useFullHandTallyResults = (
   (newResult: IFullHandTallyBatchResult) => Promise<boolean>,
   (batchName: string, newResult: IFullHandTallyBatchResult) => Promise<boolean>,
   (batchName: string) => Promise<boolean>,
-  () => Promise<boolean>
+  () => Promise<boolean>,
 ] => {
   const [results, setResults] = useState<IFullHandTallyBatchResults | null>(
     null

@@ -60,12 +60,8 @@ export const getJurisdictionStatus = (
   jurisdiction: IJurisdiction,
   lastLogin?: IActivity
 ): JurisdictionProgressStatus => {
-  const {
-    currentRoundStatus,
-    ballotManifest,
-    batchTallies,
-    cvrs,
-  } = jurisdiction
+  const { currentRoundStatus, ballotManifest, batchTallies, cvrs } =
+    jurisdiction
 
   if (!currentRoundStatus) {
     const files: IFileInfo['processing'][] = [ballotManifest.processing]

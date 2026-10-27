@@ -50,10 +50,11 @@ const TableControls = styled.div`
 const formatNumber = ({ value }: { value: number | null }) =>
   value && value.toLocaleString()
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-const totalFooter = <T extends object>(headerName: string) => (
-  info: TableInstance<T>
-) => sum(info.rows.map(row => row.values[headerName])).toLocaleString()
+const totalFooter =
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  <T extends object>(headerName: string) =>
+    (info: TableInstance<T>) =>
+      sum(info.rows.map(row => row.values[headerName])).toLocaleString()
 
 // Sorts rows with a discrepancy first, then zeros, then empty rows, so
 // discrepancies aren't buried below the zeros/empty on either sort direction.
@@ -128,10 +129,8 @@ const Progress: React.FC<IProgressProps> = ({
   const [jurisdictionDetailId, setJurisdictionDetailId] = useState<
     string | null
   >(null)
-  const [
-    jurisdictionDiscrepanciesId,
-    setJurisdictionDiscrepanciesId,
-  ] = useState<string | null>(null)
+  const [jurisdictionDiscrepanciesId, setJurisdictionDiscrepanciesId] =
+    useState<string | null>(null)
 
   const ballotsOrBatches =
     auditType === 'BATCH_COMPARISON' ? 'Batches' : 'Ballots'
@@ -218,12 +217,8 @@ const Progress: React.FC<IProgressProps> = ({
         }
       },
       sortType: sortByRank((jurisdiction: IJurisdiction) => {
-        const {
-          currentRoundStatus,
-          ballotManifest,
-          batchTallies,
-          cvrs,
-        } = jurisdiction
+        const { currentRoundStatus, ballotManifest, batchTallies, cvrs } =
+          jurisdiction
         const progressStatus = getJurisdictionStatus(
           jurisdiction,
           lastLoginQuery.data![jurisdiction.id]
@@ -273,12 +268,8 @@ const Progress: React.FC<IProgressProps> = ({
       Footer: info => {
         const numJurisdictionsComplete = sum(
           info.rows.map(row => {
-            const {
-              currentRoundStatus,
-              ballotManifest,
-              batchTallies,
-              cvrs,
-            } = row.original
+            const { currentRoundStatus, ballotManifest, batchTallies, cvrs } =
+              row.original
 
             if (!currentRoundStatus) {
               const files: IFileInfo['processing'][] = [
@@ -567,11 +558,9 @@ const Progress: React.FC<IProgressProps> = ({
       />
       {jurisdictionDetailId && (
         <JurisdictionDetail
-          jurisdiction={
-            jurisdictions.find(
-              jurisdiction => jurisdiction.id === jurisdictionDetailId
-            )!
-          }
+          jurisdiction={jurisdictions.find(
+            jurisdiction => jurisdiction.id === jurisdictionDetailId
+          )!}
           lastLoginActivity={lastLoginByJurisdiction[jurisdictionDetailId]}
           electionId={electionId}
           round={round}
@@ -582,11 +571,9 @@ const Progress: React.FC<IProgressProps> = ({
       {jurisdictionDiscrepanciesId && (
         <JurisdictionDiscrepancies
           discrepancies={discrepancyQuery.data!}
-          jurisdiction={
-            jurisdictions.find(
-              jurisdiction => jurisdiction.id === jurisdictionDiscrepanciesId
-            )!
-          }
+          jurisdiction={jurisdictions.find(
+            jurisdiction => jurisdiction.id === jurisdictionDiscrepanciesId
+          )!}
           electionId={electionId}
           handleClose={() => setJurisdictionDiscrepanciesId(null)}
         />

@@ -42,7 +42,7 @@ const prettyAuditType = (auditType: IElection['auditType']) =>
     BALLOT_COMPARISON: 'Ballot Comparison',
     BATCH_COMPARISON: 'Batch Comparison',
     HYBRID: 'Hybrid',
-  }[auditType])
+  })[auditType]
 
 const Audit = ({
   electionId,
@@ -53,14 +53,8 @@ const Audit = ({
 
   if (!election.isSuccess) return null
 
-  const {
-    id,
-    auditName,
-    auditType,
-    organization,
-    jurisdictions,
-    rounds,
-  } = election.data
+  const { id, auditName, auditType, organization, jurisdictions, rounds } =
+    election.data
 
   return (
     <Container>

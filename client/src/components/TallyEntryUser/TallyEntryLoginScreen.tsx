@@ -47,9 +47,8 @@ interface ILoginStartFormValues {
 }
 
 const LoginStartForm: React.FC = () => {
-  const { register, handleSubmit, errors, formState } = useForm<
-    ILoginStartFormValues
-  >()
+  const { register, handleSubmit, errors, formState } =
+    useForm<ILoginStartFormValues>()
   const requestCode = useRequestCode()
 
   const onSubmit = async (values: ILoginStartFormValues) => {

@@ -32,9 +32,7 @@ const FormSection: React.FC<IProps> = ({
       {label ? <H3Title>{label}</H3Title> : undefined}
       {description ? (
         <FormSectionDescription>{description}</FormSectionDescription>
-      ) : (
-        undefined
-      )}
+      ) : undefined}
       {children}
     </Section>
   )

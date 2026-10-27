@@ -28,12 +28,10 @@ const useContestNameStandardizations = (
   IContestNameStandardizations | null,
   (
     standardizations: IContestNameStandardizations['standardizations']
-  ) => Promise<boolean>
+  ) => Promise<boolean>,
 ] => {
-  const [
-    standardizations,
-    setStandardizations,
-  ] = useState<IContestNameStandardizations | null>(null)
+  const [standardizations, setStandardizations] =
+    useState<IContestNameStandardizations | null>(null)
   const queryClient = useQueryClient()
 
   const updateStandardizations = async (

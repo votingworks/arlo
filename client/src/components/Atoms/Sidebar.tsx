@@ -20,8 +20,10 @@ const Wrapper = styled.div`
   }
 `
 
-export interface ISidebarMenuItem
-  extends Pick<IMenuItemProps, 'text' | 'active' | 'disabled' | 'onClick'> {
+export interface ISidebarMenuItem extends Pick<
+  IMenuItemProps,
+  'text' | 'active' | 'disabled' | 'onClick'
+> {
   id: string
 }
 

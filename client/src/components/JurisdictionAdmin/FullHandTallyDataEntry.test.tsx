@@ -80,8 +80,7 @@ const apiCalls = {
     response: { status: 'ok' },
   }),
   finalizeResults: {
-    url:
-      '/api/election/1/jurisdiction/1/round/round-1/full-hand-tally/finalize',
+    url: '/api/election/1/jurisdiction/1/round/round-1/full-hand-tally/finalize',
     options: {
       method: 'POST',
     },

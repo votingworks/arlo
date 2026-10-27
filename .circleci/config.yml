@@ -108,6 +108,10 @@ jobs:
             sudo apt-get update
             sudo apt-get install graphicsmagick
       - run:
+          name: check formatting
+          command: |
+            pnpm format:check
+      - run:
           name: lint client
           command: |
             make -C client lint
@@ -135,15 +139,15 @@ jobs:
           cache-version: v7
       - install-node-packages
       - restore_cache:
-          name: "Restoring Cypress cache"
+          name: 'Restoring Cypress cache'
           key: v5-cypress-cache-{{ checksum "pnpm-lock.yaml" }}
       - run:
-          name: "Installing Cypress"
+          name: 'Installing Cypress'
           command: |
             pnpm --dir client exec cypress install
             pnpm --dir client exec cypress verify
       - save_cache:
-          name: "Saving Cypress cache"
+          name: 'Saving Cypress cache'
           key: v5-cypress-cache-{{ checksum "pnpm-lock.yaml" }}
           paths:
             - /home/circleci/.cache/Cypress

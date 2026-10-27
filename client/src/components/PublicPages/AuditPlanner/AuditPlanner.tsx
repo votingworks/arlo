@@ -17,12 +17,10 @@ const PageHeading = styled(H1)`
 `
 
 const AuditPlanner: React.FC = () => {
-  const [savedElectionResults, setSavedElectionResults] = useState<
-    IElectionResults
-  >()
-  const [areElectionResultsEditable, setAreElectionResultsEditable] = useState(
-    true
-  )
+  const [savedElectionResults, setSavedElectionResults] =
+    useState<IElectionResults>()
+  const [areElectionResultsEditable, setAreElectionResultsEditable] =
+    useState(true)
 
   const planAudit = (electionResultsFormState: IElectionResultsFormState) => {
     assertIsElectionResults(electionResultsFormState)

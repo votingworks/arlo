@@ -85,16 +85,13 @@ const AuditPlanCard: React.FC<IProps> = ({ disabled, electionResults }) => {
   }, [])
 
   const { isMobileWidth } = useCssBreakpoints()
-  const [selectedAuditType, setSelectedAuditType] = useState<
-    Exclude<AuditType, 'HYBRID'>
-  >('BALLOT_POLLING')
+  const [selectedAuditType, setSelectedAuditType] =
+    useState<Exclude<AuditType, 'HYBRID'>>('BALLOT_POLLING')
   const [riskLimitPercentage, setRiskLimitPercentage] = useState(
     DEFAULT_RISK_LIMIT_PERCENTAGE
   )
-  const [
-    debouncedRiskLimitPercentage,
-    setDebouncedRiskLimitPercentage,
-  ] = useState(riskLimitPercentage)
+  const [debouncedRiskLimitPercentage, setDebouncedRiskLimitPercentage] =
+    useState(riskLimitPercentage)
 
   return (
     <Container data-testid="auditPlanCard" disabled={disabled} elevation={1}>

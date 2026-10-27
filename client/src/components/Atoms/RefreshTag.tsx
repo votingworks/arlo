@@ -13,8 +13,9 @@ export const prettifyRefreshStatus = (refreshTime: number): string => {
   if (refreshTime < 240000)
     return `Will refresh in ${5 - Math.floor(refreshTime / 60000)} minutes`
   if (refreshTime < 250000) return `Will refresh in 1 minute`
-  return `Will refresh in ${Math.ceil((300000 - refreshTime) / 10000) *
-    10} seconds`
+  return `Will refresh in ${
+    Math.ceil((300000 - refreshTime) / 10000) * 10
+  } seconds`
 }
 
 export const RefreshTag: React.FC<{ refresh: () => void }> = ({ refresh }) => {

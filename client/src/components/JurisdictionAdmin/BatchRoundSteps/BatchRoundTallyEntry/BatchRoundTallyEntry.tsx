@@ -65,7 +65,9 @@ interface IBatchRoundTallyEntryContentProps {
   roundId: string
 }
 
-const BatchRoundTallyEntryContent: React.FC<IBatchRoundTallyEntryContentProps> = ({
+const BatchRoundTallyEntryContent: React.FC<
+  IBatchRoundTallyEntryContentProps
+> = ({
   areResultsFinalized,
   batches,
   contests,

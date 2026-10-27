@@ -298,9 +298,10 @@ const ContestForm: React.FC<IProps> = ({
   const standardizedContests = useStandardizedContests(electionId)
   // Memoized so that the blank contest's id doesn't change on every render,
   // which would make Formik reinitialize the form
-  const initialBlankContest = useMemo(() => blankContestValues(isTargeted), [
-    isTargeted,
-  ])
+  const initialBlankContest = useMemo(
+    () => blankContestValues(isTargeted),
+    [isTargeted]
+  )
 
   if (
     (isHybrid && !standardizedContests) ||
@@ -553,8 +554,10 @@ const ContestForm: React.FC<IProps> = ({
                           >
                             <label htmlFor={`contests[${i}].totalBallotsCast`}>
                               Total Ballot Cards Cast for Contest{' '}
-                              {/* istanbul ignore next */
-                              values.contests.length > 1 ? i + 1 : ''}
+                              {
+                                /* istanbul ignore next */
+                                values.contests.length > 1 ? i + 1 : ''
+                              }
                               <Field
                                 id={`contests[${i}].totalBallotsCast`}
                                 name={`contests[${i}].totalBallotsCast`}

@@ -235,7 +235,7 @@ describe('CodeInput', () => {
       // The types are weird, but this works. Fixed in user-event v14, if we
       // ever upgrade.
       userEvent.paste(element, text, {
-        clipboardData: ({ getData: () => text } as unknown) as DataTransfer,
+        clipboardData: { getData: () => text } as unknown as DataTransfer,
       } as MouseEventInit)
     }
 

@@ -22,13 +22,11 @@ describe('Full Hand Tally Data Entry', () => {
   it('success & failure cases', () => {
     cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet.csv').then(
       fileContent => {
-        cy.get('input[type="file"]')
-          .first()
-          .attachFile({
-            fileContent: fileContent.toString(),
-            fileName: 'sample_jurisdiction_filesheet.csv',
-            mimeType: 'text/csv',
-          })
+        cy.get('input[type="file"]').first().attachFile({
+          fileContent: fileContent.toString(),
+          fileName: 'sample_jurisdiction_filesheet.csv',
+          mimeType: 'text/csv',
+        })
       }
     )
     cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
@@ -59,13 +57,11 @@ describe('Full Hand Tally Data Entry', () => {
     cy.loginJurisdictionAdmin(jurisdictionAdmin)
     cy.fixture('CSVs/manifest/ballot_polling_manifest.csv').then(
       fileContent => {
-        cy.get('input[type="file"]')
-          .first()
-          .attachFile({
-            fileContent: fileContent.toString(),
-            fileName: 'ballot_polling_manifest.csv',
-            mimeType: 'text/csv',
-          })
+        cy.get('input[type="file"]').first().attachFile({
+          fileContent: fileContent.toString(),
+          fileName: 'ballot_polling_manifest.csv',
+          mimeType: 'text/csv',
+        })
       }
     )
     cy.findByText('Upload File').click()
@@ -78,9 +74,7 @@ describe('Full Hand Tally Data Entry', () => {
 
     // add custom sample size to be same as total ballots cast
     cy.findByText('Enter your own sample size (not recommended)').click()
-    cy.findByRole('spinbutton')
-      .type('400')
-      .blur()
+    cy.findByRole('spinbutton').type('400').blur()
 
     cy.findByRole('button', { name: 'Launch Audit' })
       .should('be.enabled')
@@ -125,21 +119,13 @@ describe('Full Hand Tally Data Entry', () => {
     cy.findByRole('button', { name: 'Cancel' }).click()
 
     // editing batch
-    cy.findByText('Batch 1')
-      .closest('tr')
-      .findByRole('button', /Edit/)
-      .click()
+    cy.findByText('Batch 1').closest('tr').findByRole('button', /Edit/).click()
     cy.findByLabelText('Batch Type').select('Election Day')
     cy.findByRole('button', { name: 'Save Batch' }).click()
-    cy.findAllByText('Batch 1')
-      .closest('tr')
-      .contains('Election Day')
+    cy.findAllByText('Batch 1').closest('tr').contains('Election Day')
 
     // deleting batch
-    cy.findByText('Batch 2')
-      .closest('tr')
-      .findByRole('button', /Edit/)
-      .click()
+    cy.findByText('Batch 2').closest('tr').findByRole('button', /Edit/).click()
     cy.findByRole('button', { name: 'Remove Batch' }).click()
     cy.findByText('Batch 2').should('not.exist')
 
@@ -153,10 +139,7 @@ describe('Full Hand Tally Data Entry', () => {
     cy.contains('Batch 2')
 
     //verify total
-    cy.findAllByText('Total')
-      .closest('tr')
-      .last()
-      .contains('400')
+    cy.findAllByText('Total').closest('tr').last().contains('400')
 
     // finalize results
     cy.findByRole('button', { name: 'Finalize Results' }).click()
@@ -175,9 +158,7 @@ describe('Full Hand Tally Data Entry', () => {
       .findByText('Complete')
       .click({ force: true })
     cy.findByRole('button', { name: 'Unfinalize Results' }).click()
-    cy.findByText('Death Star')
-      .closest('tr')
-      .contains('In progress')
+    cy.findByText('Death Star').closest('tr').contains('In progress')
     cy.logout(auditAdmin)
     cy.loginJurisdictionAdmin(jurisdictionAdmin)
 

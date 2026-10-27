@@ -40,7 +40,9 @@ const StandardizeContestsTable = styled(HTMLTable)`
   }
 `
 
-const StandardizeContestNamesDialog: React.FC<IStandardizeContestNamesDialogProps> = ({
+const StandardizeContestNamesDialog: React.FC<
+  IStandardizeContestNamesDialogProps
+> = ({
   isOpen,
   onClose,
   standardizations,

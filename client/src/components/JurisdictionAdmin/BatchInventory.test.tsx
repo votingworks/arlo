@@ -52,8 +52,7 @@ const tabulatorStatusProcessed: IFileInfo = {
 
 const apiCalls = {
   getSystemType: (systemType: CvrFileType | null) => ({
-    url:
-      '/api/election/1/jurisdiction/jurisdiction-id-1/batch-inventory/system-type',
+    url: '/api/election/1/jurisdiction/jurisdiction-id-1/batch-inventory/system-type',
     response: { systemType },
   }),
   getCvr: (fileInfo: IFileInfo) => ({
@@ -61,18 +60,15 @@ const apiCalls = {
     response: fileInfo,
   }),
   getTabulatorStatus: (fileInfo: IFileInfo) => ({
-    url:
-      '/api/election/1/jurisdiction/jurisdiction-id-1/batch-inventory/tabulator-status',
+    url: '/api/election/1/jurisdiction/jurisdiction-id-1/batch-inventory/tabulator-status',
     response: fileInfo,
   }),
   getSignOff: (signedOffAt: string | null) => ({
-    url:
-      '/api/election/1/jurisdiction/jurisdiction-id-1/batch-inventory/sign-off',
+    url: '/api/election/1/jurisdiction/jurisdiction-id-1/batch-inventory/sign-off',
     response: { signedOffAt },
   }),
   putSystemType: (systemType: CvrFileType) => ({
-    url:
-      '/api/election/1/jurisdiction/jurisdiction-id-1/batch-inventory/system-type',
+    url: '/api/election/1/jurisdiction/jurisdiction-id-1/batch-inventory/system-type',
     options: {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -82,8 +78,7 @@ const apiCalls = {
   }),
   uploadCvrCalls: [
     {
-      url:
-        '/api/election/1/jurisdiction/jurisdiction-id-1/batch-inventory/cvr/upload-url',
+      url: '/api/election/1/jurisdiction/jurisdiction-id-1/batch-inventory/cvr/upload-url',
       options: {
         method: 'GET',
         params: { fileType: testCvrFile.type },
@@ -99,8 +94,7 @@ const apiCalls = {
       response: { status: 'ok' },
     },
     {
-      url:
-        '/api/election/1/jurisdiction/jurisdiction-id-1/batch-inventory/cvr/upload-complete',
+      url: '/api/election/1/jurisdiction/jurisdiction-id-1/batch-inventory/cvr/upload-complete',
       options: {
         method: 'POST',
         body: getMockJsonDataForUploadComplete(testCvrFile),
@@ -111,8 +105,7 @@ const apiCalls = {
   ],
   uploadTabulatorStatusCalls: [
     {
-      url:
-        '/api/election/1/jurisdiction/jurisdiction-id-1/batch-inventory/tabulator-status/upload-url',
+      url: '/api/election/1/jurisdiction/jurisdiction-id-1/batch-inventory/tabulator-status/upload-url',
       options: {
         method: 'GET',
         params: { fileType: testTabulatorStatusFile.type },
@@ -128,8 +121,7 @@ const apiCalls = {
       response: { status: 'ok' },
     },
     {
-      url:
-        '/api/election/1/jurisdiction/jurisdiction-id-1/batch-inventory/tabulator-status/upload-complete',
+      url: '/api/election/1/jurisdiction/jurisdiction-id-1/batch-inventory/tabulator-status/upload-complete',
       options: {
         method: 'POST',
         body: getMockJsonDataForUploadComplete(testTabulatorStatusFile),
@@ -139,16 +131,14 @@ const apiCalls = {
     },
   ],
   postSignOff: {
-    url:
-      '/api/election/1/jurisdiction/jurisdiction-id-1/batch-inventory/sign-off',
+    url: '/api/election/1/jurisdiction/jurisdiction-id-1/batch-inventory/sign-off',
     options: {
       method: 'POST',
     },
     response: { status: 'ok' },
   },
   deleteSignOff: {
-    url:
-      '/api/election/1/jurisdiction/jurisdiction-id-1/batch-inventory/sign-off',
+    url: '/api/election/1/jurisdiction/jurisdiction-id-1/batch-inventory/sign-off',
     options: {
       method: 'DELETE',
     },

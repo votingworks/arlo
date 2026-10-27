@@ -31,8 +31,9 @@ const BatchRoundProgress: React.FC<IBatchRoundProgressProps> = ({
 
   if (!batchesQuery.isSuccess) return null // Still loading
   const { batches } = batchesQuery.data
-  const numAudited = batches.filter(batch => batch.resultTallySheets.length > 0)
-    .length
+  const numAudited = batches.filter(
+    batch => batch.resultTallySheets.length > 0
+  ).length
 
   return (
     <BatchRoundProgressContainer>

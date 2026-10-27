@@ -1564,12 +1564,12 @@ export const getMockJsonDataForUploadComplete = (
   file: File,
   cvrFileType?: CvrFileType
 ): BodyInit => {
-  return ({
+  return {
     fileName: file.name,
     fileType: file.type,
     ...(cvrFileType && { cvrFileType }),
     storagePathKey: '/path/to/file',
-  } as unknown) as BodyInit
+  } as unknown as BodyInit
 }
 
 // Make the mock CVR file large enough to trigger an "Uploading..." progress bar
@@ -1744,8 +1744,7 @@ export const jaApiCalls = {
   }),
   uploadManifestCalls: [
     {
-      url:
-        '/api/election/1/jurisdiction/jurisdiction-id-1/ballot-manifest/upload-url',
+      url: '/api/election/1/jurisdiction/jurisdiction-id-1/ballot-manifest/upload-url',
       options: {
         method: 'GET',
         params: { fileType: manifestFile.type },
@@ -1761,8 +1760,7 @@ export const jaApiCalls = {
       response: { status: 'ok' },
     },
     {
-      url:
-        '/api/election/1/jurisdiction/jurisdiction-id-1/ballot-manifest/upload-complete',
+      url: '/api/election/1/jurisdiction/jurisdiction-id-1/ballot-manifest/upload-complete',
       options: {
         method: 'POST',
         body: getMockJsonDataForUploadComplete(manifestFile),
@@ -1773,8 +1771,7 @@ export const jaApiCalls = {
   ],
   uploadTalliesCalls: [
     {
-      url:
-        '/api/election/1/jurisdiction/jurisdiction-id-1/batch-tallies/upload-url',
+      url: '/api/election/1/jurisdiction/jurisdiction-id-1/batch-tallies/upload-url',
       options: {
         method: 'GET',
         params: { fileType: talliesFile.type },
@@ -1790,8 +1787,7 @@ export const jaApiCalls = {
       response: { status: 'ok' },
     },
     {
-      url:
-        '/api/election/1/jurisdiction/jurisdiction-id-1/batch-tallies/upload-complete',
+      url: '/api/election/1/jurisdiction/jurisdiction-id-1/batch-tallies/upload-complete',
       options: {
         method: 'POST',
         body: getMockJsonDataForUploadComplete(talliesFile),
@@ -1821,8 +1817,7 @@ export const jaApiCalls = {
       response: { status: 'ok' },
     },
     {
-      url:
-        '/api/election/1/jurisdiction/jurisdiction-id-1/cvrs/upload-complete',
+      url: '/api/election/1/jurisdiction/jurisdiction-id-1/cvrs/upload-complete',
       options: {
         method: 'POST',
         body: getMockJsonDataForUploadComplete(
@@ -1852,8 +1847,7 @@ export const jaApiCalls = {
       response: { status: 'ok' },
     },
     {
-      url:
-        '/api/election/1/jurisdiction/jurisdiction-id-1/cvrs/upload-complete',
+      url: '/api/election/1/jurisdiction/jurisdiction-id-1/cvrs/upload-complete',
       options: {
         method: 'POST',
         body: getMockJsonDataForUploadComplete(cvrsZip, CvrFileType.HART),
@@ -1868,8 +1862,7 @@ export const jaApiCalls = {
     response: { status: 'ok' },
   },
   getAuditBoards: (auditBoards: IAuditBoard[]) => ({
-    url:
-      '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/audit-board',
+    url: '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/audit-board',
     response: { auditBoards },
   }),
   getBallots: (ballots: IBallot[]) => ({
@@ -1877,8 +1870,7 @@ export const jaApiCalls = {
     response: { ballots },
   }),
   getBallotCount: (ballots: IBallot[]) => ({
-    url:
-      '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/ballots?count=true',
+    url: '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/ballots?count=true',
     response: { count: ballots.length },
   }),
   getBatches: (batches: IBatches) => ({
@@ -1891,8 +1883,7 @@ export const jaApiCalls = {
     response: { status: 'ok' },
   },
   unfinalizeBatchResults: {
-    url:
-      '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/batches/finalize',
+    url: '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/batches/finalize',
     options: { method: 'DELETE' },
     response: { status: 'ok' },
   },
@@ -2283,8 +2274,7 @@ export const aaApiCalls = {
     response,
   }),
   reopenAuditBoard: {
-    url:
-      '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/audit-board/audit-board-1/sign-off',
+    url: '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/audit-board/audit-board-1/sign-off',
     options: { method: 'DELETE' },
     response: { status: 'ok' },
   },

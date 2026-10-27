@@ -9,7 +9,7 @@ import { IBallotInterpretation, Interpretation } from '../../types'
 const testCases: [
   string, // Description
   IBallotInterpretation,
-  IBallotInterpretationFormState
+  IBallotInterpretationFormState,
 ][] = [
   [
     'no interpretation',

@@ -3,7 +3,8 @@ import { Link, LinkProps } from 'react-router-dom'
 import { Button, IButtonProps } from '@blueprintjs/core'
 
 interface ILinkButtonProps
-  extends LinkProps,
+  extends
+    LinkProps,
     Pick<
       IButtonProps,
       | 'disabled'

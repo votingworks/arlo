@@ -207,9 +207,8 @@ const BatchDetail: React.FC<IBatchDetailProps> = ({
   const tabs = tabsFromSheets(sheets)
   const [selectedTabId, setSelectedTabId] = useState(tabs[0].id)
   const [isTabsAnimationEnabled, setIsTabsAnimationEnabled] = useState(true)
-  const [areAdditionalActionsOpen, setAreAdditionalActionsOpen] = useState(
-    false
-  )
+  const [areAdditionalActionsOpen, setAreAdditionalActionsOpen] =
+    useState(false)
   const [isRemovingSheet, setIsRemovingSheet] = useState(false)
 
   const currentSheetIndex = sheets.findIndex(

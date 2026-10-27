@@ -181,20 +181,16 @@ const Map: React.FC<IProps> = ({
   let mapContents: React.ReactNode = null
   if (jsonData) {
     const stateName = states[stateAbbreviation]
-    const usState = (feature(
-      jsonData,
-      jsonData.objects.states
-    ) as GeoJSON.FeatureCollection).features.find(
-      state => state.properties!.name === stateName
-    )
+    const usState = (
+      feature(jsonData, jsonData.objects.states) as GeoJSON.FeatureCollection
+    ).features.find(state => state.properties!.name === stateName)
     if (!usState) throw new Error(`State topology not found: ${stateName}`)
 
     // Filter counties for this state. The county ID's initial 2 characters are
     // the state's ID
-    const stateCounties = (feature(
-      jsonData,
-      jsonData.objects.counties
-    ) as GeoJSON.FeatureCollection).features.filter(
+    const stateCounties = (
+      feature(jsonData, jsonData.objects.counties) as GeoJSON.FeatureCollection
+    ).features.filter(
       county => (county.id as string).slice(0, 2) === usState.id
     )
 

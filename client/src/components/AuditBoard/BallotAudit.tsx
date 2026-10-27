@@ -227,45 +227,44 @@ const BallotAuditContest = ({
     isInvalidWriteInChecked,
   } = interpretation
 
-  const onCheckboxClick = (value: string) => (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const { checked } = e.currentTarget
-    if (value === Interpretation.BLANK) {
-      setInterpretation({
-        ...interpretation,
-        choiceIds: [],
-        isBlankVoteChecked: checked,
-        isContestNotOnBallotChecked: false,
-        isInvalidWriteInChecked: false,
-      })
-    } else if (value === Interpretation.CONTEST_NOT_ON_BALLOT) {
-      setInterpretation({
-        ...interpretation,
-        choiceIds: [],
-        isBlankVoteChecked: false,
-        isContestNotOnBallotChecked: checked,
-        isInvalidWriteInChecked: false,
-      })
-    } else if (value === INVALID_WRITE_IN) {
-      setInterpretation({
-        ...interpretation,
-        isBlankVoteChecked: false,
-        isContestNotOnBallotChecked: false,
-        isInvalidWriteInChecked: checked,
-      })
-    } else {
-      const newChoiceIds = checked
-        ? [...choiceIds, value]
-        : choiceIds.filter(v => v !== value)
-      setInterpretation({
-        ...interpretation,
-        choiceIds: newChoiceIds,
-        isBlankVoteChecked: false,
-        isContestNotOnBallotChecked: false,
-      })
+  const onCheckboxClick =
+    (value: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { checked } = e.currentTarget
+      if (value === Interpretation.BLANK) {
+        setInterpretation({
+          ...interpretation,
+          choiceIds: [],
+          isBlankVoteChecked: checked,
+          isContestNotOnBallotChecked: false,
+          isInvalidWriteInChecked: false,
+        })
+      } else if (value === Interpretation.CONTEST_NOT_ON_BALLOT) {
+        setInterpretation({
+          ...interpretation,
+          choiceIds: [],
+          isBlankVoteChecked: false,
+          isContestNotOnBallotChecked: checked,
+          isInvalidWriteInChecked: false,
+        })
+      } else if (value === INVALID_WRITE_IN) {
+        setInterpretation({
+          ...interpretation,
+          isBlankVoteChecked: false,
+          isContestNotOnBallotChecked: false,
+          isInvalidWriteInChecked: checked,
+        })
+      } else {
+        const newChoiceIds = checked
+          ? [...choiceIds, value]
+          : choiceIds.filter(v => v !== value)
+        setInterpretation({
+          ...interpretation,
+          choiceIds: newChoiceIds,
+          isBlankVoteChecked: false,
+          isContestNotOnBallotChecked: false,
+        })
+      }
     }
-  }
 
   // Sort yes before no for propositions
   const yesOption = contest.choices.find(c => c.name.toLowerCase() === 'yes')

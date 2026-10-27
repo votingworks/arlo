@@ -425,9 +425,8 @@ describe('JA setup', () => {
     await withMockFetch(expectedCalls, async () => {
       renderView()
       await screen.findByText('Audit Setup')
-      const [manifestInput, talliesInput] = screen.getAllByLabelText(
-        'Select a file...'
-      )
+      const [manifestInput, talliesInput] =
+        screen.getAllByLabelText('Select a file...')
       const [manifestButton, talliesButton] = screen.getAllByRole('button', {
         name: 'Upload File',
       })

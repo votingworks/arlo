@@ -2,7 +2,7 @@ import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 
 const devFlaskServerUrl = 'http://localhost:3001'
-const IS_CI = process.env['CI'] === 'true';
+const IS_CI = process.env['CI'] === 'true'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -36,7 +36,7 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['src/setupTests.ts'],
     reporters: IS_CI ? ['verbose', 'junit'] : [],
-    outputFile: IS_CI ? "test_results/junit.xml" : undefined,
+    outputFile: IS_CI ? 'test_results/junit.xml' : undefined,
     coverage: {
       thresholds: {
         lines: -220,
