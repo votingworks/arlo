@@ -226,6 +226,7 @@ def test_batch_comparison_round_1(
                 "needsFullHandTally": False,
                 "isFullHandTally": False,
                 "endedWithFullTallyEscalation": False,
+                "randomSeed": None,
                 "drawSampleTask": {
                     "status": "PROCESSED",
                     "startedAt": assert_is_date,

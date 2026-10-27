@@ -139,6 +139,7 @@ def test_all_ballots_audit(
             "needsFullHandTally": True,
             "isFullHandTally": True,
             "endedWithFullTallyEscalation": False,
+            "randomSeed": None,
             "drawSampleTask": {
                 "status": "PROCESSED",
                 "startedAt": assert_is_date,

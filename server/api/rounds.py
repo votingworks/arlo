@@ -796,6 +796,7 @@ def serialize_round(round: Round) -> dict[str, Any]:
         "needsFullHandTally": needs_full_hand_tally(round, round.election),
         "isFullHandTally": is_full_hand_tally(round, round.election),
         "endedWithFullTallyEscalation": bool(round.ended_with_full_tally_escalation),
+        "randomSeed": round.random_seed,
         "drawSampleTask": serialize_background_task(round.draw_sample_task),
     }
 

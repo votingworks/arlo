@@ -20,6 +20,7 @@ export interface IRound {
   needsFullHandTally: boolean
   isFullHandTally: boolean
   endedWithFullTallyEscalation: boolean
+  randomSeed: string | null
   drawSampleTask: {
     status: FileProcessingStatus
     startedAt: string | null

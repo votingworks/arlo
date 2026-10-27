@@ -60,6 +60,7 @@ def test_rounds_create_one(
                 "needsFullHandTally": False,
                 "isFullHandTally": False,
                 "endedWithFullTallyEscalation": False,
+                "randomSeed": None,
                 "drawSampleTask": {
                     "status": "PROCESSED",
                     "startedAt": assert_is_date,
@@ -141,6 +142,7 @@ def test_rounds_create_two(
                 "needsFullHandTally": False,
                 "isFullHandTally": False,
                 "endedWithFullTallyEscalation": False,
+                "randomSeed": None,
                 "drawSampleTask": {
                     "status": "PROCESSED",
                     "startedAt": assert_is_date,
@@ -157,6 +159,7 @@ def test_rounds_create_two(
                 "needsFullHandTally": False,
                 "isFullHandTally": False,
                 "endedWithFullTallyEscalation": False,
+                "randomSeed": None,
                 "drawSampleTask": {
                     "status": "PROCESSED",
                     "startedAt": assert_is_date,
@@ -304,6 +307,7 @@ def test_rounds_complete_audit(
                 "needsFullHandTally": False,
                 "isFullHandTally": False,
                 "endedWithFullTallyEscalation": False,
+                "randomSeed": None,
                 "drawSampleTask": {
                     "status": "PROCESSED",
                     "startedAt": assert_is_date,
