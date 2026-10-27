@@ -1066,6 +1066,9 @@ def compute_sample_ballots(
     # Batch.has_cvrs. Since Batch.has_cvrs is None for all other audit types,
     # the default filter is None.
     filter_has_cvrs: bool | None = None,
+    # For Providence audits, each round has its own random seed, so each
+    # round's sample is drawn from a fresh stream of tickets.
+    round_random_seed: str | None = None,
 ) -> list[BallotDraw]:
     participating_jurisdictions = {
         jurisdiction
@@ -1090,16 +1093,22 @@ def compute_sample_ballots(
     def compute_sample_for_contest(
         contest: Contest, sample_size: SampleSize
     ) -> list[BallotDraw]:
-        # Compute the total number of ballot samples in all rounds leading up to
-        # this one. Note that this corresponds to the number of SampledBallotDraws,
-        # not SampledBallots.
-        num_previously_sampled = (
-            SampledBallotDraw.query.filter_by(contest_id=contest.id)
-            .join(SampledBallot)
-            .join(Batch)
-            .filter_by(has_cvrs=filter_has_cvrs)
-            .count()
-        )
+        if round_random_seed:
+            # Rounds with their own seed draw from a fresh stream of tickets
+            seed = round_random_seed
+            num_previously_sampled = 0
+        else:
+            seed = str(election.random_seed)
+            # Compute the total number of ballot samples in all rounds leading
+            # up to this one. Note that this corresponds to the number of
+            # SampledBallotDraws, not SampledBallots.
+            num_previously_sampled = (
+                SampledBallotDraw.query.filter_by(contest_id=contest.id)
+                .join(SampledBallot)
+                .join(Batch)
+                .filter_by(has_cvrs=filter_has_cvrs)
+                .count()
+            )
 
         if election.audit_math_type == AuditMathType.SUPERSIMPLE_CARD_STYLE_DATA:
             # The sampling pool will be all ballots in the audit with the contest
@@ -1170,7 +1179,7 @@ def compute_sample_ballots(
 
         # Do the math! i.e. compute the actual sample
         sample = sampler.draw_sample(
-            str(election.random_seed),
+            seed,
             dict(manifest),
             sample_size_num,
             num_previously_sampled,

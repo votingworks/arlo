@@ -418,7 +418,9 @@ def draw_sample_ballots(
     # the default filter is None.
     filter_has_cvrs: bool | None = None,
 ):
-    sample = compute_sample_ballots(election, contest_sample_sizes, filter_has_cvrs)
+    sample = compute_sample_ballots(
+        election, contest_sample_sizes, filter_has_cvrs, round.random_seed
+    )
 
     # Group all sample draws by ballot
     sample_draws_by_ballot: dict[tuple[str, int], list[BallotDraw]] = group_by(
@@ -497,6 +499,7 @@ def create_round_schema(audit_type: AuditType):
         "properties": {
             "roundNum": {"type": "integer", "minimum": 1},
             "sampleSizes": create_selected_sample_sizes_schema(audit_type),
+            "randomSeed": {"type": "string", "minLength": 1, "maxLength": 100},
         },
         "additionalProperties": False,
         "required": ["roundNum", "sampleSizes"],
@@ -514,6 +517,16 @@ def validate_round(round: dict[str, Any], election: Election):
 
     if current_round and not current_round.ended_at:
         raise Conflict("The current round is not complete")
+
+    requires_random_seed = (
+        election.audit_math_type == AuditMathType.PROVIDENCE and next_round_num > 1
+    )
+    if requires_random_seed and "randomSeed" not in round:
+        raise BadRequest("A new random seed is required for each round")
+    if not requires_random_seed and "randomSeed" in round:
+        raise BadRequest(
+            "A random seed can only be provided for rounds after round 1 of a Providence audit"
+        )
 
     if any(
         any_jurisdiction_file_is_processing(jurisdiction)
@@ -676,6 +689,8 @@ def create_round(election: Election):
         election_id=election.id,
         round_num=json_round["roundNum"],
     )
+    if election.audit_math_type == AuditMathType.PROVIDENCE:
+        round.random_seed = json_round.get("randomSeed", election.random_seed)
     db_session.add(round)
 
     # For round 1, use the given sample size for each contest. In later rounds,
