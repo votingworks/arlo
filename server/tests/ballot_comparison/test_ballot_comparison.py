@@ -1684,6 +1684,13 @@ def test_ballot_comparison_ess(
     )
     check_discrepancies(discrepancy_report, audit_results)
 
+    # A confirmed overvote is not a discrepancy, but an unconfirmed one is
+    rv = client.get(f"/api/election/{election_id}/discrepancy")
+    discrepancies = json.loads(rv.data)
+    j2_discrepancies = discrepancies[jurisdiction_ids[1]]
+    assert "0001, BATCH2, Ballot 3" not in j2_discrepancies
+    assert "0002, BATCH1, Ballot 3" in j2_discrepancies
+
 
 def test_ballot_comparison_sample_preview(
     client: FlaskClient,
