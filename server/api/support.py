@@ -28,7 +28,7 @@ from ..config import (
     AUDITADMIN_AUTH0_CLIENT_SECRET,
     FLASK_ENV,
 )
-from ..util.jsonschema import validate
+from ..util.jsonschema import JSONDict, validate
 from ..util.isoformat import isoformat
 from ..util.file import delete_file
 from ..util.redirect import redirect
@@ -38,7 +38,12 @@ from .rounds import (
     is_audit_complete,
 )
 from ..util.get_json import safe_get_json_dict
-from .shared import group_combined_batches
+from .shared import group_combined_batches, is_sample_drawn
+from .jurisdictions import JurisdictionStatus, round_status_by_jurisdiction
+from .discrepancies import (
+    get_ballot_comparison_discrepancies_by_jurisdiction,
+    get_batch_comparison_discrepancies_by_jurisdiction,
+)
 
 AUTH0_DOMAIN = urlparse(AUDITADMIN_AUTH0_BASE_URL).hostname
 
@@ -54,6 +59,55 @@ def get_current_round_info(election):  # noqa: ANN001
         endedWithFullTallyEscalation=bool(
             current_round.ended_with_full_tally_escalation
         ),
+    )
+
+
+def get_jurisdiction_progress(election: Election, current_round: Round) -> JSONDict:
+    round_status = round_status_by_jurisdiction(election, current_round)
+    return dict(
+        numComplete=sum(
+            1
+            for status in round_status.values()
+            if status and status["status"] == JurisdictionStatus.COMPLETE
+        ),
+        numTotal=len(round_status),
+    )
+
+
+# Counts batch/ballot-contest pairs with discrepancies, matching the count shown
+# on the audit admin progress table
+def get_discrepancy_count(election: Election, current_round: Round) -> int | None:
+    if election.audit_type == AuditType.BATCH_COMPARISON:
+        discrepancies_by_jurisdiction = (
+            get_batch_comparison_discrepancies_by_jurisdiction(
+                election, current_round.id
+            )
+        )
+    elif election.audit_type == AuditType.BALLOT_COMPARISON:
+        discrepancies_by_jurisdiction = (
+            get_ballot_comparison_discrepancies_by_jurisdiction(election, current_round)
+        )
+    else:
+        return None
+    return sum(
+        len(contest_discrepancies)
+        for discrepancies in discrepancies_by_jurisdiction.values()
+        for contest_discrepancies in discrepancies.values()
+    )
+
+
+def get_round_progress(election: Election) -> JSONDict | None:
+    current_round = get_current_round(election)
+    # Before the sample is drawn, every jurisdiction would look complete
+    if (
+        not current_round
+        or current_round.ended_at
+        or not is_sample_drawn(current_round)
+    ):
+        return None
+    return dict(
+        jurisdictions=get_jurisdiction_progress(election, current_round),
+        discrepancyCount=get_discrepancy_count(election, current_round),
     )
 
 
@@ -342,6 +396,15 @@ def get_election(election_id: str):
         ],
         deletedAt=isoformat(election.deleted_at),
     )
+
+
+# Fetched separately for each audit in the active audits list, since computing
+# discrepancies can be slow for large comparison audits
+@api.route("/support/elections/<election_id>/round-progress", methods=["GET"])
+@restrict_access_support
+def get_election_round_progress(election_id: str):
+    election = get_or_404(Election, election_id)
+    return jsonify(get_round_progress(election))
 
 
 @api.route("/support/elections/<election_id>", methods=["DELETE"])
