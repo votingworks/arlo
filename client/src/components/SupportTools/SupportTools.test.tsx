@@ -76,6 +76,7 @@ const mockOrganization: IOrganizationForSupport = {
         id: 'round-2',
         endedAt: null,
         roundNum: 1,
+        endedWithFullTallyEscalation: false,
       },
     },
     {
@@ -90,6 +91,7 @@ const mockOrganization: IOrganizationForSupport = {
         id: 'round-3',
         endedAt: '2022-03-07T21:03:35.487Z',
         roundNum: 1,
+        endedWithFullTallyEscalation: false,
       },
     },
     {
@@ -104,6 +106,7 @@ const mockOrganization: IOrganizationForSupport = {
         id: 'round-3',
         endedAt: '2022-03-07T21:03:35.487Z',
         roundNum: 1,
+        endedWithFullTallyEscalation: false,
       },
     },
   ],
@@ -122,7 +125,14 @@ const mockElection: IElection = {
       name: 'Jurisdiction 2',
     },
   ],
-  rounds: [{ id: 'round-1', endedAt: null, roundNum: 1 }],
+  rounds: [
+    {
+      id: 'round-1',
+      endedAt: null,
+      roundNum: 1,
+      endedWithFullTallyEscalation: false,
+    },
+  ],
 }
 
 const mockJurisdiction: IJurisdiction = {
@@ -311,7 +321,24 @@ describe('Support Tools', () => {
           id: 'election-id-2',
           auditName: 'Audit 2',
           organization: mockOrganizationBase,
-          currentRound: { id: 'round-1', endedAt: null, roundNum: 1 },
+          currentRound: {
+            id: 'round-1',
+            endedAt: null,
+            roundNum: 1,
+            endedWithFullTallyEscalation: false,
+          },
+        },
+        {
+          ...mockElectionForSupport,
+          id: 'election-id-3',
+          auditName: 'Audit 3',
+          organization: mockOrganizationBase,
+          currentRound: {
+            id: 'round-1',
+            endedAt: '2022-03-07T21:03:35.487Z',
+            roundNum: 1,
+            endedWithFullTallyEscalation: true,
+          },
         },
       ]),
       apiCalls.getElection(mockElection),
@@ -323,6 +350,7 @@ describe('Support Tools', () => {
       screen.getByRole('link', {
         name: 'Organization 1 Audit 2 Round 1 In Progress',
       })
+      screen.getByRole('link', { name: 'Organization 1 Audit 3 Blocked' })
       userEvent.click(
         screen.getByRole('link', { name: 'Organization 1 Audit 1 Not Started' })
       )
@@ -1028,7 +1056,14 @@ describe('Support Tools', () => {
       expectedRoundsTableBody: [{ round: 'Round 1', status: 'Not started' }],
     },
     {
-      rounds: [{ id: 'round-1', endedAt: null, roundNum: 1 }],
+      rounds: [
+        {
+          id: 'round-1',
+          endedAt: null,
+          roundNum: 1,
+          endedWithFullTallyEscalation: false,
+        },
+      ],
       expectedRoundsTableHead: ['Round', 'Status', 'Actions'],
       expectedRoundsTableBody: [
         { round: 'Round 1', status: 'In progress', action: 'Undo Start' },
@@ -1036,8 +1071,18 @@ describe('Support Tools', () => {
     },
     {
       rounds: [
-        { id: 'round-1', endedAt: 'some-timestamp', roundNum: 1 },
-        { id: 'round-2', endedAt: null, roundNum: 2 },
+        {
+          id: 'round-1',
+          endedAt: 'some-timestamp',
+          roundNum: 1,
+          endedWithFullTallyEscalation: false,
+        },
+        {
+          id: 'round-2',
+          endedAt: null,
+          roundNum: 2,
+          endedWithFullTallyEscalation: false,
+        },
       ],
       expectedRoundsTableHead: ['Round', 'Status', 'Actions'],
       expectedRoundsTableBody: [
@@ -1046,10 +1091,31 @@ describe('Support Tools', () => {
       ],
     },
     {
-      rounds: [{ id: 'round-1', endedAt: 'some-timestamp', roundNum: 1 }],
+      rounds: [
+        {
+          id: 'round-1',
+          endedAt: 'some-timestamp',
+          roundNum: 1,
+          endedWithFullTallyEscalation: false,
+        },
+      ],
       expectedRoundsTableHead: ['Round', 'Status', 'Actions'],
       expectedRoundsTableBody: [
         { round: 'Round 1', status: 'Completed', action: 'Reopen' },
+      ],
+    },
+    {
+      rounds: [
+        {
+          id: 'round-1',
+          endedAt: 'some-timestamp',
+          roundNum: 1,
+          endedWithFullTallyEscalation: true,
+        },
+      ],
+      expectedRoundsTableHead: ['Round', 'Status', 'Actions'],
+      expectedRoundsTableBody: [
+        { round: 'Round 1', status: 'Blocked', action: 'Reopen' },
       ],
     },
   ]
@@ -1084,25 +1150,75 @@ describe('Support Tools', () => {
     }
   )
 
+  it('audit screen explains blocked rounds', async () => {
+    const expectedCalls = [
+      supportApiCalls.getUser,
+      apiCalls.getElection({
+        ...mockElection,
+        rounds: [
+          {
+            id: 'round-1',
+            endedAt: 'some-timestamp',
+            roundNum: 1,
+            endedWithFullTallyEscalation: true,
+          },
+        ],
+      }),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderRoute('/support/audits/election-id-1')
+
+      await screen.findByRole('heading', { name: 'Audit 1' })
+      userEvent.hover(screen.getByText('Blocked'))
+      await screen.findByText(
+        'Another round is required but escalates to the size of a full hand tally'
+      )
+    })
+  })
+
   it('audit screen supports undoing round starts and reopening rounds', async () => {
     const expectedCalls = [
       supportApiCalls.getUser,
       apiCalls.getElection({
         ...mockElection,
         rounds: [
-          { id: 'round-1', endedAt: 'some-timestamp', roundNum: 1 },
-          { id: 'round-2', endedAt: null, roundNum: 2 },
+          {
+            id: 'round-1',
+            endedAt: 'some-timestamp',
+            roundNum: 1,
+            endedWithFullTallyEscalation: false,
+          },
+          {
+            id: 'round-2',
+            endedAt: null,
+            roundNum: 2,
+            endedWithFullTallyEscalation: false,
+          },
         ],
       }),
       apiCalls.undoRoundStart,
       apiCalls.getElection({
         ...mockElection,
-        rounds: [{ id: 'round-1', endedAt: 'some-timestamp', roundNum: 1 }],
+        rounds: [
+          {
+            id: 'round-1',
+            endedAt: 'some-timestamp',
+            roundNum: 1,
+            endedWithFullTallyEscalation: false,
+          },
+        ],
       }),
       apiCalls.reopenCurrentRound,
       apiCalls.getElection({
         ...mockElection,
-        rounds: [{ id: 'round-1', endedAt: null, roundNum: 1 }],
+        rounds: [
+          {
+            id: 'round-1',
+            endedAt: null,
+            roundNum: 1,
+            endedWithFullTallyEscalation: false,
+          },
+        ],
       }),
     ]
     await withMockFetch(expectedCalls, async () => {

@@ -50,6 +50,11 @@ class EndRound(Activity):
 
 
 @dataclass
+class FullHandTallyRequired(Activity):
+    round_num: int
+
+
+@dataclass
 class CalculateSampleSizes(Activity):
     pass
 

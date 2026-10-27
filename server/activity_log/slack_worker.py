@@ -165,6 +165,19 @@ def slack_message(activity: activity_log.Activity):
             ],
         )
 
+    if isinstance(activity, activity_log.FullHandTallyRequired):
+        message = f"Round {activity.round_num} ended, another round is required but escalates to the size of a full hand tally"
+        return dict(
+            text=message,
+            blocks=[
+                dict(type="section", text=dict(type="mrkdwn", text=f"*{message}*")),
+                dict(
+                    type="context",
+                    elements=[org_context, audit_context, time_context, user_context],
+                ),
+            ],
+        )
+
     if isinstance(activity, activity_log.CalculateSampleSizes):
         return dict(
             text=f"{acting_user} calculated sample sizes",

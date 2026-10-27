@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button } from '@blueprintjs/core'
+import { Button, Tooltip } from '@blueprintjs/core'
 import { toast } from 'react-toastify'
 
 import { Confirm, useConfirm } from '../Atoms/Confirm'
@@ -48,7 +48,11 @@ const RoundsTable: React.FC<IProps> = ({ electionId, rounds }) => {
           <tr key={round.id}>
             <td>Round {round.roundNum}</td>
             <td>
-              {round.endedAt ? (
+              {round.endedWithFullTallyEscalation ? (
+                <Tooltip content="Another round is required but escalates to the size of a full hand tally">
+                  <StatusTag intent="danger">Blocked</StatusTag>
+                </Tooltip>
+              ) : round.endedAt ? (
                 <StatusTag intent="success">Completed</StatusTag>
               ) : (
                 <StatusTag intent="warning">In progress</StatusTag>

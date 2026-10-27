@@ -356,8 +356,4 @@ def compute_risk(
     if 0 < max_p < alpha:
         result = True
 
-    # Special case if the sample size equals all the ballots (i.e. a full hand tally)
-    if sum(ballot["times_sampled"] for ballot in sample_cvr.values()) >= N:
-        return 0, True
-
     return min(float(max_p), 1.0), result

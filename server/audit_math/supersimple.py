@@ -1,4 +1,5 @@
 import math
+from collections import Counter
 from itertools import product
 from decimal import Decimal, ROUND_CEILING, ROUND_HALF_UP
 from typing import TypedDict
@@ -251,8 +252,37 @@ def get_sample_sizes(
     return max(stopping_size - int(num_sampled), 0)
 
 
+def get_sample_sizes_from_discrepancies(
+    risk_limit: int,
+    contest: Contest,
+    discrepancies: dict[str, Discrepancy],
+    num_sampled_so_far: int,
+) -> int:
+    """
+    Computes the next round's sample size from the discrepancies found so far
+    (the output of compute_discrepancies) and the number of ballots sampled so
+    far.
+    """
+    discrepancy_counter = Counter(d["counted_as"] for d in discrepancies.values())
+    return get_sample_sizes(
+        risk_limit,
+        contest,
+        {
+            "sample_size": num_sampled_so_far,
+            "1-under": discrepancy_counter[-1],
+            "1-over": discrepancy_counter[1],
+            "2-under": discrepancy_counter[-2],
+            "2-over": discrepancy_counter[2],
+        },
+    )
+
+
 def compute_risk(
-    risk_limit: int, contest: Contest, cvrs: CVRS, sample_cvr: SAMPLECVRS
+    risk_limit: int,
+    contest: Contest,
+    cvrs: CVRS,
+    sample_cvr: SAMPLECVRS,
+    discrepancies: dict[str, Discrepancy] | None = None,
 ) -> tuple[float, bool]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
@@ -282,6 +312,9 @@ def compute_risk(
                     ...
                 }
 
+        discrepancies  - optional, the result of compute_discrepancies for this
+                         sample, to avoid computing it again
+
     Outputs:
         measurements    - the p-value of the hypotheses that the election
                           result is correct based on the sample, for each winner-loser pair.
@@ -302,7 +335,8 @@ def compute_risk(
 
     result = False
 
-    discrepancies = compute_discrepancies(contest, cvrs, sample_cvr)
+    if discrepancies is None:
+        discrepancies = compute_discrepancies(contest, cvrs, sample_cvr)
 
     for ballot in sample_cvr:
         if ballot in discrepancies:
@@ -330,9 +364,5 @@ def compute_risk(
 
     if 0 < p < alpha:
         result = True
-
-    # Special case if the sample size equals all the ballots (i.e. a full hand tally)
-    if sum(ballot["times_sampled"] for ballot in sample_cvr.values()) >= N:
-        return 0, True
 
     return min(float(p), 1.0), result

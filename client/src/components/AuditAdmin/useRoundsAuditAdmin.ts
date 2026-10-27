@@ -19,6 +19,7 @@ export interface IRound {
   isAuditComplete: boolean
   needsFullHandTally: boolean
   isFullHandTally: boolean
+  endedWithFullTallyEscalation: boolean
   drawSampleTask: {
     status: FileProcessingStatus
     startedAt: string | null

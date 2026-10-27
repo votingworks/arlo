@@ -355,6 +355,45 @@ describe('StatusBox', () => {
       })
     })
 
+    it('renders round complete, full hand tally required state', async () => {
+      // Doesn't load next round sample sizes
+      await withMockFetch([], async () => {
+        render(
+          <QueryClientProvider client={createQueryClient()}>
+            <Router>
+              <AuditAdminStatusBox
+                rounds={[
+                  {
+                    ...roundMocks.needAnother[0],
+                    endedWithFullTallyEscalation: true,
+                  },
+                ]}
+                startNextRound={vi.fn()}
+                finishRound={vi.fn()}
+                undoRoundStart={vi.fn()}
+                jurisdictions={jurisdictionMocks.allComplete}
+                contests={contestMocks.filledTargeted}
+                auditSettings={auditSettingsMocks.ballotComparisonAll}
+              />
+            </Router>
+          </QueryClientProvider>
+        )
+        await screen.findByText(
+          'Round 1 of the audit is complete - a full hand tally is required'
+        )
+        screen.getByText(
+          'Another round would require sampling at least as many ballots as were cast in the contest. ' +
+            'Create a ballot polling or batch comparison audit to conduct a full hand tally instead.'
+        )
+        expect(
+          screen.queryByText('Round 2 Sample Sizes')
+        ).not.toBeInTheDocument()
+        expect(
+          screen.queryByRole('button', { name: 'Start Round 2' })
+        ).not.toBeInTheDocument()
+      })
+    })
+
     it('handles sample size errors in need another round state', async () => {
       const expectedCalls = [
         {

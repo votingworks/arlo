@@ -19,6 +19,7 @@ from .shared import (
     compute_sample_ballots,
     compute_sample_batches,
     contest_results_by_round,
+    cumulative_sample_sizes,
     cvrs_for_contest,
     full_hand_tally_sizes,
     get_current_round,
@@ -56,9 +57,11 @@ from ..activity_log import (
     activity_base,
     StartRound,
     EndRound,
+    FullHandTallyRequired,
 )
 from ..feature_flags import is_enabled_automatically_end_audit_after_one_round
 from ..util.get_json import safe_get_json_dict
+from ..util.string import format_count
 
 
 def is_round_ready_to_finish(election: Election, round: Round) -> bool:
@@ -279,8 +282,17 @@ def count_audited_votes(election: Election, round: Round):
             db_session.add(result)
 
 
-def calculate_risk_measurements(election: Election, round: Round):
+# Returns the ids of targeted ballot comparison contests that haven't met the
+# risk limit and whose next round would reach a full hand tally
+def calculate_risk_measurements(election: Election, round: Round) -> set[str]:
     assert election.risk_limit is not None
+    escalating_contest_ids: set[str] = set()
+    # Includes the round being finished
+    sample_sizes_so_far = (
+        cumulative_sample_sizes(election.id)
+        if election.audit_type == AuditType.BALLOT_COMPARISON
+        else {}
+    )
 
     for round_contest in round.round_contests:
         contest = round_contest.contest
@@ -306,12 +318,30 @@ def calculate_risk_measurements(election: Election, round: Round):
                 combined_batch_keys(contest),
             )
         elif election.audit_type == AuditType.BALLOT_COMPARISON:
+            contest_for_sampler = sampler_contest.from_db_contest(contest)
+            cvrs = cvrs_for_contest(contest)
+            sample_cvrs = sampled_ballot_interpretations_to_cvrs(contest)
+            discrepancies = supersimple.compute_discrepancies(
+                contest_for_sampler, cvrs, sample_cvrs
+            )
             p_value, is_complete = supersimple.compute_risk(
                 election.risk_limit,
-                sampler_contest.from_db_contest(contest),
-                cvrs_for_contest(contest),
-                sampled_ballot_interpretations_to_cvrs(contest),
+                contest_for_sampler,
+                cvrs,
+                sample_cvrs,
+                discrepancies,
             )
+            if (
+                contest.is_targeted
+                and not is_complete
+                and next_round_requires_full_hand_tally(
+                    election.risk_limit,
+                    contest_for_sampler,
+                    discrepancies,
+                    sample_sizes_so_far.get(contest.id, 0),
+                )
+            ):
+                escalating_contest_ids.add(contest.id)
         else:
             assert election.audit_type == AuditType.HYBRID
             non_cvr_stratum, cvr_stratum = hybrid_contest_strata(contest)
@@ -324,6 +354,8 @@ def calculate_risk_measurements(election: Election, round: Round):
 
         round_contest.end_p_value = p_value
         round_contest.is_complete = is_complete
+
+    return escalating_contest_ids
 
 
 @background_task
@@ -493,12 +525,31 @@ def validate_round(round: dict[str, Any], election: Election):
                 raise Conflict(str(error)) from error
 
 
+def next_round_requires_full_hand_tally(
+    risk_limit: int,
+    contest: sampler_contest.Contest,
+    discrepancies: dict[str, supersimple.Discrepancy],
+    num_sampled_so_far: int,
+) -> bool:
+    sample_size = supersimple.get_sample_sizes_from_discrepancies(
+        risk_limit, contest, discrepancies, num_sampled_so_far
+    )
+    return num_sampled_so_far + sample_size >= contest.ballots
+
+
 def validate_sample_size(round: dict[str, Any], election: Election):
     targeted_contests = active_targeted_contests(election)
     if set(round["sampleSizes"].keys()) != {c.id for c in targeted_contests}:
         raise BadRequest("Sample sizes provided do not match targeted contest ids")
 
     full_hand_tally_size = full_hand_tally_sizes(election)
+    # Ballot comparison samples are drawn with replacement across rounds, so
+    # count previous rounds' samples toward the total
+    previous_sample_sizes = (
+        cumulative_sample_sizes(election.id)
+        if election.audit_type == AuditType.BALLOT_COMPARISON
+        else {}
+    )
 
     for contest in targeted_contests:
         sample_size = round["sampleSizes"][contest.id]
@@ -545,13 +596,26 @@ def validate_sample_size(round: dict[str, Any], election: Election):
                     f" {full_hand_tally_size[contest.id]} (the total number of {ballots_or_batches} in the contest)"
                 )
 
-        if sample_size["size"] >= full_hand_tally_size[contest.id]:
+        num_previous_samples = previous_sample_sizes.get(contest.id, 0)
+        total_sample_size = num_previous_samples + sample_size["size"]
+        if total_sample_size >= full_hand_tally_size[contest.id]:
             if election.audit_type not in [
                 AuditType.BALLOT_POLLING,
                 AuditType.BATCH_COMPARISON,
             ]:
                 raise BadRequest(
-                    "For a full hand tally, use the ballot polling or batch comparison audit type."
+                    (
+                        f"For contest {contest.name},"
+                        f" {format_count(num_previous_samples, 'ballot has', 'ballots have')}"
+                        f" already been sampled, so this round would bring the total"
+                        f" sample size to {total_sample_size:,}, which escalates to the"
+                        f" size of a full hand tally"
+                        f" ({format_count(full_hand_tally_size[contest.id], 'ballot', 'ballots')}"
+                        " cast in the contest). "
+                        if num_previous_samples
+                        else ""
+                    )
+                    + "For a full hand tally, use the ballot polling or batch comparison audit type."
                 )
             if (
                 election.audit_type == AuditType.BALLOT_POLLING
@@ -598,6 +662,11 @@ def create_round(election: Election):
 
     # Figure out which contests still need auditing
     previous_round = get_previous_round(election, round)
+
+    # Starting another round (e.g. with a smaller custom sample size) means the
+    # previous round is no longer blocked by a full hand tally escalation
+    if previous_round:
+        previous_round.ended_with_full_tally_escalation = False  # ty: ignore[invalid-assignment]
     contests_that_havent_met_risk_limit = (
         [
             round_contest.contest
@@ -649,18 +718,31 @@ def finish_round(election: Election):
         raise Conflict("Round already finished")
 
     count_audited_votes(election, current_round)
-    calculate_risk_measurements(election, current_round)
+    escalating_contest_ids = calculate_risk_measurements(election, current_round)
     current_round.ended_at = datetime.now(timezone.utc)  # ty: ignore[invalid-assignment]
 
     db_session.flush()  # Ensure round contest results are queryable by is_audit_complete
+    audit_complete = is_audit_complete(current_round)
     record_activity(
         EndRound(
             timestamp=current_round.ended_at,
             base=activity_base(election),
             round_num=current_round.round_num,
-            is_audit_complete=is_audit_complete(current_round),
+            is_audit_complete=audit_complete,
         )
     )
+
+    current_round.ended_with_full_tally_escalation = bool(  # ty: ignore[invalid-assignment]
+        escalating_contest_ids and not audit_complete
+    )
+    if current_round.ended_with_full_tally_escalation:
+        record_activity(
+            FullHandTallyRequired(
+                timestamp=datetime.now(timezone.utc),
+                base=activity_base(election),
+                round_num=current_round.round_num,
+            )
+        )
 
     db_session.commit()
 
@@ -676,6 +758,7 @@ def serialize_round(round: Round) -> dict[str, Any]:
         "isAuditComplete": is_audit_complete(round),
         "needsFullHandTally": needs_full_hand_tally(round, round.election),
         "isFullHandTally": is_full_hand_tally(round, round.election),
+        "endedWithFullTallyEscalation": bool(round.ended_with_full_tally_escalation),
         "drawSampleTask": serialize_background_task(round.draw_sample_task),
     }
 

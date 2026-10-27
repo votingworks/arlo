@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-from collections import Counter
 from flask import jsonify
 from werkzeug.exceptions import BadRequest
 
@@ -9,6 +8,7 @@ from ..models import *
 from ..database import db_session
 from .shared import (
     combined_batch_keys,
+    cumulative_sample_sizes,
     samples_not_found_by_round,
     validate_batch_tallies,
 )
@@ -106,6 +106,12 @@ def sample_size_options(election: Election) -> dict[str, dict[str, SampleSizeOpt
     if election.risk_limit is None:
         raise UserError("Cannot compute sample sizes until risk limit is set")
 
+    sample_sizes_so_far = (
+        cumulative_sample_sizes(election.id)
+        if election.audit_type == AuditType.BALLOT_COMPARISON
+        else {}
+    )
+
     def sample_sizes_for_contest(contest: Contest):
         assert election.risk_limit is not None
         if election.audit_type == AuditType.BALLOT_POLLING:
@@ -142,28 +148,15 @@ def sample_size_options(election: Election) -> dict[str, dict[str, SampleSizeOpt
             validate_uploaded_cvrs(contest)
 
             contest_for_sampler = sampler_contest.from_db_contest(contest)
-
-            num_previous_samples = SampledBallotDraw.query.filter_by(
-                contest_id=contest.id
-            ).count()
-            discrepancies = supersimple.compute_discrepancies(
+            sample_size = supersimple.get_sample_sizes_from_discrepancies(
+                election.risk_limit,
                 contest_for_sampler,
-                rounds.cvrs_for_contest(contest),
-                rounds.sampled_ballot_interpretations_to_cvrs(contest),
-            )
-            discrepancy_counter = Counter(
-                d["counted_as"] for d in discrepancies.values()
-            )
-            discrepancy_counts = {
-                "sample_size": num_previous_samples,
-                "1-under": discrepancy_counter[-1],
-                "1-over": discrepancy_counter[1],
-                "2-under": discrepancy_counter[-2],
-                "2-over": discrepancy_counter[2],
-            }
-
-            sample_size = supersimple.get_sample_sizes(
-                election.risk_limit, contest_for_sampler, discrepancy_counts
+                supersimple.compute_discrepancies(
+                    contest_for_sampler,
+                    rounds.cvrs_for_contest(contest),
+                    rounds.sampled_ballot_interpretations_to_cvrs(contest),
+                ),
+                sample_sizes_so_far.get(contest.id, 0),
             )
             return {"default": {"key": "default", "size": sample_size, "prob": None}}
 

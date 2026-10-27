@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import React, { ReactElement, ReactNode } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { Callout, H1, Text } from '@blueprintjs/core'
@@ -45,7 +45,7 @@ interface IStatusBoxProps {
   headline: string
   details: string[]
   auditName: string
-  action?: ReactElement
+  action?: ReactNode
   children?: ReactElement
 }
 
@@ -202,6 +202,7 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
     isAuditComplete,
     needsFullHandTally,
     isFullHandTally,
+    endedWithFullTallyEscalation,
   } = rounds[rounds.length - 1]
 
   // Round in progress
@@ -268,6 +269,7 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
         auditSettings={auditSettings}
         contests={contests}
         roundNum={roundNum}
+        fullHandTallyRequired={endedWithFullTallyEscalation}
         startNextRound={startNextRound}
       />
     )
@@ -298,6 +300,7 @@ interface IAuditAdminAnotherRoundStatusBoxProps {
   auditSettings: IAuditSettings
   contests: IContest[]
   roundNum: number
+  fullHandTallyRequired: boolean
   startNextRound: (sampleSizes: ISampleSizes) => Promise<boolean>
   children?: ReactElement
 }
@@ -307,10 +310,12 @@ const AuditAdminAnotherRoundStatusBox = ({
   auditSettings,
   contests,
   roundNum,
+  fullHandTallyRequired,
   startNextRound,
   children,
 }: IAuditAdminAnotherRoundStatusBoxProps) => {
   const sampleSizesQuery = useSampleSizes(electionId, roundNum + 1, {
+    enabled: !fullHandTallyRequired,
     refetchInterval: sampleSizesResponse =>
       sampleSizesResponse?.task.completedAt === null ? 1000 : false,
   })
@@ -325,8 +330,17 @@ const AuditAdminAnotherRoundStatusBox = ({
   return (
     <StatusBox
       auditName={auditSettings.auditName}
-      headline={`Round ${roundNum} of the audit is complete - another round is needed`}
+      headline={
+        fullHandTallyRequired
+          ? `Round ${roundNum} of the audit is complete - a full hand tally is required`
+          : `Round ${roundNum} of the audit is complete - another round is needed`
+      }
       details={(() => {
+        if (fullHandTallyRequired)
+          return [
+            'Another round would require sampling at least as many ballots as were cast in the contest. ' +
+              'Create a ballot polling or batch comparison audit to conduct a full hand tally instead.',
+          ]
         if (!sampleSizesQuery.data?.task.completedAt)
           return ['Loading sample sizes...']
         if (sampleSizesQuery.data.task.error !== null)
@@ -344,18 +358,20 @@ const AuditAdminAnotherRoundStatusBox = ({
         ]
       })()}
       action={
-        <AsyncButton
-          intent="primary"
-          onClick={async () => {
-            if (!sampleSizes) {
-              toast.info('Sample sizes are still loading')
-            } else {
-              await startNextRound(sampleSizes)
-            }
-          }}
-        >
-          Start Round {roundNum + 1}
-        </AsyncButton>
+        !fullHandTallyRequired && (
+          <AsyncButton
+            intent="primary"
+            onClick={async () => {
+              if (!sampleSizes) {
+                toast.info('Sample sizes are still loading')
+              } else {
+                await startNextRound(sampleSizes)
+              }
+            }}
+          >
+            Start Round {roundNum + 1}
+          </AsyncButton>
+        )
       }
     >
       {children}
