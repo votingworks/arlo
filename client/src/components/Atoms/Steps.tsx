@@ -120,12 +120,12 @@ export const StepList: React.FC = ({ children }) => {
   )
 }
 
-export const StepPanel = styled.div<{ noPadding?: boolean }>`
+export const StepPanel = styled.div`
   display: flex;
   justify-content: center;
   gap: 20px;
   height: 400px;
-  padding: ${props => (props.noPadding ? '0' : '20px')};
+  padding: 20px;
   overflow-y: auto;
 `
 

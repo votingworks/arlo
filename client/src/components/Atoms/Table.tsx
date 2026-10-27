@@ -192,6 +192,9 @@ export const sortByRank = <T extends object>(
     [rank]
   )
 
+const overflowY = ({ scrollable }: { scrollable?: boolean }): string =>
+  scrollable ? 'scroll' : 'none'
+
 // FlexTable uses flexbox styling to compute thead/tbody height.
 // This allows us to create a scrollable table body when there's overflow.
 // Columns will all have the same width by default.
@@ -214,13 +217,13 @@ export const FlexTable = styled(({ scrollable, ...props }) => (
   tbody {
     display: block;
     flex: 1 1 auto;
-    overflow-y: ${props => (props.scrollable ? 'scroll' : 'none')};
+    overflow-y: ${overflowY};
   }
 
   /* Add a hidden scrollbar so headers line up with columns */
   thead tr::after {
     visibility: hidden;
-    overflow-y: ${props => (props.scrollable ? 'scroll' : 'none')};
+    overflow-y: ${overflowY};
     content: '';
   }
 
