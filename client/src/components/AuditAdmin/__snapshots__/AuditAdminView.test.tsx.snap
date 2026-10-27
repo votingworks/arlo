@@ -8,7 +8,7 @@ exports[`AA setup flow > renders sidebar when authenticated on /setup 1`] = `
     tabindex="-1"
   >
     <div
-      class="bp3-callout sc-EHOje epwUhp"
+      class="bp3-callout sc-gzVnrw gBbXsD"
     >
       <section
         class="sc-bwzfXH lhKVhE"
@@ -17,12 +17,12 @@ exports[`AA setup flow > renders sidebar when authenticated on /setup 1`] = `
           class=""
         >
           <h1
-            class="bp3-heading sc-bxivhb lmZkrC"
+            class="bp3-heading sc-EHOje hOvTmQ"
           >
             Test Audit
           </h1>
           <p
-            class="sc-ifAKCX gBhNHZ"
+            class="sc-bZQynM jtUFPY"
           >
             The audit has not started.
           </p>
@@ -43,7 +43,7 @@ exports[`AA setup flow > renders sidebar when authenticated on /setup 1`] = `
         class="sc-iRbamj gepcrJ"
       >
         <h2
-          class="bp3-heading sc-htoDjs kqWibi"
+          class="bp3-heading sc-iwsKbI fNvBEB"
         >
           Audit Setup
         </h2>
@@ -148,20 +148,20 @@ exports[`AA setup flow > renders sidebar when authenticated on /setup 1`] = `
       >
         <section
           aria-label="Participants"
-          class="sc-dnqmqq kymPuI"
+          class="sc-gZMcBi bkEddA"
         >
           <h2
-            class="bp3-heading sc-htoDjs kqWibi"
+            class="bp3-heading sc-iwsKbI fNvBEB"
           >
             Participants
           </h2>
           <form>
             <section
-              class="sc-dnqmqq kymPuI"
+              class="sc-gZMcBi bkEddA"
             >
               <div>
                 <div
-                  class="sc-gqjmRU jqRxta"
+                  class="sc-jTzLTM cjKxyN"
                 >
                   Click "Browse" to choose the appropriate file from your computer. This file should be a comma-separated list of all the jurisdictions participating in the audit, plus email addresses for audit administrators in each participating jurisdiction.
                 </div>
@@ -175,7 +175,7 @@ exports[`AA setup flow > renders sidebar when authenticated on /setup 1`] = `
                   file name
                 </p>
                 <p
-                  class="sc-jTzLTM llAJhK"
+                  class="sc-ifAKCX fBQYvx"
                 >
                   Uploaded at
                    
@@ -213,7 +213,7 @@ exports[`AA setup flow > renders sidebar when authenticated on /setup 1`] = `
             </section>
           </form>
           <div
-            class="sc-gzVnrw gthdTE"
+            class="sc-dnqmqq kkGpLe"
             style="margin-top: 20px;"
           >
             <button

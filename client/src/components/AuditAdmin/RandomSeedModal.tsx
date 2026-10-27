@@ -1,9 +1,13 @@
 import React from 'react'
 import { Button, Dialog, InputGroup, Classes } from '@blueprintjs/core'
 import AsyncButton from '../Atoms/AsyncButton'
+import { ErrorLabel } from '../Atoms/Form/_helpers'
 
 export const RANDOM_SEED_INSTRUCTIONS =
   'Enter a series of random numbers to be used when drawing the random sample of ballots to audit.'
+
+export const RANDOM_SEED_MAX_LENGTH = 100
+export const RANDOM_SEED_MAX_LENGTH_ERROR = `Must be ${RANDOM_SEED_MAX_LENGTH} characters or fewer`
 
 interface IRandomSeedModalProps {
   title: string
@@ -28,6 +32,7 @@ const RandomSeedModal = ({
   const [isPresentationModeToggled, setIsPresentationModeToggled] =
     React.useState(false)
   const isPresentationMode = alwaysPresentationMode || isPresentationModeToggled
+  const isTooLong = value.length > RANDOM_SEED_MAX_LENGTH
 
   return (
     <Dialog
@@ -60,6 +65,7 @@ const RandomSeedModal = ({
                 : undefined
             }
           />
+          {isTooLong && <ErrorLabel>{RANDOM_SEED_MAX_LENGTH_ERROR}</ErrorLabel>}
         </label>
       </div>
       <div className={Classes.DIALOG_FOOTER}>
@@ -80,7 +86,7 @@ const RandomSeedModal = ({
           <AsyncButton
             intent="success"
             icon="tick"
-            disabled={!value}
+            disabled={!value || isTooLong}
             onClick={async () => {
               await onSave(value)
               onClose()

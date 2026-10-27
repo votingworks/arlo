@@ -402,10 +402,20 @@ describe('StatusBox', () => {
           name: /Start Round 2/,
         })
         expect(submitButton).toBeDisabled()
-        userEvent.type(
-          within(modal).getByLabelText(/Enter a series of random numbers/),
-          '67890'
+        const seedInput = within(modal).getByLabelText(
+          /Enter a series of random numbers/
         )
+
+        // Seeds longer than 100 characters aren't allowed
+        userEvent.type(seedInput, '1'.repeat(101))
+        within(modal).getByText('Must be 100 characters or fewer')
+        expect(submitButton).toBeDisabled()
+
+        userEvent.clear(seedInput)
+        userEvent.type(seedInput, '67890')
+        expect(
+          within(modal).queryByText('Must be 100 characters or fewer')
+        ).not.toBeInTheDocument()
         userEvent.click(submitButton)
 
         await waitFor(() => expect(startNextRoundMock).toHaveBeenCalledTimes(1))

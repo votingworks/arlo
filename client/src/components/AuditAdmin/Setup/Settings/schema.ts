@@ -1,11 +1,15 @@
 import * as Yup from 'yup'
 import number from '../../../../utils/number-schema'
+import {
+  RANDOM_SEED_MAX_LENGTH,
+  RANDOM_SEED_MAX_LENGTH_ERROR,
+} from '../../RandomSeedModal'
 
 const schema = Yup.object().shape({
   state: Yup.string().required('Required'),
   electionName: Yup.string().required('Required'),
   randomSeed: Yup.string()
-    .max(100, 'Must be 100 characters or fewer')
+    .max(RANDOM_SEED_MAX_LENGTH, RANDOM_SEED_MAX_LENGTH_ERROR)
     .required('Required'),
   riskLimit: number()
     .typeError('Must be a number')
