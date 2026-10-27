@@ -3,7 +3,6 @@ import React from 'react'
 import { screen } from '@testing-library/react'
 import { Route } from 'react-router-dom'
 import { QueryClientProvider } from 'react-query'
-import { jsPDFOptions } from 'jspdf'
 import {
   roundMocks,
   batchesMocks,
@@ -30,18 +29,10 @@ import AuthDataProvider from '../UserContext'
 import { dummyBallots } from '../AuditBoard/_mocks'
 import { IContest } from '../../types'
 
-const mockSavePDF = vi.fn()
-vi.mock('jspdf', async () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { jsPDF } = (await vi.importActual('jspdf')) as any
-  function mockJsPDF(options?: jsPDFOptions) {
-    return {
-      ...new jsPDF(options),
-      addImage: vi.fn(),
-      save: mockSavePDF,
-    }
-  }
-  return { default: mockJsPDF, jsPDF: mockJsPDF }
+const mockSavePDF = vi.hoisted(() => vi.fn())
+vi.mock(import('jspdf'), async importActual => {
+  const { default: mockJsPDFModule } = await import('../mockJsPDF')
+  return mockJsPDFModule(await importActual(), mockSavePDF)
 })
 
 const renderView = (props: IRoundManagementProps) =>

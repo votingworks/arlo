@@ -29,18 +29,10 @@ vi.mock(import('copy-to-clipboard'), async importActual => ({
   default: vi.fn(() => true),
 }))
 
-const mockSavePDF = vi.fn()
-vi.mock('jspdf', async () => {
-  const { jsPDF } = (await vi.importActual('jspdf')) as any
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  function mockJsPDF(options?: any) {
-    return {
-      ...new jsPDF(options),
-      addImage: vi.fn(),
-      save: mockSavePDF,
-    }
-  }
-  return { default: mockJsPDF, jsPDF: mockJsPDF }
+const mockSavePDF = vi.hoisted(() => vi.fn())
+vi.mock(import('jspdf'), async importActual => {
+  const { default: mockJsPDFModule } = await import('../../mockJsPDF')
+  return mockJsPDFModule(await importActual(), mockSavePDF)
 })
 
 vi.mock('@sentry/react', () => ({
