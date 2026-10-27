@@ -10,6 +10,7 @@ import {
   useOrganizations,
   useCreateOrganization,
   useActiveElections,
+  useRoundProgress,
 } from './support-api'
 import { List, LinkItem } from './List'
 import Audit from './Audit'
@@ -105,26 +106,53 @@ const ActiveAudits = () => {
       <List>
         {elections.data.map(election => (
           <LinkItem key={election.id} to={`/support/audits/${election.id}`}>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                width: '100%',
-              }}
-            >
-              <div>
-                <div style={{ color: 'black' }}>
-                  {election.organization.name}
+            <div style={{ width: '100%' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                <div>
+                  <div style={{ color: 'black' }}>
+                    {election.organization.name}
+                  </div>
+                  <div className="bp3-text-large">{election.auditName}</div>
                 </div>
-                <div className="bp3-text-large">{election.auditName}</div>
+                <AuditStatusTag currentRound={election.currentRound} />
               </div>
-              <AuditStatusTag currentRound={election.currentRound} />
+              {election.currentRound && !election.currentRound.endedAt && (
+                <RoundProgress electionId={election.id} />
+              )}
             </div>
           </LinkItem>
         ))}
       </List>
     </>
+  )
+}
+
+// Loaded separately for each audit, since computing discrepancies can be slow
+// for large comparison audits
+const RoundProgress = ({ electionId }: { electionId: string }) => {
+  const roundProgress = useRoundProgress(electionId)
+
+  if (!roundProgress.isSuccess || !roundProgress.data) return null
+  const { jurisdictions, discrepancyCount } = roundProgress.data
+
+  return (
+    <div
+      className={`${Classes.TEXT_MUTED} ${Classes.TEXT_SMALL}`}
+      style={{ marginTop: '5px' }}
+    >
+      {jurisdictions.numComplete}/{jurisdictions.numTotal} jurisdictions
+      complete
+      {discrepancyCount !== null &&
+        ` · ${discrepancyCount} ${
+          discrepancyCount === 1 ? 'discrepancy' : 'discrepancies'
+        }`}
+    </div>
   )
 }
 
