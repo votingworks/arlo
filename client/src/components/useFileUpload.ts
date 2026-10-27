@@ -32,7 +32,7 @@ export const useUploadedFile = (
   key: string[],
   url: string,
   options: { onFileChange?: () => void; enabled?: boolean } = {}
-) => {
+): UseQueryResult<IFileInfo, ApiError> => {
   const isFirstFetch = useRef(true)
   const isProcessing = (fileInfo?: IFileInfo) =>
     fileInfo && fileInfo.processing && !fileInfo.processing.completedAt

@@ -5,7 +5,12 @@ import axios, {
   isAxiosError,
 } from 'axios'
 import React from 'react'
-import { createLocation, createMemoryHistory, MemoryHistory } from 'history'
+import {
+  createLocation,
+  createMemoryHistory,
+  Location,
+  MemoryHistory,
+} from 'history'
 import { match as routerMatch, Router } from 'react-router-dom'
 import equal from 'fast-deep-equal'
 import {
@@ -49,7 +54,11 @@ const generateUrl = <Params extends MatchParameter<Params>>(
 export const routerTestProps = <Params extends MatchParameter<Params> = {}>(
   path: string,
   params: Params
-) => {
+): {
+  history: MemoryHistory
+  location: Location
+  match: routerMatch<Params>
+} => {
   const match: routerMatch<Params> = {
     isExact: false,
     path,
@@ -260,13 +269,17 @@ export const findAndCloseToast = async (
   )
 }
 
+type MocksOf<T> = <Mock>(mock: { [K in keyof Mock]: T }) => {
+  [K in keyof Mock]: T
+}
+
 // Enforces the value type for an object with values of type Mock, while
 // inferring the keys. This allows for good autocompletion of mocks in tests
 // while still enforcing their type.
 // Example: const mockNumbers = mocksOfType<number>()({ 'one': 1, 'two': 2 })
 export const mocksOfType =
-  <T,>() =>
-  <Mock,>(mock: { [K in keyof Mock]: T }) =>
+  <T,>(): MocksOf<T> =>
+  mock =>
     mock
 
 // Create a react-query query client with the same defaults as the app (and a few test-specific exceptions).

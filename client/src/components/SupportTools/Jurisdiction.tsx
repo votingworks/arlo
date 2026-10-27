@@ -276,7 +276,11 @@ const CombinedBatchesForm = ({
   )
 }
 
-const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
+const Jurisdiction = ({
+  jurisdictionId,
+}: {
+  jurisdictionId: string
+}): JSX.Element | null => {
   const jurisdiction = useJurisdiction(jurisdictionId)
   const clearAuditBoards = useClearAuditBoards()
   const clearOfflineResults = useClearOfflineResults()
