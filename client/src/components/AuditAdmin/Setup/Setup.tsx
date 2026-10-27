@@ -5,7 +5,7 @@ import Settings from './Settings/Settings'
 import Review from './Review/Review'
 import { ElementType } from '../../../types'
 import Sidebar from '../../Atoms/Sidebar'
-import { ISampleSizes } from '../useRoundsAuditAdmin'
+import { StartNextRound } from '../useRoundsAuditAdmin'
 import { IAuditSettings } from '../../useAuditSettings'
 import { Inner } from '../../Atoms/Wrapper'
 import { isFileProcessed } from '../../useCSV'
@@ -35,7 +35,7 @@ const stageTitles: { [stage in Stage]: string } = {
 export interface ISetupProps {
   electionId: string
   auditSettings: IAuditSettings
-  startNextRound: (sampleSizes: ISampleSizes) => Promise<boolean>
+  startNextRound: StartNextRound
   isAuditStarted: boolean
 }
 

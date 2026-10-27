@@ -397,3 +397,58 @@ it('finishes a round', async () => {
     await screen.findByText('Congratulations - the audit is complete!')
   })
 })
+
+it('sends the new random seed when starting the next round of a Providence audit', async () => {
+  const sampleSizes = {
+    'contest-id': sampleSizeMock.ballotPolling.sampleSizes!['contest-id'][0],
+  }
+  const expectedCalls = [
+    aaApiCalls.getUser,
+    aaApiCalls.getRounds(roundMocks.needAnother),
+    {
+      ...aaApiCalls.getJurisdictions,
+      response: { jurisdictions: jurisdictionMocks.allComplete },
+    },
+    aaApiCalls.getContests(contestMocks.filledTargeted),
+    aaApiCalls.getSettings({
+      ...auditSettingsMocks.all,
+      auditMathType: 'PROVIDENCE',
+    }),
+    {
+      ...aaApiCalls.getSampleSizes(sampleSizeMock.ballotPolling),
+      url: '/api/election/1/sample-sizes/2',
+    },
+    aaApiCalls.getLastLoginByJurisdiction(),
+    aaApiCalls.getMapData,
+    {
+      url: '/api/election/1/round',
+      response: { status: 'ok' },
+      options: {
+        body: JSON.stringify({
+          sampleSizes,
+          roundNum: 2,
+          randomSeed: '67890',
+        }),
+        headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
+      },
+    },
+    aaApiCalls.getRounds(roundMocks.needAnother),
+  ]
+  await withMockFetch(expectedCalls, async () => {
+    render('progress')
+    await screen.findByText('Round 2 Sample Sizes')
+    userEvent.click(screen.getByRole('button', { name: 'Start Round 2' }))
+    const modal = screen
+      .getByRole('heading', { name: 'Enter Random Seed for Round 2' })
+      .closest('div.bp3-dialog')! as HTMLElement
+    userEvent.type(
+      within(modal).getByLabelText(/Enter a series of random numbers/),
+      '67890'
+    )
+    userEvent.click(
+      within(modal).getByRole('button', { name: /Start Round 2/ })
+    )
+    await waitFor(() => expect(modal).not.toBeInTheDocument())
+  })
+})

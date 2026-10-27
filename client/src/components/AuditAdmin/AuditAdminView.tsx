@@ -9,7 +9,7 @@ import {
   isDrawingSample,
   useStartNextRound,
   useUndoRoundStart,
-  ISampleSizes,
+  StartNextRound,
   roundsQueryKey,
   IRound,
   useFinishRound,
@@ -99,12 +99,13 @@ const AuditAdminView: React.FC = () => {
     )
   }
 
-  const startNextRound = async (sampleSizes: ISampleSizes) => {
+  const startNextRound: StartNextRound = async (sampleSizes, randomSeed) => {
     const nextRoundNum =
       rounds.length === 0 ? 1 : rounds[rounds.length - 1].roundNum + 1
     await startNextRoundMutation.mutateAsync({
       sampleSizes,
       roundNum: nextRoundNum,
+      ...(randomSeed !== undefined && { randomSeed }),
     })
     return true
   }

@@ -11,12 +11,13 @@ import { IAuditSettings } from '../useAuditSettings'
 import {
   IRound,
   drawSampleError,
-  ISampleSizes,
+  StartNextRound,
 } from '../AuditAdmin/useRoundsAuditAdmin'
 import { IContest } from '../../types'
 import useSampleSizes from '../AuditAdmin/Setup/Review/useSampleSizes'
 import { mapValues } from '../../utils/objects'
 import AsyncButton from './AsyncButton'
+import RandomSeedModal from '../AuditAdmin/RandomSeedModal'
 
 const SpacedH1 = styled(H1)`
   &.bp3-heading {
@@ -119,7 +120,7 @@ export const isSetupComplete = (
 
 interface IAuditAdminProps {
   rounds: IRound[]
-  startNextRound: (sampleSizes: ISampleSizes) => Promise<boolean>
+  startNextRound: StartNextRound
   finishRound: () => Promise<void>
   undoRoundStart: () => Promise<void>
   jurisdictions: IJurisdiction[]
@@ -301,7 +302,7 @@ interface IAuditAdminAnotherRoundStatusBoxProps {
   contests: IContest[]
   roundNum: number
   fullHandTallyRequired: boolean
-  startNextRound: (sampleSizes: ISampleSizes) => Promise<boolean>
+  startNextRound: StartNextRound
   children?: ReactElement
 }
 
@@ -314,6 +315,7 @@ const AuditAdminAnotherRoundStatusBox = ({
   startNextRound,
   children,
 }: IAuditAdminAnotherRoundStatusBoxProps) => {
+  const [isSeedModalOpen, setIsSeedModalOpen] = React.useState(false)
   const sampleSizesQuery = useSampleSizes(electionId, roundNum + 1, {
     enabled: !fullHandTallyRequired,
     refetchInterval: sampleSizesResponse =>
@@ -326,6 +328,8 @@ const AuditAdminAnotherRoundStatusBox = ({
     mapValues(sampleSizesQuery.data.sampleSizes, options => options[0])
   const ballotsOrBatches =
     auditSettings.auditType === 'BATCH_COMPARISON' ? 'batches' : 'ballots'
+  // Providence requires a fresh random seed for each round
+  const requiresNewRandomSeed = auditSettings.auditMathType === 'PROVIDENCE'
 
   return (
     <StatusBox
@@ -364,6 +368,8 @@ const AuditAdminAnotherRoundStatusBox = ({
             onClick={async () => {
               if (!sampleSizes) {
                 toast.info('Sample sizes are still loading')
+              } else if (requiresNewRandomSeed) {
+                setIsSeedModalOpen(true)
               } else {
                 await startNextRound(sampleSizes)
               }
@@ -374,7 +380,20 @@ const AuditAdminAnotherRoundStatusBox = ({
         )
       }
     >
-      {children}
+      <>
+        {children}
+        {isSeedModalOpen && sampleSizes && (
+          <RandomSeedModal
+            title={`Enter Random Seed for Round ${roundNum + 1}`}
+            submitButtonText={`Start Round ${roundNum + 1}`}
+            initialValue={null}
+            onClose={() => setIsSeedModalOpen(false)}
+            onSave={async randomSeed => {
+              await startNextRound(sampleSizes, randomSeed)
+            }}
+          />
+        )}
+      </>
     </StatusBox>
   )
 }

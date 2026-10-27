@@ -68,9 +68,15 @@ export const useRounds = (
     options
   )
 
+export type StartNextRound = (
+  sampleSizes: ISampleSizes,
+  randomSeed?: string
+) => Promise<boolean>
+
 interface ICreateRoundBody {
   roundNum: number
   sampleSizes: ISampleSizes
+  randomSeed?: string
 }
 
 export const useStartNextRound = (

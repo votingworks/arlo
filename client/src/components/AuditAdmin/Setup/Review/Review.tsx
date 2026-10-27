@@ -27,6 +27,7 @@ import useSampleSizes, {
 } from './useSampleSizes'
 import {
   ISampleSizes,
+  StartNextRound,
   useComputeSamplePreview,
 } from '../../useRoundsAuditAdmin'
 import { mapValues } from '../../../../utils/objects'
@@ -86,7 +87,7 @@ interface IProps {
   electionId: string
   locked: boolean
   goToPrevStage: () => void
-  startNextRound: (sampleSizes: ISampleSizes) => Promise<boolean>
+  startNextRound: StartNextRound
 }
 
 const Review: React.FC<IProps> = ({
