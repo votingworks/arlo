@@ -1,9 +1,8 @@
 import { expect, vi } from 'vitest'
 import axios, {
   AxiosRequestConfig,
-  AxiosError,
-  AxiosResponse,
   AxiosProgressEvent,
+  isAxiosError,
 } from 'axios'
 import React from 'react'
 import { createLocation, createMemoryHistory, MemoryHistory } from 'history'
@@ -122,39 +121,46 @@ const normalizeRequestOptions = (options: RequestInit) => ({
   body: requestBodyToJSON(options.body),
 })
 
-function maybeMockAxios() {
+async function maybeMockAxios() {
   // Also mock axios, since we use that in some cases
   // To enable axios mock, the test file must have vi.mock('axios') at the top
+  if (!vi.isMockFunction(axios)) return
+  const actualAxios = await vi.importActual<typeof import('axios')>('axios')
+  vi.mocked(isAxiosError).mockImplementation(actualAxios.isAxiosError)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  if ('mockImplementation' in (axios as any).default) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ;(axios as any).mockImplementation(
-      async (
-        url: string,
-        { onUploadProgress, data, ...options }: AxiosRequestConfig
-      ) => {
-        if (onUploadProgress)
-          onUploadProgress({ loaded: 1, total: 2 } as AxiosProgressEvent)
-        const response = await fetch(url, {
-          ...options,
-          body: data,
-        } as RequestInit)
-        if (response.status >= 400) {
-          const error = new Error() as AxiosError
-          error.response = {
-            config: {},
-            ...response,
+  ;(axios as any).mockImplementation(
+    async (
+      url: string,
+      { onUploadProgress, data, ...options }: AxiosRequestConfig
+    ) => {
+      if (onUploadProgress)
+        onUploadProgress({ loaded: 1, total: 2 } as AxiosProgressEvent)
+      const response = await fetch(url, {
+        ...options,
+        body: data,
+      } as RequestInit)
+      if (response.status >= 400) {
+        const config = { headers: new actualAxios.AxiosHeaders() }
+        throw new actualAxios.AxiosError(
+          response.statusText,
+          undefined,
+          config,
+          undefined,
+          {
             data: JSON.parse(await response.text()),
-          } as unknown as AxiosResponse
-          throw error
-        }
-        return {
-          ...response,
-          data: await response.json(),
-        }
+            status: response.status,
+            statusText: response.statusText,
+            headers: {},
+            config,
+          }
+        )
       }
-    )
-  }
+      return {
+        ...response,
+        data: await response.json(),
+      }
+    }
+  )
 }
 
 export const withMockFetch = async (
@@ -203,7 +209,7 @@ export const withMockFetch = async (
   const originalFetch = globalThis.fetch
   globalThis.fetch = mockFetch as typeof globalThis.fetch
 
-  maybeMockAxios()
+  await maybeMockAxios()
 
   try {
     await testFn()
