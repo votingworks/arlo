@@ -201,17 +201,17 @@ def count_audited_votes(election: Election, round: Round):
 
         # For batch audits, count the votes for each audited Batch
         if election.audit_type == AuditType.BATCH_COMPARISON:
+            batches = with_combined_sub_batches(
+                Batch.query.join(SampledBatchDraw)
+                # Special case: don't include extra sampled batches
+                .filter(SampledBatchDraw.ticket_number != EXTRA_TICKET_NUMBER)
+                .filter_by(round_id=round.id, contest_id=contest.id)
+                .all()
+            )
             vote_counts = dict(
-                BatchResult.query.filter(
-                    BatchResult.tally_sheet_id.in_(
-                        BatchResultTallySheet.query.join(Batch)
-                        .join(SampledBatchDraw)
-                        # Special case: don't include extra sampled batches
-                        .filter(SampledBatchDraw.ticket_number != EXTRA_TICKET_NUMBER)
-                        .filter_by(round_id=round.id)
-                        .with_entities(BatchResultTallySheet.id)
-                        .subquery()
-                    )
+                BatchResult.query.join(BatchResultTallySheet)
+                .filter(
+                    BatchResultTallySheet.batch_id.in_([batch.id for batch in batches])
                 )
                 .group_by(BatchResult.contest_choice_id)
                 .values(BatchResult.contest_choice_id, func.sum(BatchResult.result))

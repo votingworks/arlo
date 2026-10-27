@@ -1,3 +1,4 @@
+import csv
 import pytest
 from flask.testing import FlaskClient
 
@@ -754,6 +755,35 @@ def test_multi_contest_batch_comparison_end_to_end(
     assert rv.status_code == 200
     assert_match_report(rv.data, snapshot)
 
+    # Each contest's totals cover the batches drawn for it, like its round row
+    report_rows = list(csv.reader(io.StringIO(rv.data.decode("utf-8"))))
+    rounds_header = next(
+        row for row in report_rows if row[:2] == ["Round Number", "Contest Name"]
+    )
+    sampled_batches_header = next(
+        row for row in report_rows if row[:2] == ["Jurisdiction Name", "Batch Name"]
+    )
+    totals_row = dict(
+        zip(
+            sampled_batches_header,
+            next(row for row in report_rows if row[:1] == ["Totals"]),
+        )
+    )
+    for contest_name in ["Contest 1", "Contest 2"]:
+        round_row = dict(
+            zip(
+                rounds_header,
+                next(row for row in report_rows if row[:2] == ["1", contest_name]),
+            )
+        )
+        assert (
+            totals_row[f"Reported Results: {contest_name}"]
+            == round_row["Reported Votes"]
+        )
+        assert (
+            totals_row[f"Audit Results: {contest_name}"] == round_row["Audited Votes"]
+        )
+
 
 def test_multi_contest_batch_comparison_round_2(
     client: FlaskClient,
@@ -1313,6 +1343,26 @@ def test_multi_contest_batch_comparison_combined_batches(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert_ok(rv)
+
+    # Each contest's round results count a combined batch once, whichever
+    # sub-batch was drawn for it: Combined Batch 2 and 7 other batches for
+    # Contest 1, both combined batches and 2 other batches for Contest 2
+    def round_results(contest_id: str) -> dict[str, int]:
+        return {
+            result.contest_choice_id: result.result
+            for result in RoundContestResult.query.filter_by(
+                round_id=round_1_id, contest_id=contest_id
+            )
+        }
+
+    assert round_results(contest_ids[0]) == {
+        contest_1_choice_ids[0]: 7 * 50,
+        contest_1_choice_ids[1]: 75,
+    }
+    assert round_results(contest_ids[1]) == {
+        contest_2_choice_ids[0]: 50 + 40 + 2 * 50,
+        contest_2_choice_ids[1]: 10,
+    }
 
     rv = client.get(f"/api/election/{election_id}/sample-sizes/2")
     sample_size_options = json.loads(rv.data)["sampleSizes"]
