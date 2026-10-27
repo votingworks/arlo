@@ -389,15 +389,13 @@ describe('Support Tools', () => {
 
       await screen.findByRole('heading', { name: 'Active Audits' })
       await screen.findByRole('link', {
-        name: 'Organization 1 Audit 2 Round 1 In Progress 1/2 jurisdictions complete',
+        name: 'Organization 1 Audit 2 Round 1 1/2 jurisdictions complete',
       })
       await screen.findByRole('link', {
-        name: 'Organization 1 Audit 4 Round 1 In Progress 0/3 jurisdictions complete · 4 discrepancies',
+        name: 'Organization 1 Audit 4 Round 1 0/3 jurisdictions complete · 4 discrepancies',
       })
       screen.getByRole('link', { name: 'Organization 1 Audit 3 Blocked' })
-      screen.getByRole('link', {
-        name: 'Organization 1 Audit 5 Round 1 In Progress',
-      })
+      screen.getByRole('link', { name: 'Organization 1 Audit 5 Round 1' })
       userEvent.click(
         screen.getByRole('link', { name: 'Organization 1 Audit 1 Not Started' })
       )
@@ -505,7 +503,7 @@ describe('Support Tools', () => {
       await screen.findByRole('heading', { name: 'Organization 1' })
 
       screen.getByRole('heading', { name: 'Audits' })
-      screen.getByRole('link', { name: /^Audit 2\s*Round 1 In Progress$/ })
+      screen.getByRole('link', { name: /^Audit 2\s*Round 1$/ })
       screen.getByRole('link', { name: /^Audit 4\s*Completed$/ })
       screen.getByRole('link', { name: /^Audit 1\s*Not Started$/ })
 

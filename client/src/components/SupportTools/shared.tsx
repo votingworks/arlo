@@ -71,7 +71,7 @@ export const AuditStatusTag = ({
   }
   return (
     <StatusTag intent="warning" style={auditStatusTagStyle}>
-      Round {currentRound.roundNum} In Progress
+      Round {currentRound.roundNum}
     </StatusTag>
   )
 }
