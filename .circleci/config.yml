@@ -26,6 +26,16 @@ executors:
           POSTGRES_DB: arlo-test
 
 commands:
+  install-uv:
+    steps:
+      - run:
+          name: install uv
+          command: |
+            curl -LsSf https://astral.sh/uv/0.13.6/install.sh | env UV_INSTALL_DIR="$HOME/.local/bin" UV_NO_MODIFY_PATH=1 sh
+            echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$BASH_ENV"
+            source "$BASH_ENV"
+            uv --version
+
   create-data-model:
     steps:
       - run:
@@ -57,6 +67,7 @@ jobs:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
+      - install-uv
       - python/install-packages:
           pkg-manager: uv
           args: --locked
@@ -82,6 +93,7 @@ jobs:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
+      - install-uv
       - python/install-packages:
           pkg-manager: uv
           args: --locked
@@ -133,6 +145,7 @@ jobs:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
+      - install-uv
       - python/install-packages:
           pkg-manager: uv
           args: --locked
