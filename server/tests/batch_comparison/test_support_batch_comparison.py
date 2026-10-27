@@ -168,7 +168,22 @@ def test_support_combined_batches(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     assert count_num_batches_audited() == 2
 
-    # Create another combined batch
+    # Record results for a batch on its own, then combine it: the combined
+    # batch has to be tallied from scratch
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/{sampled_batches[2]['id']}/results",
+        [
+            {
+                "name": "Tally Sheet #1",
+                "results": {choice["id"]: 1 for choice in contest["choices"]},
+            }
+        ],
+    )
+    assert_ok(rv)
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)
     combined_batch_2_sub_batch_ids = [
         sampled_batches[2]["id"],
@@ -181,6 +196,11 @@ def test_support_combined_batches(
             name="Combined Batch 2",
             subBatchIds=combined_batch_2_sub_batch_ids,
         ),
+    )
+    assert_ok(rv)
+    assert (
+        BatchResultTallySheet.query.filter_by(batch_id=sampled_batches[2]["id"]).count()
+        == 0
     )
 
     # Delete the first combined batch
@@ -372,3 +392,27 @@ def test_support_invalid_combined_batches(
         f"/api/support/jurisdictions/{jurisdiction_ids[0]}/combined-batches/non-existent"
     )
     assert rv.status_code == 404
+
+    # Can't combine batches once the jurisdiction has finalized its results,
+    # since the combined batch would have to be tallied from scratch
+    db_session.add(
+        BatchResultsFinalized(jurisdiction_id=jurisdiction_ids[0], round_id=round_1_id)
+    )
+    db_session.commit()
+    rv = post_json(
+        client,
+        f"/api/support/jurisdictions/{jurisdiction_ids[0]}/combined-batches",
+        dict(
+            name="Combined Batch 2",
+            subBatchIds=[jurisdiction_1_batches[2].id, jurisdiction_1_batches[3].id],
+        ),
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Cannot combine batches after results are finalized",
+            }
+        ]
+    }

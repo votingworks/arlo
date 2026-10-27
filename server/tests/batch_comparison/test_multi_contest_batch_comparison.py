@@ -1344,6 +1344,33 @@ def test_multi_contest_batch_comparison_combined_batches(
     rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert_ok(rv)
 
+    # A batch audited on its own can't be combined once its round has ended,
+    # since its results don't cover the other sub-batch's ballots
+    def combine_batch_4_and_batch_9():
+        set_support_user(client, DEFAULT_SUPPORT_EMAIL)
+        rv = post_json(
+            client,
+            f"/api/support/jurisdictions/{jurisdiction_ids[0]}/combined-batches",
+            dict(
+                name="Combined Batch 3",
+                subBatchIds=[
+                    batch_ids_by_name["Batch 4"],
+                    batch_ids_by_name["Batch 9"],
+                ],
+            ),
+        )
+        assert rv.status_code == 409
+        assert json.loads(rv.data) == {
+            "errors": [
+                {
+                    "errorType": "Conflict",
+                    "message": "Cannot combine batches sampled in a previous round",
+                }
+            ]
+        }
+
+    combine_batch_4_and_batch_9()
+
     # Each contest's round results count a combined batch once, whichever
     # sub-batch was drawn for it: Combined Batch 2 and 7 other batches for
     # Contest 1, both combined batches and 2 other batches for Contest 2
@@ -1415,6 +1442,9 @@ def test_multi_contest_batch_comparison_combined_batches(
             ).count()
             == 2
         )
+
+    # Nor during the next round
+    combine_batch_4_and_batch_9()
 
 
 def test_multi_contest_batch_comparison_progress_with_new_contest_draw(
