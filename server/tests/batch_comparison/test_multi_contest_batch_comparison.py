@@ -1635,6 +1635,83 @@ def test_multi_contest_batch_comparison_combined_batch_tallied_in_two_rounds(
         == "Candidate 3: 90; Candidate 4: 10"
     )
 
+    # Hackily draw Batch 6, audited for Contest 1 in round 1, for Contest 2
+    # now, as a later round would, and enter its Contest 2 tallies
+    db_session.add(
+        SampledBatchDraw(
+            batch_id=batch_ids_by_name["Batch 6"],
+            round_id=round_2_id,
+            contest_id=contest_ids[1],
+            ticket_number="0.2",
+        )
+    )
+    db_session.commit()
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = put_batch_results(
+        client,
+        election_id,
+        jurisdiction_ids[0],
+        round_2_id,
+        batch_ids_by_name["Batch 6"],
+        [{contest_2_choice_ids[0]: 60, contest_2_choice_ids[1]: 40}],
+    )
+    assert_ok(rv)
+
+    # Undoing round 2 removes only the sheets entered in round 2: the combined
+    # batch's Contest 2 sheet on Batch 9 and the zero tally it put on Batch 2,
+    # and Batch 6's Contest 2 sheet. Round 1's sheets and results are unchanged.
+    def tally_sheets(batch_name: str) -> dict[str, dict[str, int]]:
+        return {
+            tally_sheet.name: {
+                result.contest_choice_id: result.result
+                for result in tally_sheet.results
+            }
+            for tally_sheet in BatchResultTallySheet.query.filter_by(
+                batch_id=batch_ids_by_name[batch_name]
+            )
+        }
+
+    contest_1_zero_results = {contest_1_choice_ids[0]: 0, contest_1_choice_ids[1]: 0}
+    contest_2_zero_results = {contest_2_choice_ids[0]: 0, contest_2_choice_ids[1]: 0}
+    batch_6_contest_1_results = {
+        contest_1_choice_ids[0]: 50,
+        contest_1_choice_ids[1]: 0,
+    }
+    assert tally_sheets("Batch 2") == {
+        "Round 1 Tally Sheet #0": expected_contest_1_results,
+        "Round 2 Combined Batch Zero Tally": contest_2_zero_results,
+    }
+    assert tally_sheets("Batch 9") == {
+        "Round 1 Combined Batch Zero Tally": contest_1_zero_results,
+        "Round 2 Tally Sheet #0": expected_contest_2_results,
+    }
+    assert tally_sheets("Batch 6") == {
+        "Round 1 Tally Sheet #0": batch_6_contest_1_results,
+        "Round 2 Tally Sheet #0": {
+            contest_2_choice_ids[0]: 60,
+            contest_2_choice_ids[1]: 40,
+        },
+    }
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.delete(f"/api/election/{election_id}/round/current")
+    assert_ok(rv)
+
+    assert tally_sheets("Batch 2") == {
+        "Round 1 Tally Sheet #0": expected_contest_1_results
+    }
+    assert tally_sheets("Batch 9") == {
+        "Round 1 Combined Batch Zero Tally": contest_1_zero_results
+    }
+    assert tally_sheets("Batch 6") == {
+        "Round 1 Tally Sheet #0": batch_6_contest_1_results
+    }
+    results = sampled_batch_results(Contest.query.get(contest_ids[0]))
+    assert results[("J1", "Batch 2")][contest_ids[0]] == expected_contest_1_results
+    assert results[("J1", "Batch 6")][contest_ids[0]] == batch_6_contest_1_results
+
 
 def test_multi_contest_batch_comparison_progress_with_new_contest_draw(
     client: FlaskClient,

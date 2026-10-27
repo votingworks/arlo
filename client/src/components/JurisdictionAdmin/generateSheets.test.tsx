@@ -507,6 +507,30 @@ describe('generateSheets', () => {
       )
     })
 
+    it('Excludes contests a batch was not sampled for', async () => {
+      const pdf = await downloadBatchTallySheets(
+        [
+          { ...mockBatches[0], contestIdsToAudit: ['Contest 1'] },
+          { ...mockBatches[1], contestIdsToAudit: ['Contest 2'] },
+        ],
+        [
+          constructMinimalContest('Contest 1', 2),
+          constructMinimalContest('Contest 2', 2),
+        ],
+        mockJurisdiction.name,
+        mockJurisdiction.election.auditName
+      )
+      await expect(Buffer.from(pdf)).toMatchPdfSnapshot({
+        tolerance: diffTolerance,
+      })
+      expect(mockSavePDF).toHaveBeenCalledWith(
+        'Batch Tally Sheets - Jurisdiction One - audit one.pdf',
+        {
+          returnPromise: true,
+        }
+      )
+    })
+
     it('Handles two contests with many choices', async () => {
       const pdf = await downloadBatchTallySheets(
         mockBatches,
