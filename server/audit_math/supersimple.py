@@ -150,12 +150,12 @@ def discrepancy(
         # 0 error.  Otherwise, return an error using the standard formula, but
         # substituting in the appropriate overvotes/undervotes.
         if has_overvote:
-            if audited_votes > 1:
+            if audited_votes > contest.votes_allowed:
                 return 0
             else:
                 return (1 - a_w) - (1 - a_l)
         if has_undervote:
-            if audited_votes < 1:
+            if audited_votes < contest.votes_allowed:
                 return 0
             else:
                 return (0 - a_w) - (0 - a_l)
