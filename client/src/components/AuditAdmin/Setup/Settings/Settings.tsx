@@ -1,14 +1,6 @@
 import React from 'react'
 import { Formik, FormikProps, Field, ErrorMessage } from 'formik'
-import {
-  RadioGroup,
-  Radio,
-  HTMLSelect,
-  Button,
-  Dialog,
-  InputGroup,
-  Classes,
-} from '@blueprintjs/core'
+import { RadioGroup, Radio, HTMLSelect, Button } from '@blueprintjs/core'
 import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormWrapper from '../../../Atoms/Form/FormWrapper'
 import FormSection from '../../../Atoms/Form/FormSection'
@@ -23,70 +15,9 @@ import {
 } from '../../../useAuditSettings'
 import { stateOptions } from './states'
 import { range } from '../../../../utils/array'
-import AsyncButton from '../../../Atoms/AsyncButton'
-
-const RANDOM_SEED_INSTRUCTIONS =
-  'Enter a series of random numbers to be used when drawing the random sample of ballots to audit.'
-
-const RandomSeedModal = ({
-  initialValue,
-  onClose,
-  onSave,
-}: {
-  initialValue: string | null
-  onClose: () => void
-  onSave: (seed: string) => Promise<void>
-}): JSX.Element => {
-  const [value, setValue] = React.useState(initialValue || '')
-  return (
-    <Dialog
-      isOpen
-      onClose={onClose}
-      title="Enter Random Seed"
-      // Zoom in the whole modal
-      style={{ transform: 'scale(2)' }}
-      // Darken the usual backdrop
-      backdropProps={{ style: { backgroundColor: 'rgba(16, 22, 26, 0.9)' } }}
-    >
-      <div className={Classes.DIALOG_BODY}>
-        <label htmlFor="random-seed-modal" id="random-seed-modal-label">
-          <p>{RANDOM_SEED_INSTRUCTIONS}</p>
-          <InputGroup
-            id="random-seed-modal"
-            aria-labelledby="random-seed-modal-label"
-            type="text"
-            value={value}
-            onChange={(e: React.FormEvent<HTMLInputElement>) =>
-              setValue(e.currentTarget.value)
-            }
-            large
-            fill
-            style={{
-              fontSize: '1.5em',
-              letterSpacing: '0.2em',
-            }}
-          />
-        </label>
-      </div>
-      <div className={Classes.DIALOG_FOOTER}>
-        <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-          <Button onClick={onClose}>Cancel</Button>
-          <AsyncButton
-            intent="success"
-            icon="tick"
-            disabled={!value}
-            onClick={async () => {
-              await onSave(value)
-              onClose()
-            }}
-          >
-            Set Random Seed
-          </AsyncButton>
-        </div>
-      </div>
-    </Dialog>
-  )
-}
+import RandomSeedModal, {
+  RANDOM_SEED_INSTRUCTIONS,
+} from '../../RandomSeedModal'
 
 interface IProps {
   electionId: string
@@ -270,6 +201,9 @@ const Settings: React.FC<IProps> = ({
           </FormButtonBar>
           {isSeedModalOpen && (
             <RandomSeedModal
+              title="Enter Random Seed"
+              submitButtonText="Set Random Seed"
+              alwaysPresentationMode
               initialValue={values.randomSeed}
               onClose={() => setIsSeedModalOpen(false)}
               onSave={value => saveSettings({ ...values, randomSeed: value })}
