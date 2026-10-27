@@ -11,7 +11,7 @@ from . import api
 from ..auth import get_loggedin_user, get_support_user, restrict_access, UserType
 from ..database import db_session
 from ..models import *
-from .shared import get_current_round, group_combined_batches
+from .shared import get_current_round, group_combined_batches, is_sample_drawn
 from ..util.csv_download import csv_response, jurisdiction_timestamp_name
 from ..util.jsonschema import JSONDict, validate
 from ..util.isoformat import isoformat
@@ -360,6 +360,9 @@ def finalize_batch_results(
     jurisdiction: Jurisdiction,
     round: Round,
 ):
+    if not is_sample_drawn(round):
+        raise Conflict("Cannot finalize batch results until the sample has been drawn.")
+
     if (
         BatchResultsFinalized.query.filter_by(
             jurisdiction_id=jurisdiction.id, round_id=round.id

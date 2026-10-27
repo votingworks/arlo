@@ -1043,6 +1043,134 @@ def test_count_audited_votes(
     )
 
 
+def test_audit_boards_cannot_change_after_sign_off(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
+    round_1_id: str,
+    audit_board_round_1_ids: list[str],
+):
+    jurisdiction_id = jurisdiction_ids[0]
+    audit_board_id = audit_board_round_1_ids[0]
+    audit_board_url = f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/audit-board/{audit_board_id}"
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    member_1, member_2 = set_up_audit_board(
+        client,
+        election_id,
+        jurisdiction_id,
+        round_1_id,
+        contest_ids[0],
+        audit_board_id,
+    )
+    set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
+    rv = post_json(
+        client,
+        f"{audit_board_url}/sign-off",
+        {"memberName1": member_1, "memberName2": member_2},
+    )
+    assert_ok(rv)
+
+    rv = put_json(
+        client,
+        f"{audit_board_url}/members",
+        [{"name": "Someone Else", "affiliation": None}],
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "message": "Audit board has already signed off.",
+                "errorType": "Conflict",
+            }
+        ]
+    }
+
+    ballot = SampledBallot.query.filter_by(audit_board_id=audit_board_id).first()
+    interpretations_before = [
+        (i.contest_id, i.interpretation, [c.id for c in i.selected_choices])
+        for i in ballot.interpretations
+    ]
+    choice = ContestChoice.query.filter_by(contest_id=contest_ids[0]).first()
+    rv = put_json(
+        client,
+        f"{audit_board_url}/ballots/{ballot.id}",
+        {
+            "status": "AUDITED",
+            "interpretations": [
+                {
+                    "contestId": contest_ids[0],
+                    "interpretation": "VOTE",
+                    "choiceIds": [choice.id],
+                    "comment": None,
+                    "hasInvalidWriteIn": False,
+                }
+            ],
+        },
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "message": "Audit board has already signed off.",
+                "errorType": "Conflict",
+            }
+        ]
+    }
+
+    db_session.expire_all()
+    audit_board = AuditBoard.query.get(audit_board_id)
+    assert audit_board.member_1 == member_1.strip()
+    ballot = SampledBallot.query.get(ballot.id)
+    assert [
+        (i.contest_id, i.interpretation, [c.id for c in i.selected_choices])
+        for i in ballot.interpretations
+    ] == interpretations_before
+
+    # Can't sign off again
+    signed_off_at = audit_board.signed_off_at
+    rv = post_json(
+        client,
+        f"{audit_board_url}/sign-off",
+        {"memberName1": member_1, "memberName2": member_2},
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "message": "Audit board has already signed off.",
+                "errorType": "Conflict",
+            }
+        ]
+    }
+    db_session.expire_all()
+    assert AuditBoard.query.get(audit_board_id).signed_off_at == signed_off_at
+
+    # Audit boards that didn't sign off can't change members after the round ends
+    other_audit_board_id = audit_board_round_1_ids[1]
+    round = Round.query.get(round_1_id)
+    round.ended_at = datetime.now(timezone.utc)
+    db_session.commit()
+    set_logged_in_user(client, UserType.AUDIT_BOARD, other_audit_board_id)
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/audit-board/{other_audit_board_id}/members",
+        [{"name": "Someone Else", "affiliation": None}],
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "message": "Round 1 has ended.",
+                "errorType": "Conflict",
+            }
+        ]
+    }
+    assert AuditBoard.query.get(other_audit_board_id).member_1 is None
+
+
 def test_audit_boards_sign_off_missing_name(
     client: FlaskClient,
     election_id: str,

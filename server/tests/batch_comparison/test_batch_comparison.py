@@ -883,6 +883,42 @@ def test_batch_comparison_undo_start_round_1(
     )
 
 
+def test_batch_comparison_cant_undo_ended_round(
+    client: FlaskClient,
+    election_id: str,
+    round_1_id: str,
+):
+    round = Round.query.get(round_1_id)
+    round.ended_at = datetime.now(timezone.utc)
+    db_session.commit()
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.delete(f"/api/election/{election_id}/round/current")
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Cannot undo starting this round because it has ended.",
+            }
+        ]
+    }
+
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
+    rv = client.delete(f"/api/support/rounds/{round_1_id}")
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Cannot undo starting this round because it has ended.",
+            }
+        ]
+    }
+
+    assert Round.query.get(round_1_id) is not None
+
+
 def test_batch_comparison_cant_create_audit_boards(
     client: FlaskClient, election_id: str, jurisdiction_ids: list[str], round_1_id: str
 ):

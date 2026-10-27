@@ -754,6 +754,23 @@ def test_ab_audit_ballot_invalid(
 
     choice_id = ContestChoice.query.filter_by(contest_id=contest_ids[0]).first().id
 
+    # A contest in the same election that doesn't include this jurisdiction
+    other_jurisdiction_choice = ContestChoice(
+        id=str(uuid.uuid4()), name="Other Choice", num_votes=0
+    )
+    other_jurisdiction_contest = Contest(
+        id=str(uuid.uuid4()),
+        election_id=election_id,
+        name="Other Jurisdiction Contest",
+        is_targeted=False,
+        choices=[other_jurisdiction_choice],
+        jurisdictions=[Jurisdiction.query.get(jurisdiction_ids[1])],
+    )
+    db_session.add(other_jurisdiction_contest)
+    db_session.commit()
+    other_jurisdiction_contest_id = other_jurisdiction_contest.id
+    other_jurisdiction_choice_id = other_jurisdiction_choice.id
+
     for missing_field in ["status", "interpretations"]:
         audit_request = {
             "status": "AUDITED",
@@ -905,7 +922,51 @@ def test_ab_audit_ballot_invalid(
                     },
                 ],
             },
-            "Contest not found: 12345",
+            "Must include an interpretation for each contest.",
+        ),
+        (
+            {
+                "status": "AUDITED",
+                "interpretations": [
+                    {
+                        "contestId": contest_ids[0],
+                        "interpretation": "VOTE",
+                        "choiceIds": [choice_id],
+                        "comment": None,
+                        "hasInvalidWriteIn": False,
+                    },
+                    {
+                        "contestId": contest_ids[0],
+                        "interpretation": "VOTE",
+                        "choiceIds": [choice_id],
+                        "comment": None,
+                        "hasInvalidWriteIn": False,
+                    },
+                ],
+            },
+            "Must include an interpretation for each contest.",
+        ),
+        (
+            {
+                "status": "AUDITED",
+                "interpretations": [
+                    {
+                        "contestId": contest_ids[0],
+                        "interpretation": "VOTE",
+                        "choiceIds": [choice_id],
+                        "comment": None,
+                        "hasInvalidWriteIn": False,
+                    },
+                    {
+                        "contestId": other_jurisdiction_contest_id,
+                        "interpretation": "VOTE",
+                        "choiceIds": [other_jurisdiction_choice_id],
+                        "comment": None,
+                        "hasInvalidWriteIn": False,
+                    },
+                ],
+            },
+            "Must include an interpretation for each contest.",
         ),
         (
             {

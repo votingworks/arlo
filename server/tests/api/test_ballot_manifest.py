@@ -318,6 +318,54 @@ def test_ballot_manifest_upload_invalid_num_ballots(
     )
 
 
+def test_ballot_manifest_upload_nul_character(
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+
+    rv = upload_ballot_manifest(
+        client,
+        io.BytesIO(b"\xef\xbb\xbfBatch Name,Number of Ballots\n1,\x00\n"),
+        election_id,
+        jurisdiction_ids[0],
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
+    )
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {
+                "name": asserts_startswith("manifest"),
+                "uploadedAt": assert_is_date,
+            },
+            "processing": {
+                "status": ProcessingStatus.ERRORED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": "Expected a number in column Number of Ballots, row 2. Got: .",
+            },
+        },
+    )
+
+    activity = (
+        ActivityLogRecord.query.filter(
+            ActivityLogRecord.info["base"]["election_id"].as_string() == election_id,
+            ActivityLogRecord.activity_name == "UploadFile",
+        )
+        .order_by(ActivityLogRecord.timestamp.desc())
+        .first()
+    )
+    assert (
+        activity.info["error"]
+        == "Expected a number in column Number of Ballots, row 2. Got: ."
+    )
+
+
 def test_ballot_manifest_upload_zero_ballot_batches(
     client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
 ):

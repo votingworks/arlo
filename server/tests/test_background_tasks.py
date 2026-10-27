@@ -188,6 +188,29 @@ def test_task_user_error(caplog, db_session):
     )
 
 
+def test_task_user_error_with_nul_character(db_session):
+    @background_task
+    def user_error_with_nul(election_id):
+        raise UserError("invalid value: 'a\x00b'")
+
+    task = create_background_task(
+        user_error_with_nul, dict(election_id="test-election-id"), db_session
+    )
+
+    run_task(claim_next_task("test_worker", db_session), db_session)  # ty: ignore[invalid-argument-type]
+
+    task = db_session.query(BackgroundTask).get(task.id)
+    compare_json(
+        serialize_background_task(task),
+        {
+            "status": "ERRORED",
+            "startedAt": assert_is_date,
+            "completedAt": assert_is_date,
+            "error": "invalid value: 'ab'",
+        },
+    )
+
+
 @patch("sentry_sdk.capture_exception", autospec=True)
 def test_task_python_error(capture_exception, caplog, db_session):
     @background_task

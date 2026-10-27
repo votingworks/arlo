@@ -70,6 +70,11 @@ class UploadFile(JurisdictionActivity):
     file_type: str
     error: str | None
 
+    def __post_init__(self):
+        # Postgres can't process NUL characters in JSON, so we strip them.
+        if self.error is not None:
+            self.error = self.error.replace("\x00", "")
+
 
 @dataclass
 class CreateAuditBoards(JurisdictionActivity):

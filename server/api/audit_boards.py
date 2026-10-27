@@ -9,7 +9,7 @@ from . import api
 from ..database import db_session
 from ..models import *
 from ..auth.auth_helpers import restrict_access, UserType
-from .shared import get_current_round
+from .shared import get_current_round, is_sample_drawn
 from ..util.jsonschema import validate, JSONDict
 from ..util.binpacking import BalancedBucketList, Bucket
 from ..util.isoformat import isoformat
@@ -48,12 +48,7 @@ def validate_audit_boards(
     if election.audit_type == AuditType.BATCH_COMPARISON:
         raise Conflict("Batch comparison audits do not use audit boards")
 
-    draw_sample_task = round.draw_sample_task
-    if (
-        draw_sample_task is None
-        or draw_sample_task.completed_at is None
-        or draw_sample_task.error is not None
-    ):
+    if not is_sample_drawn(round):
         raise Conflict("Cannot create audit boards until the sample has been drawn.")
 
     if any(ab for ab in jurisdiction.audit_boards if ab.round_id == round.id):
@@ -337,6 +332,11 @@ def set_audit_board_members(
     round: Round,
     audit_board: AuditBoard,
 ):
+    if audit_board.signed_off_at is not None:
+        raise Conflict("Audit board has already signed off.")
+    if round.ended_at is not None:
+        raise Conflict(f"Round {round.round_num} has ended.")
+
     members = safe_get_json_list(request)
     validate_members(members)
 
@@ -394,6 +394,9 @@ def sign_off_audit_board(
     round: Round,
     audit_board: AuditBoard,
 ):
+    if audit_board.signed_off_at is not None:
+        raise Conflict("Audit board has already signed off.")
+
     validate_sign_off(safe_get_json_dict(request), audit_board)
 
     audit_board.signed_off_at = datetime.now(timezone.utc)  # ty: ignore[invalid-assignment]
