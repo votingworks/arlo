@@ -63,7 +63,7 @@ def contest_results_by_round(
 def active_targeted_contests(election: Election) -> list[Contest]:
     targeted_contests = Contest.query.filter_by(
         election_id=election.id, is_targeted=True
-    )
+    ).order_by(Contest.created_at)
     last_ended_round = (
         Round.query.filter_by(election_id=election.id)
         .filter(Round.ended_at.isnot(None))

@@ -950,7 +950,7 @@ def test_ballot_comparison_two_rounds(
             record
             for record in ActivityLogRecord.query.filter_by(
                 activity_name="FullHandTallyRequired"
-            )
+            ).order_by(ActivityLogRecord.timestamp)
             if record.info["base"]["election_id"] == election_id
         ]
 
