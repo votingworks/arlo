@@ -152,7 +152,6 @@ const Settings: React.FC<IProps> = ({
         >
           <FormWrapper title="Audit Settings">
             <FormSection label="State">
-              {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
               <label htmlFor="state">
                 <p>Choose your state from the options below.</p>
                 <div>

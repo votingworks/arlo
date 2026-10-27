@@ -76,7 +76,6 @@ export const downloadTableAsCSV = ({
   downloadFile(csvBlob, fileName)
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
 interface ITableProps<T extends object> {
   data: T[]
   columns: Column<T>[]
@@ -88,7 +87,6 @@ interface ITableProps<T extends object> {
 /**
  * Deprecated: Use StyledTable or HTMLTable instead
  */
-// eslint-disable-next-line @typescript-eslint/ban-types
 export const Table = <T extends object>({
   data,
   columns,
@@ -183,7 +181,6 @@ export const Table = <T extends object>({
   )
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
 export const sortByRank = <T extends object>(
   rank: (data: T) => number
 ): ((rowA: Row<T>, rowB: Row<T>) => number) =>

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "vite build",
-    "lint": "eslint --cache --ext ts --ext tsx src",
+    "lint": "oxlint",
     "lint:fix": "pnpm lint --fix",
     "start": "vite",
     "test": "is-ci \"test:ci\" \"test:watch\"",
@@ -67,28 +67,19 @@
     "@types/topojson-specification": "^1.0.1",
     "@types/uuidv4": "^2.0.0",
     "@types/yup": "^0.26.22",
-    "@typescript-eslint/eslint-plugin": "^3.0.1",
-    "@typescript-eslint/parser": "^3.0.1",
     "@typescript/native": "npm:typescript@7.0.2",
     "@vitest/coverage-v8": "^4.1.11",
     "babel-preset-react-app": "^9.1.1",
     "camelcase": "^5.3.1",
     "cypress": "^11.0.0",
     "cypress-file-upload": "^4.1.1",
-    "eslint": "^6.6.0",
-    "eslint-config-airbnb": "^17.1.0",
-    "eslint-config-prettier": "^4.2.0",
-    "eslint-plugin-cypress": "^2.2.1",
-    "eslint-plugin-import": "^2.17.2",
-    "eslint-plugin-jsx-a11y": "^6.2.1",
-    "eslint-plugin-react": "^7.13.0",
-    "eslint-plugin-react-hooks": "^1.6.1",
-    "eslint-plugin-testing-library": "^3.1.3",
     "identity-obj-proxy": "3.0.0",
     "is-ci-cli": "^1.1.1",
     "jsdom": "^28.1.0",
     "lint-staged": "^16.4.0",
     "maildev": "^2.1.0",
+    "oxlint": "1.89.0",
+    "oxlint-tsgolint": "7.0.2005",
     "pdf-parse": "^1.1.1",
     "pdf-visual-diff": "^0.5.0",
     "react-test-renderer": "^16.13.1",
@@ -108,7 +99,7 @@
     "*.+(js|jsx|ts|tsx)": [
       "oxfmt --no-error-on-unmatched-pattern --write",
       "stylelint",
-      "eslint --cache --fix"
+      "oxlint --no-error-on-unmatched-pattern --fix"
     ],
     "*.+(ts|tsx)": [
       "bash -c tsc"

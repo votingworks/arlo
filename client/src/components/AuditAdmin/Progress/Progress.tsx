@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React, { useState, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
@@ -51,10 +50,9 @@ const formatNumber = ({ value }: { value: number | null }) =>
   value && value.toLocaleString()
 
 const totalFooter =
-  // eslint-disable-next-line @typescript-eslint/ban-types
   <T extends object>(headerName: string) =>
-    (info: TableInstance<T>) =>
-      sum(info.rows.map(row => row.values[headerName])).toLocaleString()
+  (info: TableInstance<T>) =>
+    sum(info.rows.map(row => row.values[headerName])).toLocaleString()
 
 // Sorts rows with a discrepancy first, then zeros, then empty rows, so
 // discrepancies aren't buried below the zeros/empty on either sort direction.
@@ -139,7 +137,6 @@ const Progress: React.FC<IProgressProps> = ({
     {
       Header: 'Jurisdiction',
       accessor: ({ name }) => name,
-      // eslint-disable-next-line react/display-name
       Cell: ({ row: { original: jurisdiction } }: Cell<IJurisdiction>) => (
         <Button
           small
@@ -154,7 +151,6 @@ const Progress: React.FC<IProgressProps> = ({
     },
     {
       Header: 'Status',
-      // eslint-disable-next-line react/display-name
       accessor: jurisdiction => {
         const { ballotManifest, batchTallies, cvrs } = jurisdiction
 

@@ -531,7 +531,6 @@ const CreateAudit = ({ organizations }: { organizations: IOrganization[] }) => {
         <CreateAuditWrapper aria-label="New Audit">
           <h2>New Audit</h2>
           <FormSection>
-            {/* eslint-disable jsx-a11y/label-has-associated-control */}
             {organizations.length > 1 && (
               <label htmlFor="organizationId">
                 <p>Organization</p>

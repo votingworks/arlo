@@ -184,7 +184,7 @@ interface IBatchDetailProps {
 
   // Require a key to ensure that the state within this component resets when a different batch is
   // selected
-  key: string // eslint-disable-line react/no-unused-prop-types
+  key: string
 }
 
 const BatchDetail: React.FC<IBatchDetailProps> = ({
@@ -410,7 +410,7 @@ interface IBatchResultTallySheetProps {
 
   // Require a key to ensure that the state within this component resets when a different sheet is
   // selected
-  key: string // eslint-disable-line react/no-unused-prop-types
+  key: string
 }
 
 const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({

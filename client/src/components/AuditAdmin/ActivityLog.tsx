@@ -112,7 +112,6 @@ const ActivityLogOrgsLoaded = ({
             <H1 style={{ margin: 0 }}>Activity Log</H1>
             <div>
               {showOrgSelect && (
-                // eslint-disable-next-line jsx-a11y/label-has-associated-control
                 <label htmlFor="organizationId" style={{ marginRight: '10px' }}>
                   Organization:&nbsp;
                   <HTMLSelect

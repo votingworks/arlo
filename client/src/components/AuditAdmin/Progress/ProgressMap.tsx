@@ -3,7 +3,6 @@ import styled from 'styled-components'
 import { geoPath, geoAlbers } from 'd3-geo'
 import { feature } from 'topojson-client'
 // topojson-specification is defined in package.json but throwing linting error here
-// eslint-disable-next-line import/no-unresolved
 import { Topology } from 'topojson-specification'
 import { Colors, Spinner } from '@blueprintjs/core'
 import { IAuditSettings } from '../../useAuditSettings'

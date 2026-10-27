@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useState } from 'react'
 import { Formik, FormikProps } from 'formik'
 import { Checkbox, NumericInput } from '@blueprintjs/core'
@@ -120,7 +119,6 @@ const ContestSelect: React.FC<IProps> = ({
                   id: 'select',
                   Header: 'Select',
                   accessor: 'name',
-                  // eslint-disable-next-line react/display-name
                   Cell: ({ value: contestName }: Cell) => (
                     <Checkbox
                       inline
@@ -166,7 +164,6 @@ const ContestSelect: React.FC<IProps> = ({
                   Header: 'Winners',
                   accessor: 'name',
                   disableSortBy: true,
-                  // eslint-disable-next-line react/display-name
                   Cell: ({ value: contestName }: Cell) => (
                     <NumericInput
                       type="number"

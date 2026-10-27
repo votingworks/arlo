@@ -1,5 +1,5 @@
 import autoTable from 'jspdf-autotable'
-import jsPDF from 'jspdf'
+import { jsPDF } from 'jspdf'
 import { Colors } from '@blueprintjs/core'
 import { getBallots, IBallot } from './useBallots'
 import { IAuditBoard } from '../useAuditBoards'

@@ -133,7 +133,6 @@ const DropdownCheckboxList: React.FC<IDropdownCheckboxListProps> = ({
       </CustomMenuItem>
       {optionList.map(v => (
         <CustomMenuItem key={v.value}>
-          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
           <label className="bp3-menu-item">
             {v.title}
             <Checkbox

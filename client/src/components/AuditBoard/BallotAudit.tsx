@@ -102,7 +102,6 @@ interface IProps {
   confirmSelections: (interpretations: IBallotInterpretationFormState[]) => void
   confirmBallotNotFound: () => void
   previousBallot: () => void
-  // eslint-disable-next-line react/no-unused-prop-types
   key: string // Require a key (ballot ID) to force a state reset whenever a new ballot is toggled
 }
 

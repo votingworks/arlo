@@ -66,7 +66,6 @@ export class NumberSchema extends (MixedSchema as new (
   ...args: unknown[]
 ) => Yup.MixedSchema) {
   public constructor() {
-    // eslint-disable-next-line constructor-super
     super({ type: 'number' })
 
     this.withMutation(() => {
