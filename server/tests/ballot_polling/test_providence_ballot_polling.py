@@ -1,3 +1,6 @@
+import csv
+import io
+import itertools
 from datetime import timezone
 import pytest
 from flask.testing import FlaskClient
@@ -145,3 +148,16 @@ def test_providence_round_random_seeds(
         for draw in SampledBallotDraw.query.filter_by(round_id=round_2.id)
     }
     assert round_2_draws == expected_draws
+
+    # Each round's seed is included in the audit report
+    rv = client.get(f"/api/election/{election_id}/report")
+    report = rv.data.decode("utf-8")
+    rows = list(csv.reader(io.StringIO(report)))
+    rounds_start = rows.index(["######## ROUNDS ########"])
+    header = rows[rounds_start + 1]
+    round_rows = itertools.takewhile(lambda row: row, rows[rounds_start + 2 :])
+    seed_column = header.index("Random Seed")
+    assert {(row[0], row[seed_column]) for row in round_rows} == {
+        ("1", "1234567890"),
+        ("2", "0987654321"),
+    }

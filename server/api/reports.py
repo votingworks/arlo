@@ -477,6 +477,11 @@ def round_rows(election: Election):
             ["Batches Sampled", "Ballots Sampled", "Reported Votes"]
             if election.audit_type == AuditType.BATCH_COMPARISON
             else []
+        )
+        + (
+            ["Random Seed"]
+            if election.audit_math_type == AuditMathType.PROVIDENCE
+            else []
         ),
     ]
 
@@ -618,6 +623,11 @@ def round_rows(election: Election):
                     pretty_choice_votes(reported_results_by_name),  # ty: ignore[possibly-unresolved-reference]
                 ]
                 if election.audit_type == AuditType.BATCH_COMPARISON
+                else []
+            )
+            + (
+                [round.random_seed]
+                if election.audit_math_type == AuditMathType.PROVIDENCE
                 else []
             )
         )
