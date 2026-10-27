@@ -1038,9 +1038,17 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
             sampled_batch_rows.append(combined_batch_row)
             return
 
-        audited_choice_ids = set(
-            audit_results_by_batch.get(representative_batch.id, {})
-        )
+        # The sub-batches not holding the combined batch's tallies have zero tallies
+        sub_batch_audit_results = [
+            audit_results_by_batch[sub_batch.id]
+            for sub_batch in sub_batches
+            if sub_batch.id in audit_results_by_batch
+        ]
+        audited_choice_ids = {
+            choice_id
+            for sub_batch_audit_result in sub_batch_audit_results
+            for choice_id in sub_batch_audit_result
+        }
         sampled_contests = [
             contest
             for contest in contests
@@ -1092,8 +1100,9 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
             )
             audit_results = (
                 {
-                    choice.id: audit_results_by_batch[representative_batch.id].get(
-                        choice.id, 0
+                    choice.id: sum(
+                        sub_batch_audit_result.get(choice.id, 0)
+                        for sub_batch_audit_result in sub_batch_audit_results
                     )
                     for choice in contest.choices
                 }

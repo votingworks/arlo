@@ -314,8 +314,8 @@ def sampled_batch_results(
         for batch_key, batch_results in results_by_batch.items()
     }
 
-    # For combined batches, copy the results from the representative batch to
-    # all sampled sub-batches
+    # A combined batch's results are summed across its sub-batches, since the
+    # sub-batches not holding its tallies have zero tallies
     all_sub_batches = (
         Batch.query.join(Jurisdiction)
         .filter(Jurisdiction.election_id == contest.election_id)
@@ -324,17 +324,24 @@ def sampled_batch_results(
     )
     combined_batches = group_combined_batches(all_sub_batches)
     for combined_batch in combined_batches:
-        representative_batch = combined_batch["representative_batch"]
-        representative_batch_key = (
-            representative_batch.jurisdiction.name,
-            representative_batch.name,
-        )
-        if representative_batch_key in results:
-            representative_results = results[representative_batch_key]
-            for sub_batch in combined_batch["sub_batches"]:
-                sub_batch_key = (sub_batch.jurisdiction.name, sub_batch.name)
-                if sub_batch_key in results:
-                    results[sub_batch_key] = representative_results
+        sub_batch_keys = [
+            (sub_batch.jurisdiction.name, sub_batch.name)
+            for sub_batch in combined_batch["sub_batches"]
+        ]
+        sub_batch_results = [results[key] for key in sub_batch_keys if key in results]
+        if len(sub_batch_results) > 0:
+            combined_batch_results = {
+                contest.id: {
+                    choice_id: sum(
+                        sub_batch_result[contest.id][choice_id]
+                        for sub_batch_result in sub_batch_results
+                    )
+                    for choice_id in sub_batch_results[0][contest.id]
+                }
+            }
+            for key in sub_batch_keys:
+                if key in results:
+                    results[key] = combined_batch_results
 
     # Don't include non-RLA batches unless explicitly requested, e.g., for discrepancy
     # and audit reports
