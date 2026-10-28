@@ -1,5 +1,11 @@
-import { useQuery, useMutation, useQueryClient } from 'react-query'
-import { fetchApi } from '../../utils/api'
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  UseMutationResult,
+  UseQueryResult,
+} from 'react-query'
+import { ApiError, fetchApi } from '../../utils/api'
 
 export interface IBatchResults {
   [choiceId: string]: number
@@ -29,25 +35,27 @@ export const useBatches = (
   electionId: string,
   jurisdictionId: string,
   roundId: string
-) =>
-  useQuery<IBatches>('batches', () =>
+): UseQueryResult<IBatches, ApiError> =>
+  useQuery<IBatches, ApiError>('batches', () =>
     fetchApi(
       `/api/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/batches`
     )
   )
 
+interface IRecordBatchResultsArgs {
+  batchId: string
+  resultTallySheets: IBatchResultTallySheet[]
+}
+
 export const useRecordBatchResults = (
   electionId: string,
   jurisdictionId: string,
   roundId: string
-) => {
+): UseMutationResult<unknown, ApiError, IRecordBatchResultsArgs> => {
   const putBatchResults = async ({
     batchId,
     resultTallySheets,
-  }: {
-    batchId: string
-    resultTallySheets: IBatchResultTallySheet[]
-  }) =>
+  }: IRecordBatchResultsArgs) =>
     fetchApi(
       `/api/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/batches/${batchId}/results`,
       {
@@ -59,16 +67,19 @@ export const useRecordBatchResults = (
 
   const queryClient = useQueryClient()
 
-  return useMutation(putBatchResults, {
-    onSuccess: () => queryClient.invalidateQueries('batches'),
-  })
+  return useMutation<unknown, ApiError, IRecordBatchResultsArgs>(
+    putBatchResults,
+    {
+      onSuccess: () => queryClient.invalidateQueries('batches'),
+    }
+  )
 }
 
 export const useFinalizeBatchResults = (
   electionId: string,
   jurisdictionId: string,
   roundId: string
-) => {
+): UseMutationResult<unknown, ApiError, void> => {
   const finalizeBatchResults = async () =>
     fetchApi(
       `/api/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/batches/finalize`,
@@ -77,7 +88,7 @@ export const useFinalizeBatchResults = (
 
   const queryClient = useQueryClient()
 
-  return useMutation(finalizeBatchResults, {
+  return useMutation<unknown, ApiError, void>(finalizeBatchResults, {
     onSuccess: () => queryClient.invalidateQueries('batches'),
   })
 }

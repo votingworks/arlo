@@ -70,21 +70,24 @@ const SupportTools: React.FC = () => {
               </Row>
             </SupportToolsOuterColumn>
           </Route>
-          <Route path="/support/orgs/:organizationId">
-            {({ match }: any) => (
-              <Organization organizationId={match!.params.organizationId} />
+          <Route
+            path="/support/orgs/:organizationId"
+            render={({ match }) => (
+              <Organization organizationId={match.params.organizationId} />
             )}
-          </Route>
-          <Route path="/support/audits/:electionId">
-            {({ match }: any) => (
-              <Audit electionId={match!.params.electionId} />
+          />
+          <Route
+            path="/support/audits/:electionId"
+            render={({ match }) => (
+              <Audit electionId={match.params.electionId} />
             )}
-          </Route>
-          <Route path="/support/jurisdictions/:jurisdictionId">
-            {({ match }: any) => (
-              <Jurisdiction jurisdictionId={match!.params.jurisdictionId} />
+          />
+          <Route
+            path="/support/jurisdictions/:jurisdictionId"
+            render={({ match }) => (
+              <Jurisdiction jurisdictionId={match.params.jurisdictionId} />
             )}
-          </Route>
+          />
         </Switch>
       </SupportToolsInner>
     </Wrapper>

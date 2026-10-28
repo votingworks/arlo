@@ -4,7 +4,7 @@ import {
   useQueryClient,
   UseQueryResult,
 } from 'react-query'
-import axios from 'axios'
+import axios, { isAxiosError } from 'axios'
 import { useState, useRef } from 'react'
 import { IFileInfo, CvrFileType } from './useCSV'
 import { fetchApi, ApiError, addCSRFToken } from '../utils/api'
@@ -32,7 +32,7 @@ export const useUploadedFile = (
   key: string[],
   url: string,
   options: { onFileChange?: () => void; enabled?: boolean } = {}
-) => {
+): UseQueryResult<IFileInfo, ApiError> => {
   const isFirstFetch = useRef(true)
   const isProcessing = (fileInfo?: IFileInfo) =>
     fileInfo && fileInfo.processing && !fileInfo.processing.completedAt
@@ -80,18 +80,18 @@ export const useUploadFiles = (key: string[], url: string) => {
         : {
             fileType: file.type,
           }
-      const getUploadResponse = (await axios<UploadUrlResponseData>(
+      const getUploadResponse = await axios<UploadUrlResponseData>(
         `${url}/upload-url`,
         addCSRFToken({
           method: 'GET',
           params,
         })
-      )) as any
+      )
 
       // Upload the file to s3
       const uploadFileFormData = new FormData()
       Object.entries(getUploadResponse.data.fields).forEach(([k, v]) => {
-        uploadFileFormData.append(k, v as string)
+        uploadFileFormData.append(k, v)
       })
       uploadFileFormData.append('Content-Type', file.type)
       uploadFileFormData.append('file', file, file.name)
@@ -126,11 +126,10 @@ export const useUploadFiles = (key: string[], url: string) => {
         })
       )
     } catch (e) {
-      const error = e as any
-      const errors = error.response?.data.errors
-      const message =
-        errors && errors.length ? errors[0].message : error.response?.statusText
-      throw new ApiError(message, error.response?.status)
+      if (!isAxiosError<UploadUrlResponseData>(e) || !e.response) throw e
+      const { data, status, statusText } = e.response
+      const message = data.errors?.length ? data.errors[0].message : statusText
+      throw new ApiError(message, status)
     } finally {
       setProgress(undefined)
     }

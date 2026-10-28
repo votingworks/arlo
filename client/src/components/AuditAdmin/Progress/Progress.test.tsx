@@ -26,19 +26,10 @@ import { dummyBallots } from '../../AuditBoard/_mocks'
 import * as utilities from '../../utilities'
 import { ExtendedIntent } from '../../Atoms/StatusTag'
 
-// Borrowed from generateSheets.test.tsx
-const mockSavePDF = vi.fn()
-vi.mock('jspdf', async importActual => {
-  const { jsPDF } = (await importActual()) as any
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  function mockJsPDF(options?: any) {
-    return {
-      ...new jsPDF(options),
-      addImage: vi.fn(),
-      save: mockSavePDF,
-    }
-  }
-  return { default: mockJsPDF, jsPDF: mockJsPDF }
+const mockSavePDF = vi.hoisted(() => vi.fn())
+vi.mock(import('jspdf'), async importActual => {
+  const { default: mockJsPDFModule } = await import('../../mockJsPDF')
+  return mockJsPDFModule(await importActual(), mockSavePDF)
 })
 window.URL.createObjectURL = vi.fn()
 window.open = vi.fn()

@@ -29,7 +29,11 @@ import { stateOptions, states } from '../AuditAdmin/Setup/Settings/states'
 import { sortBy } from '../../utils/array'
 import { AuditStatusTag, Column, Row, Table } from './shared'
 
-const Organization = ({ organizationId }: { organizationId: string }) => {
+const Organization = ({
+  organizationId,
+}: {
+  organizationId: string
+}): JSX.Element | null => {
   const organization = useOrganization(organizationId)
   const createAuditAdmin = useCreateAuditAdmin(organizationId)
   const removeAuditAdmin = useRemoveAuditAdmin(organizationId)

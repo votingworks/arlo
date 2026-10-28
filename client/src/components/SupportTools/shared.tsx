@@ -51,7 +51,7 @@ export const AuditStatusTag = ({
   currentRound,
 }: {
   currentRound: IRound | null
-}) => {
+}): JSX.Element => {
   if (!currentRound) {
     return <StatusTag style={auditStatusTagStyle}>Not Started</StatusTag>
   }

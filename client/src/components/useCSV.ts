@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { isAxiosError } from 'axios'
 import { toast } from 'react-toastify'
 import { useEffect, useState } from 'react'
 import { api, useInterval } from './utilities'
@@ -71,18 +71,18 @@ const putCSVFile = async (
       : {
           fileType: file.type,
         }
-    const getUploadResponse = (await axios<UploadUrlResponseData>(
+    const getUploadResponse = await axios<UploadUrlResponseData>(
       `/api${url}/upload-url`,
       addCSRFToken({
         method: 'GET',
         params,
       })
-    )) as any
+    )
 
     // Upload the file to s3
     const uploadFileFormData = new FormData()
     Object.entries(getUploadResponse.data.fields).forEach(([key, value]) => {
-      uploadFileFormData.append(key, value as string)
+      uploadFileFormData.append(key, value)
     })
     uploadFileFormData.append('Content-Type', file.type)
     uploadFileFormData.append('file', file, file.name)
@@ -120,10 +120,12 @@ const putCSVFile = async (
     )
     return true
   } catch (e) {
-    const error = e as any
-    const errors = error.response?.data.errors
+    const response = isAxiosError<UploadUrlResponseData>(e)
+      ? e.response
+      : undefined
+    const errors = response?.data.errors
     const message =
-      errors && errors.length ? errors[0].message : error.response?.statusText
+      errors && errors.length ? errors[0].message : response?.statusText
     toast.error(message)
     return false
   }

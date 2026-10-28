@@ -16,6 +16,15 @@ interface IInnerProps {
   withTopPadding?: boolean
 }
 
+const paddingTop = ({ withTopPadding }: IInnerProps): string | undefined =>
+  withTopPadding ? '30px' : undefined
+const flexDirection = ({
+  flexDirection: value,
+}: IInnerProps): IInnerProps['flexDirection'] => value
+const justifyContent = ({
+  justifyContent: value,
+}: IInnerProps): IInnerProps['justifyContent'] => value
+
 export const Inner = styled.section<IInnerProps>`
   display: flex;
   margin-right: auto;
@@ -23,9 +32,9 @@ export const Inner = styled.section<IInnerProps>`
   width: 100%;
   max-width: 1020px;
   padding: 0 30px;
-  padding-top: ${props => (props.withTopPadding ? '30px' : undefined)};
-  flex-direction: ${props => props.flexDirection || undefined};
-  justify-content: ${props => props.justifyContent || undefined};
+  padding-top: ${paddingTop};
+  flex-direction: ${flexDirection};
+  justify-content: ${justifyContent};
 `
 
 export const SupportToolsInner = styled.div`

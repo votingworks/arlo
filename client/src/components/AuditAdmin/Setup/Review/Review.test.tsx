@@ -1545,10 +1545,7 @@ describe('Audit Setup > Review & Launch', () => {
         },
       ]
 
-      // Mock window.location.href
-      const originalLocation = window.location
-      delete (window as any).location
-      window.location = { ...originalLocation, href: '' } as any
+      vi.stubGlobal('location', { ...window.location, href: '' })
 
       await withMockFetch(expectedCalls, async () => {
         renderView()
@@ -1577,8 +1574,7 @@ describe('Audit Setup > Review & Launch', () => {
         )
       })
 
-      // Restore window.location
-      ;(window as any).location = originalLocation
+      vi.unstubAllGlobals()
     })
 
     it('initiates candidate totals bundle download when button is clicked', async () => {
@@ -1622,10 +1618,7 @@ describe('Audit Setup > Review & Launch', () => {
         },
       ]
 
-      // Mock window.location.href
-      const originalLocation = window.location
-      delete (window as any).location
-      window.location = { ...originalLocation, href: '' } as any
+      vi.stubGlobal('location', { ...window.location, href: '' })
 
       await withMockFetch(expectedCalls, async () => {
         renderView()
@@ -1654,8 +1647,7 @@ describe('Audit Setup > Review & Launch', () => {
         )
       })
 
-      // Restore window.location
-      ;(window as any).location = originalLocation
+      vi.unstubAllGlobals()
     })
 
     it('shows error message when bundle generation fails', async () => {
