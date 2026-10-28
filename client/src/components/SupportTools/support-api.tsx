@@ -63,6 +63,15 @@ export interface IElectionForSupport extends IElectionWithOrg {
   currentRound: IRound | null
 }
 
+export interface IRoundProgress {
+  jurisdictions: {
+    numComplete: number
+    numTotal: number
+  }
+  // Only present for ballot and batch comparison audits
+  discrepancyCount: number | null
+}
+
 export interface IJurisdictionBase {
   id: string
   name: string
@@ -100,6 +109,12 @@ export interface ICombinedBatch {
 export const useActiveElections = () =>
   useQuery<IElectionForSupport[], Error>(['elections', 'active'], () =>
     fetchApi('/api/support/elections/active')
+  )
+
+export const useRoundProgress = (electionId: string) =>
+  useQuery<IRoundProgress | null, Error>(
+    ['elections', electionId, 'round-progress'],
+    () => fetchApi(`/api/support/elections/${electionId}/round-progress`)
   )
 
 export const useOrganizations = () =>

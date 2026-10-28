@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 import os.path
 from unittest.mock import Mock, patch
 from urllib.parse import urlparse
@@ -12,6 +12,8 @@ from ...api.support import (
     Auth0Error,
 )
 from ...config import HTTP_ORIGIN
+from ...worker.tasks import run_task
+from .test_audit_boards import start_round_without_drawing_sample
 
 
 def test_support_list_organizations(client: FlaskClient, org_id: str):
@@ -314,6 +316,62 @@ def test_support_list_active_elections(
         (election for election in elections if election["id"] == election_id), None
     )
     assert election is None
+
+
+def test_support_get_round_progress(
+    client: FlaskClient,
+    election_id: str,
+    contest_ids: list[str],
+    election_settings: None,
+    manifests: None,
+):
+    def get_round_progress():
+        set_support_user(client, DEFAULT_SUPPORT_EMAIL)
+        rv = client.get(f"/api/support/elections/{election_id}/round-progress")
+        assert rv.status_code == 200
+        return json.loads(rv.data)
+
+    # No round started
+    assert get_round_progress() is None
+
+    round = start_round_without_drawing_sample(client, election_id, contest_ids)
+    round_id = round.id
+    task_id = round.draw_sample_task_id
+    assert task_id is not None
+
+    # Draw task queued
+    assert get_round_progress() is None
+
+    # Draw task in progress
+    task = BackgroundTask.query.get(task_id)
+    task.started_at = datetime.now(timezone.utc)
+    db_session.commit()
+    assert get_round_progress() is None
+
+    # Draw task failed
+    task = BackgroundTask.query.get(task_id)
+    task.completed_at = datetime.now(timezone.utc)
+    task.error = "Draw failed"
+    db_session.commit()
+    assert get_round_progress() is None
+
+    # Draw task completed
+    task = BackgroundTask.query.get(task_id)
+    task.completed_at = None
+    task.error = None
+    db_session.commit()
+    run_task(BackgroundTask.query.get(task_id), db_session)
+    # J3 has no sampled ballots, so it's complete from the start
+    assert get_round_progress() == {
+        "jurisdictions": {"numComplete": 1, "numTotal": 3},
+        "discrepancyCount": None,
+    }
+
+    # Round ended
+    round = Round.query.get(round_id)
+    round.ended_at = datetime.now(timezone.utc)
+    db_session.commit()
+    assert get_round_progress() is None
 
 
 def test_support_get_election(

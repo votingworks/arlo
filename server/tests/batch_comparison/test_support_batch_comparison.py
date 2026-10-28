@@ -416,3 +416,63 @@ def test_support_invalid_combined_batches(
             }
         ]
     }
+
+
+def test_support_get_round_progress_batch_comparison(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_id: str,
+    round_1_id: str,
+):
+    def get_round_progress():
+        set_support_user(client, DEFAULT_SUPPORT_EMAIL)
+        rv = client.get(f"/api/support/elections/{election_id}/round-progress")
+        return json.loads(rv.data)
+
+    # J3 has no sampled batches, so it's complete from the start
+    assert get_round_progress() == {
+        "jurisdictions": {"numComplete": 1, "numTotal": 3},
+        "discrepancyCount": 0,
+    }
+
+    # Audit J1's batches, introducing a discrepancy in each
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches"
+    )
+    batches = json.loads(rv.data)["batches"]
+    choice_id = Contest.query.get(contest_id).choices[0].id
+    batch_tallies = Jurisdiction.query.get(jurisdiction_ids[0]).batch_tallies
+    for batch in batches:
+        results = batch_tallies[batch["name"]][contest_id]
+        del results["ballots"]
+        results[choice_id] = results[choice_id] - 1
+        rv = put_json(
+            client,
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/{batch['id']}/results",
+            [{"name": "Tally Sheet #1", "results": results}],
+        )
+        assert_ok(rv)
+
+    # Discrepancies are hidden until the jurisdiction finalizes
+    assert get_round_progress() == {
+        "jurisdictions": {"numComplete": 1, "numTotal": 3},
+        "discrepancyCount": 0,
+    }
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/finalize",
+    )
+    assert_ok(rv)
+
+    assert get_round_progress() == {
+        "jurisdictions": {"numComplete": 2, "numTotal": 3},
+        "discrepancyCount": len(batches),
+    }

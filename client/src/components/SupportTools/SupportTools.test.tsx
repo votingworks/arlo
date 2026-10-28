@@ -24,6 +24,7 @@ import {
   IBatch,
   ICombinedBatch,
   IElectionForSupport,
+  IRoundProgress,
   IOrganizationForSupport,
   IElectionBase,
 } from './support-api'
@@ -223,6 +224,10 @@ const apiCalls = {
     url: '/api/support/elections/active',
     response,
   }),
+  getRoundProgress: (electionId: string, response: IRoundProgress | null) => ({
+    url: `/api/support/elections/${electionId}/round-progress`,
+    response,
+  }),
   getElection: (response: IElection) => ({
     url: '/api/support/elections/election-id-1',
     response,
@@ -340,17 +345,57 @@ describe('Support Tools', () => {
             endedWithFullTallyEscalation: true,
           },
         },
+        {
+          ...mockElectionForSupport,
+          id: 'election-id-4',
+          auditName: 'Audit 4',
+          auditType: 'BATCH_COMPARISON',
+          organization: mockOrganizationBase,
+          currentRound: {
+            id: 'round-2',
+            endedAt: null,
+            roundNum: 1,
+            endedWithFullTallyEscalation: false,
+          },
+        },
+        {
+          ...mockElectionForSupport,
+          id: 'election-id-5',
+          auditName: 'Audit 5',
+          organization: mockOrganizationBase,
+          currentRound: {
+            id: 'round-3',
+            endedAt: null,
+            roundNum: 1,
+            endedWithFullTallyEscalation: false,
+          },
+        },
       ]),
+      // Only fetched for audits with a round in progress
+      apiCalls.getRoundProgress('election-id-2', {
+        jurisdictions: { numComplete: 1, numTotal: 2 },
+        discrepancyCount: null,
+      }),
+      apiCalls.getRoundProgress('election-id-4', {
+        jurisdictions: { numComplete: 0, numTotal: 3 },
+        discrepancyCount: 4,
+      }),
+      // Sample still being drawn
+      apiCalls.getRoundProgress('election-id-5', null),
       apiCalls.getElection(mockElection),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { history } = renderRoute('/support')
 
       await screen.findByRole('heading', { name: 'Active Audits' })
-      screen.getByRole('link', {
-        name: 'Organization 1 Audit 2 Round 1 In Progress',
+      await screen.findByRole('link', {
+        name: 'Organization 1 Audit 2 Round 1 1/2 jurisdictions finalized',
+      })
+      await screen.findByRole('link', {
+        name: 'Organization 1 Audit 4 Round 1 0/3 jurisdictions finalized · 4 discrepancies',
       })
       screen.getByRole('link', { name: 'Organization 1 Audit 3 Blocked' })
+      screen.getByRole('link', { name: 'Organization 1 Audit 5 Round 1' })
       userEvent.click(
         screen.getByRole('link', { name: 'Organization 1 Audit 1 Not Started' })
       )
@@ -458,7 +503,7 @@ describe('Support Tools', () => {
       await screen.findByRole('heading', { name: 'Organization 1' })
 
       screen.getByRole('heading', { name: 'Audits' })
-      screen.getByRole('link', { name: /^Audit 2\s*Round 1 In Progress$/ })
+      screen.getByRole('link', { name: /^Audit 2\s*Round 1$/ })
       screen.getByRole('link', { name: /^Audit 4\s*Completed$/ })
       screen.getByRole('link', { name: /^Audit 1\s*Not Started$/ })
 
