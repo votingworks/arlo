@@ -594,6 +594,13 @@ def ballot_vote_deltas(
     if reported is None:
         reported = {choice.id: "0" for choice in contest.choices}
 
+    # ES&S CVRs record overvotes as "o", while audit boards mark each vote seen
+    if (
+        "o" in reported.values()
+        and sum(map(int, audited.values())) > contest.votes_allowed
+    ):
+        return None
+
     deltas = {}
     for choice in contest.choices:
         reported_vote = (

@@ -142,26 +142,24 @@ def discrepancy(
             else (0, 0)
         )
 
-        # Special case for ES&S overvotes/undervotes.
+        # Special case for ES&S overvotes. If the audited result correctly
+        # identified the overvote, return 0 error. Otherwise, return an error
+        # using the standard formula, but substituting in the overvotes.
         has_overvote = "o" in reported.get(contest.name, {}).values()
-        has_undervote = "u" in reported.get(contest.name, {}).values()
         audited_votes = sum(map(int, (audited.get(contest.name, {}).values())))
-        # If the audited result correctly identified overvote/undervote, return
-        # 0 error.  Otherwise, return an error using the standard formula, but
-        # substituting in the appropriate overvotes/undervotes.
         if has_overvote:
-            if audited_votes > 1:
+            if audited_votes > contest.votes_allowed:
                 return 0
             else:
                 return (1 - a_w) - (1 - a_l)
-        if has_undervote:
-            if audited_votes < 1:
-                return 0
-            else:
-                return (0 - a_w) - (0 - a_l)
+
+        # ES&S undervotes count as no vote for any choice.
+        def reported_vote(choice: str) -> int:
+            value = reported[contest.name][choice]
+            return 0 if value == "u" else int(value)
 
         v_w, v_l = (
-            (int(reported[contest.name][winner]), int(reported[contest.name][loser]))
+            (reported_vote(winner), reported_vote(loser))
             if contest.name in reported
             # If contest wasn't on the ballot according to the CVR
             else (0, 0)
