@@ -13,6 +13,7 @@ from ..database import db_session
 from ..models import *
 from .shared import (
     contest_ids_to_audit_in_round,
+    jurisdiction_ids_with_batches_to_audit,
     tally_sheets_for_contests,
     with_combined_sub_batches,
     BallotDraw,
@@ -69,30 +70,18 @@ from ..util.string import format_count
 
 
 def is_round_ready_to_finish(election: Election, round: Round) -> bool:
-    # For batch audits, check that all jurisdictions with sampled batches this
+    # For batch audits, check that all jurisdictions with batches to audit this
     # round have finalized batch results
     if election.audit_type == AuditType.BATCH_COMPARISON:
-        num_jurisdictions_not_finalized: int = (
-            Jurisdiction.query.filter_by(election_id=election.id)
-            .filter(
-                Jurisdiction.id.in_(
-                    SampledBatchDraw.query.filter_by(round_id=round.id)
-                    .join(Batch)
-                    .with_entities(Batch.jurisdiction_id)
-                    .subquery()
-                )
-            )
-            .filter(
-                Jurisdiction.id.notin_(
-                    BatchResultsFinalized.query.filter_by(round_id=round.id)
-                    .with_entities(BatchResultsFinalized.jurisdiction_id)
-                    .subquery()
-                )
-            )
-            .with_entities(Jurisdiction.id)
-            .count()
-        )  # ty: ignore[unsound-assignment]
-        return num_jurisdictions_not_finalized == 0
+        finalized_jurisdiction_ids = {
+            jurisdiction_id
+            for (jurisdiction_id,) in BatchResultsFinalized.query.filter_by(
+                round_id=round.id
+            ).values(BatchResultsFinalized.jurisdiction_id)
+        }
+        return (
+            jurisdiction_ids_with_batches_to_audit(round) <= finalized_jurisdiction_ids
+        )
 
     # For online audits, check that all the audit boards are finished auditing
     if election.online:

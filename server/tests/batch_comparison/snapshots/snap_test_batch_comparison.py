@@ -142,7 +142,7 @@ snapshots["test_batch_comparison_round_2 10"] = {
     "numSamplesAudited": 1,
     "numUnique": 1,
     "numUniqueAudited": 1,
-    "status": "IN_PROGRESS",
+    "status": "COMPLETE",
 }
 
 snapshots["test_batch_comparison_round_2 11"] = {
