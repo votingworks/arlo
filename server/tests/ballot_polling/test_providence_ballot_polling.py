@@ -111,6 +111,22 @@ def test_providence_round_random_seeds(
         ]
     }
 
+    # Reusing an earlier round's seed would draw the same ballots again
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {**round_2_body, "randomSeed": "1234567890"},
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "Cannot reuse a previous random seed",
+            }
+        ]
+    }
+
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",

@@ -523,6 +523,12 @@ def validate_round(round: dict[str, Any], election: Election):
     )
     if requires_random_seed and "randomSeed" not in round:
         raise BadRequest("A new random seed is required for each round")
+    # Reusing a seed would draw the same ballots as that earlier round. Round 1
+    # copies the election's seed, so this covers it too.
+    if requires_random_seed and round["randomSeed"] in {
+        previous_round.random_seed for previous_round in election.rounds
+    }:
+        raise BadRequest("Cannot reuse a previous random seed")
     if not requires_random_seed and "randomSeed" in round:
         raise BadRequest(
             "A random seed can only be provided for rounds after round 1 of a Providence audit"
