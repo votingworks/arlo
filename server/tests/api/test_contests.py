@@ -353,6 +353,61 @@ def test_contest_too_many_votes(
     }
 
 
+@pytest.mark.parametrize(
+    "audit_math_type", [AuditMathType.MINERVA, AuditMathType.PROVIDENCE]
+)
+def test_contest_candidate_with_zero_votes(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    audit_math_type: AuditMathType,
+):
+    contest = {
+        "id": str(uuid.uuid4()),
+        "name": "Contest 1",
+        "isTargeted": True,
+        "choices": [
+            {
+                "id": str(uuid.uuid4()),
+                "name": "candidate 1",
+                "numVotes": 400,
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "name": "candidate 2",
+                "numVotes": 0,
+            },
+        ],
+        "totalBallotsCast": 500,
+        "numWinners": 1,
+        "votesAllowed": 1,
+        "jurisdictionIds": jurisdiction_ids,
+    }
+
+    # BRAVO allows candidates with 0 votes
+    rv = put_json(client, f"/api/election/{election_id}/contest", [contest])
+    assert_ok(rv)
+
+    election = Election.query.get(election_id)
+    election.audit_math_type = audit_math_type
+    db_session.commit()
+
+    rv = put_json(client, f"/api/election/{election_id}/contest", [contest])
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "message": "Each candidate must have at least 1 vote in Minerva and Providence audits. candidate 2 has 0 votes in contest: Contest 1",
+                "errorType": "Bad Request",
+            }
+        ]
+    }
+
+    contest["choices"][1]["numVotes"] = 1
+    rv = put_json(client, f"/api/election/{election_id}/contest", [contest])
+    assert_ok(rv)
+
+
 def test_jurisdictions_contests_list_empty(
     client: FlaskClient,
     election_id: str,

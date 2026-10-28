@@ -294,6 +294,17 @@ def validate_contests(contests: list[JSONDict], election: Election):
                     f" ({total_votes} votes, {total_allowed_votes} allowed)"
                 )
 
+    # Minerva and Providence math can't handle a candidate with 0 votes
+    if election.audit_math_type in [AuditMathType.MINERVA, AuditMathType.PROVIDENCE]:
+        for contest in contests:
+            for choice in contest["choices"]:
+                if choice["numVotes"] == 0:
+                    raise BadRequest(
+                        "Each candidate must have at least 1 vote in Minerva and"
+                        f" Providence audits. {choice['name']} has 0 votes in"
+                        f" contest: {contest['name']}"
+                    )
+
     for contest in contests:
         if not contest.get("isSubjectToRunoff", False):
             continue
