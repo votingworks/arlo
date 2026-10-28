@@ -294,9 +294,16 @@ def validate_contests(contests: list[JSONDict], election: Election):
                     f" ({total_votes} votes, {total_allowed_votes} allowed)"
                 )
 
-    # Minerva and Providence math can't handle a candidate with 0 votes
+    # Minerva and Providence math can't handle a candidate with 0 votes or more
+    # than 1 vote allowed per ballot
     if election.audit_math_type in [AuditMathType.MINERVA, AuditMathType.PROVIDENCE]:
         for contest in contests:
+            if contest["votesAllowed"] > 1:
+                raise BadRequest(
+                    "Only 1 vote per ballot is supported in Minerva and Providence"
+                    f" audits. {contest['name']} allows {contest['votesAllowed']}"
+                    " votes per ballot."
+                )
             for choice in contest["choices"]:
                 if choice["numVotes"] == 0:
                     raise BadRequest(

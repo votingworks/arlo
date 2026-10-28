@@ -408,6 +408,62 @@ def test_contest_candidate_with_zero_votes(
     assert_ok(rv)
 
 
+@pytest.mark.parametrize(
+    "audit_math_type", [AuditMathType.MINERVA, AuditMathType.PROVIDENCE]
+)
+def test_contest_multiple_votes_allowed(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    audit_math_type: AuditMathType,
+):
+    contest = {
+        "id": str(uuid.uuid4()),
+        "name": "Contest 1",
+        "isTargeted": True,
+        "choices": [
+            {
+                "id": str(uuid.uuid4()),
+                "name": "candidate 1",
+                "numVotes": 600,
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "name": "candidate 2",
+                "numVotes": 500,
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "name": "candidate 3",
+                "numVotes": 100,
+            },
+        ],
+        "totalBallotsCast": 700,
+        "numWinners": 2,
+        "votesAllowed": 2,
+        "jurisdictionIds": jurisdiction_ids,
+    }
+
+    # BRAVO allows more than 1 vote per ballot
+    rv = put_json(client, f"/api/election/{election_id}/contest", [contest])
+    assert_ok(rv)
+
+    election = Election.query.get(election_id)
+    election.audit_math_type = audit_math_type
+    db_session.commit()
+
+    rv = put_json(client, f"/api/election/{election_id}/contest", [contest])
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "message": "Only 1 vote per ballot is supported in Minerva and Providence audits. Contest 1 allows 2 votes per ballot.",
+                "errorType": "Bad Request",
+            }
+        ]
+    }
+
+
 def test_jurisdictions_contests_list_empty(
     client: FlaskClient,
     election_id: str,

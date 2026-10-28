@@ -7,8 +7,12 @@ const contestsSchema = (
   auditType: IAuditSettings['auditType'],
   auditMathType: IAuditSettings['auditMathType']
 ) => {
-  // Minerva and Providence math can't handle a candidate with 0 votes
-  const minVotes = ['MINERVA', 'PROVIDENCE'].includes(auditMathType) ? 1 : 0
+  // Minerva and Providence math can't handle a candidate with 0 votes or more
+  // than 1 vote allowed per ballot
+  const isMinervaOrProvidence = ['MINERVA', 'PROVIDENCE'].includes(
+    auditMathType
+  )
+  const minVotes = isMinervaOrProvidence ? 1 : 0
   return Yup.object().shape({
     contests: Yup.array()
       .required()
@@ -24,6 +28,10 @@ const contestsSchema = (
             .typeError('Must be a number')
             .integer('Must be an integer')
             .min(0, 'Must be a positive number')
+            .max(
+              isMinervaOrProvidence ? 1 : Infinity,
+              'Must be 1 in Minerva and Providence audits'
+            )
             .required('Required'),
           ...(auditType === 'BALLOT_POLLING' && {
             totalBallotsCast: number()

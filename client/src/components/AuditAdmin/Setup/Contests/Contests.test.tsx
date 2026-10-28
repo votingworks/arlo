@@ -425,6 +425,33 @@ describe('Audit Setup > Contests', () => {
     }
   )
 
+  it.each(['MINERVA', 'PROVIDENCE'] as const)(
+    'displays an error when more than 1 vote is allowed in a %s audit',
+    async auditMathType => {
+      const expectedCalls = [
+        aaApiCalls.getContests(contestMocks.empty),
+        aaApiCalls.getJurisdictions,
+        aaApiCalls.getStandardizedContests(null),
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        renderContests({ auditMathType })
+        const votesAllowedInput = (await screen.findByLabelText(
+          'Votes Allowed',
+          { selector: 'input' }
+        )) as HTMLInputElement
+        userEvent.clear(votesAllowedInput)
+        userEvent.type(votesAllowedInput, '2')
+        userEvent.click(document.body) // Simulate blurring by clicking outside
+
+        await waitFor(() => {
+          expect(
+            screen.getByTestId(`${votesAllowedInput.name}-error`)
+          ).toHaveTextContent('Must be 1 in Minerva and Providence audits')
+        })
+      })
+    }
+  )
+
   it('allows a candidate with 0 votes in a BRAVO audit', async () => {
     const expectedCalls = [
       aaApiCalls.getContests(contestMocks.empty),
