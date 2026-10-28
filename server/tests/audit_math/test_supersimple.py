@@ -671,6 +671,7 @@ def test_ess_discrepancies(contests) -> None:
         "ballot-0": {"Vote For Two": {"winner": "o", "loser1": "o", "loser2": "o"}},
         "ballot-1": {"Vote For Two": {"winner": "o", "loser1": "o", "loser2": "o"}},
         "ballot-2": {"Vote For Two": {"winner": "u", "loser1": "u", "loser2": "u"}},
+        "ballot-3": {"Vote For Two": {"winner": "u", "loser1": "u", "loser2": "u"}},
     }
     sample_cvr = {
         "ballot-0": {
@@ -685,11 +686,21 @@ def test_ess_discrepancies(contests) -> None:
             "times_sampled": 1,
             "cvr": {"Vote For Two": {"winner": "1", "loser1": "0", "loser2": "0"}},
         },
+        "ballot-3": {
+            "times_sampled": 1,
+            "cvr": {"Vote For Two": {"winner": "0", "loser1": "0", "loser2": "1"}},
+        },
     }
     discrepancies = supersimple.compute_discrepancies(contest, cvrs, sample_cvr)
     assert discrepancies == {
         "ballot-1": supersimple.Discrepancy(
             counted_as=-1, weighted_error=Decimal(-1) / Decimal(1000)
+        ),
+        "ballot-2": supersimple.Discrepancy(
+            counted_as=-1, weighted_error=Decimal(-1) / Decimal(1000)
+        ),
+        "ballot-3": supersimple.Discrepancy(
+            counted_as=1, weighted_error=Decimal(1) / Decimal(500)
         ),
     }
 
