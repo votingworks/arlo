@@ -17,6 +17,9 @@ s1_default: Decimal = Decimal(0.001)
 r2_default: Decimal = Decimal(0.0001)
 s2_default: Decimal = Decimal(0.0001)
 
+# Chance that an uncontested contest's sample includes a vote for each winner
+UNCONTESTED_P_COMPLETION = 0.95
+
 
 class Discrepancy(TypedDict):
     counted_as: int
@@ -213,6 +216,9 @@ def get_sample_sizes(
     obs_u2 = 0
     num_sampled = Decimal(sample_results.get("sample_size", 0))
 
+    if contest.is_uncontested:
+        return uncontested_sample_size(contest, int(num_sampled))
+
     if num_sampled:
         r1 = obs_o1 / num_sampled
         r2 = obs_o2 / num_sampled
@@ -321,9 +327,15 @@ def compute_risk(
     alpha = Decimal(risk_limit) / 100
     assert alpha < 1
 
-    p = Decimal(1.0)
-
     N = contest.ballots
+
+    # An uncontested outcome is confirmed by finding a vote for each winner
+    if contest.is_uncontested:
+        if all_winners_have_audited_votes(contest, sample_cvr):
+            return 0, True
+        return 1, False
+
+    p = Decimal(1.0)
     V = Decimal(contest.diluted_margin * N)
 
     if contest.diluted_margin == 0:
@@ -364,3 +376,30 @@ def compute_risk(
         result = True
 
     return min(float(p), 1.0), result
+
+
+def uncontested_sample_size(contest: Contest, num_sampled: int) -> int:
+    """Returns the number of ballots likely to include a vote for every winner."""
+    remaining = max(contest.ballots - num_sampled, 0)
+    min_winner_fraction = min(contest.winners.values()) / contest.ballots
+    # A winner with no reported votes can only be confirmed by a full hand tally
+    if min_winner_fraction == 0:
+        return remaining
+    if min_winner_fraction >= 1:
+        return min(1, remaining)
+    size = math.ceil(
+        math.log(1 - UNCONTESTED_P_COMPLETION) / math.log(1 - min_winner_fraction)
+    )
+    return min(size, remaining)
+
+
+def all_winners_have_audited_votes(contest: Contest, sample_cvr: SAMPLECVRS) -> bool:
+    """Returns whether every winner received a vote on at least one audited ballot."""
+    return all(
+        any(
+            ballot["cvr"] is not None
+            and str(ballot["cvr"].get(contest.name, {}).get(winner)) == "1"
+            for ballot in sample_cvr.values()
+        )
+        for winner in contest.winners
+    )

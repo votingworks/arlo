@@ -79,10 +79,10 @@ async function checkThatElectionResultsCardIsInInitialState() {
   })
   expect(candidate1NameInput).toHaveValue('Candidate 1')
   expect(candidate1VotesInput).toHaveValue(null)
-  expect(candidate1RemoveButton).toBeDisabled()
+  expect(candidate1RemoveButton).toBeEnabled()
   expect(candidate2NameInput).toHaveValue('Candidate 2')
   expect(candidate2VotesInput).toHaveValue(null)
-  expect(candidate2RemoveButton).toBeDisabled()
+  expect(candidate2RemoveButton).toBeEnabled()
   const addCandidateButton = screen.getByRole('button', {
     name: /Add Candidate/,
   })
@@ -206,6 +206,25 @@ const apiMocks = {
         '5': { 'all-ballots': 1004 },
       },
       batchComparison: { '5': 1005 },
+    },
+  },
+  publicComputeSampleSizesUncontested: {
+    url: '/api/public/sample-sizes',
+    options: {
+      method: 'POST',
+      body: JSON.stringify({
+        electionResults: {
+          candidates: [{ name: 'Helga Hippo', votes: 1000 }],
+          numWinners: 1,
+          totalBallotsCast: 2000,
+        },
+      }),
+      headers: { 'Content-Type': 'application/json' },
+    },
+    response: {
+      ballotComparison: { '0': 2000, '5': 1 },
+      ballotPolling: { '0': null, '5': null },
+      batchComparison: { '0': null, '5': null },
     },
   },
   publicComputeSampleSizesError: serverError('publicComputeSampleSizes', {
@@ -339,16 +358,10 @@ test('Entering election results - validation and submit', async () => {
       notDisplayed: ['Required'],
     })
     userEvent.clear(numberOfWinnersInput)
-    userEvent.type(numberOfWinnersInput, '2')
-    await areExpectedErrorMessagesDisplayed({
-      displayed: ['Must be less than number of candidates'],
-      notDisplayed: ['Cannot be less than 1'],
-    })
-    userEvent.clear(numberOfWinnersInput)
     userEvent.type(numberOfWinnersInput, '1.2')
     await areExpectedErrorMessagesDisplayed({
       displayed: ['Can only contain numeric characters'],
-      notDisplayed: ['Must be less than number of candidates'],
+      notDisplayed: ['Cannot be less than 1'],
     })
     userEvent.clear(numberOfWinnersInput)
     userEvent.type(numberOfWinnersInput, '1')
@@ -601,6 +614,42 @@ test('Entering election results - editing', async () => {
     expect(textInputs[4]).toHaveValue('1') // Number of winners
     expect(textInputs[5]).toHaveValue('2,001') // Total ballots cast
     await screen.findByText('Full hand tally')
+  })
+})
+
+test('Uncontested contest', async () => {
+  const expectedCalls = [apiMocks.publicComputeSampleSizesUncontested]
+  await withMockFetch(expectedCalls, async () => {
+    renderAuditPlanner()
+    await screen.findByRole('heading', { name: 'Audit Planner' })
+    const {
+      candidate1NameInput,
+      candidate1VotesInput,
+      candidate2RemoveButton,
+      totalBallotsCastInput,
+      planAuditButton,
+    } = await checkThatElectionResultsCardIsInInitialState()
+
+    userEvent.click(candidate2RemoveButton)
+    await waitFor(() =>
+      expect(
+        screen.queryByRole('textbox', { name: 'Candidate 2 Name' })
+      ).not.toBeInTheDocument()
+    )
+    expect(
+      screen.getByRole('button', { name: 'Remove Candidate 1' })
+    ).toBeDisabled()
+    userEvent.clear(candidate1NameInput)
+    userEvent.type(candidate1NameInput, 'Helga Hippo')
+    userEvent.type(candidate1VotesInput, '1000')
+    userEvent.type(totalBallotsCastInput, '2000')
+    userEvent.click(planAuditButton)
+
+    await screen.findByText('Not supported for uncontested contests')
+    userEvent.click(screen.getByRole('radio', { name: 'Ballot Comparison' }))
+    await screen.findByText('1 ballot')
+    userEvent.click(screen.getByRole('radio', { name: 'Batch Comparison' }))
+    await screen.findByText('Not supported for uncontested contests')
   })
 })
 

@@ -178,6 +178,11 @@ class Contest:
         else:
             self.diluted_margin = -1.0
 
+    @property
+    def is_uncontested(self) -> bool:
+        """Whether every candidate is a winner, i.e. there are no losers."""
+        return not self.losers
+
     @override
     def __repr__(self) -> str:
         """

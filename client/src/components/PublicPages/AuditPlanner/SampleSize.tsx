@@ -56,6 +56,15 @@ const SampleSize: React.FC<IProps> = ({
       )
     }
 
+    if (sampleSizes.data?.[auditType][riskLimitPercentage] === null) {
+      return (
+        <ErrorMessage>
+          <Icon icon="info-sign" />
+          <span>Not supported for uncontested contests</span>
+        </ErrorMessage>
+      )
+    }
+
     if (!sampleSizes.data?.[auditType][riskLimitPercentage]) {
       return <span>&mdash;</span>
     }

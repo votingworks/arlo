@@ -387,7 +387,7 @@ const ElectionResultsCard: React.FC<IProps> = ({
                       />
                       <Button
                         aria-label={`Remove Candidate ${i + 1}`}
-                        disabled={!editable || candidateFields.length === 2}
+                        disabled={!editable || candidateFields.length === 1}
                         icon="delete"
                         intent={editable ? 'danger' : undefined}
                         minimal
@@ -437,12 +437,6 @@ const ElectionResultsCard: React.FC<IProps> = ({
                     max: maxValueRule,
                     pattern: numericValidationRule,
                     required: 'Required',
-                    validate: value => {
-                      if (value >= getValues().candidates.length) {
-                        return 'Must be less than number of candidates'
-                      }
-                      return true
-                    },
                     valueAsNumber: true,
                   })}
                   value={watch('numWinners') || 0}

@@ -794,6 +794,42 @@ describe('Audit Setup > Review & Launch', () => {
     })
   })
 
+  it('shows a notice for uncontested contests - ballot comparison', async () => {
+    const [contest] = contestMocks.filledTargetedWithJurisdictionId
+    const expectedCalls = [
+      apiCalls.getSettings(auditSettingsMocks.ballotComparisonAll),
+      apiCalls.getJurisdictions({
+        jurisdictions: jurisdictionMocks.allManifestsWithCVRs,
+      }),
+      apiCalls.getJurisdictionFile,
+      apiCalls.getStandardizedContests(),
+      apiCalls.getContests([{ ...contest, choices: [contest.choices[0]] }]),
+      apiCalls.getContestChoiceNameStandardizations(),
+      apiCalls.getStandardizedContestsFile,
+      apiCalls.getContestNameStandardizations({
+        standardizations: {},
+        cvrContestNames: {},
+      }),
+      apiCalls.getSampleSizeOptions({
+        ...sampleSizeMock.ballotComparison,
+        sampleSizes: {
+          'contest-id': [{ prob: null, size: 1, key: 'supersimple' }],
+        },
+      }),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView()
+      await screen.findByText(
+        'This contest is uncontested. The audit will confirm its outcome once a vote has been found for each winner.'
+      )
+      expect(
+        screen.queryByText(
+          'The currently selected sample size for this contest requires a full hand tally.'
+        )
+      ).not.toBeInTheDocument()
+    })
+  })
+
   it('shows the selected sample size after launch', async () => {
     const expectedCalls = [
       apiCalls.getSettings(auditSettingsMocks.all),

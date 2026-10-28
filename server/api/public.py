@@ -43,7 +43,7 @@ ELECTION_RESULTS_SCHEMA = {
         "candidates": {
             "type": "array",
             "items": ELECTION_RESULTS_CANDIDATE_SCHEMA,
-            "minItems": 2,
+            "minItems": 1,
         },
         "numWinners": {
             "type": "integer",
@@ -82,11 +82,19 @@ def public_compute_sample_sizes():
         "ballotPolling": compute_ballot_polling_sample_size,
         "batchComparison": compute_batch_comparison_sample_size,
     }
+    # Only ballot comparison audits support uncontested contests so far
+    unsupported_audit_types = (
+        {"ballotPolling", "batchComparison"}
+        if contest_for_sampler.is_uncontested
+        else set()
+    )
     for audit_type in audit_types:
         for risk_limit_percentage in list(range(0, 21)):
             sample_size_function = sample_size_functions[audit_type]
-            sample_sizes[audit_type][str(risk_limit_percentage)] = sample_size_function(
-                contest_for_sampler, risk_limit_percentage
+            sample_sizes[audit_type][str(risk_limit_percentage)] = (
+                None
+                if audit_type in unsupported_audit_types
+                else sample_size_function(contest_for_sampler, risk_limit_percentage)
             )
 
     return jsonify(sample_sizes)
@@ -107,9 +115,6 @@ def parse_compute_sample_sizes_input(
 
     if all(candidate["votes"] == 0 for candidate in candidates):
         raise Conflict("At least 1 candidate must have greater than 0 votes")
-
-    if num_winners >= len(candidates):
-        raise Conflict("Number of winners must be less than number of candidates")
 
     contest = Contest(
         choices=[
