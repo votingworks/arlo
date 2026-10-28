@@ -147,7 +147,7 @@ const RoundProgress = ({ electionId }: { electionId: string }) => {
       style={{ marginTop: '5px' }}
     >
       {jurisdictions.numComplete}/{jurisdictions.numTotal} jurisdictions
-      complete
+      finalized
       {discrepancyCount !== null &&
         ` · ${discrepancyCount} ${
           discrepancyCount === 1 ? 'discrepancy' : 'discrepancies'

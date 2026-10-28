@@ -389,10 +389,10 @@ describe('Support Tools', () => {
 
       await screen.findByRole('heading', { name: 'Active Audits' })
       await screen.findByRole('link', {
-        name: 'Organization 1 Audit 2 Round 1 1/2 jurisdictions complete',
+        name: 'Organization 1 Audit 2 Round 1 1/2 jurisdictions finalized',
       })
       await screen.findByRole('link', {
-        name: 'Organization 1 Audit 4 Round 1 0/3 jurisdictions complete · 4 discrepancies',
+        name: 'Organization 1 Audit 4 Round 1 0/3 jurisdictions finalized · 4 discrepancies',
       })
       screen.getByRole('link', { name: 'Organization 1 Audit 3 Blocked' })
       screen.getByRole('link', { name: 'Organization 1 Audit 5 Round 1' })
