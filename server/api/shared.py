@@ -254,6 +254,7 @@ def jurisdiction_ids_with_batches_to_audit(round: Round) -> set[str]:
         Batch.query.join(SampledBatchDraw)
         .filter_by(round_id=round.id)
         .options(selectinload(Batch.draws))
+        .options(selectinload(Batch.jurisdiction).selectinload(Jurisdiction.contests))
         .all()
     )
     return {
