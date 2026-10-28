@@ -7,21 +7,25 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
-snapshots["test_batch_retrieval_list_round_1 1"] = """Batch Name,Container,Tabulator
-Batch 1,,
-Batch 2,,
-Batch 4,,
-Batch 6,,
-Batch 8,,
+snapshots[
+    "test_batch_retrieval_list_round_1 1"
+] = """Batch Name,Container,Tabulator,Contests
+Batch 1,,,Contest 1
+Batch 2,,,Contest 1
+Batch 4,,,Contest 1
+Batch 6,,,Contest 1
+Batch 8,,,Contest 1
 """
 
-snapshots["test_batches_human_sort_order 1"] = """Batch Name,Container,Tabulator
-Batch 1,,
-Batch 1 - 1,,
-Batch 1 - 2,,
-Batch 1 - 10,,
-Batch 2,,
-Batch 10,,
+snapshots[
+    "test_batches_human_sort_order 1"
+] = """Batch Name,Container,Tabulator,Contests
+Batch 1,,,Contest 1
+Batch 1 - 1,,,Contest 1
+Batch 1 - 2,,,Contest 1
+Batch 1 - 10,,,Contest 1
+Batch 2,,,Contest 1
+Batch 10,,,Contest 1
 """
 
 snapshots["test_batches_human_sort_order 2"] = """######## SAMPLED BATCHES ########\r
