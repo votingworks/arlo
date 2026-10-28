@@ -75,6 +75,9 @@ const contestJurisdictions = (
     jurisdictionId => jurisdictionsById[jurisdictionId]
   )
 
+const isUncontested = (contest: IContest) =>
+  contest.choices.length > 0 && contest.choices.length <= contest.numWinners
+
 const ReviewWrapper = styled.div`
   width: 100%;
   section {
@@ -845,6 +848,12 @@ const SelectSampleSizes: React.FC<ISelectSampleSizesProps> = ({
         return (
           <Card key={contest.id} style={{ background: Colors.LIGHT_GRAY5 }}>
             <H4>{contest.name}</H4>
+            {auditType === 'BALLOT_COMPARISON' && isUncontested(contest) && (
+              <Callout intent="primary" style={{ marginBottom: '15px' }}>
+                This contest is uncontested. The audit will confirm its outcome
+                once a vote has been found for each winner.
+              </Callout>
+            )}
             {currentOption.size !== null &&
               currentOption.size >= fullHandTallySize && (
                 <Callout

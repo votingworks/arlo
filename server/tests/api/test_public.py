@@ -69,11 +69,11 @@ def test_public_compute_sample_sizes_input_validation(client: FlaskClient):
                 **valid_input,
                 "electionResults": {
                     **valid_input["electionResults"],
-                    "candidates": [{"name": "Helga Hippo", "votes": 1000}],
+                    "candidates": [],
                 },
             },
             "expected_status_code": 400,
-            "expected_error_message": "[{'name': 'Helga Hippo', 'votes': 1000}] is too short",
+            "expected_error_message": "[] should be non-empty",
         },
         {
             "body": {
@@ -235,14 +235,6 @@ def test_public_compute_sample_sizes_input_validation(client: FlaskClient):
             },
             "expected_status_code": 409,
             "expected_error_message": "At least 1 candidate must have greater than 0 votes",
-        },
-        {
-            "body": {
-                **valid_input,
-                "electionResults": {**valid_input["electionResults"], "numWinners": 2},
-            },
-            "expected_status_code": 409,
-            "expected_error_message": "Number of winners must be less than number of candidates",
         },
     ]
     for test_case in test_cases:
@@ -552,6 +544,61 @@ def test_public_compute_sample_sizes(client: FlaskClient, snapshot):
         assert rv.status_code == 200
         response = json.loads(rv.data)
         snapshot.assert_match(response, test_case["description"])
+
+
+def test_public_compute_sample_sizes_uncontested(client: FlaskClient):
+    for candidates, num_winners, expected_size in [
+        ([{"name": "Helga Hippo", "votes": 1000}], 1, 5),
+        (
+            [
+                {"name": "Helga Hippo", "votes": 1000},
+                {"name": "Bobby Bear", "votes": 900},
+                {"name": "Cami Cat", "votes": 800},
+            ],
+            3,
+            6,
+        ),
+        ([{"name": "Helga Hippo", "votes": 1000}], 2, 5),
+    ]:
+        rv = post_json(
+            client,
+            "/api/public/sample-sizes",
+            {
+                "electionResults": {
+                    "candidates": candidates,
+                    "numWinners": num_winners,
+                    "totalBallotsCast": 2000,
+                }
+            },
+        )
+        assert rv.status_code == 200
+        response = json.loads(rv.data)
+        assert response["ballotComparison"] == {
+            "0": 2000,
+            **{str(risk_limit): expected_size for risk_limit in range(1, 21)},
+        }
+        assert set(response["ballotPolling"].values()) == {None}
+        assert set(response["batchComparison"].values()) == {None}
+
+
+def test_public_compute_sample_sizes_uncontested_zero_vote_winner(client: FlaskClient):
+    rv = post_json(
+        client,
+        "/api/public/sample-sizes",
+        {
+            "electionResults": {
+                "candidates": [
+                    {"name": "Helga Hippo", "votes": 1000},
+                    {"name": "Bobby Bear", "votes": 0},
+                ],
+                "numWinners": 2,
+                "totalBallotsCast": 2000,
+            }
+        },
+    )
+    assert rv.status_code == 200
+    response = json.loads(rv.data)
+    assert set(response["ballotComparison"].values()) == {2000}
 
 
 def upload_to_key(client: FlaskClient, key: str):

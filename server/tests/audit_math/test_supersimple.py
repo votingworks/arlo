@@ -1213,6 +1213,86 @@ def test_supersimple_sample_size_zero_risk_limit():
     assert supersimple.get_sample_sizes(0, contest, None) == contest.ballots
 
 
+def test_uncontested_contest():
+    contest = Contest(
+        "Uncontested",
+        {"winner": 900, "ballots": 1000, "numWinners": 1, "votesAllowed": 1},
+    )
+    assert contest.is_uncontested
+    cvrs = {f"ballot-{i}": {"Uncontested": {"winner": "1"}} for i in range(1000)}
+
+    assert supersimple.get_sample_sizes(RISK_LIMIT, contest, None) == 2
+    assert (
+        supersimple.get_sample_sizes(
+            RISK_LIMIT,
+            contest,
+            {"sample_size": 2, "1-under": 0, "1-over": 0, "2-under": 0, "2-over": 0},
+        )
+        == 2
+    )
+
+    assert supersimple.compute_risk(RISK_LIMIT, contest, cvrs, {}) == (1, False)
+
+    blank: SAMPLECVRS = {
+        "ballot-0": {"times_sampled": 1, "cvr": {"Uncontested": {"winner": "0"}}},
+        "ballot-1": {"times_sampled": 1, "cvr": None},
+        "ballot-2": {"times_sampled": 1, "cvr": {}},
+    }
+    assert supersimple.compute_risk(RISK_LIMIT, contest, cvrs, blank) == (1, False)
+
+    vote: SAMPLECVRS = {
+        **blank,
+        "ballot-3": {"times_sampled": 1, "cvr": {"Uncontested": {"winner": "1"}}},
+    }
+    assert supersimple.compute_risk(RISK_LIMIT, contest, cvrs, vote) == (0, True)
+
+
+def test_uncontested_multi_winner_contest():
+    contest = Contest(
+        "Uncontested",
+        {"a": 600, "b": 500, "ballots": 1000, "numWinners": 2, "votesAllowed": 2},
+    )
+    assert contest.is_uncontested
+    cvrs: CVRS = {}
+
+    # Sized by the winner with the fewest votes
+    assert supersimple.get_sample_sizes(RISK_LIMIT, contest, None) == 5
+
+    one_winner: SAMPLECVRS = {
+        "ballot-0": {"times_sampled": 1, "cvr": {"Uncontested": {"a": "1", "b": "0"}}},
+    }
+    assert supersimple.compute_risk(RISK_LIMIT, contest, cvrs, one_winner) == (
+        1,
+        False,
+    )
+
+    both_winners: SAMPLECVRS = {
+        **one_winner,
+        "ballot-1": {"times_sampled": 1, "cvr": {"Uncontested": {"a": "0", "b": "1"}}},
+    }
+    assert supersimple.compute_risk(RISK_LIMIT, contest, cvrs, both_winners) == (
+        0,
+        True,
+    )
+
+
+def test_uncontested_contest_with_zero_vote_winner():
+    contest = Contest(
+        "Uncontested",
+        {"a": 600, "b": 0, "ballots": 1000, "numWinners": 2, "votesAllowed": 2},
+    )
+    assert contest.is_uncontested
+    assert supersimple.get_sample_sizes(RISK_LIMIT, contest, None) == 1000
+    assert (
+        supersimple.get_sample_sizes(
+            RISK_LIMIT,
+            contest,
+            {"sample_size": 10, "1-under": 0, "1-over": 0, "2-under": 0, "2-over": 0},
+        )
+        == 990
+    )
+
+
 true_dms = {
     "Contest A": 0.2,
     "Contest B": 0.1,
@@ -1336,3 +1416,25 @@ expected_p_values = {
         "Two-winner Contest": 1.0,
     },
 }
+
+
+@pytest.mark.parametrize(
+    "winner_votes,ballots,expected_size",
+    [
+        ([30000], 100000, 9),
+        ([30000, 90000], 100000, 9),
+        ([100], 100, 1),
+        ([1], 3, 3),
+    ],
+)
+def test_uncontested_sample_size(winner_votes, ballots, expected_size):
+    contest = Contest(
+        "Uncontested",
+        {
+            **{f"winner-{i}": votes for i, votes in enumerate(winner_votes)},
+            "ballots": ballots,
+            "numWinners": len(winner_votes),
+            "votesAllowed": len(winner_votes),
+        },
+    )
+    assert supersimple.get_sample_sizes(RISK_LIMIT, contest, None) == expected_size
