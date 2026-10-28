@@ -1,7 +1,13 @@
+import csv
 import pytest
 from flask.testing import FlaskClient
 
 from ...models import *
+from ...api.shared import (
+    SampleSize,
+    compute_extra_batches_for_round,
+    sampled_batch_results,
+)
 from ..helpers import *
 
 
@@ -279,11 +285,25 @@ def test_multi_contest_batch_comparison_batch_results_validation(
     )
     jurisdiction_2_batches = json.loads(rv.data)["batches"]
 
+    # Each batch lists the contests it was drawn for
+    for batch in jurisdiction_1_batches + jurisdiction_2_batches:
+        drawn_contest_ids = {
+            draw.contest_id
+            for draw in SampledBatchDraw.query.filter_by(batch_id=batch["id"])
+        }
+        assert batch["contestIdsToAudit"] == [
+            contest_id for contest_id in contest_ids if contest_id in drawn_contest_ids
+        ]
+    batch_1 = next(b for b in jurisdiction_1_batches if b["name"] == "Batch 1")
+    batch_4 = next(b for b in jurisdiction_1_batches if b["name"] == "Batch 4")
+    assert batch_1["contestIdsToAudit"] == [contest_ids[1]]
+    assert batch_4["contestIdsToAudit"] == contest_ids
+
     test_cases = [
         # Success cases
         (
             jurisdiction_ids[0],
-            jurisdiction_1_batches[0]["id"],
+            batch_4["id"],
             [
                 {
                     contest_1_choice_ids[0]: 0,
@@ -302,7 +322,13 @@ def test_multi_contest_batch_comparison_batch_results_validation(
         ),
         (
             jurisdiction_ids[0],
-            jurisdiction_1_batches[0]["id"],
+            batch_1["id"],
+            [{contest_2_choice_ids[0]: 0, contest_2_choice_ids[1]: 0}],
+            None,
+        ),
+        (
+            jurisdiction_ids[0],
+            batch_4["id"],
             [
                 # Multiple tally sheets
                 {
@@ -323,13 +349,13 @@ def test_multi_contest_batch_comparison_batch_results_validation(
         # Error cases
         (
             jurisdiction_ids[0],
-            jurisdiction_1_batches[0]["id"],
+            batch_4["id"],
             [{"non-existent-choice-id": 0}],
             "Invalid choice ids",
         ),
         (
             jurisdiction_ids[0],
-            jurisdiction_1_batches[0]["id"],
+            batch_4["id"],
             [{contest_1_choice_ids[0]: 0}],
             "Missing choice ids",
         ),
@@ -349,7 +375,21 @@ def test_multi_contest_batch_comparison_batch_results_validation(
         ),
         (
             jurisdiction_ids[0],
-            jurisdiction_1_batches[0]["id"],
+            batch_1["id"],
+            [
+                {
+                    # Contest 1 not drawn for this batch
+                    contest_1_choice_ids[0]: 0,
+                    contest_1_choice_ids[1]: 0,
+                    contest_2_choice_ids[0]: 0,
+                    contest_2_choice_ids[1]: 0,
+                }
+            ],
+            "Invalid choice ids",
+        ),
+        (
+            jurisdiction_ids[0],
+            batch_4["id"],
             [
                 {
                     contest_1_choice_ids[0]: 100,
@@ -358,12 +398,12 @@ def test_multi_contest_batch_comparison_batch_results_validation(
                     contest_2_choice_ids[1]: 0,
                 }
             ],
-            "Total votes for batch Batch 1 contest Contest 1 should not exceed 100 - "
+            "Total votes for batch Batch 4 contest Contest 1 should not exceed 100 - "
             "the number of ballots in the batch (100) times the number of votes allowed (1).",
         ),
         (
             jurisdiction_ids[0],
-            jurisdiction_1_batches[0]["id"],
+            batch_4["id"],
             [
                 {
                     contest_1_choice_ids[0]: 0,
@@ -372,12 +412,12 @@ def test_multi_contest_batch_comparison_batch_results_validation(
                     contest_2_choice_ids[1]: 1,
                 }
             ],
-            "Total votes for batch Batch 1 contest Contest 2 should not exceed 200 - "
+            "Total votes for batch Batch 4 contest Contest 2 should not exceed 200 - "
             "the number of ballots in the batch (100) times the number of votes allowed (2).",
         ),
         (
             jurisdiction_ids[0],
-            jurisdiction_1_batches[0]["id"],
+            batch_4["id"],
             [
                 # Multiple tally sheets
                 {
@@ -393,7 +433,7 @@ def test_multi_contest_batch_comparison_batch_results_validation(
                     contest_2_choice_ids[1]: 0,
                 },
             ],
-            "Total votes for batch Batch 1 contest Contest 1 should not exceed 100 - "
+            "Total votes for batch Batch 4 contest Contest 1 should not exceed 100 - "
             "the number of ballots in the batch (100) times the number of votes allowed (1).",
         ),
     ]
@@ -596,9 +636,12 @@ def test_multi_contest_batch_comparison_end_to_end(
             }
         ],
     }
-    for batch_id, results in jurisdiction_1_batch_results.items():
+    for batch in jurisdiction_1_batches:
+        results = results_for_batch_contests(
+            batch, jurisdiction_1_batch_results[batch["id"]]
+        )
         rv = put_batch_results(
-            client, election_id, jurisdiction_ids[0], round_1_id, batch_id, results
+            client, election_id, jurisdiction_ids[0], round_1_id, batch["id"], results
         )
         assert_ok(rv)
 
@@ -632,9 +675,12 @@ def test_multi_contest_batch_comparison_end_to_end(
             {contest_1_choice_ids[0]: 75, contest_1_choice_ids[1]: 25}
         ],
     }
-    for batch_id, results in jurisdiction_2_batch_results.items():
+    for batch in jurisdiction_2_batches:
+        results = results_for_batch_contests(
+            batch, jurisdiction_2_batch_results[batch["id"]]
+        )
         rv = put_batch_results(
-            client, election_id, jurisdiction_ids[1], round_1_id, batch_id, results
+            client, election_id, jurisdiction_ids[1], round_1_id, batch["id"], results
         )
         assert_ok(rv)
 
@@ -659,9 +705,12 @@ def test_multi_contest_batch_comparison_end_to_end(
             }
         ],
     }
-    for batch_id, results in jurisdiction_3_batch_results.items():
+    for batch in jurisdiction_3_batches:
+        results = results_for_batch_contests(
+            batch, jurisdiction_3_batch_results[batch["id"]]
+        )
         rv = put_batch_results(
-            client, election_id, jurisdiction_ids[2], round_1_id, batch_id, results
+            client, election_id, jurisdiction_ids[2], round_1_id, batch["id"], results
         )
         assert_ok(rv)
 
@@ -709,6 +758,35 @@ def test_multi_contest_batch_comparison_end_to_end(
     rv = client.get(f"/api/election/{election_id}/report")
     assert rv.status_code == 200
     assert_match_report(rv.data, snapshot)
+
+    # Each contest's totals cover the batches drawn for it, like its round row
+    report_rows = list(csv.reader(io.StringIO(rv.data.decode("utf-8"))))
+    rounds_header = next(
+        row for row in report_rows if row[:2] == ["Round Number", "Contest Name"]
+    )
+    sampled_batches_header = next(
+        row for row in report_rows if row[:2] == ["Jurisdiction Name", "Batch Name"]
+    )
+    totals_row = dict(
+        zip(
+            sampled_batches_header,
+            next(row for row in report_rows if row[:1] == ["Totals"]),
+        )
+    )
+    for contest_name in ["Contest 1", "Contest 2"]:
+        round_row = dict(
+            zip(
+                rounds_header,
+                next(row for row in report_rows if row[:2] == ["1", contest_name]),
+            )
+        )
+        assert (
+            totals_row[f"Reported Results: {contest_name}"]
+            == round_row["Reported Votes"]
+        )
+        assert (
+            totals_row[f"Audit Results: {contest_name}"] == round_row["Audited Votes"]
+        )
 
 
 def test_multi_contest_batch_comparison_round_2(
@@ -820,9 +898,12 @@ def test_multi_contest_batch_comparison_round_2(
             }
         ],
     }
-    for batch_id, results in jurisdiction_1_batch_results.items():
+    for batch in jurisdiction_1_batches:
+        results = results_for_batch_contests(
+            batch, jurisdiction_1_batch_results[batch["id"]]
+        )
         rv = put_batch_results(
-            client, election_id, jurisdiction_ids[0], round_1_id, batch_id, results
+            client, election_id, jurisdiction_ids[0], round_1_id, batch["id"], results
         )
         assert_ok(rv)
 
@@ -844,9 +925,12 @@ def test_multi_contest_batch_comparison_round_2(
             {contest_1_choice_ids[0]: 75, contest_1_choice_ids[1]: 25}
         ],
     }
-    for batch_id, results in jurisdiction_2_batch_results.items():
+    for batch in jurisdiction_2_batches:
+        results = results_for_batch_contests(
+            batch, jurisdiction_2_batch_results[batch["id"]]
+        )
         rv = put_batch_results(
-            client, election_id, jurisdiction_ids[1], round_1_id, batch_id, results
+            client, election_id, jurisdiction_ids[1], round_1_id, batch["id"], results
         )
         assert_ok(rv)
 
@@ -868,9 +952,12 @@ def test_multi_contest_batch_comparison_round_2(
             {contest_1_choice_ids[0]: 75, contest_1_choice_ids[1]: 25}
         ],
     }
-    for batch_id, results in jurisdiction_3_batch_results.items():
+    for batch in jurisdiction_3_batches:
+        results = results_for_batch_contests(
+            batch, jurisdiction_3_batch_results[batch["id"]]
+        )
         rv = put_batch_results(
-            client, election_id, jurisdiction_ids[2], round_1_id, batch_id, results
+            client, election_id, jurisdiction_ids[2], round_1_id, batch["id"], results
         )
         assert_ok(rv)
 
@@ -961,7 +1048,10 @@ def test_multi_contest_batch_comparison_round_2(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/batches"
     )
     jurisdiction_1_batches = json.loads(rv.data)["batches"]
-    assert [batch["name"] for batch in jurisdiction_1_batches] == []
+    # Batches audited for Contest 2 only in round 1 are drawn for Contest 1 now
+    assert [batch["name"] for batch in jurisdiction_1_batches] == ["Batch 1", "Batch 3"]
+    for batch in jurisdiction_1_batches:
+        assert batch["resultTallySheets"] == []
 
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -981,12 +1071,49 @@ def test_multi_contest_batch_comparison_round_2(
     jurisdiction_3_batches = json.loads(rv.data)["batches"]
     assert len(jurisdiction_3_batches) == 0
 
+    # Two of jurisdiction 1's draws re-sample batches already audited for that
+    # contest. The reopened batches keep their round 1 tally sheets, but don't
+    # count as audited until their round 2 contest is entered.
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    assert json.loads(rv.data)["jurisdictions"][0]["currentRoundStatus"] == {
+        "status": "IN_PROGRESS",
+        "numSamples": 4,
+        "numSamplesAudited": 2,
+        "numUnique": 4,
+        "numUniqueAudited": 2,
+    }
+
     #
     # Enter batch results
     #
 
-    # Enter jurisdiction 1 batch results (nothing to enter, just need to finalize)
-
+    # Enter jurisdiction 1 batch results for the reopened batches
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/batches/finalize",
+    )
+    assert rv.status_code == 409
+    for batch in jurisdiction_1_batches:
+        results = results_for_batch_contests(
+            batch, [reported_results_for_batches_1_through_8]
+        )
+        rv = put_batch_results(
+            client, election_id, jurisdiction_ids[0], round_2_id, batch["id"], results
+        )
+        assert_ok(rv)
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    assert json.loads(rv.data)["jurisdictions"][0]["currentRoundStatus"] == {
+        "status": "IN_PROGRESS",
+        "numSamples": 4,
+        "numSamplesAudited": 4,
+        "numUnique": 4,
+        "numUniqueAudited": 4,
+    }
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
@@ -1042,6 +1169,601 @@ def test_multi_contest_batch_comparison_round_2(
     rv = client.get(f"/api/election/{election_id}/report")
     assert rv.status_code == 200
     assert_match_report(rv.data, snapshot)
+
+
+@pytest.fixture
+def org_id(client: FlaskClient, request) -> str:
+    if not hasattr(request, "param"):
+        org_id, _ = create_org_and_admin(
+            f"Test Org {request.node.name}", DEFAULT_AA_EMAIL
+        )
+        return org_id
+    create_org(request.param)
+    return request.param  # ty: ignore[unsound-return-statement]
+
+
+@pytest.mark.parametrize("org_id", ["TEST-ORG/required-batches"], indirect=True)
+def test_multi_contest_batch_comparison_extra_batch(
+    client: FlaskClient,
+    org_id: str,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
+    election_settings,
+    manifests,
+    batch_tallies,
+):
+    # A required batch that isn't randomly sampled is added as an extra batch
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
+    batch_9_id = (
+        Batch.query.filter_by(jurisdiction_id=jurisdiction_ids[0], name="Batch 9")
+        .one()
+        .id
+    )
+    rv = put_json(
+        client,
+        f"/api/support/jurisdictions/{jurisdiction_ids[0]}/required-batches",
+        {"batchIds": [batch_9_id]},
+    )
+    assert_ok(rv)
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
+    sample_size_options = json.loads(rv.data)["sampleSizes"]
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 1,
+            "sampleSizes": {
+                contest_id: options[0]
+                for contest_id, options in sample_size_options.items()
+            },
+        },
+    )
+    assert_ok(rv)
+
+    # Confirm that the extra batch is drawn for the first contest J1 is in, even
+    # though J1 is in both contests
+    assert [
+        (draw.ticket_number, draw.contest_id)
+        for draw in SampledBatchDraw.query.filter_by(batch_id=batch_9_id)
+    ] == [(EXTRA_TICKET_NUMBER, contest_ids[0])]
+
+    # In a later round, an extra batch is still drawn for the first contest,
+    # even once that contest is no longer being sampled
+    extra_batches = compute_extra_batches_for_round(
+        Election.query.get(election_id),
+        2,
+        [
+            (
+                Contest.query.get(contest_ids[1]),
+                SampleSize(size=1, key="custom", prob=None, sizeCvr=0, sizeNonCvr=0),
+            )
+        ],
+        [],
+    )
+    assert [
+        (extra_batch["ticket_number"], extra_batch["contest_id"])
+        for extra_batch in extra_batches
+    ] == [(EXTRA_TICKET_NUMBER, contest_ids[0])]
+
+
+def test_multi_contest_batch_comparison_combined_batches(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
+    election_settings,
+    manifests,
+    batch_tallies,
+    round_1_id: str,
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contests = json.loads(rv.data)["contests"]
+    contest_1_choice_ids = [choice["id"] for choice in contests[0]["choices"]]
+    contest_2_choice_ids = [choice["id"] for choice in contests[1]["choices"]]
+
+    # Combine two batches drawn for Contest 2 only, and a batch drawn for
+    # Contest 1 only with a batch drawn for Contest 2 only
+    batch_ids_by_name = {
+        batch.name: batch.id
+        for batch in Batch.query.filter_by(jurisdiction_id=jurisdiction_ids[0])
+    }
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
+    for name, sub_batch_names in [
+        ("Combined Batch 1", ["Batch 1", "Batch 3"]),
+        ("Combined Batch 2", ["Batch 2", "Batch 8"]),
+    ]:
+        rv = post_json(
+            client,
+            f"/api/support/jurisdictions/{jurisdiction_ids[0]}/combined-batches",
+            dict(
+                name=name,
+                subBatchIds=[
+                    batch_ids_by_name[sub_batch_name]
+                    for sub_batch_name in sub_batch_names
+                ],
+            ),
+        )
+        assert_ok(rv)
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches"
+    )
+    combined_batches = {
+        batch["name"]: batch
+        for batch in json.loads(rv.data)["batches"]
+        if batch["name"].startswith("Combined")
+    }
+    assert combined_batches["Combined Batch 1"]["contestIdsToAudit"] == [contest_ids[1]]
+    assert combined_batches["Combined Batch 2"]["contestIdsToAudit"] == contest_ids
+
+    reported_results = {
+        contest_1_choice_ids[0]: 50,
+        contest_1_choice_ids[1]: 0,
+        contest_2_choice_ids[0]: 50,
+        contest_2_choice_ids[1]: 0,
+    }
+    # Discrepancies, so that round 2 samples Contest 1
+    combined_batch_2_results = {
+        contest_1_choice_ids[0]: 0,
+        contest_1_choice_ids[1]: 75,
+        contest_2_choice_ids[0]: 40,
+        contest_2_choice_ids[1]: 10,
+    }
+    for i, jurisdiction_id in enumerate(jurisdiction_ids):
+        set_logged_in_user(
+            client,
+            UserType.JURISDICTION_ADMIN,
+            jurisdiction_admin_email(election_id, f"J{i + 1}"),
+        )
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/batches"
+        )
+        for batch in json.loads(rv.data)["batches"]:
+            results = results_for_batch_contests(
+                batch,
+                [
+                    combined_batch_2_results
+                    if batch["name"] == "Combined Batch 2"
+                    else reported_results
+                ],
+            )
+            rv = put_batch_results(
+                client, election_id, jurisdiction_id, round_1_id, batch["id"], results
+            )
+            assert_ok(rv)
+        rv = post_json(
+            client,
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/batches/finalize",
+        )
+        assert_ok(rv)
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
+    assert_ok(rv)
+
+    # A batch audited on its own can't be combined once its round has ended,
+    # since its results don't cover the other sub-batch's ballots
+    def combine_batch_4_and_batch_9():
+        set_support_user(client, DEFAULT_SUPPORT_EMAIL)
+        rv = post_json(
+            client,
+            f"/api/support/jurisdictions/{jurisdiction_ids[0]}/combined-batches",
+            dict(
+                name="Combined Batch 3",
+                subBatchIds=[
+                    batch_ids_by_name["Batch 4"],
+                    batch_ids_by_name["Batch 9"],
+                ],
+            ),
+        )
+        assert rv.status_code == 409
+        assert json.loads(rv.data) == {
+            "errors": [
+                {
+                    "errorType": "Conflict",
+                    "message": "Cannot combine batches sampled in a previous round",
+                }
+            ]
+        }
+
+    combine_batch_4_and_batch_9()
+
+    # Each contest's round results count a combined batch once, whichever
+    # sub-batch was drawn for it: Combined Batch 2 and 7 other batches for
+    # Contest 1, both combined batches and 2 other batches for Contest 2
+    def round_results(contest_id: str) -> dict[str, int]:
+        return {
+            result.contest_choice_id: result.result
+            for result in RoundContestResult.query.filter_by(
+                round_id=round_1_id, contest_id=contest_id
+            )
+        }
+
+    assert round_results(contest_ids[0]) == {
+        contest_1_choice_ids[0]: 7 * 50,
+        contest_1_choice_ids[1]: 75,
+    }
+    assert round_results(contest_ids[1]) == {
+        contest_2_choice_ids[0]: 50 + 40 + 2 * 50,
+        contest_2_choice_ids[1]: 10,
+    }
+
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/2")
+    sample_size_options = json.loads(rv.data)["sampleSizes"]
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 2,
+            "sampleSizes": {
+                contest_id: options[0]
+                for contest_id, options in sample_size_options.items()
+            },
+        },
+    )
+    assert_ok(rv)
+    rv = client.get(f"/api/election/{election_id}/round")
+    round_2_id = json.loads(rv.data)["rounds"][1]["id"]
+
+    # Combined Batch 1 is drawn for Contest 1 now, so it is reopened with its
+    # round 1 sheets kept, including the zero tally on the sub-batch that
+    # doesn't hold its results. Combined Batch 2 has audited both contests.
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/batches"
+    )
+    combined_batches = {
+        batch["name"]: batch
+        for batch in json.loads(rv.data)["batches"]
+        if batch["name"].startswith("Combined")
+    }
+    assert list(combined_batches) == ["Combined Batch 1"]
+    combined_batch_1 = combined_batches["Combined Batch 1"]
+    assert combined_batch_1["contestIdsToAudit"] == [contest_ids[0]]
+    assert combined_batch_1["resultTallySheets"] == []
+    rv = put_batch_results(
+        client,
+        election_id,
+        jurisdiction_ids[0],
+        round_2_id,
+        combined_batch_1["id"],
+        results_for_batch_contests(combined_batch_1, [reported_results]),
+    )
+    assert_ok(rv)
+    for batch_name in ["Batch 1", "Batch 3"]:
+        assert (
+            BatchResultTallySheet.query.filter_by(
+                batch_id=batch_ids_by_name[batch_name]
+            ).count()
+            == 2
+        )
+
+    # Nor during the next round
+    combine_batch_4_and_batch_9()
+
+
+def test_multi_contest_batch_comparison_combined_batch_tallied_in_two_rounds(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
+    election_settings,
+    manifests,
+    batch_tallies,
+    round_1_id: str,
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contests = json.loads(rv.data)["contests"]
+    contest_1_choice_ids = [choice["id"] for choice in contests[0]["choices"]]
+    contest_2_choice_ids = [choice["id"] for choice in contests[1]["choices"]]
+
+    # Combine Batch 2, drawn for Contest 1, with Batch 9, which isn't drawn, so
+    # round 1's tallies go on Batch 2
+    batch_ids_by_name = {
+        batch.name: batch.id
+        for batch in Batch.query.filter_by(jurisdiction_id=jurisdiction_ids[0])
+    }
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
+    rv = post_json(
+        client,
+        f"/api/support/jurisdictions/{jurisdiction_ids[0]}/combined-batches",
+        dict(
+            name="Combined Batch",
+            subBatchIds=[batch_ids_by_name["Batch 2"], batch_ids_by_name["Batch 9"]],
+        ),
+    )
+    assert_ok(rv)
+
+    # The combined batch's reported results are the sum of its sub-batches'
+    reported_results = {
+        contest_1_choice_ids[0]: 50,
+        contest_1_choice_ids[1]: 0,
+        contest_2_choice_ids[0]: 50,
+        contest_2_choice_ids[1]: 0,
+    }
+    results_by_batch_name = {
+        "Combined Batch": {
+            contest_1_choice_ids[0]: 100,
+            contest_1_choice_ids[1]: 0,
+            contest_2_choice_ids[0]: 100,
+            contest_2_choice_ids[1]: 0,
+        },
+        # A discrepancy, so that round 2 samples Contest 1
+        "Batch 4": {
+            contest_1_choice_ids[0]: 0,
+            contest_1_choice_ids[1]: 75,
+            contest_2_choice_ids[0]: 50,
+            contest_2_choice_ids[1]: 0,
+        },
+    }
+    for i, jurisdiction_id in enumerate(jurisdiction_ids):
+        set_logged_in_user(
+            client,
+            UserType.JURISDICTION_ADMIN,
+            jurisdiction_admin_email(election_id, f"J{i + 1}"),
+        )
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/batches"
+        )
+        for batch in json.loads(rv.data)["batches"]:
+            results = results_for_batch_contests(
+                batch, [results_by_batch_name.get(batch["name"], reported_results)]
+            )
+            rv = put_batch_results(
+                client, election_id, jurisdiction_id, round_1_id, batch["id"], results
+            )
+            assert_ok(rv)
+        rv = post_json(
+            client,
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/batches/finalize",
+        )
+        assert_ok(rv)
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
+    assert_ok(rv)
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/2")
+    sample_size_options = json.loads(rv.data)["sampleSizes"]
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 2,
+            "sampleSizes": {
+                contest_id: options[0]
+                for contest_id, options in sample_size_options.items()
+            },
+        },
+    )
+    assert_ok(rv)
+    rv = client.get(f"/api/election/{election_id}/round")
+    round_2_id = json.loads(rv.data)["rounds"][1]["id"]
+
+    # Hackily draw Batch 9 for Contest 2, so that the combined batch's round 2
+    # tallies go on a different sub-batch than its round 1 tallies
+    db_session.add(
+        SampledBatchDraw(
+            batch_id=batch_ids_by_name["Batch 9"],
+            round_id=round_2_id,
+            contest_id=contest_ids[1],
+            ticket_number="0.1",
+        )
+    )
+    db_session.commit()
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/batches"
+    )
+    combined_batch = next(
+        batch
+        for batch in json.loads(rv.data)["batches"]
+        if batch["name"] == "Combined Batch"
+    )
+    assert combined_batch["id"] == batch_ids_by_name["Batch 9"]
+    assert combined_batch["contestIdsToAudit"] == [contest_ids[1]]
+    rv = put_batch_results(
+        client,
+        election_id,
+        jurisdiction_ids[0],
+        round_2_id,
+        combined_batch["id"],
+        [{contest_2_choice_ids[0]: 90, contest_2_choice_ids[1]: 10}],
+    )
+    assert_ok(rv)
+
+    # Each contest's tallies are read from the combined batch as a whole,
+    # whichever sub-batch holds them
+    expected_contest_1_results = {
+        contest_1_choice_ids[0]: 100,
+        contest_1_choice_ids[1]: 0,
+    }
+    expected_contest_2_results = {
+        contest_2_choice_ids[0]: 90,
+        contest_2_choice_ids[1]: 10,
+    }
+    for contest_id, expected_results in [
+        (contest_ids[0], expected_contest_1_results),
+        (contest_ids[1], expected_contest_2_results),
+    ]:
+        results = sampled_batch_results(Contest.query.get(contest_id))
+        for batch_name in ["Batch 2", "Batch 9"]:
+            assert results[("J1", batch_name)][contest_id] == expected_results
+
+    # Batch 2 reports 50/0 and Batch 9 reports 25/25 for Contest 2
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/discrepancy")
+    assert json.loads(rv.data)[jurisdiction_ids[0]]["Combined Batch"] == {
+        contest_ids[1]: {
+            "reportedVotes": {contest_2_choice_ids[0]: 75, contest_2_choice_ids[1]: 25},
+            "auditedVotes": expected_contest_2_results,
+            "discrepancies": {
+                contest_2_choice_ids[0]: -15,
+                contest_2_choice_ids[1]: 15,
+            },
+        }
+    }
+
+    rv = client.get(f"/api/election/{election_id}/report")
+    report_rows = list(csv.reader(io.StringIO(rv.data.decode("utf-8"))))
+    sampled_batches_header = next(
+        row for row in report_rows if row[:2] == ["Jurisdiction Name", "Batch Name"]
+    )
+    combined_batch_row = dict(
+        zip(
+            sampled_batches_header,
+            next(row for row in report_rows if row[:2] == ["J1", "Combined Batch"]),
+        )
+    )
+    assert (
+        combined_batch_row["Audit Results: Contest 1"]
+        == "Candidate 1: 100; Candidate 2: 0"
+    )
+    assert (
+        combined_batch_row["Audit Results: Contest 2"]
+        == "Candidate 3: 90; Candidate 4: 10"
+    )
+
+    # Hackily draw Batch 6, audited for Contest 1 in round 1, for Contest 2
+    # now, as a later round would, and enter its Contest 2 tallies
+    db_session.add(
+        SampledBatchDraw(
+            batch_id=batch_ids_by_name["Batch 6"],
+            round_id=round_2_id,
+            contest_id=contest_ids[1],
+            ticket_number="0.2",
+        )
+    )
+    db_session.commit()
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = put_batch_results(
+        client,
+        election_id,
+        jurisdiction_ids[0],
+        round_2_id,
+        batch_ids_by_name["Batch 6"],
+        [{contest_2_choice_ids[0]: 60, contest_2_choice_ids[1]: 40}],
+    )
+    assert_ok(rv)
+
+    # Undoing round 2 removes only the sheets entered in round 2: the combined
+    # batch's Contest 2 sheet on Batch 9 and the zero tally it put on Batch 2,
+    # and Batch 6's Contest 2 sheet. Round 1's sheets and results are unchanged.
+    def tally_sheets(batch_name: str) -> dict[str, dict[str, int]]:
+        return {
+            tally_sheet.name: {
+                result.contest_choice_id: result.result
+                for result in tally_sheet.results
+            }
+            for tally_sheet in BatchResultTallySheet.query.filter_by(
+                batch_id=batch_ids_by_name[batch_name]
+            )
+        }
+
+    contest_1_zero_results = {contest_1_choice_ids[0]: 0, contest_1_choice_ids[1]: 0}
+    contest_2_zero_results = {contest_2_choice_ids[0]: 0, contest_2_choice_ids[1]: 0}
+    batch_6_contest_1_results = {
+        contest_1_choice_ids[0]: 50,
+        contest_1_choice_ids[1]: 0,
+    }
+    assert tally_sheets("Batch 2") == {
+        "Round 1 Tally Sheet #0": expected_contest_1_results,
+        "Round 2 Combined Batch Zero Tally": contest_2_zero_results,
+    }
+    assert tally_sheets("Batch 9") == {
+        "Round 1 Combined Batch Zero Tally": contest_1_zero_results,
+        "Round 2 Tally Sheet #0": expected_contest_2_results,
+    }
+    assert tally_sheets("Batch 6") == {
+        "Round 1 Tally Sheet #0": batch_6_contest_1_results,
+        "Round 2 Tally Sheet #0": {
+            contest_2_choice_ids[0]: 60,
+            contest_2_choice_ids[1]: 40,
+        },
+    }
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.delete(f"/api/election/{election_id}/round/current")
+    assert_ok(rv)
+
+    assert tally_sheets("Batch 2") == {
+        "Round 1 Tally Sheet #0": expected_contest_1_results
+    }
+    assert tally_sheets("Batch 9") == {
+        "Round 1 Combined Batch Zero Tally": contest_1_zero_results
+    }
+    assert tally_sheets("Batch 6") == {
+        "Round 1 Tally Sheet #0": batch_6_contest_1_results
+    }
+    results = sampled_batch_results(Contest.query.get(contest_ids[0]))
+    assert results[("J1", "Batch 2")][contest_ids[0]] == expected_contest_1_results
+    assert results[("J1", "Batch 6")][contest_ids[0]] == batch_6_contest_1_results
+
+
+def test_multi_contest_batch_comparison_progress_with_new_contest_draw(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
+    election_settings,
+    manifests,
+    batch_tallies,
+    round_1_id: str,
+):
+    # Batch 2 is drawn for Contest 1 only
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches"
+    )
+    batch_2 = next(b for b in json.loads(rv.data)["batches"] if b["name"] == "Batch 2")
+    rv = put_batch_results(
+        client,
+        election_id,
+        jurisdiction_ids[0],
+        round_1_id,
+        batch_2["id"],
+        [{choice.id: 0 for choice in Contest.query.get(contest_ids[0]).choices}],
+    )
+    assert_ok(rv)
+
+    # Hackily draw Batch 2 for Contest 2 too, as a later round would for a
+    # batch already audited for Contest 1
+    db_session.add(
+        SampledBatchDraw(
+            batch_id=batch_2["id"],
+            round_id=round_1_id,
+            contest_id=contest_ids[1],
+            ticket_number="0.1",
+        )
+    )
+    db_session.commit()
+
+    # The Contest 1 draw counts as audited, but the batch doesn't until
+    # Contest 2's results are entered
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    assert json.loads(rv.data)["jurisdictions"][0]["currentRoundStatus"] == {
+        "status": "IN_PROGRESS",
+        "numSamples": 16,
+        "numSamplesAudited": 1,
+        "numUnique": 9,
+        "numUniqueAudited": 0,
+    }
 
 
 def test_multi_contest_batch_comparison_batch_tallies_template_csv_generation(

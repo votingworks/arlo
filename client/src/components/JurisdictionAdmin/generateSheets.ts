@@ -355,6 +355,7 @@ export const downloadAuditBoardCredentials = async (
 
 export interface IMinimalContest {
   choices: { name: string }[]
+  id: string
   name: string
 }
 
@@ -382,6 +383,9 @@ export const downloadBatchTallySheets = async (
   const yMax = pageHeight - pageMargin
   for (let i = 0; i < batches.length; i += 1) {
     const batch = batches[i]
+    const batchContests = contests.filter(contest =>
+      batch.contestIdsToAudit.includes(contest.id)
+    )
 
     doc.setFont('Helvetica', 'normal').setFontSize(headingFontSize)
     doc.setLineWidth(drawingLineWidth).setDrawColor('black')
@@ -461,7 +465,7 @@ export const downloadBatchTallySheets = async (
     // Add 3 blank lines to contest entries table to allow for additional entries (i.e. overvotes)
     const blankLines: string[][] = new Array(3).fill(['', ''])
 
-    for (const [contestIndex, contest] of contests.entries()) {
+    for (const [contestIndex, contest] of batchContests.entries()) {
       // manually add page break if table will only print header rows before the
       // page ends as it will then re-print headers on the subsequent page
       y = addPageBreakIfNecessary({
@@ -533,7 +537,7 @@ export const downloadBatchTallySheets = async (
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       y = (doc as any).lastAutoTable.finalY
       y += sectionBottomMargin
-      if (contestIndex === contests.length - 1) {
+      if (contestIndex === batchContests.length - 1) {
         y += doc.getLineHeight()
       }
     }

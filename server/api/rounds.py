@@ -5,12 +5,16 @@ from flask import jsonify, request
 from jsonschema import validate
 from werkzeug.exceptions import BadRequest, Conflict
 from sqlalchemy import and_, func, not_
+from sqlalchemy.orm import selectinload
 
 
 from . import api
 from ..database import db_session
 from ..models import *
 from .shared import (
+    contest_ids_to_audit_in_round,
+    tally_sheets_for_contests,
+    with_combined_sub_batches,
     BallotDraw,
     SampleSize,
     active_targeted_contests,
@@ -197,17 +201,17 @@ def count_audited_votes(election: Election, round: Round):
 
         # For batch audits, count the votes for each audited Batch
         if election.audit_type == AuditType.BATCH_COMPARISON:
+            batches = with_combined_sub_batches(
+                Batch.query.join(SampledBatchDraw)
+                # Special case: don't include extra sampled batches
+                .filter(SampledBatchDraw.ticket_number != EXTRA_TICKET_NUMBER)
+                .filter_by(round_id=round.id, contest_id=contest.id)
+                .all()
+            )
             vote_counts = dict(
-                BatchResult.query.filter(
-                    BatchResult.tally_sheet_id.in_(
-                        BatchResultTallySheet.query.join(Batch)
-                        .join(SampledBatchDraw)
-                        # Special case: don't include extra sampled batches
-                        .filter(SampledBatchDraw.ticket_number != EXTRA_TICKET_NUMBER)
-                        .filter_by(round_id=round.id)
-                        .with_entities(BatchResultTallySheet.id)
-                        .subquery()
-                    )
+                BatchResult.query.join(BatchResultTallySheet)
+                .filter(
+                    BatchResultTallySheet.batch_id.in_([batch.id for batch in batches])
                 )
                 .group_by(BatchResult.contest_choice_id)
                 .values(BatchResult.contest_choice_id, func.sum(BatchResult.result))
@@ -625,6 +629,24 @@ def validate_sample_size(round: dict[str, Any], election: Election):
 
 
 def delete_round_and_corresponding_sampled_ballots(round: Round):
+    # Batch results entered this round are for the round's contests only
+    if round.election.audit_type == AuditType.BATCH_COMPARISON:
+        for batch in with_combined_sub_batches(
+            Batch.query.join(SampledBatchDraw)
+            .filter_by(round_id=round.id)
+            .options(selectinload(Batch.draws))
+            .options(
+                selectinload(Batch.result_tally_sheets).selectinload(
+                    BatchResultTallySheet.results
+                )
+            )
+            .all()
+        ):
+            for tally_sheet in tally_sheets_for_contests(
+                batch, contest_ids_to_audit_in_round(round, batch)
+            ):
+                db_session.delete(tally_sheet)
+
     db_session.delete(round)
 
     # Delete any sampled ballots that were created this round (they will have no associated

@@ -866,10 +866,40 @@ def test_batch_comparison_sample_all_batches(
 def test_batch_comparison_undo_start_round_1(
     client: FlaskClient,
     election_id: str,
+    jurisdiction_ids: list[str],
     round_1_id: str,
 ):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/contest"
+    )
+    choice_ids = [
+        choice["id"] for choice in json.loads(rv.data)["contests"][0]["choices"]
+    ]
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches"
+    )
+    batch_id = json.loads(rv.data)["batches"][0]["id"]
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/{batch_id}/results",
+        [
+            {
+                "name": "Tally Sheet #1",
+                "results": {choice_id: 0 for choice_id in choice_ids},
+            }
+        ],
+    )
+    assert_ok(rv)
+    assert BatchResultTallySheet.query.filter_by(batch_id=batch_id).count() == 1
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.delete(f"/api/election/{election_id}/round/current")
     assert_ok(rv)
+
+    assert BatchResultTallySheet.query.filter_by(batch_id=batch_id).count() == 0
 
     rv = client.get(f"/api/election/{election_id}/round")
     assert json.loads(rv.data) == {"rounds": []}

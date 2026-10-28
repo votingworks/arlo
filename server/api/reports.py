@@ -534,6 +534,7 @@ def round_rows(election: Election):
                 .join(Jurisdiction)
                 .filter_by(election_id=election.id)
                 .filter(SampledBatchDraw.round_id == round.id)
+                .filter(SampledBatchDraw.contest_id == contest.id)
                 .filter(SampledBatchDraw.ticket_number != EXTRA_TICKET_NUMBER)
                 .all()
             )
@@ -1037,38 +1038,75 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
             sampled_batch_rows.append(combined_batch_row)
             return
 
-        is_audited = representative_batch.id in audit_results_by_batch
+        # The sub-batches not holding the combined batch's tallies have zero tallies
+        sub_batch_audit_results = [
+            audit_results_by_batch[sub_batch.id]
+            for sub_batch in sub_batches
+            if sub_batch.id in audit_results_by_batch
+        ]
+        audited_choice_ids = {
+            choice_id
+            for sub_batch_audit_result in sub_batch_audit_results
+            for choice_id in sub_batch_audit_result
+        }
+        sampled_contests = [
+            contest
+            for contest in contests
+            if any(
+                draw.contest_id == contest.id
+                for sub_batch in sub_batches
+                for draw in sub_batch.draws
+            )
+        ]
+        # A batch is audited once every contest it was sampled for has results
+        is_audited = all(
+            choice.id in audited_choice_ids
+            for contest in sampled_contests
+            for choice in contest.choices
+        )
         combined_batch_row += [pretty_boolean(is_audited)]
         for contest in contests:
+            # Reported results are shown for the contests the combined batch was
+            # sampled for, which its audit results can cover
+            is_sampled_for_contest = contest in sampled_contests
             sub_batch_reported_results = list(
                 sub_batch.jurisdiction.batch_tallies[sub_batch.name].get(contest.id)
                 for sub_batch in sub_batches
             )
-            reported_results = {
-                choice.id: sum(
-                    reported_results[choice.id]
-                    for reported_results in sub_batch_reported_results
-                    if reported_results is not None
-                )
-                for choice in contest.choices
-            }
-            for choice in contest.choices:
-                total_reported_results[contest.id][choice.id] += reported_results[
-                    choice.id
-                ]
-
-            reported_results_by_name = {
-                choice.name: reported_results[choice.id] for choice in contest.choices
-            }
-
-            audit_results = (
+            reported_results = (
                 {
-                    choice.id: audit_results_by_batch[representative_batch.id].get(
-                        choice.id, 0
+                    choice.id: sum(
+                        reported_results[choice.id]
+                        for reported_results in sub_batch_reported_results
+                        if reported_results is not None
                     )
                     for choice in contest.choices
                 }
-                if is_audited
+                if is_sampled_for_contest
+                else None
+            )
+            if reported_results is not None:
+                for choice in contest.choices:
+                    total_reported_results[contest.id][choice.id] += reported_results[
+                        choice.id
+                    ]
+
+            reported_results_by_name = reported_results and {
+                choice.name: reported_results[choice.id] for choice in contest.choices
+            }
+
+            is_contest_audited = all(
+                choice.id in audited_choice_ids for choice in contest.choices
+            )
+            audit_results = (
+                {
+                    choice.id: sum(
+                        sub_batch_audit_result.get(choice.id, 0)
+                        for sub_batch_audit_result in sub_batch_audit_results
+                    )
+                    for choice in contest.choices
+                }
+                if reported_results and is_contest_audited
                 else None
             )
             if audit_results is not None:
@@ -1087,12 +1125,16 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
                     sampler_contest.from_db_contest(contest),
                     0,
                 )
-                if audit_results
+                if reported_results and audit_results
                 else None
             )
 
             combined_batch_row += [
-                pretty_choice_votes(reported_results_by_name),
+                (
+                    pretty_choice_votes(reported_results_by_name)
+                    if reported_results_by_name
+                    else ""
+                ),
                 (
                     pretty_choice_votes(audit_results_by_name)
                     if audit_results_by_name
@@ -1103,7 +1145,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
                         contest,
                         batch_vote_deltas(reported_results, audit_results),
                     )
-                    if audit_results
+                    if reported_results and audit_results
                     else ""
                 ),
                 error["counted_as"] if error else "",
@@ -1149,12 +1191,28 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
             sampled_batch_rows.append(row)
             continue
 
-        is_audited = batch.id in audit_results_by_batch
+        audited_choice_ids = set(audit_results_by_batch.get(batch.id, {}))
+        sampled_contests = [
+            contest
+            for contest in contests
+            if any(draw.contest_id == contest.id for draw in batch.draws)
+        ]
+        # A batch is audited once every contest it was sampled for has results
+        is_audited = all(
+            choice.id in audited_choice_ids
+            for contest in sampled_contests
+            for choice in contest.choices
+        )
         row += [pretty_boolean(is_audited)]
 
         for contest in contests:
-            reported_results = batch.jurisdiction.batch_tallies[batch.name].get(
-                contest.id
+            # Reported results are shown for the contests the batch was sampled
+            # for, which its audit results can cover
+            is_sampled_for_contest = contest in sampled_contests
+            reported_results = (
+                batch.jurisdiction.batch_tallies[batch.name].get(contest.id)
+                if is_sampled_for_contest
+                else None
             )
             if reported_results is not None:
                 for choice in contest.choices:
@@ -1166,12 +1224,15 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
                 choice.name: reported_results[choice.id] for choice in contest.choices
             }
 
+            is_contest_audited = all(
+                choice.id in audited_choice_ids for choice in contest.choices
+            )
             audit_results = (
                 {
                     choice.id: audit_results_by_batch[batch.id].get(choice.id, 0)
                     for choice in contest.choices
                 }
-                if is_audited and reported_results
+                if reported_results and is_contest_audited
                 else None
             )
             if audit_results is not None:
@@ -1190,7 +1251,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
                     sampler_contest.from_db_contest(contest),
                     0,
                 )
-                if is_audited and audit_results
+                if reported_results and audit_results
                 else None
             )
 

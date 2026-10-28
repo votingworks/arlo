@@ -789,9 +789,25 @@ def create_combined_batch(jurisdiction_id: str):
         )
     if all(len(batch.draws) == 0 for batch in batches):
         raise Conflict("At least one batch must be part of the sample")
+    # A combined batch counts as audited for the contests any sub-batch was
+    # drawn for in earlier rounds, which only holds if it was tallied as a group
+    current_round = get_current_round(jurisdiction.election)
+    assert current_round is not None
+    if current_round.ended_at is not None or any(
+        draw.round_id != current_round.id for batch in batches for draw in batch.draws
+    ):
+        raise Conflict("Cannot combine batches sampled in a previous round")
+    # The combined batch is tallied from scratch, which the jurisdiction can't
+    # do once it has finalized its results
+    if BatchResultsFinalized.query.filter_by(
+        jurisdiction_id=jurisdiction.id, round_id=current_round.id
+    ).one_or_none():
+        raise Conflict("Cannot combine batches after results are finalized")
 
+    # Tallies entered for a batch on its own don't cover the combined batch
     for batch in batches:
         batch.combined_batch_name = combined_batch["name"]
+        batch.result_tally_sheets = []
 
     db_session.commit()
 

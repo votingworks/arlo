@@ -89,6 +89,14 @@ def get_batch_comparison_discrepancies_by_jurisdiction(
         .all()
     )
     combined_batches = group_combined_batches(combined_sub_batches)
+    # A combined batch is in the round if any of its sub-batches was drawn
+    for combined_batch in combined_batches:
+        sub_batch_keys = {
+            (sub_batch.jurisdiction.name, sub_batch.name)
+            for sub_batch in combined_batch["sub_batches"]
+        }
+        if len(sub_batch_keys & batch_keys_in_round) > 0:
+            batch_keys_in_round |= sub_batch_keys
 
     all_combined_batch_keys = {
         (sub_batch.jurisdiction.name, sub_batch.name)
