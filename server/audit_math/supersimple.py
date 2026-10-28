@@ -380,17 +380,17 @@ def compute_risk(
 
 def uncontested_sample_size(contest: Contest, num_sampled: int) -> int:
     """Returns the number of ballots likely to include a vote for every winner."""
-    remaining = max(contest.ballots - num_sampled, 0)
     min_winner_fraction = min(contest.winners.values()) / contest.ballots
-    # A winner with no reported votes can only be confirmed by a full hand tally
     if min_winner_fraction == 0:
-        return remaining
-    if min_winner_fraction >= 1:
-        return min(1, remaining)
-    size = math.ceil(
-        math.log(1 - UNCONTESTED_P_COMPLETION) / math.log(1 - min_winner_fraction)
-    )
-    return min(size, remaining)
+        # A winner with no reported votes can only be confirmed by a full hand tally
+        size = contest.ballots
+    elif min_winner_fraction >= 1:
+        size = 1
+    else:
+        size = math.ceil(
+            math.log(1 - UNCONTESTED_P_COMPLETION) / math.log(1 - min_winner_fraction)
+        )
+    return min(size, max(contest.ballots - num_sampled, 0))
 
 
 def all_winners_have_audited_votes(contest: Contest, sample_cvr: SAMPLECVRS) -> bool:
