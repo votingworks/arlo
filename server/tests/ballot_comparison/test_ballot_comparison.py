@@ -16,7 +16,9 @@ from .conftest import (
 from ..ballot_comparison.test_cvrs import (
     ESS_BALLOTS_1,
     ESS_BALLOTS_2,
+    build_hart_cvr,
 )
+from ...api.shared import cvrs_for_contest
 
 
 def test_set_contest_metadata_on_contest_creation(
@@ -1690,6 +1692,148 @@ def test_ballot_comparison_ess(
     j2_discrepancies = discrepancies[jurisdiction_ids[1]]
     assert "0001, BATCH2, Ballot 3" not in j2_discrepancies
     assert "0002, BATCH1, Ballot 3" in j2_discrepancies
+
+
+def test_ballot_comparison_hart_invalid_write_in(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    election_settings,
+    hart_manifests,
+):
+    # Hart CVRs record unadjudicated write-ins as a "Write-In" vote
+    hart_cvrs = [
+        build_hart_cvr("BATCH1", "1", "1-1-1", "1,0,1,0,0"),
+        build_hart_cvr("BATCH1", "2", "1-1-2", "1,0,1,0,0"),
+        build_hart_cvr("BATCH1", "3", "1-1-3", "1,0,1,0,0", add_write_in=True),
+        build_hart_cvr("BATCH2", "1", "1-2-1", "1,0,1,0,0"),
+        build_hart_cvr("BATCH2", "2", "1-2-2", "1,0,0,1,0"),
+        build_hart_cvr("BATCH2", "3", "1-2-3", "1,0,1,0,0", add_write_in=True),
+        build_hart_cvr("BATCH3", "1", "1-3-1", "1,0,0,1,0"),
+        build_hart_cvr("BATCH3", "2", "1-3-2", "1,0,0,0,1"),
+        build_hart_cvr("BATCH3", "3", "1-3-3", "1,0,1,0,0", add_write_in=True),
+        build_hart_cvr("BATCH4", "1", "1-4-1", "1,0,0,0,1"),
+        build_hart_cvr("BATCH4", "2", "1-4-2", "1,0,1,0,0"),
+        build_hart_cvr("BATCH4", "3", "1-4-3", "1,0,1,0,0", add_write_in=True),
+        build_hart_cvr("BATCH4", "4", "1-4-4", "1,0,1,0,0"),
+        build_hart_cvr("BATCH4", "5", "1-4-5", "0,1,0,1,0"),
+        build_hart_cvr("BATCH4", "6", "1-4-6", "1,0,1,0,0", add_write_in=True),
+    ]
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    for jurisdiction_id in jurisdiction_ids[:2]:
+        rv = upload_cvrs(
+            client,
+            zip_hart_cvrs(hart_cvrs),
+            election_id,
+            jurisdiction_id,
+            "HART",
+            "application/zip",
+        )
+        assert_ok(rv)
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/contest",
+        [
+            {
+                "id": str(uuid.uuid4()),
+                "name": "Contest 1",
+                "numWinners": 1,
+                "jurisdictionIds": jurisdiction_ids[:2],
+                "isTargeted": True,
+            },
+        ],
+    )
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contest_id = json.loads(rv.data)["contests"][0]["id"]
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
+    sample_size = json.loads(rv.data)["sampleSizes"][contest_id][0]
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {"roundNum": 1, "sampleSizes": {contest_id: sample_size}},
+    )
+    assert_ok(rv)
+    rv = client.get(f"/api/election/{election_id}/round")
+    round_1_id = json.loads(rv.data)["rounds"][0]["id"]
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    for jurisdiction_id in jurisdiction_ids[:2]:
+        rv = post_json(
+            client,
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/audit-board",
+            [{"name": "Audit Board #1"}],
+        )
+        assert_ok(rv)
+
+    # Audit boards see each ballot as reported, except that write-ins are
+    # adjudicated as invalid
+    contest = Contest.query.get(contest_id)
+    write_in = next(choice for choice in contest.choices if choice.name == "Write-In")
+    write_in_id = write_in.id
+    reported_votes = {
+        ballot_id: cvr[contest_id]
+        for ballot_id, cvr in cvrs_for_contest(contest).items()
+        if cvr
+    }
+    sampled_ballots = SampledBallot.query.filter(
+        SampledBallot.id.in_(reported_votes.keys())
+    ).all()
+    write_in_ballots = [
+        ballot
+        for ballot in sampled_ballots
+        if reported_votes[ballot.id][write_in_id] == "1"
+    ]
+    assert len(write_in_ballots) > 0
+    faint_mark_ballot = next(
+        ballot for ballot in sampled_ballots if ballot not in write_in_ballots
+    )
+    faint_mark_jurisdiction_id = faint_mark_ballot.batch.jurisdiction_id
+    faint_mark_ballot_label = (
+        f"{faint_mark_ballot.batch.name}, Ballot {faint_mark_ballot.ballot_position}"
+    )
+    for ballot in sampled_ballots:
+        choices = [
+            choice
+            for choice in contest.choices
+            if choice != write_in and reported_votes[ballot.id][choice.id] == "1"
+        ]
+        audit_ballot(
+            ballot,
+            contest_id,
+            Interpretation.VOTE if choices else Interpretation.BLANK,
+            choices,
+            has_invalid_write_in=(
+                ballot in write_in_ballots or ballot == faint_mark_ballot
+            ),
+        )
+    for audit_board in AuditBoard.query.filter(
+        AuditBoard.jurisdiction_id.in_(jurisdiction_ids)
+    ):
+        audit_board.signed_off_at = datetime.now(timezone.utc)
+    db_session.commit()
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/discrepancy")
+    discrepancies = json.loads(rv.data)
+    discrepant_ballots = [
+        (jurisdiction_id, ballot_id, ballot_discrepancies[contest_id]["discrepancies"])
+        for jurisdiction_id, jurisdiction_discrepancies in discrepancies.items()
+        for ballot_id, ballot_discrepancies in jurisdiction_discrepancies.items()
+    ]
+    # Only the invalid write-in the scanner didn't record is a discrepancy
+    assert len(discrepant_ballots) == 1
+    jurisdiction_id, ballot_id, ballot_discrepancies = discrepant_ballots[0]
+    assert jurisdiction_id == faint_mark_jurisdiction_id
+    assert ballot_id.endswith(faint_mark_ballot_label)
+    assert ballot_discrepancies[write_in_id] == -1
 
 
 def test_ballot_comparison_sample_preview(
