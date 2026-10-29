@@ -1695,7 +1695,10 @@ def test_ballot_comparison_ess(
     assert "0002, BATCH1, Ballot 3" in j2_discrepancies
 
 
-@pytest.mark.parametrize("mixed_write_in_casing", [False, True])
+@pytest.mark.parametrize(
+    "mixed_write_in_casing,write_in_wins",
+    [(False, False), (True, False), (False, True)],
+)
 def test_ballot_comparison_hart_invalid_write_in(
     client: FlaskClient,
     election_id: str,
@@ -1703,22 +1706,23 @@ def test_ballot_comparison_hart_invalid_write_in(
     election_settings,
     hart_manifests,
     mixed_write_in_casing: bool,
+    write_in_wins: bool,
 ):
     # Hart CVRs record unadjudicated write-ins as a "Write-In" vote
     hart_cvrs = [
-        build_hart_cvr("BATCH1", "1", "1-1-1", "1,0,1,0,0"),
-        build_hart_cvr("BATCH1", "2", "1-1-2", "1,0,1,0,0"),
+        build_hart_cvr("BATCH1", "1", "1-1-1", "1,0,1,0,0", add_write_in=write_in_wins),
+        build_hart_cvr("BATCH1", "2", "1-1-2", "1,0,1,0,0", add_write_in=write_in_wins),
         build_hart_cvr("BATCH1", "3", "1-1-3", "1,0,1,0,0", add_write_in=True),
-        build_hart_cvr("BATCH2", "1", "1-2-1", "1,0,1,0,0"),
-        build_hart_cvr("BATCH2", "2", "1-2-2", "1,0,0,1,0"),
+        build_hart_cvr("BATCH2", "1", "1-2-1", "1,0,1,0,0", add_write_in=write_in_wins),
+        build_hart_cvr("BATCH2", "2", "1-2-2", "1,0,0,1,0", add_write_in=write_in_wins),
         build_hart_cvr("BATCH2", "3", "1-2-3", "1,0,1,0,0", add_write_in=True),
-        build_hart_cvr("BATCH3", "1", "1-3-1", "1,0,0,1,0"),
-        build_hart_cvr("BATCH3", "2", "1-3-2", "1,0,0,0,1"),
+        build_hart_cvr("BATCH3", "1", "1-3-1", "1,0,0,1,0", add_write_in=write_in_wins),
+        build_hart_cvr("BATCH3", "2", "1-3-2", "1,0,0,0,1", add_write_in=write_in_wins),
         build_hart_cvr("BATCH3", "3", "1-3-3", "1,0,1,0,0", add_write_in=True),
-        build_hart_cvr("BATCH4", "1", "1-4-1", "1,0,0,0,1"),
-        build_hart_cvr("BATCH4", "2", "1-4-2", "1,0,1,0,0"),
+        build_hart_cvr("BATCH4", "1", "1-4-1", "1,0,0,0,1", add_write_in=write_in_wins),
+        build_hart_cvr("BATCH4", "2", "1-4-2", "1,0,1,0,0", add_write_in=write_in_wins),
         build_hart_cvr("BATCH4", "3", "1-4-3", "1,0,1,0,0", add_write_in=True),
-        build_hart_cvr("BATCH4", "4", "1-4-4", "1,0,1,0,0"),
+        build_hart_cvr("BATCH4", "4", "1-4-4", "1,0,1,0,0", add_write_in=write_in_wins),
         build_hart_cvr("BATCH4", "5", "1-4-5", "0,1,0,1,0"),
         build_hart_cvr("BATCH4", "6", "1-4-6", "1,0,1,0,0", add_write_in=True),
     ]
@@ -1807,8 +1811,16 @@ def test_ballot_comparison_hart_invalid_write_in(
     ]
     assert len(write_in_ballots) > 0
     unrecorded_write_in_ballot = next(
-        ballot for ballot in sampled_ballots if ballot not in write_in_ballots
+        (ballot for ballot in sampled_ballots if ballot not in write_in_ballots),
+        None,
     )
+    write_in_ballot_labels = {
+        (
+            ballot.batch.jurisdiction_id,
+            f"{ballot.batch.tabulator}, {ballot.batch.name}, Ballot {ballot.ballot_position}",
+        )
+        for ballot in write_in_ballots
+    }
     for ballot in sampled_ballots:
         choices = [
             choice
@@ -1833,7 +1845,16 @@ def test_ballot_comparison_hart_invalid_write_in(
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/discrepancy")
-    assert json.loads(rv.data) == {}
+    discrepancies = json.loads(rv.data)
+    discrepant_ballot_labels = {
+        (jurisdiction_id, ballot_label)
+        for jurisdiction_id, jurisdiction_discrepancies in discrepancies.items()
+        for ballot_label in jurisdiction_discrepancies
+    }
+    # Invalid write-ins counted toward a winning Write-In are overstatements
+    assert discrepant_ballot_labels == (
+        write_in_ballot_labels if write_in_wins else set()
+    )
 
 
 def test_ballot_comparison_sample_preview(

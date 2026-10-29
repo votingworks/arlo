@@ -541,13 +541,19 @@ def sampled_ballot_interpretations_to_cvrs(
     write_in_choices = [
         choice for choice in contest.choices if str(choice.name).lower() == "write-in"
     ]
+    if match_invalid_write_ins_to_cvrs and write_in_choices:
+        losers = sampler_contest.from_db_contest(contest).losers
+        write_in_choices = [
+            choice for choice in write_in_choices if choice.id in losers
+        ]
 
     # The CVR we build should have a 1 for each choice that got voted for,
     # and a 0 otherwise. There are a couple special cases:
     # - Contest wasn't on the ballot - CVR should be an empty object
     # - Audit board couldn't find the ballot - CVR should be None
     # - Invalid write-in - CVRs may or may not record the write-in mark
-    #   depending on adjudication, so we defer to the CVR
+    #   depending on adjudication, so we defer to the CVR unless write-ins
+    #   are a reported winner
     cvrs: sampler_contest.SAMPLECVRS = {}
     reported_cvrs: sampler_contest.CVRS | None = None
     for ballot, times_sampled in ballots:
