@@ -237,3 +237,13 @@ def test_tight_margins_full_count():
     m_1 = minerva.compute_risk(RISK_LIMIT, contest, sample_results, round_schedule)
     assert m_2[1]
     assert m_1[1]
+
+
+@pytest.mark.parametrize("math_type", [AuditMathType.MINERVA, AuditMathType.PROVIDENCE])
+def test_compute_risk_tie(math_type: AuditMathType):
+    # A sample can't confirm a tie, no matter how lopsided
+    contest = minerva.make_arlo_contest({"A": 500, "B": 500})
+    round_sizes = {1: RoundInfo("1", 100)}
+    assert ballot_polling.compute_risk(
+        RISK_LIMIT, contest, {"1": {"A": 100, "B": 0}}, {}, math_type, round_sizes
+    ) == ({("winner", "loser"): 1.0}, False)

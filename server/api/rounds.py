@@ -640,6 +640,16 @@ def validate_sample_size(round: dict[str, Any], election: Election):
                     )
                     + "For a full hand tally, use the ballot polling or batch comparison audit type."
                 )
+            # Only round 1 switches to a full hand tally, which Minerva and
+            # Providence math can't compute risk for
+            if round["roundNum"] == 1 and election.audit_math_type in [
+                AuditMathType.MINERVA,
+                AuditMathType.PROVIDENCE,
+            ]:
+                raise BadRequest(
+                    "Minerva and Providence audits don't support a full hand tally."
+                    " For a full hand tally, use a BRAVO ballot polling audit."
+                )
             if (
                 election.audit_type == AuditType.BALLOT_POLLING
                 and len(targeted_contests) > 1

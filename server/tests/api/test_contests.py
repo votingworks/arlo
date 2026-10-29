@@ -464,6 +464,84 @@ def test_contest_multiple_votes_allowed(
     }
 
 
+@pytest.mark.parametrize(
+    "audit_math_type", [AuditMathType.MINERVA, AuditMathType.PROVIDENCE]
+)
+def test_contest_tied(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    audit_math_type: AuditMathType,
+):
+    election = Election.query.get(election_id)
+    election.audit_math_type = audit_math_type
+    db_session.commit()
+
+    contest = {
+        "id": str(uuid.uuid4()),
+        "name": "Contest 1",
+        "isTargeted": True,
+        "choices": [
+            {
+                "id": str(uuid.uuid4()),
+                "name": "candidate 1",
+                "numVotes": 400,
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "name": "candidate 2",
+                "numVotes": 300,
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "name": "candidate 3",
+                "numVotes": 300,
+            },
+        ],
+        "totalBallotsCast": 1000,
+        "numWinners": 2,
+        "votesAllowed": 1,
+        "jurisdictionIds": jurisdiction_ids,
+    }
+
+    # The second winner is tied with the loser
+    rv = put_json(client, f"/api/election/{election_id}/contest", [contest])
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "message": "Contest Contest 1 is tied, which requires a full hand tally. For a full hand tally, use a BRAVO ballot polling audit.",
+                "errorType": "Bad Request",
+            }
+        ]
+    }
+
+    # A tie among winners doesn't affect the outcome
+    contest["choices"][0]["numVotes"] = 300
+    contest["choices"][2]["numVotes"] = 200
+    rv = put_json(client, f"/api/election/{election_id}/contest", [contest])
+    assert_ok(rv)
+
+    # Opportunistic contests can be tied, since they never need a full hand tally
+    tied_opportunistic_contest = {
+        **contest,
+        "id": str(uuid.uuid4()),
+        "name": "Contest 2",
+        "isTargeted": False,
+        "choices": [
+            {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 400},
+            {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 400},
+        ],
+        "numWinners": 1,
+    }
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/contest",
+        [contest, tied_opportunistic_contest],
+    )
+    assert_ok(rv)
+
+
 def test_jurisdictions_contests_list_empty(
     client: FlaskClient,
     election_id: str,
