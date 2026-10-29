@@ -458,7 +458,7 @@ describe('Home screen', () => {
         screen.getByRole('textbox', { name: 'Audit name' }),
         'November Presidential Election 2020'
       )
-      userEvent.click(screen.getByRole('radio', { name: 'Providence (Beta)' }))
+      userEvent.click(screen.getByRole('radio', { name: 'Providence' }))
       userEvent.click(createAuditButton)
       await screen.findByText('The audit has not started.')
     })
