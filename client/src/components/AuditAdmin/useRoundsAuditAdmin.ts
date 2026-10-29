@@ -20,6 +20,7 @@ export interface IRound {
   needsFullHandTally: boolean
   isFullHandTally: boolean
   endedWithFullTallyEscalation: boolean
+  randomSeed: string | null
   drawSampleTask: {
     status: FileProcessingStatus
     startedAt: string | null
@@ -67,9 +68,15 @@ export const useRounds = (
     options
   )
 
+export type StartNextRound = (
+  sampleSizes: ISampleSizes,
+  randomSeed?: string
+) => Promise<boolean>
+
 interface ICreateRoundBody {
   roundNum: number
   sampleSizes: ISampleSizes
+  randomSeed?: string
 }
 
 export const useStartNextRound = (

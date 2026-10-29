@@ -5,6 +5,7 @@ from flask.testing import FlaskClient
 from ...models import *
 from ...auth import UserType
 from ...api.shared import active_targeted_contests
+from ...audit_math import sampler
 from ...database import db_session
 from ..helpers import *
 
@@ -59,6 +60,7 @@ def test_rounds_create_one(
                 "needsFullHandTally": False,
                 "isFullHandTally": False,
                 "endedWithFullTallyEscalation": False,
+                "randomSeed": None,
                 "drawSampleTask": {
                     "status": "PROCESSED",
                     "startedAt": assert_is_date,
@@ -140,6 +142,7 @@ def test_rounds_create_two(
                 "needsFullHandTally": False,
                 "isFullHandTally": False,
                 "endedWithFullTallyEscalation": False,
+                "randomSeed": None,
                 "drawSampleTask": {
                     "status": "PROCESSED",
                     "startedAt": assert_is_date,
@@ -156,6 +159,7 @@ def test_rounds_create_two(
                 "needsFullHandTally": False,
                 "isFullHandTally": False,
                 "endedWithFullTallyEscalation": False,
+                "randomSeed": None,
                 "drawSampleTask": {
                     "status": "PROCESSED",
                     "startedAt": assert_is_date,
@@ -188,6 +192,74 @@ def test_rounds_create_two(
         draw.sampled_ballot.batch.jurisdiction_id for draw in ballot_draws
     }
     assert sorted(sampled_jurisdictions) == sorted(jurisdiction_ids[:2])
+
+
+def test_rounds_random_seed_only_for_providence(
+    client: FlaskClient,
+    election_id: str,
+    contest_ids: list[str],
+    round_1_id: str,
+):
+    run_audit_round(round_1_id, contest_ids[0], contest_ids, 0.5)
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/2")
+    sample_size = json.loads(rv.data)["sampleSizes"][contest_ids[0]][0]
+    round_2_body = {"roundNum": 2, "sampleSizes": {contest_ids[0]: sample_size}}
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {**round_2_body, "randomSeed": "0987654321"},
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "A random seed can only be provided for rounds after round 1 of a Providence audit",
+            }
+        ]
+    }
+
+    rv = post_json(client, f"/api/election/{election_id}/round", round_2_body)
+    assert_ok(rv)
+
+    # Non-Providence rounds don't store a seed, and keep drawing from the
+    # election's random seed where the previous round left off
+    rounds = Round.query.filter_by(election_id=election_id).order_by(Round.round_num)
+    round_1, round_2 = rounds.all()
+    assert round_1.random_seed is None
+    assert round_2.random_seed is None
+
+    contest = Contest.query.get(contest_ids[0])
+    manifest = {
+        (jurisdiction.name, batch.tabulator, batch.name): list(
+            range(1, batch.num_ballots + 1)
+        )
+        for jurisdiction in contest.jurisdictions
+        for batch in jurisdiction.batches
+    }
+    num_round_1_draws = SampledBallotDraw.query.filter_by(
+        round_id=round_1.id, contest_id=contest.id
+    ).count()
+    expected_tickets = {
+        ticket_number
+        for ticket_number, _, _ in sampler.draw_sample(
+            contest.election.random_seed,
+            manifest,
+            sample_size["size"],
+            num_round_1_draws,
+        )
+    }
+    round_2_tickets = {
+        draw.ticket_number
+        for draw in SampledBallotDraw.query.filter_by(
+            round_id=round_2.id, contest_id=contest.id
+        )
+    }
+    assert round_2_tickets == expected_tickets
 
 
 def test_active_targeted_contests_uses_latest_ended_round(
@@ -235,6 +307,7 @@ def test_rounds_complete_audit(
                 "needsFullHandTally": False,
                 "isFullHandTally": False,
                 "endedWithFullTallyEscalation": False,
+                "randomSeed": None,
                 "drawSampleTask": {
                     "status": "PROCESSED",
                     "startedAt": assert_is_date,

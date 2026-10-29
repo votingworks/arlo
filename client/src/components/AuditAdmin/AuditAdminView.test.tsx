@@ -4,6 +4,7 @@ import { waitFor, fireEvent, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Route, RouteProps } from 'react-router-dom'
 import { QueryClientProvider } from 'react-query'
+import { toast } from 'react-toastify'
 import AuditAdminView from './AuditAdminView'
 import {
   withMockFetch,
@@ -396,4 +397,132 @@ it('finishes a round', async () => {
     userEvent.click(screen.getByRole('button', { name: 'Finish Round 1' }))
     await screen.findByText('Congratulations - the audit is complete!')
   })
+})
+
+it('sends the new random seed when starting the next round of a Providence audit', async () => {
+  const sampleSizes = {
+    'contest-id': sampleSizeMock.ballotPolling.sampleSizes!['contest-id'][0],
+  }
+  const expectedCalls = [
+    aaApiCalls.getUser,
+    aaApiCalls.getRounds(roundMocks.needAnother),
+    {
+      ...aaApiCalls.getJurisdictions,
+      response: { jurisdictions: jurisdictionMocks.allComplete },
+    },
+    aaApiCalls.getContests(contestMocks.filledTargeted),
+    aaApiCalls.getSettings({
+      ...auditSettingsMocks.all,
+      auditMathType: 'PROVIDENCE',
+    }),
+    {
+      ...aaApiCalls.getSampleSizes(sampleSizeMock.ballotPolling),
+      url: '/api/election/1/sample-sizes/2',
+    },
+    aaApiCalls.getLastLoginByJurisdiction(),
+    aaApiCalls.getMapData,
+    {
+      url: '/api/election/1/round',
+      response: { status: 'ok' },
+      options: {
+        body: JSON.stringify({
+          sampleSizes,
+          roundNum: 2,
+          randomSeed: '67890',
+        }),
+        headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
+      },
+    },
+    aaApiCalls.getRounds(roundMocks.needAnother),
+  ]
+  await withMockFetch(expectedCalls, async () => {
+    render('progress')
+    await screen.findByText('Round 2 Sample Sizes')
+    userEvent.click(screen.getByRole('button', { name: 'Start Round 2' }))
+    const modal = screen
+      .getByRole('heading', { name: 'Enter Random Seed for Round 2' })
+      .closest('div.bp3-dialog')! as HTMLElement
+    userEvent.type(
+      within(modal).getByLabelText(/Enter a series of random numbers/),
+      '67890'
+    )
+    userEvent.click(
+      within(modal).getByRole('button', { name: /Start Round 2/ })
+    )
+    await waitFor(() => expect(modal).not.toBeInTheDocument())
+  })
+})
+
+it('keeps the random seed modal open when the server rejects a reused seed', async () => {
+  const toastErrorSpy = vi.spyOn(toast, 'error')
+  const sampleSizes = {
+    'contest-id': sampleSizeMock.ballotPolling.sampleSizes!['contest-id'][0],
+  }
+  const expectedCalls = [
+    aaApiCalls.getUser,
+    aaApiCalls.getRounds(roundMocks.needAnother),
+    {
+      ...aaApiCalls.getJurisdictions,
+      response: { jurisdictions: jurisdictionMocks.allComplete },
+    },
+    aaApiCalls.getContests(contestMocks.filledTargeted),
+    aaApiCalls.getSettings({
+      ...auditSettingsMocks.all,
+      auditMathType: 'PROVIDENCE',
+    }),
+    {
+      ...aaApiCalls.getSampleSizes(sampleSizeMock.ballotPolling),
+      url: '/api/election/1/sample-sizes/2',
+    },
+    aaApiCalls.getLastLoginByJurisdiction(),
+    aaApiCalls.getMapData,
+    {
+      url: '/api/election/1/round',
+      options: {
+        body: JSON.stringify({
+          sampleSizes,
+          roundNum: 2,
+          randomSeed: '12345',
+        }),
+        headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
+      },
+      response: {
+        errors: [
+          {
+            errorType: 'Bad Request',
+            message: 'Cannot reuse a previous random seed',
+          },
+        ],
+      },
+      error: { status: 400, statusText: 'Bad Request' },
+    },
+  ]
+  await withMockFetch(expectedCalls, async () => {
+    render('progress')
+    await screen.findByText('Round 2 Sample Sizes')
+    userEvent.click(screen.getByRole('button', { name: 'Start Round 2' }))
+    const modal = screen
+      .getByRole('heading', { name: 'Enter Random Seed for Round 2' })
+      .closest('div.bp3-dialog')! as HTMLElement
+    userEvent.type(
+      within(modal).getByLabelText(/Enter a series of random numbers/),
+      '12345'
+    )
+    userEvent.click(
+      within(modal).getByRole('button', { name: /Start Round 2/ })
+    )
+    await waitFor(() =>
+      expect(toastErrorSpy).toHaveBeenCalledWith(
+        'Cannot reuse a previous random seed'
+      )
+    )
+    // The modal stays open so a different seed can be entered
+    expect(modal).toBeInTheDocument()
+    expect(
+      within(modal).getByLabelText(/Enter a series of random numbers/)
+    ).toHaveValue('12345')
+  })
+  toastErrorSpy.mockRestore()
 })

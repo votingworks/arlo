@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import React from 'react'
 import { BrowserRouter as Router, useParams } from 'react-router-dom'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QueryClientProvider } from 'react-query'
 import { ToastContainer } from 'react-toastify'
@@ -352,6 +352,81 @@ describe('StatusBox', () => {
         )
         await screen.findByText('Round 2 Sample Sizes')
         screen.getByText(/Contest Name: 4 batches/)
+      })
+    })
+
+    it('prompts for a new random seed before starting the next round of a Providence audit', async () => {
+      const expectedCalls = [
+        {
+          ...aaApiCalls.getSampleSizes(sampleSizeMock.ballotPolling),
+          url: '/api/election/1/sample-sizes/2',
+        },
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        const startNextRoundMock = vi.fn().mockResolvedValue(true)
+        render(
+          <QueryClientProvider client={createQueryClient()}>
+            <Router>
+              <AuditAdminStatusBox
+                rounds={roundMocks.needAnother}
+                startNextRound={startNextRoundMock}
+                finishRound={vi.fn()}
+                undoRoundStart={vi.fn()}
+                jurisdictions={jurisdictionMocks.allComplete}
+                contests={contestMocks.filledTargeted}
+                auditSettings={{
+                  ...auditSettingsMocks.all,
+                  auditMathType: 'PROVIDENCE',
+                }}
+              />
+            </Router>
+          </QueryClientProvider>
+        )
+        await screen.findByText('Round 2 Sample Sizes')
+
+        userEvent.click(screen.getByRole('button', { name: 'Start Round 2' }))
+        const modal = screen
+          .getByRole('heading', { name: 'Enter Random Seed for Round 2' })
+          .closest('div.bp3-dialog')! as HTMLElement
+        expect(startNextRoundMock).not.toHaveBeenCalled()
+
+        // Presentation mode can be toggled on and off
+        userEvent.click(
+          within(modal).getByRole('button', { name: 'Presentation Mode' })
+        )
+        userEvent.click(
+          within(modal).getByRole('button', { name: 'Exit Presentation Mode' })
+        )
+
+        const submitButton = within(modal).getByRole('button', {
+          name: /Start Round 2/,
+        })
+        expect(submitButton).toBeDisabled()
+        const seedInput = within(modal).getByLabelText(
+          /Enter a series of random numbers/
+        )
+
+        // Seeds longer than 100 characters aren't allowed
+        userEvent.type(seedInput, '1'.repeat(101))
+        within(modal).getByText('Must be 100 characters or fewer')
+        expect(submitButton).toBeDisabled()
+
+        userEvent.clear(seedInput)
+        userEvent.type(seedInput, '67890')
+        expect(
+          within(modal).queryByText('Must be 100 characters or fewer')
+        ).not.toBeInTheDocument()
+        userEvent.click(submitButton)
+
+        await waitFor(() => expect(startNextRoundMock).toHaveBeenCalledTimes(1))
+        expect(startNextRoundMock).toHaveBeenCalledWith(
+          {
+            'contest-id':
+              sampleSizeMock.ballotPolling.sampleSizes!['contest-id'][0],
+          },
+          '67890'
+        )
+        await waitFor(() => expect(modal).not.toBeInTheDocument())
       })
     })
 

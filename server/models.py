@@ -688,6 +688,9 @@ class Round(BaseModel):
     round_num = Column(Integer, nullable=False)
     ended_at = Column(UTCDateTime)
     ended_with_full_tally_escalation = Column(Boolean)
+    # For Providence ballot polling audits, each round requires a fresh random
+    # seed. Round 1 uses a copy of Election.random_seed.
+    random_seed = Column(String(100))
 
     draw_sample_task_id = Column(
         String(200), ForeignKey("background_task.id", ondelete="set null")

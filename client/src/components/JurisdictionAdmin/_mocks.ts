@@ -24,6 +24,7 @@ export const roundMocks = mocksOfType<IRound>()({
     needsFullHandTally: false,
     isFullHandTally: false,
     endedWithFullTallyEscalation: false,
+    randomSeed: null,
     drawSampleTask: {
       status: FileProcessingStatus.PROCESSED,
       startedAt: '2020-09-14T17:35:19.482Z',
@@ -40,6 +41,7 @@ export const roundMocks = mocksOfType<IRound>()({
     isAuditComplete: true,
     isFullHandTally: false,
     endedWithFullTallyEscalation: false,
+    randomSeed: null,
     drawSampleTask: {
       status: FileProcessingStatus.PROCESSED,
       startedAt: '2020-09-14T17:35:19.482Z',
@@ -56,6 +58,7 @@ export const roundMocks = mocksOfType<IRound>()({
     needsFullHandTally: true,
     isFullHandTally: true,
     endedWithFullTallyEscalation: false,
+    randomSeed: null,
     drawSampleTask: {
       status: FileProcessingStatus.PROCESSED,
       startedAt: '2020-09-14T17:35:19.482Z',
