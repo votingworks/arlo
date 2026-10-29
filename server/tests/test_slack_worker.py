@@ -351,3 +351,122 @@ def test_slack_worker_truncate_long_error_messages():
     error_message = message["blocks"][1]["elements"][0]["text"]
     error_prefix = ":x: "
     assert len(error_message) == max_error_len + len(error_prefix)
+
+
+def test_slack_worker_channels():
+    timestamp = datetime.fromisoformat("2021-05-19T18:31:13.576657+00:00")
+    base = activity_log.ActivityBase(
+        organization_id="test_org_id",
+        organization_name="Test Org",
+        election_id="test_election_id",
+        audit_name="Test Audit",
+        audit_type="BATCH_COMPARISON",
+        user_type="audit_admin",
+        user_key="test_user@example.com",
+        support_user_email=None,
+    )
+    create_audit = activity_log.CreateAudit(timestamp, base)
+    end_round = activity_log.EndRound(
+        timestamp, base, round_num=1, is_audit_complete=True
+    )
+
+    # States with their own channel
+    for state, state_channel in [
+        ("GA", "#arlo-activity-ga"),
+        ("MD", "#arlo-activity-md"),
+        ("TX", "#arlo-activity-tx"),
+    ]:
+        base.state = state
+        assert slack_worker.slack_channels(create_audit) == [
+            "#arlo-activity",
+            state_channel,
+        ]
+        assert slack_worker.slack_channels(end_round) == [
+            "#arlo-activity",
+            state_channel,
+            "#arlo-activity-critical",
+        ]
+
+    # Other states, or no state, go to the catchall channel
+    for state in ["MI", None]:
+        base.state = state
+        assert slack_worker.slack_channels(create_audit) == [
+            "#arlo-activity",
+            "#arlo-activity-others",
+        ]
+        assert slack_worker.slack_channels(end_round) == [
+            "#arlo-activity",
+            "#arlo-activity-others",
+            "#arlo-activity-critical",
+        ]
+
+
+def test_slack_worker_is_critical():
+    timestamp = datetime.fromisoformat("2021-05-19T18:31:13.576657+00:00")
+    base = activity_log.ActivityBase(
+        organization_id="test_org_id",
+        organization_name="Test Org",
+        election_id="test_election_id",
+        audit_name="Test Audit",
+        audit_type="BATCH_COMPARISON",
+        user_type="audit_admin",
+        user_key="test_user@example.com",
+        support_user_email=None,
+    )
+    jurisdiction = dict(
+        jurisdiction_id="test_jurisdiction_id",
+        jurisdiction_name="Test Jurisdiction",
+    )
+
+    def finalize_batch_results(num_batches_with_discrepancies: int):
+        return activity_log.FinalizeBatchResults(
+            timestamp,
+            base,
+            **jurisdiction,
+            num_batches_with_discrepancies=num_batches_with_discrepancies,
+        )
+
+    critical = [
+        activity_log.CalculateSampleSizes(timestamp, base),
+        activity_log.StartRound(timestamp, base, round_num=1),
+        activity_log.EndRound(timestamp, base, round_num=1, is_audit_complete=True),
+        activity_log.EndRound(timestamp, base, round_num=2, is_audit_complete=False),
+        finalize_batch_results(1),
+    ]
+    not_critical = [
+        activity_log.FullHandTallyRequired(timestamp, base, round_num=1),
+        activity_log.CreateAudit(timestamp, base),
+        activity_log.DeleteAudit(timestamp, base),
+        activity_log.StartRound(timestamp, base, round_num=2),
+        finalize_batch_results(0),
+        activity_log.UploadFile(
+            timestamp, base, **jurisdiction, file_type="cvrs", error=None
+        ),
+        activity_log.CreateAuditBoards(
+            timestamp, base, **jurisdiction, num_audit_boards=2
+        ),
+        activity_log.RecordResults(timestamp, base, **jurisdiction),
+        activity_log.AuditBoardSignOff(
+            timestamp, base, **jurisdiction, audit_board_name="Audit Board #1"
+        ),
+    ]
+    for activity in critical:
+        assert slack_worker.is_critical(activity), activity
+    for activity in not_critical:
+        assert not slack_worker.is_critical(activity), activity
+
+
+def test_slack_worker_channel_override():
+    config.SLACK_CHANNEL_OVERRIDE = "#arlo-test"
+    try:
+        timestamp = datetime.fromisoformat("2021-05-19T18:31:13.576657+00:00")
+        base = activity_log.ActivityBase(
+            organization_id="test_org_id",
+            organization_name="Test Org",
+            state="GA",
+        )
+        assert slack_worker.slack_channels(
+            activity_log.EndRound(timestamp, base, round_num=1, is_audit_complete=True)
+        ) == ["#arlo-test"]
+    finally:
+        config.SLACK_CHANNEL_OVERRIDE = None

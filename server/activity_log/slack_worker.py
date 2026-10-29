@@ -27,6 +27,34 @@ STATE_FLAG_EMOJIS = {
 }
 
 
+ALL_ACTIVITY_CHANNEL = "#arlo-activity"
+CRITICAL_CHANNEL = "#arlo-activity-critical"
+OTHER_STATES_CHANNEL = "#arlo-activity-others"
+STATE_CHANNELS = {
+    USState.Georgia.value: "#arlo-activity-ga",
+    USState.Maryland.value: "#arlo-activity-md",
+    USState.Texas.value: "#arlo-activity-tx",
+}
+
+
+def is_critical(activity: activity_log.Activity) -> bool:
+    if isinstance(activity, activity_log.FinalizeBatchResults):
+        return activity.num_batches_with_discrepancies > 0
+    if isinstance(activity, activity_log.StartRound):
+        return activity.round_num == 1
+    return isinstance(
+        activity, (activity_log.CalculateSampleSizes, activity_log.EndRound)
+    )
+
+
+def slack_channels(activity: activity_log.Activity) -> list[str]:
+    if config.SLACK_CHANNEL_OVERRIDE:
+        return [config.SLACK_CHANNEL_OVERRIDE]
+    state_channel = STATE_CHANNELS.get(activity.base.state or "", OTHER_STATES_CHANNEL)
+    critical_channels = [CRITICAL_CHANNEL] if is_critical(activity) else []
+    return [ALL_ACTIVITY_CHANNEL, state_channel, *critical_channels]
+
+
 def slack_message(activity: activity_log.Activity):
     base = activity.base
     org_link = urljoin(config.HTTP_ORIGIN, f"/support/orgs/{base.organization_id}")

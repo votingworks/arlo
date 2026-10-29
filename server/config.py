@@ -164,6 +164,9 @@ SENTRY_DSN = os.environ.get("SENTRY_DSN")
 
 SLACK_WEBHOOK_URL = os.environ.get("SLACK_WEBHOOK_URL")
 
+SLACK_BOT_TOKEN = os.environ.get("SLACK_BOT_TOKEN")
+SLACK_CHANNEL_OVERRIDE = os.environ.get("SLACK_CHANNEL_OVERRIDE")
+
 RUN_BACKGROUND_TASKS_IMMEDIATELY = parse_bool(
     read_env_var("RUN_BACKGROUND_TASKS_IMMEDIATELY", default="False")
 )
