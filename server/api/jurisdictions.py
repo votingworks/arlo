@@ -19,6 +19,7 @@ from ..auth import restrict_access, UserType
 from .shared import (
     get_current_round,
     is_full_hand_tally,
+    jurisdiction_ids_with_batches_to_audit,
 )
 from .ballot_manifest import hybrid_jurisdiction_total_ballots
 from .contests import set_contest_metadata
@@ -527,6 +528,7 @@ def batch_round_status(election: Election, round: Round) -> dict[str, JSONDict]:
             round_id=round.id
         ).values(BatchResultsFinalized.jurisdiction_id)
     }
+    jurisdiction_ids_to_audit = jurisdiction_ids_with_batches_to_audit(round)
 
     def num_samples(jurisdiction_id: str) -> int:
         return sample_count_by_jurisdiction.get(jurisdiction_id, 0)  # ty: ignore[unsound-return-statement]
@@ -544,9 +546,11 @@ def batch_round_status(election: Election, round: Round) -> dict[str, JSONDict]:
     # IN_PROGRESS = the jurisdiction is auditing batches
     # COMPLETE = the batch results are finalized
     def status(jurisdiction_id: str) -> JurisdictionStatus:
-        # Special case: jurisdictions that don't get any batches assigned are
-        # COMPLETE from the get-go
-        if num_samples(jurisdiction_id) == 0:
+        # Special case: jurisdictions with nothing to audit are COMPLETE from
+        # the get-go, whether they weren't assigned any batches or their only
+        # draws are batches already audited for those contests in an earlier
+        # round
+        if jurisdiction_id not in jurisdiction_ids_to_audit:
             return JurisdictionStatus.COMPLETE
         if num_samples_audited(jurisdiction_id) == 0:
             return JurisdictionStatus.NOT_STARTED

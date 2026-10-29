@@ -617,8 +617,7 @@ const ContestForm: React.FC<IProps> = ({
                             >
                               Maximize Batch Overlap With
                               <br />
-                              <Field
-                                component={Select}
+                              <Select
                                 id={`contests[${i}].nestedUnderContestId`}
                                 name={`contests[${i}].nestedUnderContestId`}
                                 onChange={(

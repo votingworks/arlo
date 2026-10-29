@@ -271,7 +271,7 @@ const Review: React.FC<IProps> = ({
           <LabeledValue label="Jurisdictions">
             {jurisdictions.length}
           </LabeledValue>
-          <LabeledValue label="Jursidictions File">
+          <LabeledValue label="Jurisdictions File">
             <a
               href={jurisdictionsFileUpload.downloadFileUrl}
               target="_blank"

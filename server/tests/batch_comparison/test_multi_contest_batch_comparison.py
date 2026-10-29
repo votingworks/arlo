@@ -1191,6 +1191,137 @@ def test_multi_contest_batch_comparison_round_2(
     assert_match_report(rv.data, snapshot)
 
 
+def test_multi_contest_batch_comparison_jurisdiction_with_nothing_to_audit_in_round_2(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
+    election_settings,
+    manifests,
+    batch_tallies,
+    round_1_id: str,
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contests = json.loads(rv.data)["contests"]
+    contest_1_choice_ids = [choice["id"] for choice in contests[0]["choices"]]
+    contest_2_choice_ids = [choice["id"] for choice in contests[1]["choices"]]
+
+    reported_results = {
+        contest_1_choice_ids[0]: 50,
+        contest_1_choice_ids[1]: 0,
+        contest_2_choice_ids[0]: 50,
+        contest_2_choice_ids[1]: 0,
+    }
+    results_by_batch_name = {
+        # A discrepancy, so that round 2 samples Contest 1
+        "Batch 4": {
+            contest_1_choice_ids[0]: 0,
+            contest_1_choice_ids[1]: 75,
+            contest_2_choice_ids[0]: 50,
+            contest_2_choice_ids[1]: 0,
+        },
+    }
+    for i, jurisdiction_id in enumerate(jurisdiction_ids):
+        set_logged_in_user(
+            client,
+            UserType.JURISDICTION_ADMIN,
+            jurisdiction_admin_email(election_id, f"J{i + 1}"),
+        )
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/batches"
+        )
+        for batch in json.loads(rv.data)["batches"]:
+            results = results_for_batch_contests(
+                batch, [results_by_batch_name.get(batch["name"], reported_results)]
+            )
+            rv = put_batch_results(
+                client, election_id, jurisdiction_id, round_1_id, batch["id"], results
+            )
+            assert_ok(rv)
+        rv = post_json(
+            client,
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/batches/finalize",
+        )
+        assert_ok(rv)
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
+    assert_ok(rv)
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/2")
+    sample_size_options = json.loads(rv.data)["sampleSizes"]
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 2,
+            "sampleSizes": {
+                contest_id: options[0]
+                for contest_id, options in sample_size_options.items()
+            },
+        },
+    )
+    assert_ok(rv)
+    rv = client.get(f"/api/election/{election_id}/round")
+    round_2_id = json.loads(rv.data)["rounds"][1]["id"]
+
+    # Jurisdiction 2's only round 2 draw is Batch 1 again, for Contest 1, which
+    # it was audited for in round 1, so the jurisdiction has nothing to audit
+    for round_id in [round_1_id, round_2_id]:
+        assert {
+            batch_name
+            for jurisdiction_name, batch_name, _ in sampled_batch_draws(round_id)[
+                "Contest 1"
+            ]
+            if jurisdiction_name == "J2"
+        } == {"Batch 1"}
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, jurisdiction_admin_email(election_id, "J2")
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_2_id}/batches"
+    )
+    assert json.loads(rv.data)["batches"] == []
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    assert json.loads(rv.data)["jurisdictions"][1]["currentRoundStatus"] == {
+        "status": "COMPLETE",
+        "numSamples": 1,
+        "numSamplesAudited": 1,
+        "numUnique": 1,
+        "numUniqueAudited": 1,
+    }
+
+    for i, jurisdiction_id in [(0, jurisdiction_ids[0]), (2, jurisdiction_ids[2])]:
+        set_logged_in_user(
+            client,
+            UserType.JURISDICTION_ADMIN,
+            jurisdiction_admin_email(election_id, f"J{i + 1}"),
+        )
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_2_id}/batches"
+        )
+        for batch in json.loads(rv.data)["batches"]:
+            results = results_for_batch_contests(batch, [reported_results])
+            rv = put_batch_results(
+                client, election_id, jurisdiction_id, round_2_id, batch["id"], results
+            )
+            assert_ok(rv)
+        rv = post_json(
+            client,
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_2_id}/batches/finalize",
+        )
+        assert_ok(rv)
+
+    # The round finishes without jurisdiction 2 finalizing
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
+    assert_ok(rv)
+    rv = client.get(f"/api/election/{election_id}/round")
+    assert json.loads(rv.data)["rounds"][1]["endedAt"] is not None
+
+
 @pytest.fixture
 def org_id(client: FlaskClient, request) -> str:
     if not hasattr(request, "param"):

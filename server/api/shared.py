@@ -2,7 +2,7 @@ from collections import defaultdict
 import random
 from typing import TypedDict, cast as typing_cast
 from sqlalchemy import and_, func, literal
-from sqlalchemy.orm import joinedload, load_only
+from sqlalchemy.orm import joinedload, load_only, selectinload
 
 
 from ..models import *
@@ -247,6 +247,21 @@ def contest_ids_to_audit_in_round(round: Round, batch: Batch) -> list[str]:
         for contest in batch.jurisdiction.contests
         if contest.id in sampled - audited
     ]
+
+
+def jurisdiction_ids_with_batches_to_audit(round: Round) -> set[str]:
+    sampled_batches = (
+        Batch.query.join(SampledBatchDraw)
+        .filter_by(round_id=round.id)
+        .options(selectinload(Batch.draws))
+        .options(selectinload(Batch.jurisdiction).selectinload(Jurisdiction.contests))
+        .all()
+    )
+    return {
+        batch.jurisdiction_id
+        for batch in sampled_batches
+        if len(contest_ids_to_audit_in_round(round, batch)) > 0
+    }
 
 
 def tally_sheets_for_contests(
