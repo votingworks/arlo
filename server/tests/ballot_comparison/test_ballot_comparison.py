@@ -1,4 +1,5 @@
 import io
+import pytest
 import json
 import csv
 from unittest.mock import patch
@@ -1694,12 +1695,14 @@ def test_ballot_comparison_ess(
     assert "0002, BATCH1, Ballot 3" in j2_discrepancies
 
 
+@pytest.mark.parametrize("mixed_write_in_casing", [False, True])
 def test_ballot_comparison_hart_invalid_write_in(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: list[str],
     election_settings,
     hart_manifests,
+    mixed_write_in_casing: bool,
 ):
     # Hart CVRs record unadjudicated write-ins as a "Write-In" vote
     hart_cvrs = [
@@ -1732,6 +1735,15 @@ def test_ballot_comparison_hart_invalid_write_in(
             "application/zip",
         )
         assert_ok(rv)
+
+    # Simulate another vendor's CVR spelling the write-in choice differently
+    if mixed_write_in_casing:
+        jurisdiction = Jurisdiction.query.get(jurisdiction_ids[1])
+        metadata = json.loads(json.dumps(jurisdiction.cvr_contests_metadata))
+        choices = metadata["Contest 1"]["choices"]
+        choices["Write-in"] = choices.pop("Write-In")
+        jurisdiction.cvr_contests_metadata = metadata
+        db_session.commit()
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = put_json(
@@ -1776,8 +1788,10 @@ def test_ballot_comparison_hart_invalid_write_in(
     # Audit boards see each ballot as reported, except that write-ins are
     # adjudicated as invalid, including one the CVR didn't record
     contest = Contest.query.get(contest_id)
-    write_in = next(choice for choice in contest.choices if choice.name == "Write-In")
-    write_in_id = write_in.id
+    write_in_ids = {
+        choice.id for choice in contest.choices if choice.name.lower() == "write-in"
+    }
+    assert len(write_in_ids) == (2 if mixed_write_in_casing else 1)
     reported_votes = {
         ballot_id: cvr[contest_id]
         for ballot_id, cvr in cvrs_for_contest(contest).items()
@@ -1789,7 +1803,7 @@ def test_ballot_comparison_hart_invalid_write_in(
     write_in_ballots = [
         ballot
         for ballot in sampled_ballots
-        if reported_votes[ballot.id][write_in_id] == "1"
+        if any(reported_votes[ballot.id][id] == "1" for id in write_in_ids)
     ]
     assert len(write_in_ballots) > 0
     unrecorded_write_in_ballot = next(
@@ -1799,7 +1813,8 @@ def test_ballot_comparison_hart_invalid_write_in(
         choices = [
             choice
             for choice in contest.choices
-            if choice != write_in and reported_votes[ballot.id][choice.id] == "1"
+            if choice.id not in write_in_ids
+            and reported_votes[ballot.id][choice.id] == "1"
         ]
         audit_ballot(
             ballot,

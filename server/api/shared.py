@@ -538,14 +538,9 @@ def sampled_ballot_interpretations_to_cvrs(
         .load_only(ContestChoice.id),
     ).all()
 
-    write_in_choice = next(
-        (
-            choice
-            for choice in contest.choices
-            if str(choice.name).lower() == "write-in"
-        ),
-        None,
-    )
+    write_in_choices = [
+        choice for choice in contest.choices if str(choice.name).lower() == "write-in"
+    ]
 
     # The CVR we build should have a 1 for each choice that got voted for,
     # and a 0 otherwise. There are a couple special cases:
@@ -600,15 +595,16 @@ def sampled_ballot_interpretations_to_cvrs(
                 match_invalid_write_ins_to_cvrs
                 and interpretation is not None
                 and interpretation.has_invalid_write_in
-                and write_in_choice is not None
+                and write_in_choices
                 and contest.id in ballot_cvr
             ):
                 if reported_cvrs is None:
                     reported_cvrs = cvrs_for_contest(contest)
                 reported_cvr = reported_cvrs.get(ballot.id) or {}
                 reported_votes = reported_cvr.get(contest.id, {})
-                if reported_votes.get(write_in_choice.id) == "1":
-                    ballot_cvr[contest.id][write_in_choice.id] = "1"
+                for write_in_choice in write_in_choices:
+                    if reported_votes.get(write_in_choice.id) == "1":
+                        ballot_cvr[contest.id][write_in_choice.id] = "1"
 
             cvrs[ballot.id] = {"times_sampled": times_sampled, "cvr": ballot_cvr}
 
