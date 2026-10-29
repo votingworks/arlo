@@ -514,7 +514,9 @@ def round_rows(election: Election):
             non_cvr_choice_vote = total_choice_votes
             choice_id_to_name = {choice.id: choice.name for choice in contest.choices}
             cvr_choice_votes = Counter({choice.name: 0 for choice in contest.choices})
-            for ballot in sampled_ballot_interpretations_to_cvrs(contest).values():
+            for ballot in sampled_ballot_interpretations_to_cvrs(
+                contest, match_invalid_write_ins_to_cvrs=False
+            ).values():
                 choice_votes = ballot["cvr"] and ballot["cvr"].get(contest.id)
                 if choice_votes:
                     cvr_choice_votes.update(

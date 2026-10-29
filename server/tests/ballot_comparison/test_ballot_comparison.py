@@ -1774,7 +1774,7 @@ def test_ballot_comparison_hart_invalid_write_in(
         assert_ok(rv)
 
     # Audit boards see each ballot as reported, except that write-ins are
-    # adjudicated as invalid
+    # adjudicated as invalid, including one the CVR didn't record
     contest = Contest.query.get(contest_id)
     write_in = next(choice for choice in contest.choices if choice.name == "Write-In")
     write_in_id = write_in.id
@@ -1792,12 +1792,8 @@ def test_ballot_comparison_hart_invalid_write_in(
         if reported_votes[ballot.id][write_in_id] == "1"
     ]
     assert len(write_in_ballots) > 0
-    faint_mark_ballot = next(
+    unrecorded_write_in_ballot = next(
         ballot for ballot in sampled_ballots if ballot not in write_in_ballots
-    )
-    faint_mark_jurisdiction_id = faint_mark_ballot.batch.jurisdiction_id
-    faint_mark_ballot_label = (
-        f"{faint_mark_ballot.batch.name}, Ballot {faint_mark_ballot.ballot_position}"
     )
     for ballot in sampled_ballots:
         choices = [
@@ -1811,7 +1807,7 @@ def test_ballot_comparison_hart_invalid_write_in(
             Interpretation.VOTE if choices else Interpretation.BLANK,
             choices,
             has_invalid_write_in=(
-                ballot in write_in_ballots or ballot == faint_mark_ballot
+                ballot in write_in_ballots or ballot == unrecorded_write_in_ballot
             ),
         )
     for audit_board in AuditBoard.query.filter(
@@ -1822,18 +1818,7 @@ def test_ballot_comparison_hart_invalid_write_in(
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/discrepancy")
-    discrepancies = json.loads(rv.data)
-    discrepant_ballots = [
-        (jurisdiction_id, ballot_id, ballot_discrepancies[contest_id]["discrepancies"])
-        for jurisdiction_id, jurisdiction_discrepancies in discrepancies.items()
-        for ballot_id, ballot_discrepancies in jurisdiction_discrepancies.items()
-    ]
-    # Only the invalid write-in the scanner didn't record is a discrepancy
-    assert len(discrepant_ballots) == 1
-    jurisdiction_id, ballot_id, ballot_discrepancies = discrepant_ballots[0]
-    assert jurisdiction_id == faint_mark_jurisdiction_id
-    assert ballot_id.endswith(faint_mark_ballot_label)
-    assert ballot_discrepancies[write_in_id] == -1
+    assert json.loads(rv.data) == {}
 
 
 def test_ballot_comparison_sample_preview(
