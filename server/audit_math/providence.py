@@ -101,18 +101,33 @@ def get_sample_size(
     """
     quants = [0.7, 0.8, 0.9]
     alpha = risk_limit / 100
-    audit = make_providence_audit(contest, alpha)
 
-    if round_sizes:
-        _run_providence_audit(audit, sample_results, round_sizes)
-    return {
-        str(quant): {
-            "type": None,
-            "size": audit.next_sample_size(sprob=quant),
-            "prob": quant,
-        }
-        for quant in quants
-    }
+    # r2b2 fails with a TypeError when even a sample of every ballot can't
+    # reach a stopping probability. It can fail setting up the audit or
+    # computing any one option.
+    samples: dict[str, SampleSizeOption] = {}
+    try:
+        audit = make_providence_audit(contest, alpha)
+    except TypeError:
+        audit = None
+    if audit is not None:
+        if round_sizes:
+            _run_providence_audit(audit, sample_results, round_sizes)
+        for quant in quants:
+            try:
+                size = audit.next_sample_size(sprob=quant)
+            except TypeError:
+                continue
+            samples[str(quant)] = {"type": None, "size": size, "prob": quant}
+
+    # Later rounds always use the 0.9 option
+    if not samples or (round_sizes and "0.9" not in samples):
+        raise ValueError(
+            "This contest needs a full hand tally, which Providence audits"
+            " don't support. For a full hand tally, use a BRAVO ballot"
+            " polling audit."
+        )
+    return samples
 
 
 def compute_risk(

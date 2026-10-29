@@ -247,3 +247,35 @@ def test_compute_risk_tie(math_type: AuditMathType):
     assert ballot_polling.compute_risk(
         RISK_LIMIT, contest, {"1": {"A": 100, "B": 0}}, {}, math_type, round_sizes
     ) == ({("winner", "loser"): 1.0}, False)
+
+
+def test_get_sample_size_full_hand_tally():
+    error = (
+        "This contest needs a full hand tally, which Providence audits don't support"
+    )
+    # With a margin this small, even a sample of every ballot can't confirm
+    # the outcome
+    # r2b2 fails setting up the audit
+    with pytest.raises(ValueError, match=error):
+        providence.get_sample_size(
+            RISK_LIMIT, minerva.make_arlo_contest({"A": 5000, "B": 4999}), None, None
+        )
+    # r2b2 sets up the audit, but fails computing each option
+    with pytest.raises(ValueError, match=error):
+        providence.get_sample_size(
+            RISK_LIMIT, minerva.make_arlo_contest({"A": 5000, "B": 4990}), None, None
+        )
+
+    # Round 1 shows the options r2b2 can compute
+    contest = minerva.make_arlo_contest({"A": 5000, "B": 4980})
+    assert providence.get_sample_size(RISK_LIMIT, contest, None, None) == {
+        "0.7": {"type": None, "size": 996781, "prob": 0.7}
+    }
+    # Later rounds always use the 0.9 option
+    with pytest.raises(ValueError, match=error):
+        providence.get_sample_size(
+            RISK_LIMIT,
+            contest,
+            {"1": {"A": 50, "B": 50}},
+            {1: RoundInfo("1", 100)},
+        )
