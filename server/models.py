@@ -408,6 +408,12 @@ class JurisdictionAdministration(BaseModel):
     __table_args__ = (PrimaryKeyConstraint("user_id", "jurisdiction_id"),)
 
 
+class BatchDiscrepancyStatus(str, enum.Enum):
+    ACCEPTABLE = "ACCEPTABLE"
+    JURISDICTION_CONTACTED = "JURISDICTION_CONTACTED"
+    RE_TALLYING = "RE_TALLYING"
+
+
 # A batch represents a group of ballots in a jurisdiction (usually one physical
 # box or bin).
 class Batch(BaseModel):
@@ -454,6 +460,11 @@ class Batch(BaseModel):
     # users can flag batches to be guaranteed inclusion in the audit sample,
     # though they will only count towards the RLA if randomly sampled as well.
     required = Column(Boolean, nullable=False, server_default="false")
+
+    # For batch comparison audits, support tracks each batch's discrepancies
+    # with a status and, per contest, a log of notes
+    discrepancy_status = Column(Enum(BatchDiscrepancyStatus))
+    discrepancy_notes_by_contest_id = Column(JSON, nullable=False, server_default="{}")
 
     draws = relationship(
         "SampledBatchDraw",
