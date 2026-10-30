@@ -27,6 +27,37 @@ STATE_FLAG_EMOJIS = {
 }
 
 
+SLACK_POST_MESSAGE_URL = "https://slack.com/api/chat.postMessage"
+SLACK_MESSAGE_TIMEOUT_SECONDS = 10
+
+ALL_ACTIVITY_CHANNEL = "#arlo-activity"
+CRITICAL_CHANNEL = "#arlo-activity-critical"
+OTHER_STATES_CHANNEL = "#arlo-activity-others"
+STATE_CHANNELS = {
+    USState.Georgia.value: "#arlo-activity-ga",
+    USState.Maryland.value: "#arlo-activity-md",
+    USState.Texas.value: "#arlo-activity-tx",
+}
+
+
+def is_critical(activity: activity_log.Activity) -> bool:
+    if isinstance(activity, activity_log.FinalizeBatchResults):
+        return activity.num_batches_with_discrepancies > 0
+    if isinstance(activity, activity_log.StartRound):
+        return activity.round_num == 1
+    return isinstance(
+        activity, (activity_log.CalculateSampleSizes, activity_log.EndRound)
+    )
+
+
+def slack_channels(activity: activity_log.Activity) -> list[str]:
+    if config.SLACK_CHANNEL_OVERRIDE:
+        return [config.SLACK_CHANNEL_OVERRIDE]
+    state_channel = STATE_CHANNELS.get(activity.base.state or "", OTHER_STATES_CHANNEL)
+    critical_channels = [CRITICAL_CHANNEL] if is_critical(activity) else []
+    return [ALL_ACTIVITY_CHANNEL, state_channel, *critical_channels]
+
+
 def slack_message(activity: activity_log.Activity):
     base = activity.base
     org_link = urljoin(config.HTTP_ORIGIN, f"/support/orgs/{base.organization_id}")
@@ -370,8 +401,8 @@ def slack_message(activity: activity_log.Activity):
 # testing. Each test has its own org, and we don't want tests running in
 # parallel to influence each other.
 def send_new_slack_notification(organization_id: str | None = None) -> None:
-    if config.SLACK_WEBHOOK_URL is None:
-        raise Exception("Missing SLACK_WEBHOOK_URL")
+    if config.SLACK_BOT_TOKEN is None:
+        raise Exception("Missing SLACK_BOT_TOKEN")
 
     record = (
         ActivityLogRecord.query.filter(ActivityLogRecord.posted_to_slack_at.is_(None))
@@ -391,15 +422,33 @@ def send_new_slack_notification(organization_id: str | None = None) -> None:
             )
         )  # ty: ignore[unsound-assignment]
 
-        rv = requests.post(
-            config.SLACK_WEBHOOK_URL,
-            json=slack_message(activity),
-            timeout=10,  # seconds
-        )
-        if rv.status_code != 200:
-            raise Exception(f"Error posting record {record.id}:\n\n{rv.text}")
+        # Post to one channel at a time, recording each channel as we go, so
+        # that if posting fails partway through we don't repost to channels
+        # that already got the message.
+        unposted_channels = [
+            channel
+            for channel in slack_channels(activity)
+            if channel not in record.posted_to_slack_channels
+        ]
+        if unposted_channels:
+            channel = unposted_channels[0]
+            rv = requests.post(
+                SLACK_POST_MESSAGE_URL,
+                headers=dict(Authorization=f"Bearer {config.SLACK_BOT_TOKEN}"),
+                json=dict(slack_message(activity), channel=channel),
+                timeout=SLACK_MESSAGE_TIMEOUT_SECONDS,
+            )
+            if rv.status_code != 200 or not rv.json().get("ok"):
+                raise Exception(
+                    f"Error posting record {record.id} to {channel}:\n\n{rv.text}"
+                )
+            record.posted_to_slack_channels = [
+                *record.posted_to_slack_channels,
+                channel,
+            ]
 
-        record.posted_to_slack_at = datetime.now(timezone.utc)
+        if len(unposted_channels) <= 1:
+            record.posted_to_slack_at = datetime.now(timezone.utc)
 
 
 if __name__ == "__main__":  # pragma: no cover
