@@ -46,7 +46,11 @@ import {
 } from '../../../useContestChoiceNameStandardizations'
 import useStandardizedContests from '../../../useStandardizedContests'
 import { isSetupComplete, allCvrsUploaded } from '../../../Atoms/StatusBox'
-import { useAuditSettings, AuditType } from '../../../useAuditSettings'
+import {
+  useAuditSettings,
+  AuditType,
+  IAuditSettings,
+} from '../../../useAuditSettings'
 import { useContests } from '../../../useContests'
 import {
   useJurisdictionsFile,
@@ -686,6 +690,7 @@ const Review: React.FC<IProps> = ({
                           locked={locked}
                           contests={contests}
                           auditType={auditType}
+                          auditMathType={auditMathType}
                           jurisdictionsById={jurisdictionsById}
                           sampleSizeOptions={sampleSizeOptions}
                           values={values}
@@ -810,6 +815,7 @@ interface ISelectSampleSizesProps {
   locked: boolean
   contests: IContest[]
   auditType: AuditType
+  auditMathType: IAuditSettings['auditMathType']
   jurisdictionsById: Record<string, IJurisdiction>
   sampleSizeOptions: ISampleSizeOptions
   values: { sampleSizes: ISampleSizes }
@@ -822,12 +828,17 @@ const SelectSampleSizes: React.FC<ISelectSampleSizesProps> = ({
   locked,
   contests,
   auditType,
+  auditMathType,
   jurisdictionsById,
   sampleSizeOptions,
   values,
   setFieldValue,
 }) => {
   const targetedContests = contests.filter(contest => contest.isTargeted)
+  // Minerva and Providence math can't compute risk for a full hand tally
+  const isMinervaOrProvidence = ['MINERVA', 'PROVIDENCE'].includes(
+    auditMathType
+  )
 
   return (
     <div>
@@ -861,6 +872,7 @@ const SelectSampleSizes: React.FC<ISelectSampleSizesProps> = ({
                   intent={
                     auditType === 'BATCH_COMPARISON' ||
                     (auditType === 'BALLOT_POLLING' &&
+                      !isMinervaOrProvidence &&
                       targetedContests.length === 1)
                       ? 'warning'
                       : 'danger'
@@ -880,7 +892,14 @@ const SelectSampleSizes: React.FC<ISelectSampleSizesProps> = ({
                       using the ballot polling or batch comparison audit type.
                     </div>
                   )}
+                  {isMinervaOrProvidence && (
+                    <div>
+                      To use Arlo for a full hand tally, recreate this audit as
+                      a BRAVO ballot polling audit.
+                    </div>
+                  )}
                   {auditType === 'BALLOT_POLLING' &&
+                    !isMinervaOrProvidence &&
                     targetedContests.length > 1 && (
                       <div>
                         Arlo supports running a full hand tally for audits with

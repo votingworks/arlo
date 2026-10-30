@@ -353,6 +353,195 @@ def test_contest_too_many_votes(
     }
 
 
+@pytest.mark.parametrize(
+    "audit_math_type", [AuditMathType.MINERVA, AuditMathType.PROVIDENCE]
+)
+def test_contest_candidate_with_zero_votes(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    audit_math_type: AuditMathType,
+):
+    contest = {
+        "id": str(uuid.uuid4()),
+        "name": "Contest 1",
+        "isTargeted": True,
+        "choices": [
+            {
+                "id": str(uuid.uuid4()),
+                "name": "candidate 1",
+                "numVotes": 400,
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "name": "candidate 2",
+                "numVotes": 0,
+            },
+        ],
+        "totalBallotsCast": 500,
+        "numWinners": 1,
+        "votesAllowed": 1,
+        "jurisdictionIds": jurisdiction_ids,
+    }
+
+    # BRAVO allows candidates with 0 votes
+    rv = put_json(client, f"/api/election/{election_id}/contest", [contest])
+    assert_ok(rv)
+
+    election = Election.query.get(election_id)
+    election.audit_math_type = audit_math_type
+    db_session.commit()
+
+    rv = put_json(client, f"/api/election/{election_id}/contest", [contest])
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "message": "Each candidate must have at least 1 vote in Minerva and Providence audits. candidate 2 has 0 votes in contest: Contest 1",
+                "errorType": "Bad Request",
+            }
+        ]
+    }
+
+    contest["choices"][1]["numVotes"] = 1
+    rv = put_json(client, f"/api/election/{election_id}/contest", [contest])
+    assert_ok(rv)
+
+
+@pytest.mark.parametrize(
+    "audit_math_type", [AuditMathType.MINERVA, AuditMathType.PROVIDENCE]
+)
+def test_contest_multiple_votes_allowed(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    audit_math_type: AuditMathType,
+):
+    contest = {
+        "id": str(uuid.uuid4()),
+        "name": "Contest 1",
+        "isTargeted": True,
+        "choices": [
+            {
+                "id": str(uuid.uuid4()),
+                "name": "candidate 1",
+                "numVotes": 600,
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "name": "candidate 2",
+                "numVotes": 500,
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "name": "candidate 3",
+                "numVotes": 100,
+            },
+        ],
+        "totalBallotsCast": 700,
+        "numWinners": 2,
+        "votesAllowed": 2,
+        "jurisdictionIds": jurisdiction_ids,
+    }
+
+    # BRAVO allows more than 1 vote per ballot
+    rv = put_json(client, f"/api/election/{election_id}/contest", [contest])
+    assert_ok(rv)
+
+    election = Election.query.get(election_id)
+    election.audit_math_type = audit_math_type
+    db_session.commit()
+
+    rv = put_json(client, f"/api/election/{election_id}/contest", [contest])
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "message": "Only 1 vote per ballot is supported in Minerva and Providence audits. Contest 1 allows 2 votes per ballot.",
+                "errorType": "Bad Request",
+            }
+        ]
+    }
+
+
+@pytest.mark.parametrize(
+    "audit_math_type", [AuditMathType.MINERVA, AuditMathType.PROVIDENCE]
+)
+def test_contest_tied(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    audit_math_type: AuditMathType,
+):
+    election = Election.query.get(election_id)
+    election.audit_math_type = audit_math_type
+    db_session.commit()
+
+    contest = {
+        "id": str(uuid.uuid4()),
+        "name": "Contest 1",
+        "isTargeted": True,
+        "choices": [
+            {
+                "id": str(uuid.uuid4()),
+                "name": "candidate 1",
+                "numVotes": 400,
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "name": "candidate 2",
+                "numVotes": 300,
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "name": "candidate 3",
+                "numVotes": 300,
+            },
+        ],
+        "totalBallotsCast": 1000,
+        "numWinners": 2,
+        "votesAllowed": 1,
+        "jurisdictionIds": jurisdiction_ids,
+    }
+
+    # The second winner is tied with the loser
+    rv = put_json(client, f"/api/election/{election_id}/contest", [contest])
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "message": "Contest Contest 1 is tied, which requires a full hand tally. For a full hand tally, use a BRAVO ballot polling audit.",
+                "errorType": "Bad Request",
+            }
+        ]
+    }
+
+    # A tie among winners doesn't affect the outcome
+    contest["choices"][0]["numVotes"] = 300
+    contest["choices"][2]["numVotes"] = 200
+    rv = put_json(client, f"/api/election/{election_id}/contest", [contest])
+    assert_ok(rv)
+
+    # Opportunistic contests can be tied, since they never need a full hand tally
+    tied_opportunistic_contest = {
+        **contest,
+        "id": str(uuid.uuid4()),
+        "name": "Contest 2",
+        "isTargeted": False,
+        "choices": [
+            {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 400},
+            {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 400},
+        ],
+        "numWinners": 1,
+    }
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/contest",
+        [contest, tied_opportunistic_contest],
+    )
+    assert_ok(rv)
+
+
 def test_jurisdictions_contests_list_empty(
     client: FlaskClient,
     election_id: str,

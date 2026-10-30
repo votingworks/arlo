@@ -22,6 +22,18 @@ def election_id(client: FlaskClient, org_id: str, request):
 
 
 @pytest.fixture
+def contest_ids(
+    client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
+) -> list[str]:
+    # Only 1 vote per ballot is supported in Providence audits
+    contests = default_contests(jurisdiction_ids)
+    contests[1]["votesAllowed"] = 1
+    rv = put_json(client, f"/api/election/{election_id}/contest", contests)
+    assert_ok(rv)
+    return [str(c["id"]) for c in contests]
+
+
+@pytest.fixture
 def election_settings(client: FlaskClient, election_id: str):
     settings = {
         "electionName": "Test Election",

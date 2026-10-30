@@ -1065,6 +1065,39 @@ describe('Audit Setup > Review & Launch', () => {
     })
   })
 
+  it.each(['MINERVA', 'PROVIDENCE'] as const)(
+    'in a %s audit, shows an error pointing to BRAVO when selected sample size is a full hand tally',
+    async auditMathType => {
+      const expectedCalls = [
+        apiCalls.getSettings({ ...auditSettingsMocks.all, auditMathType }),
+        apiCalls.getJurisdictions({
+          jurisdictions: jurisdictionMocks.allManifests,
+        }),
+        apiCalls.getJurisdictionFile,
+        apiCalls.getStandardizedContests(),
+        apiCalls.getContests(contestMocks.filledTargeted),
+        apiCalls.getContestChoiceNameStandardizations(),
+        apiCalls.getSampleSizeOptions(sampleSizeMock.ballotPolling),
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        renderView()
+        await screen.findByText(/Choose the initial sample size/)
+
+        // Select an option that requires a full hand tally
+        userEvent.click(screen.getByLabelText(/90%/))
+        const error = (
+          await screen.findByText(
+            'The currently selected sample size for this contest requires a full hand tally.'
+          )
+        ).closest('.bp3-callout') as HTMLElement
+        expect(error).toHaveClass('bp3-intent-danger')
+        expect(error).toHaveTextContent(
+          'To use Arlo for a full hand tally, recreate this audit as a BRAVO ballot polling audit.'
+        )
+      })
+    }
+  )
+
   it('in ballot polling, shows an error when one of multiple target contests is a full hand tally', async () => {
     const expectedCalls = [
       apiCalls.getSettings(auditSettingsMocks.all),

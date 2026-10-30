@@ -1,5 +1,4 @@
 import io
-import uuid
 import json
 import os
 from flask.testing import FlaskClient
@@ -142,55 +141,7 @@ def jurisdiction_ids(client: FlaskClient, election_id: str) -> list[str]:
 def contest_ids(
     client: FlaskClient, election_id: str, jurisdiction_ids: list[str]
 ) -> list[str]:
-    contests = [
-        {
-            "id": str(uuid.uuid4()),
-            "name": "Contest 1",
-            "isTargeted": True,
-            "choices": [
-                {
-                    "id": str(uuid.uuid4()),
-                    "name": "candidate 1",
-                    "numVotes": 600,
-                },
-                {
-                    "id": str(uuid.uuid4()),
-                    "name": "candidate 2",
-                    "numVotes": 400,
-                },
-            ],
-            "totalBallotsCast": 1000,
-            "numWinners": 1,
-            "votesAllowed": 1,
-            "jurisdictionIds": jurisdiction_ids,
-        },
-        {
-            "id": str(uuid.uuid4()),
-            "name": "Contest 2",
-            "isTargeted": False,
-            "choices": [
-                {
-                    "id": str(uuid.uuid4()),
-                    "name": "candidate 1",
-                    "numVotes": 200,
-                },
-                {
-                    "id": str(uuid.uuid4()),
-                    "name": "candidate 2",
-                    "numVotes": 300,
-                },
-                {
-                    "id": str(uuid.uuid4()),
-                    "name": "candidate 3",
-                    "numVotes": 100,
-                },
-            ],
-            "totalBallotsCast": 600,
-            "numWinners": 2,
-            "votesAllowed": 2,
-            "jurisdictionIds": jurisdiction_ids[:2],
-        },
-    ]
+    contests = default_contests(jurisdiction_ids)
     rv = put_json(client, f"/api/election/{election_id}/contest", contests)
     assert_ok(rv)
     return [str(c["id"]) for c in contests]

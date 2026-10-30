@@ -172,6 +172,7 @@ interface IProps {
   electionId: string
   isTargeted: boolean
   auditType: AuditType
+  auditMathType: IAuditSettings['auditMathType']
   electionState: IAuditSettings['state']
   goToPrevStage: () => void
   goToNextStage: () => void
@@ -285,6 +286,7 @@ const ContestForm: React.FC<IProps> = ({
   goToPrevStage,
   goToNextStage,
   auditType,
+  auditMathType,
   electionState,
 }) => {
   const isHybrid = auditType === 'HYBRID'
@@ -353,7 +355,7 @@ const ContestForm: React.FC<IProps> = ({
   return (
     <Formik
       initialValues={initialValues}
-      validationSchema={schema(auditType)}
+      validationSchema={schema(auditType, auditMathType)}
       enableReinitialize
       onSubmit={submit}
     >

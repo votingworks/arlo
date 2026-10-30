@@ -1,5 +1,6 @@
 import json
 from datetime import datetime, timezone
+import pytest
 from flask.testing import FlaskClient
 
 from ...models import *
@@ -626,6 +627,44 @@ def test_rounds_bad_sample_sizes(
                 }
             ]
         }
+
+
+@pytest.mark.parametrize(
+    "audit_math_type", [AuditMathType.MINERVA, AuditMathType.PROVIDENCE]
+)
+def test_rounds_full_hand_tally_requires_bravo(
+    client: FlaskClient,
+    election_id: str,
+    contest_ids: list[str],
+    election_settings,
+    manifests,
+    audit_math_type: AuditMathType,
+):
+    election = Election.query.get(election_id)
+    election.audit_math_type = audit_math_type
+    db_session.commit()
+
+    # A sample size of every ballot in round 1 starts a full hand tally
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 1,
+            "sampleSizes": {
+                contest_ids[0]: {"key": "custom", "size": 1000, "prob": None}
+            },
+        },
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "message": "Minerva and Providence audits don't support a full hand tally. For a full hand tally, use a BRAVO ballot polling audit.",
+                "errorType": "Bad Request",
+            }
+        ]
+    }
 
 
 def test_finish_round_after_round_already_finished(

@@ -29,6 +29,7 @@ const renderContests = (props: Partial<IContestsProps> = {}) => {
         <Contests
           electionId="1"
           auditType="BALLOT_POLLING"
+          auditMathType="BRAVO"
           electionState={null}
           isTargeted
           goToNextStage={goToNextStage}
@@ -393,6 +394,85 @@ describe('Audit Setup > Contests', () => {
           'Must be greater than or equal to the sum of votes for each candidate/choice'
         )
       })
+    })
+  })
+
+  it.each(['MINERVA', 'PROVIDENCE'] as const)(
+    'displays an error when a candidate has 0 votes in a %s audit',
+    async auditMathType => {
+      const expectedCalls = [
+        aaApiCalls.getContests(contestMocks.empty),
+        aaApiCalls.getJurisdictions,
+        aaApiCalls.getStandardizedContests(null),
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        renderContests({ auditMathType })
+        const votesInput = (await screen.findByLabelText(
+          'Votes for Candidate/Choice 2',
+          { selector: 'input' }
+        )) as HTMLInputElement
+        userEvent.type(votesInput, '0')
+        userEvent.click(document.body) // Simulate blurring by clicking outside
+
+        await waitFor(() => {
+          expect(
+            screen.getByTestId(`${votesInput.name}-error`)
+          ).toHaveTextContent(
+            'Must be at least 1 in Minerva and Providence audits'
+          )
+        })
+      })
+    }
+  )
+
+  it.each(['MINERVA', 'PROVIDENCE'] as const)(
+    'displays an error when more than 1 vote is allowed in a %s audit',
+    async auditMathType => {
+      const expectedCalls = [
+        aaApiCalls.getContests(contestMocks.empty),
+        aaApiCalls.getJurisdictions,
+        aaApiCalls.getStandardizedContests(null),
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        renderContests({ auditMathType })
+        const votesAllowedInput = (await screen.findByLabelText(
+          'Votes Allowed',
+          { selector: 'input' }
+        )) as HTMLInputElement
+        userEvent.clear(votesAllowedInput)
+        userEvent.type(votesAllowedInput, '2')
+        userEvent.click(document.body) // Simulate blurring by clicking outside
+
+        await waitFor(() => {
+          expect(
+            screen.getByTestId(`${votesAllowedInput.name}-error`)
+          ).toHaveTextContent('Must be 1 in Minerva and Providence audits')
+        })
+      })
+    }
+  )
+
+  it('allows a candidate with 0 votes in a BRAVO audit', async () => {
+    const expectedCalls = [
+      aaApiCalls.getContests(contestMocks.empty),
+      aaApiCalls.getJurisdictions,
+      aaApiCalls.getStandardizedContests(null),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderContests()
+      const votesInput = (await screen.findByLabelText(
+        'Votes for Candidate/Choice 2',
+        { selector: 'input' }
+      )) as HTMLInputElement
+      userEvent.type(votesInput, '0')
+      userEvent.click(document.body) // Simulate blurring by clicking outside
+
+      await waitFor(() => {
+        expect(votesInput).toHaveValue('0')
+      })
+      expect(
+        screen.queryByTestId(`${votesInput.name}-error`)
+      ).not.toBeInTheDocument()
     })
   })
 

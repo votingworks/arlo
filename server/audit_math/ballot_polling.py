@@ -67,6 +67,12 @@ def compute_risk(
         for loser in contest.losers:
             sample_results[round_id][loser] += num_not_found
 
+    # A sample can't confirm a reported tie (e.g. in an opportunistic contest).
+    # BRAVO handles this itself.
+    if math_type in [AuditMathType.MINERVA, AuditMathType.PROVIDENCE]:
+        if bravo.is_tie(contest):
+            return {("winner", "loser"): 1.0}, False
+
     if math_type == AuditMathType.MINERVA:
         return minerva.compute_risk(
             risk_limit, contest, sample_results, round_sizes

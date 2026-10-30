@@ -430,6 +430,40 @@ describe('Home screen', () => {
     })
   })
 
+  it('creates Providence ballot polling audits', async () => {
+    const expectedCalls = [
+      aaApiCalls.getUser,
+      aaApiCalls.getOrganizations(mockOrganizations.oneOrgNoAudits),
+      aaApiCalls.postNewAudit({
+        organizationId: 'org-id',
+        auditName: 'November Presidential Election 2020',
+        auditType: 'BALLOT_POLLING',
+        auditMathType: 'PROVIDENCE',
+      }),
+      aaApiCalls.getOrganizations(mockOrganizations.oneOrgOneAudit),
+      ...setupScreenCalls,
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView('/')
+      await screen.findByRole('heading', {
+        name: 'Active Audits — State of California',
+      })
+
+      const createAuditButton = screen.getByRole('button', {
+        name: 'Create Audit',
+      })
+
+      // Create a new audit
+      userEvent.type(
+        screen.getByRole('textbox', { name: 'Audit name' }),
+        'November Presidential Election 2020'
+      )
+      userEvent.click(screen.getByRole('radio', { name: 'Providence' }))
+      userEvent.click(createAuditButton)
+      await screen.findByText('The audit has not started.')
+    })
+  })
+
   it('creates batch comparison audits', async () => {
     const expectedCalls = [
       aaApiCalls.getUser,

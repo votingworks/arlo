@@ -294,6 +294,39 @@ def validate_contests(contests: list[JSONDict], election: Election):
                     f" ({total_votes} votes, {total_allowed_votes} allowed)"
                 )
 
+    # Minerva and Providence math can't handle a candidate with 0 votes or more
+    # than 1 vote allowed per ballot
+    if election.audit_math_type in [AuditMathType.MINERVA, AuditMathType.PROVIDENCE]:
+        for contest in contests:
+            if contest["votesAllowed"] > 1:
+                raise BadRequest(
+                    "Only 1 vote per ballot is supported in Minerva and Providence"
+                    f" audits. {contest['name']} allows {contest['votesAllowed']}"
+                    " votes per ballot."
+                )
+            for choice in contest["choices"]:
+                if choice["numVotes"] == 0:
+                    raise BadRequest(
+                        "Each candidate must have at least 1 vote in Minerva and"
+                        f" Providence audits. {choice['name']} has 0 votes in"
+                        f" contest: {contest['name']}"
+                    )
+            # A sample can't confirm a tie, only a full hand tally can, which
+            # Minerva and Providence don't support
+            votes = sorted(
+                (choice["numVotes"] for choice in contest["choices"]), reverse=True
+            )
+            num_winners = contest["numWinners"]
+            if (
+                contest["isTargeted"]
+                and len(votes) > num_winners
+                and votes[num_winners - 1] == votes[num_winners]
+            ):
+                raise BadRequest(
+                    f"Contest {contest['name']} is tied, which requires a full hand"
+                    " tally. For a full hand tally, use a BRAVO ballot polling audit."
+                )
+
     for contest in contests:
         if not contest.get("isSubjectToRunoff", False):
             continue

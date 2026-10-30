@@ -213,6 +213,62 @@ def audit_ballot(
         ballot.status = BallotStatus.AUDITED  # ty: ignore[invalid-assignment]
 
 
+def default_contests(jurisdiction_ids: list[str]) -> list[dict[str, Any]]:
+    """
+    The contests set up by the contest_ids fixture: a targeted contest and an
+    opportunistic contest that allows 2 votes per ballot.
+    """
+    return [
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Contest 1",
+            "isTargeted": True,
+            "choices": [
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "candidate 1",
+                    "numVotes": 600,
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "candidate 2",
+                    "numVotes": 400,
+                },
+            ],
+            "totalBallotsCast": 1000,
+            "numWinners": 1,
+            "votesAllowed": 1,
+            "jurisdictionIds": jurisdiction_ids,
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Contest 2",
+            "isTargeted": False,
+            "choices": [
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "candidate 1",
+                    "numVotes": 200,
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "candidate 2",
+                    "numVotes": 300,
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "candidate 3",
+                    "numVotes": 100,
+                },
+            ],
+            "totalBallotsCast": 600,
+            "numWinners": 2,
+            "votesAllowed": 2,
+            "jurisdictionIds": jurisdiction_ids[:2],
+        },
+    ]
+
+
 def run_audit_round(
     round_id: str,
     target_contest_id: str,
