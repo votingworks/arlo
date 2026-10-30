@@ -1,11 +1,14 @@
 from collections import defaultdict
+from typing import TypedDict, TypeVar
 from werkzeug.exceptions import Conflict
 from flask import jsonify
 
 from . import api
 from ..models import *
 from ..auth import restrict_access, UserType
+from ..audit_math import macro
 from .shared import (
+    ContestVoteDeltas,
     ballot_vote_deltas,
     batch_tallies,
     batch_vote_deltas,
@@ -20,18 +23,30 @@ from .jurisdictions import (
     jurisdiction_audit_board_status,
 )
 
+
+class BatchContestDiscrepancies(TypedDict):
+    reportedVotes: macro.ChoiceVotes
+    auditedVotes: macro.ChoiceVotes
+    discrepancies: ContestVoteDeltas
+
+
+# Ballot comparison compares CVRs, whose votes are strings: ES&S records an
+# overvote as "o" and an undervote as "u"
+class BallotContestDiscrepancies(TypedDict):
+    reportedVotes: dict[str, str]
+    auditedVotes: dict[str, str]
+    discrepancies: ContestVoteDeltas
+
+
+ContestDiscrepancies = TypeVar(
+    "ContestDiscrepancies", BatchContestDiscrepancies, BallotContestDiscrepancies
+)
+DiscrepanciesByContest = dict[str, ContestDiscrepancies]
+# Keyed by batch name, or by a readable ballot identifier in ballot comparison
+DiscrepanciesByBatchOrBallot = dict[str, DiscrepanciesByContest[ContestDiscrepancies]]
 DiscrepanciesByJurisdiction = dict[
-    str, dict[str, dict[str, dict[str, dict[str, int] | dict[str, str]]]]
+    str, DiscrepanciesByBatchOrBallot[ContestDiscrepancies]
 ]
-# DiscrepanciesByJurisdiction = {
-#     jurisdictionID: {
-#         batchName/ballotReadableIdentifier: {
-#             contestID: {
-#                 reportedVotes:  {choiceID: int/str}, // 8, -1, o, u
-#                 auditedVotes:   {choiceID: int/str},
-#                 discrepancies:  {choiceID: int/str}, // only int
-#     }
-# }
 
 
 @api.route("/election/<election_id>/discrepancy", methods=["GET"])
@@ -63,10 +78,10 @@ def get_discrepancies_by_jurisdiction(election: Election):
 
 def get_batch_comparison_discrepancies_by_jurisdiction(
     election: Election, round_id: str
-) -> DiscrepanciesByJurisdiction:
-    discrepancies_by_jurisdiction: DiscrepanciesByJurisdiction = defaultdict(
-        lambda: defaultdict(dict)
-    )
+) -> DiscrepanciesByJurisdiction[BatchContestDiscrepancies]:
+    discrepancies_by_jurisdiction: DiscrepanciesByJurisdiction[
+        BatchContestDiscrepancies
+    ] = defaultdict(lambda: defaultdict(dict))
 
     batch_keys_in_round = set(
         SampledBatchDraw.query.filter_by(round_id=round_id)
@@ -197,10 +212,10 @@ def show_batch_comparison_discrepancies_by_jurisdiction(
 
 def get_ballot_comparison_discrepancies_by_jurisdiction(
     election: Election, round: Round
-) -> DiscrepanciesByJurisdiction:
-    discrepancies_by_jurisdiction: DiscrepanciesByJurisdiction = defaultdict(
-        lambda: defaultdict(dict)
-    )
+) -> DiscrepanciesByJurisdiction[BallotContestDiscrepancies]:
+    discrepancies_by_jurisdiction: DiscrepanciesByJurisdiction[
+        BallotContestDiscrepancies
+    ] = defaultdict(lambda: defaultdict(dict))
 
     ballots_in_round = (
         SampledBallot.query.join(SampledBallotDraw)
