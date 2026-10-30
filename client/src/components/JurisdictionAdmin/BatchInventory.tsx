@@ -21,6 +21,7 @@ import {
   useUploadedFile,
 } from '../useFileUpload'
 import { apiDownload, assert } from '../utilities'
+import { redactCsvColumn } from '../../utils/csv'
 import LinkButton from '../Atoms/LinkButton'
 import {
   StepPanel,
@@ -126,7 +127,8 @@ const useBatchInventorySystemType = (
 
 const useBatchInventoryCVR = (
   electionId: string,
-  jurisdictionId: string
+  jurisdictionId: string,
+  systemType: CvrFileType | null | undefined
 ): IFileUpload => {
   const key = batchInventoryQueryKey(jurisdictionId, 'cvr')
   const url = `/api/election/${electionId}/jurisdiction/${jurisdictionId}/batch-inventory/cvr`
@@ -146,8 +148,16 @@ const useBatchInventoryCVR = (
           )
         ),
     }),
-    uploadFiles: files => {
-      return uploadFiles.mutateAsync({ file: files[0] })
+    uploadFiles: async files => {
+      // Strip the RecordId column before uploading since we don't need it
+      const file =
+        systemType === CvrFileType.DOMINION
+          ? await redactCsvColumn(files[0], 'RecordId', {
+              // Dominion CVRs have 3 metadata rows above the header row
+              numRowsToSkip: 3,
+            })
+          : files[0]
+      return uploadFiles.mutateAsync({ file })
     },
     uploadProgress: uploadFiles.progress,
     deleteFile: () => deleteFile.mutateAsync(),
@@ -649,7 +659,11 @@ const BatchInventory: React.FC = () => {
     electionId,
     jurisdictionId
   )
-  const cvrUpload = useBatchInventoryCVR(electionId, jurisdictionId)
+  const cvrUpload = useBatchInventoryCVR(
+    electionId,
+    jurisdictionId,
+    systemTypeQueries.systemType.data
+  )
   const tabulatorStatusUpload = useBatchInventoryTabulatorStatus(
     electionId,
     jurisdictionId
