@@ -1,3 +1,4 @@
+import re
 import json
 from unittest.mock import patch, Mock
 import pytest
@@ -13,20 +14,24 @@ from .. import activity_log
 
 @pytest.fixture(autouse=True)
 def setup():
-    config.SLACK_WEBHOOK_URL = "test slack webhook url"
+    config.SLACK_BOT_TOKEN = "test-slack-bot-token"
     yield
-    config.SLACK_WEBHOOK_URL = None
+    config.SLACK_BOT_TOKEN = None
 
 
-def test_slack_worker_require_webhook_url():
-    config.SLACK_WEBHOOK_URL = None
-    with pytest.raises(Exception, match="Missing SLACK_WEBHOOK_URL"):
+def slack_ok_response():
+    return Mock(status_code=200, **{"json.return_value": {"ok": True}})
+
+
+def test_slack_worker_require_bot_token():
+    config.SLACK_BOT_TOKEN = None
+    with pytest.raises(Exception, match="Missing SLACK_BOT_TOKEN"):
         slack_worker.send_new_slack_notification()
 
 
 @patch("requests.post")
 def test_slack_worker_happy_path(mock_post, client: FlaskClient, org_id: str):
-    mock_post.return_value = Mock(status_code=200)
+    mock_post.return_value = slack_ok_response()
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = post_json(
@@ -44,7 +49,11 @@ def test_slack_worker_happy_path(mock_post, client: FlaskClient, org_id: str):
     slack_worker.send_new_slack_notification(organization_id=org_id)
 
     mock_post.assert_called_once()
-    assert mock_post.call_args.args[0] == "test slack webhook url"
+    assert mock_post.call_args.args[0] == "https://slack.com/api/chat.postMessage"
+    assert mock_post.call_args.kwargs["headers"] == {
+        "Authorization": "Bearer test-slack-bot-token"
+    }
+    assert mock_post.call_args.kwargs["json"]["channel"] == "#arlo-activity"
     assert (
         mock_post.call_args.kwargs["json"]["text"]
         == "admin@example.com created an audit: Test Audit test_slack_worker_happy_path (Ballot Polling)"
@@ -55,7 +64,7 @@ def test_slack_worker_happy_path(mock_post, client: FlaskClient, org_id: str):
 def test_slack_worker_one_notification_at_a_time(
     mock_post, client: FlaskClient, org_id: str
 ):
-    mock_post.return_value = Mock(status_code=200)
+    mock_post.return_value = slack_ok_response()
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, user_key=DEFAULT_AA_EMAIL)
     rv = post_json(
@@ -74,14 +83,30 @@ def test_slack_worker_one_notification_at_a_time(
     rv = client.delete(f"/api/election/{election_id}")
     assert_ok(rv)
 
-    slack_worker.send_new_slack_notification(organization_id=org_id)
-
-    mock_post.assert_called_once()
-    assert (
-        mock_post.call_args.kwargs["json"]["text"]
-        == "admin@example.com created an audit: Test Audit test_slack_worker_one_notification_at_a_time (Ballot Polling)"
+    create_record, delete_record = (
+        ActivityLogRecord.query.filter_by(organization_id=org_id)
+        .order_by(ActivityLogRecord.timestamp)
+        .all()
     )
-    mock_post.reset_mock()
+
+    # Each activity is posted to one channel at a time, and fully posted
+    # before moving on to the next activity
+    for expected_channels in [
+        ["#arlo-activity"],
+        ["#arlo-activity", "#arlo-activity-others"],
+    ]:
+        slack_worker.send_new_slack_notification(organization_id=org_id)
+
+        mock_post.assert_called_once()
+        assert (
+            mock_post.call_args.kwargs["json"]["text"]
+            == "admin@example.com created an audit: Test Audit test_slack_worker_one_notification_at_a_time (Ballot Polling)"
+        )
+        mock_post.reset_mock()
+        assert create_record.posted_to_slack_channels == expected_channels
+
+    assert create_record.posted_to_slack_at is not None
+    assert delete_record.posted_to_slack_at is None
 
     slack_worker.send_new_slack_notification(organization_id=org_id)
 
@@ -90,11 +115,17 @@ def test_slack_worker_one_notification_at_a_time(
         mock_post.call_args.kwargs["json"]["text"]
         == "admin@example.com deleted an audit: Test Audit test_slack_worker_one_notification_at_a_time (Ballot Polling)"
     )
+    assert delete_record.posted_to_slack_channels == ["#arlo-activity"]
 
 
 @patch("requests.post")
 def test_slack_worker_error_in_slack_api(mock_post, client: FlaskClient, org_id: str):
-    mock_post.return_value = Mock(status_code=400, text="test slack error")
+    # Slack returns a 200 for most errors, with ok=false in the body
+    mock_post.return_value = Mock(
+        status_code=200,
+        text='{"ok":false,"error":"not_in_channel"}',
+        **{"json.return_value": {"ok": False, "error": "not_in_channel"}},
+    )
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, user_key=DEFAULT_AA_EMAIL)
     rv = post_json(
@@ -112,12 +143,63 @@ def test_slack_worker_error_in_slack_api(mock_post, client: FlaskClient, org_id:
     record = ActivityLogRecord.query.filter_by(organization_id=org_id).one()
 
     with pytest.raises(
-        Exception, match=f"Error posting record {record.id}:\n\ntest slack error"
+        Exception,
+        match=re.escape(
+            f'Error posting record {record.id} to #arlo-activity:\n\n{{"ok":false,"error":"not_in_channel"}}'
+        ),
     ):
         slack_worker.send_new_slack_notification(organization_id=org_id)
 
     record = ActivityLogRecord.query.filter_by(organization_id=org_id).one()
     assert record.posted_to_slack_at is None
+    assert record.posted_to_slack_channels == []
+
+
+@patch("requests.post")
+def test_slack_worker_error_partway_through_channels(
+    mock_post, client: FlaskClient, org_id: str
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, user_key=DEFAULT_AA_EMAIL)
+    rv = post_json(
+        client,
+        "/api/election",
+        {
+            "auditName": "Test Audit test_slack_worker_error_partway_through_channels",
+            "auditType": "BALLOT_POLLING",
+            "auditMathType": "BRAVO",
+            "organizationId": org_id,
+        },
+    )
+    assert rv.status_code == 200
+    record = ActivityLogRecord.query.filter_by(organization_id=org_id).one()
+
+    mock_post.return_value = slack_ok_response()
+    slack_worker.send_new_slack_notification(organization_id=org_id)
+    db_session.commit()
+
+    # Posting to the second channel fails
+    mock_post.return_value = Mock(status_code=429, text="ratelimited")
+    with pytest.raises(
+        Exception,
+        match=f"Error posting record {record.id} to #arlo-activity-others:\n\nratelimited",
+    ):
+        slack_worker.send_new_slack_notification(organization_id=org_id)
+    db_session.rollback()
+
+    record = ActivityLogRecord.query.filter_by(organization_id=org_id).one()
+    assert record.posted_to_slack_channels == ["#arlo-activity"]
+    assert record.posted_to_slack_at is None
+
+    # Retrying only posts to the channel that failed
+    mock_post.reset_mock()
+    mock_post.return_value = slack_ok_response()
+    slack_worker.send_new_slack_notification(organization_id=org_id)
+    mock_post.assert_called_once()
+    assert record.posted_to_slack_channels == [
+        "#arlo-activity",
+        "#arlo-activity-others",
+    ]
+    assert record.posted_to_slack_at is not None
 
 
 def test_slack_worker_message_format(snapshot):
