@@ -514,6 +514,7 @@ def cvrs_for_contest(contest: Contest) -> sampler_contest.CVRS:
 
 def sampled_ballot_interpretations_to_cvrs(
     contest: Contest,
+    match_invalid_write_ins_to_cvrs: bool = True,
 ) -> sampler_contest.SAMPLECVRS:
     ballots_query = SampledBallot.query.join(Batch)
 
@@ -543,16 +544,33 @@ def sampled_ballot_interpretations_to_cvrs(
     ballots = ballots_query.options(
         load_only(SampledBallot.id, SampledBallot.status),
         joinedload(SampledBallot.interpretations)
-        .load_only(BallotInterpretation.contest_id, BallotInterpretation.interpretation)
+        .load_only(
+            BallotInterpretation.contest_id,
+            BallotInterpretation.interpretation,
+            BallotInterpretation.has_invalid_write_in,
+        )
         .joinedload(BallotInterpretation.selected_choices)
         .load_only(ContestChoice.id),
     ).all()
+
+    write_in_choices = [
+        choice for choice in contest.choices if str(choice.name).lower() == "write-in"
+    ]
+    if match_invalid_write_ins_to_cvrs and write_in_choices:
+        losers = sampler_contest.from_db_contest(contest).losers
+        write_in_choices = [
+            choice for choice in write_in_choices if choice.id in losers
+        ]
 
     # The CVR we build should have a 1 for each choice that got voted for,
     # and a 0 otherwise. There are a couple special cases:
     # - Contest wasn't on the ballot - CVR should be an empty object
     # - Audit board couldn't find the ballot - CVR should be None
+    # - Invalid write-in - CVRs may or may not record the write-in mark
+    #   depending on adjudication, so we defer to the CVR unless write-ins
+    #   are a reported winner
     cvrs: sampler_contest.SAMPLECVRS = {}
+    reported_cvrs: sampler_contest.CVRS | None = None
     for ballot, times_sampled in ballots:
         if ballot.status == BallotStatus.NOT_FOUND:
             cvrs[ballot.id] = {"times_sampled": times_sampled, "cvr": None}
@@ -593,6 +611,21 @@ def sampled_ballot_interpretations_to_cvrs(
                 raise Exception(
                     f"Unexpected interpretation type: {interpretation.interpretation}"
                 )  # pragma: no cover
+
+            if (
+                match_invalid_write_ins_to_cvrs
+                and interpretation is not None
+                and interpretation.has_invalid_write_in
+                and write_in_choices
+                and contest.id in ballot_cvr
+            ):
+                if reported_cvrs is None:
+                    reported_cvrs = cvrs_for_contest(contest)
+                reported_cvr = reported_cvrs.get(ballot.id) or {}
+                reported_votes = reported_cvr.get(contest.id, {})
+                for write_in_choice in write_in_choices:
+                    if reported_votes.get(write_in_choice.id) == "1":
+                        ballot_cvr[contest.id][write_in_choice.id] = "1"
 
             cvrs[ballot.id] = {"times_sampled": times_sampled, "cvr": ballot_cvr}
 
