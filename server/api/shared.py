@@ -499,7 +499,6 @@ def cvrs_for_contest(contest: Contest) -> sampler_contest.CVRS:
 
 def sampled_ballot_interpretations_to_cvrs(
     contest: Contest,
-    match_invalid_write_ins_to_cvrs: bool = True,
 ) -> sampler_contest.SAMPLECVRS:
     ballots_query = SampledBallot.query.join(Batch)
 
@@ -541,7 +540,7 @@ def sampled_ballot_interpretations_to_cvrs(
     write_in_choices = [
         choice for choice in contest.choices if str(choice.name).lower() == "write-in"
     ]
-    if match_invalid_write_ins_to_cvrs and write_in_choices:
+    if write_in_choices:
         losers = sampler_contest.from_db_contest(contest).losers
         write_in_choices = [
             choice for choice in write_in_choices if choice.id in losers
@@ -598,8 +597,7 @@ def sampled_ballot_interpretations_to_cvrs(
                 )  # pragma: no cover
 
             if (
-                match_invalid_write_ins_to_cvrs
-                and interpretation is not None
+                interpretation is not None
                 and interpretation.has_invalid_write_in
                 and write_in_choices
                 and contest.id in ballot_cvr
