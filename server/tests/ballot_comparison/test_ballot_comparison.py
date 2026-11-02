@@ -1,4 +1,5 @@
 import io
+import pytest
 import json
 import csv
 from unittest.mock import patch
@@ -16,7 +17,9 @@ from .conftest import (
 from ..ballot_comparison.test_cvrs import (
     ESS_BALLOTS_1,
     ESS_BALLOTS_2,
+    build_hart_cvr,
 )
+from ...api.shared import cvrs_for_contest
 
 
 def test_set_contest_metadata_on_contest_creation(
@@ -1690,6 +1693,168 @@ def test_ballot_comparison_ess(
     j2_discrepancies = discrepancies[jurisdiction_ids[1]]
     assert "0001, BATCH2, Ballot 3" not in j2_discrepancies
     assert "0002, BATCH1, Ballot 3" in j2_discrepancies
+
+
+@pytest.mark.parametrize(
+    "mixed_write_in_casing,write_in_wins",
+    [(False, False), (True, False), (False, True)],
+)
+def test_ballot_comparison_hart_invalid_write_in(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    election_settings,
+    hart_manifests,
+    mixed_write_in_casing: bool,
+    write_in_wins: bool,
+):
+    # Hart CVRs record unadjudicated write-ins as a "Write-In" vote
+    hart_cvrs = [
+        build_hart_cvr("BATCH1", "1", "1-1-1", "1,0,1,0,0", add_write_in=write_in_wins),
+        build_hart_cvr("BATCH1", "2", "1-1-2", "1,0,1,0,0", add_write_in=write_in_wins),
+        build_hart_cvr("BATCH1", "3", "1-1-3", "1,0,1,0,0", add_write_in=True),
+        build_hart_cvr("BATCH2", "1", "1-2-1", "1,0,1,0,0", add_write_in=write_in_wins),
+        build_hart_cvr("BATCH2", "2", "1-2-2", "1,0,0,1,0", add_write_in=write_in_wins),
+        build_hart_cvr("BATCH2", "3", "1-2-3", "1,0,1,0,0", add_write_in=True),
+        build_hart_cvr("BATCH3", "1", "1-3-1", "1,0,0,1,0", add_write_in=write_in_wins),
+        build_hart_cvr("BATCH3", "2", "1-3-2", "1,0,0,0,1", add_write_in=write_in_wins),
+        build_hart_cvr("BATCH3", "3", "1-3-3", "1,0,1,0,0", add_write_in=True),
+        build_hart_cvr("BATCH4", "1", "1-4-1", "1,0,0,0,1", add_write_in=write_in_wins),
+        build_hart_cvr("BATCH4", "2", "1-4-2", "1,0,1,0,0", add_write_in=write_in_wins),
+        build_hart_cvr("BATCH4", "3", "1-4-3", "1,0,1,0,0", add_write_in=True),
+        build_hart_cvr("BATCH4", "4", "1-4-4", "1,0,1,0,0", add_write_in=write_in_wins),
+        build_hart_cvr("BATCH4", "5", "1-4-5", "0,1,0,1,0"),
+        build_hart_cvr("BATCH4", "6", "1-4-6", "1,0,1,0,0", add_write_in=True),
+    ]
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    for jurisdiction_id in jurisdiction_ids[:2]:
+        rv = upload_cvrs(
+            client,
+            zip_hart_cvrs(hart_cvrs),
+            election_id,
+            jurisdiction_id,
+            "HART",
+            "application/zip",
+        )
+        assert_ok(rv)
+
+    # Simulate another vendor's CVR spelling the write-in choice differently
+    if mixed_write_in_casing:
+        jurisdiction = Jurisdiction.query.get(jurisdiction_ids[1])
+        metadata = json.loads(json.dumps(jurisdiction.cvr_contests_metadata))
+        choices = metadata["Contest 1"]["choices"]
+        choices["Write-in"] = choices.pop("Write-In")
+        jurisdiction.cvr_contests_metadata = metadata
+        db_session.commit()
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/contest",
+        [
+            {
+                "id": str(uuid.uuid4()),
+                "name": "Contest 1",
+                "numWinners": 1,
+                "jurisdictionIds": jurisdiction_ids[:2],
+                "isTargeted": True,
+            },
+        ],
+    )
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contest_id = json.loads(rv.data)["contests"][0]["id"]
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
+    sample_size = json.loads(rv.data)["sampleSizes"][contest_id][0]
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {"roundNum": 1, "sampleSizes": {contest_id: sample_size}},
+    )
+    assert_ok(rv)
+    rv = client.get(f"/api/election/{election_id}/round")
+    round_1_id = json.loads(rv.data)["rounds"][0]["id"]
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    for jurisdiction_id in jurisdiction_ids[:2]:
+        rv = post_json(
+            client,
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/audit-board",
+            [{"name": "Audit Board #1"}],
+        )
+        assert_ok(rv)
+
+    # Audit boards see each ballot as reported, except that write-ins are
+    # adjudicated as invalid, including one the CVR didn't record
+    contest = Contest.query.get(contest_id)
+    write_in_ids = {
+        choice.id for choice in contest.choices if choice.name.lower() == "write-in"
+    }
+    assert len(write_in_ids) == (2 if mixed_write_in_casing else 1)
+    reported_votes = {
+        ballot_id: cvr[contest_id]
+        for ballot_id, cvr in cvrs_for_contest(contest).items()
+        if cvr
+    }
+    sampled_ballots = SampledBallot.query.filter(
+        SampledBallot.id.in_(reported_votes.keys())
+    ).all()
+    write_in_ballots = [
+        ballot
+        for ballot in sampled_ballots
+        if any(reported_votes[ballot.id][id] == "1" for id in write_in_ids)
+    ]
+    assert len(write_in_ballots) > 0
+    unrecorded_write_in_ballot = next(
+        (ballot for ballot in sampled_ballots if ballot not in write_in_ballots),
+        None,
+    )
+    write_in_ballot_labels = {
+        (
+            ballot.batch.jurisdiction_id,
+            f"{ballot.batch.tabulator}, {ballot.batch.name}, Ballot {ballot.ballot_position}",
+        )
+        for ballot in write_in_ballots
+    }
+    for ballot in sampled_ballots:
+        choices = [
+            choice
+            for choice in contest.choices
+            if choice.id not in write_in_ids
+            and reported_votes[ballot.id][choice.id] == "1"
+        ]
+        audit_ballot(
+            ballot,
+            contest_id,
+            Interpretation.VOTE if choices else Interpretation.BLANK,
+            choices,
+            has_invalid_write_in=(
+                ballot in write_in_ballots or ballot == unrecorded_write_in_ballot
+            ),
+        )
+    for audit_board in AuditBoard.query.filter(
+        AuditBoard.jurisdiction_id.in_(jurisdiction_ids)
+    ):
+        audit_board.signed_off_at = datetime.now(timezone.utc)
+    db_session.commit()
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/discrepancy")
+    discrepancies = json.loads(rv.data)
+    discrepant_ballot_labels = {
+        (jurisdiction_id, ballot_label)
+        for jurisdiction_id, jurisdiction_discrepancies in discrepancies.items()
+        for ballot_label in jurisdiction_discrepancies
+    }
+    # Invalid write-ins counted toward a winning Write-In are overstatements
+    assert discrepant_ballot_labels == (
+        write_in_ballot_labels if write_in_wins else set()
+    )
 
 
 def test_ballot_comparison_sample_preview(
