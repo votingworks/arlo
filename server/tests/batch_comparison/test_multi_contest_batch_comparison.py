@@ -1915,6 +1915,21 @@ def test_multi_contest_batch_comparison_progress_with_new_contest_draw(
         "numUnique": 9,
         "numUniqueAudited": 0,
     }
+    # Per contest, the batch counts as audited for Contest 1 alone
+    assert json.loads(rv.data)["jurisdictions"][0]["currentRoundStatusByContestId"] == {
+        contest_ids[0]: {
+            "numSamples": 7,
+            "numSamplesAudited": 1,
+            "numUnique": 6,
+            "numUniqueAudited": 1,
+        },
+        contest_ids[1]: {
+            "numSamples": 9,
+            "numSamplesAudited": 0,
+            "numUnique": 6,
+            "numUniqueAudited": 0,
+        },
+    }
 
 
 def test_multi_contest_batch_comparison_batch_tallies_template_csv_generation(

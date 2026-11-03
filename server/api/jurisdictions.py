@@ -5,6 +5,7 @@ import enum
 import uuid
 import datetime
 import math
+from collections import defaultdict
 from flask import jsonify, request
 from sqlalchemy import distinct, func, tuple_
 from sqlalchemy.dialects.postgresql import insert as pg_insert
@@ -147,6 +148,8 @@ def serialize_jurisdiction(
     election: Election,
     jurisdiction: Jurisdiction,
     round_status: JSONDict | None,
+    manifest_num_ballots_by_contest_id: dict[str, int],
+    round_status_by_contest_id: dict[str, JSONDict] | None,
 ) -> JSONDict:
     json_jurisdiction: JSONDict = {
         "id": jurisdiction.id,
@@ -162,6 +165,10 @@ def serialize_jurisdiction(
     }
 
     if election.audit_type == AuditType.BATCH_COMPARISON:
+        json_jurisdiction["ballotManifest"]["numBallotsByContestId"] = (
+            manifest_num_ballots_by_contest_id
+        )
+        json_jurisdiction["currentRoundStatusByContestId"] = round_status_by_contest_id
 
         def min_num_ballots_for_contest(contest: Contest) -> int:
             assert contest.votes_allowed
@@ -452,6 +459,68 @@ def ballot_round_status(election: Election, round: Round) -> dict[str, JSONDict]
     return statuses
 
 
+# A draw counts as audited once its batch has results entered for the draw's
+# contest. Having tally sheets isn't enough: a batch drawn again in a later
+# round for another contest keeps its earlier sheets, with no results for the
+# new contest yet.
+def sampled_batch_draw_has_results():  # noqa: ANN201
+    return (
+        BatchResult.query.join(BatchResultTallySheet)
+        .join(ContestChoice)
+        .filter(
+            BatchResultTallySheet.batch_id == SampledBatchDraw.batch_id,
+            ContestChoice.contest_id == SampledBatchDraw.contest_id,
+        )
+        .exists()
+    )
+
+
+# Each jurisdiction's sample counts for each contest it has draws for
+def batch_round_status_by_contest(round: Round) -> dict[str, dict[str, JSONDict]]:
+    draws_in_round = SampledBatchDraw.query.filter_by(round_id=round.id).join(Batch)
+    draw_has_results = sampled_batch_draw_has_results()
+    by_jurisdiction_and_contest = [Batch.jurisdiction_id, SampledBatchDraw.contest_id]
+
+    def count_by_jurisdiction_and_contest(query, count) -> dict[tuple[str, str], int]:  # noqa: ANN001
+        return {
+            (jurisdiction_id, contest_id): value
+            for jurisdiction_id, contest_id, value in query.group_by(
+                *by_jurisdiction_and_contest
+            ).values(*by_jurisdiction_and_contest, count)
+        }
+
+    sample_counts = count_by_jurisdiction_and_contest(
+        draws_in_round, func.count(SampledBatchDraw.ticket_number)
+    )
+    audited_sample_counts = count_by_jurisdiction_and_contest(
+        draws_in_round.filter(draw_has_results),
+        func.count(SampledBatchDraw.ticket_number),
+    )
+    batch_counts = count_by_jurisdiction_and_contest(
+        draws_in_round, func.count(SampledBatchDraw.batch_id.distinct())
+    )
+    audited_batch_counts = count_by_jurisdiction_and_contest(
+        draws_in_round.filter(draw_has_results),
+        func.count(SampledBatchDraw.batch_id.distinct()),
+    )
+
+    status_by_contest_by_jurisdiction: dict[str, dict[str, JSONDict]] = defaultdict(
+        dict
+    )
+    for (jurisdiction_id, contest_id), num_samples in sample_counts.items():
+        status_by_contest_by_jurisdiction[jurisdiction_id][contest_id] = {
+            "numSamples": num_samples,
+            "numSamplesAudited": audited_sample_counts.get(
+                (jurisdiction_id, contest_id), 0
+            ),
+            "numUnique": batch_counts[(jurisdiction_id, contest_id)],
+            "numUniqueAudited": audited_batch_counts.get(
+                (jurisdiction_id, contest_id), 0
+            ),
+        }
+    return status_by_contest_by_jurisdiction
+
+
 def batch_round_status(election: Election, round: Round) -> dict[str, JSONDict]:
     sample_count_by_jurisdiction = dict(
         SampledBatchDraw.query.filter_by(round_id=round.id)
@@ -470,17 +539,7 @@ def batch_round_status(election: Election, round: Round) -> dict[str, JSONDict]:
             ),
         )
     )
-    # A batch audited in an earlier round keeps its tally sheets, so a draw only
-    # counts as audited once results are entered for its contest
-    draw_has_results = (
-        BatchResult.query.join(BatchResultTallySheet)
-        .join(ContestChoice)
-        .filter(
-            BatchResultTallySheet.batch_id == SampledBatchDraw.batch_id,
-            ContestChoice.contest_id == SampledBatchDraw.contest_id,
-        )
-        .exists()
-    )
+    draw_has_results = sampled_batch_draw_has_results()
     audited_sample_count_by_jurisdiction = dict(
         SampledBatchDraw.query.filter_by(round_id=round.id)
         .join(Batch)
@@ -629,11 +688,57 @@ def list_jurisdictions(election: Election):
         .all()
     )
 
+    manifest_num_ballots_by_jurisdiction_id = (
+        manifest_num_ballots_by_contest_id(election)
+        if election.audit_type == AuditType.BATCH_COMPARISON
+        else {}
+    )
+    round_status_by_contest_by_jurisdiction_id = (
+        batch_round_status_by_contest(current_round)
+        if current_round and election.audit_type == AuditType.BATCH_COMPARISON
+        else None
+    )
     json_jurisdictions = [
-        serialize_jurisdiction(election, jurisdiction, round_status[jurisdiction.id])
+        serialize_jurisdiction(
+            election,
+            jurisdiction,
+            round_status[jurisdiction.id],
+            manifest_num_ballots_by_jurisdiction_id.get(jurisdiction.id, {}),
+            (
+                round_status_by_contest_by_jurisdiction_id.get(jurisdiction.id, {})
+                if round_status_by_contest_by_jurisdiction_id is not None
+                else None
+            ),
+        )
         for jurisdiction in jurisdictions
     ]
     return jsonify({"jurisdictions": json_jurisdictions})
+
+
+# Each jurisdiction's manifest ballots for each of its contests, using the
+# manifest's per-contest counts
+def manifest_num_ballots_by_contest_id(
+    election: Election,
+) -> dict[str, dict[str, int]]:
+    num_ballots_by_jurisdiction_id: dict[str, dict[str, int]] = defaultdict(dict)
+    for jurisdiction_id, contest_id, num_ballots in (
+        Batch.query.join(Jurisdiction)
+        .join(Jurisdiction.contests)
+        .filter(Jurisdiction.election_id == election.id)
+        .group_by(Batch.jurisdiction_id, Contest.id)
+        .values(
+            Batch.jurisdiction_id,
+            Contest.id,
+            func.sum(
+                func.coalesce(
+                    Batch.num_ballots_by_contest_id[Contest.id].as_integer(),
+                    Batch.num_ballots,
+                )
+            ),
+        )
+    ):
+        num_ballots_by_jurisdiction_id[jurisdiction_id][contest_id] = num_ballots
+    return num_ballots_by_jurisdiction_id
 
 
 @api.route("/election/<election_id>/jurisdiction/file", methods=["GET"])
