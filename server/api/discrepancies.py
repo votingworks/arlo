@@ -1,14 +1,18 @@
 from collections import defaultdict
-from typing import TypedDict
-from werkzeug.exceptions import Conflict
-from flask import jsonify
+import uuid
+from typing import TypedDict, cast
+from werkzeug.exceptions import Conflict, NotFound
+from flask import jsonify, request, session
 
 from sqlalchemy import func
 from sqlalchemy.orm import selectinload
 
 from . import api
 from ..models import *
-from ..auth import restrict_access, UserType
+from ..auth import get_loggedin_user, get_support_user, restrict_access, UserType
+from ..database import db_session
+from ..util.get_json import safe_get_json_dict
+from ..util.jsonschema import validate
 from ..audit_math import macro
 from .shared import (
     ContestVoteDeltas,
@@ -228,6 +232,23 @@ def show_batch_comparison_discrepancies_by_jurisdiction(
     }
 
 
+# The audit admin acting on a discrepancy, or the support user logged in as them
+def acting_user_email() -> str:
+    _, user_email = get_loggedin_user(session)
+    return get_support_user(session) or cast(str, user_email)
+
+
+def add_batch_discrepancy_note(batch: Batch, text: str, user_email: str):
+    db_session.add(
+        BatchDiscrepancyNote(
+            id=str(uuid.uuid4()),
+            batch_id=batch.id,
+            user_email=user_email,
+            text=text,
+        )
+    )
+
+
 # Each batch paired with the batches whose tallies it carries: itself, or for
 # a combined batch's representative, every sub-batch
 def batches_with_sub_batches(batches: list[Batch]) -> list[tuple[Batch, list[Batch]]]:
@@ -340,6 +361,103 @@ def serialize_batch_discrepancies_by_jurisdiction(
             )
         )
     return serialized_by_jurisdiction
+
+
+def get_jurisdiction_batch(jurisdiction: Jurisdiction, batch_id: str) -> Batch:
+    batch = Batch.query.filter_by(
+        id=batch_id, jurisdiction_id=jurisdiction.id
+    ).one_or_none()
+    if batch is None:
+        raise NotFound()
+    return batch  # ty: ignore[unsound-return-statement]
+
+
+BATCH_DISCREPANCY_STATUS_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "status": {
+            "type": "string",
+            "enum": [
+                BatchDiscrepancyStatus.ACCEPTED.value,
+                BatchDiscrepancyStatus.JURISDICTION_CONTACTED.value,
+            ],
+        }
+    },
+    "required": ["status"],
+    "additionalProperties": False,
+}
+
+
+@api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/batches/<batch_id>/discrepancy-status",
+    methods=["PUT"],
+)
+@restrict_access([UserType.AUDIT_ADMIN])
+def set_batch_discrepancy_status(
+    election: Election, jurisdiction: Jurisdiction, batch_id: str
+):
+    batch = get_jurisdiction_batch(jurisdiction, batch_id)
+    body = safe_get_json_dict(request)
+    validate(body, BATCH_DISCREPANCY_STATUS_SCHEMA)
+    if batch.discrepancy_status not in [
+        BatchDiscrepancyStatus.NEEDS_REVIEW,
+        BatchDiscrepancyStatus.JURISDICTION_CONTACTED,
+        BatchDiscrepancyStatus.ACCEPTED,
+    ]:
+        raise Conflict("Batch does not have a discrepancy under review")
+
+    batch.discrepancy_status = BatchDiscrepancyStatus(body["status"])  # ty: ignore[invalid-assignment]
+    db_session.commit()
+
+    return jsonify(status="ok")
+
+
+BATCH_DISCREPANCY_NOTE_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "text": {"type": "string", "minLength": 1},
+    },
+    "required": ["text"],
+    "additionalProperties": False,
+}
+
+
+@api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/batches/<batch_id>/discrepancy-notes",
+    methods=["POST"],
+)
+@restrict_access([UserType.AUDIT_ADMIN])
+def create_batch_discrepancy_note(
+    election: Election, jurisdiction: Jurisdiction, batch_id: str
+):
+    batch = get_jurisdiction_batch(jurisdiction, batch_id)
+    note = safe_get_json_dict(request)
+    validate(note, BATCH_DISCREPANCY_NOTE_SCHEMA)
+    add_batch_discrepancy_note(batch, note["text"], acting_user_email())
+    db_session.commit()
+
+    return jsonify(status="ok")
+
+
+@api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/batches/<batch_id>/discrepancy-notes/<note_id>",
+    methods=["DELETE"],
+)
+@restrict_access([UserType.AUDIT_ADMIN])
+def delete_batch_discrepancy_note(
+    election: Election, jurisdiction: Jurisdiction, batch_id: str, note_id: str
+):
+    batch = get_jurisdiction_batch(jurisdiction, batch_id)
+    note = BatchDiscrepancyNote.query.filter_by(
+        id=note_id, batch_id=batch.id
+    ).one_or_none()
+    if note is None:
+        raise NotFound()
+
+    db_session.delete(note)
+    db_session.commit()
+
+    return jsonify(status="ok")
 
 
 def get_ballot_comparison_discrepancies_by_jurisdiction(
