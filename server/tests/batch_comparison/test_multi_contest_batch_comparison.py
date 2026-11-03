@@ -745,21 +745,21 @@ def test_multi_contest_batch_comparison_end_to_end(
     rv = client.get(f"/api/election/{election_id}/discrepancy")
     discrepancies = json.loads(rv.data)
     assert (
-        discrepancies[jurisdictions[0]["id"]]["Batch 6"][contest_ids[0]][
-            "reportedVotes"
-        ][contest_1_choice_ids[0]]
+        discrepancies_by_batch_name(discrepancies[jurisdictions[0]["id"]])["Batch 6"][
+            contest_ids[0]
+        ]["reportedVotes"][contest_1_choice_ids[0]]
         == 50
     )
     assert (
-        discrepancies[jurisdictions[0]["id"]]["Batch 6"][contest_ids[0]][
-            "auditedVotes"
-        ][contest_1_choice_ids[0]]
+        discrepancies_by_batch_name(discrepancies[jurisdictions[0]["id"]])["Batch 6"][
+            contest_ids[0]
+        ]["auditedVotes"][contest_1_choice_ids[0]]
         == 49
     )
     assert (
-        discrepancies[jurisdictions[0]["id"]]["Batch 6"][contest_ids[0]][
-            "discrepancies"
-        ][contest_1_choice_ids[0]]
+        discrepancies_by_batch_name(discrepancies[jurisdictions[0]["id"]])["Batch 6"][
+            contest_ids[0]
+        ]["discrepancies"][contest_1_choice_ids[0]]
         == 1
     )
 
@@ -993,21 +993,21 @@ def test_multi_contest_batch_comparison_round_2(
     discrepancies = json.loads(rv.data)
 
     assert (
-        discrepancies[jurisdiction_ids[0]]["Batch 2"][contest_ids[0]]["reportedVotes"][
-            contest_1_choice_ids[0]
-        ]
+        discrepancies_by_batch_name(discrepancies[jurisdiction_ids[0]])["Batch 2"][
+            contest_ids[0]
+        ]["reportedVotes"][contest_1_choice_ids[0]]
         == 50
     )
     assert (
-        discrepancies[jurisdiction_ids[0]]["Batch 2"][contest_ids[0]]["auditedVotes"][
-            contest_1_choice_ids[0]
-        ]
+        discrepancies_by_batch_name(discrepancies[jurisdiction_ids[0]])["Batch 2"][
+            contest_ids[0]
+        ]["auditedVotes"][contest_1_choice_ids[0]]
         == 0
     )
     assert (
-        discrepancies[jurisdiction_ids[0]]["Batch 2"][contest_ids[0]]["discrepancies"][
-            contest_1_choice_ids[0]
-        ]
+        discrepancies_by_batch_name(discrepancies[jurisdiction_ids[0]])["Batch 2"][
+            contest_ids[0]
+        ]["discrepancies"][contest_1_choice_ids[0]]
         == 50
     )
     assert jurisdiction_ids[1] not in discrepancies
@@ -1755,7 +1755,9 @@ def test_multi_contest_batch_comparison_combined_batch_tallied_in_two_rounds(
     # Batch 2 reports 50/0 and Batch 9 reports 25/25 for Contest 2
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/discrepancy")
-    assert json.loads(rv.data)[jurisdiction_ids[0]]["Combined Batch"] == {
+    assert discrepancies_by_batch_name(json.loads(rv.data)[jurisdiction_ids[0]])[
+        "Combined Batch"
+    ] == {
         contest_ids[1]: {
             "reportedVotes": {contest_2_choice_ids[0]: 75, contest_2_choice_ids[1]: 25},
             "auditedVotes": expected_contest_2_results,

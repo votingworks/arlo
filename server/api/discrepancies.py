@@ -3,6 +3,9 @@ from typing import TypedDict
 from werkzeug.exceptions import Conflict
 from flask import jsonify
 
+from sqlalchemy import func
+from sqlalchemy.orm import selectinload
+
 from . import api
 from ..models import *
 from ..auth import restrict_access, UserType
@@ -15,6 +18,7 @@ from .shared import (
     cvrs_for_contest,
     get_current_round,
     group_combined_batches,
+    with_combined_sub_batches,
     sampled_ballot_interpretations_to_cvrs,
     sampled_batch_results,
 )
@@ -56,14 +60,12 @@ def get_discrepancies_by_jurisdiction(election: Election):
         raise Conflict("Audit not started")
 
     discrepancies_by_jurisdiction: (
-        BatchDiscrepanciesByJurisdiction | BallotDiscrepanciesByJurisdiction
+        SerializedBatchDiscrepanciesByJurisdiction | BallotDiscrepanciesByJurisdiction
     ) = {}
 
     if election.audit_type == AuditType.BATCH_COMPARISON:
-        discrepancies_by_jurisdiction = (
-            get_batch_comparison_discrepancies_by_jurisdiction(
-                election, current_round.id
-            )
+        discrepancies_by_jurisdiction = serialize_batch_discrepancies_by_jurisdiction(
+            election, current_round
         )
     elif election.audit_type == AuditType.BALLOT_COMPARISON:
         discrepancies_by_jurisdiction = (
@@ -209,6 +211,73 @@ def show_batch_comparison_discrepancies_by_jurisdiction(
         jurisdiction.id: (jurisdiction.id in finalized_jurisdiction_ids)
         for jurisdiction in jurisdictions
     }
+
+
+# Each batch paired with the batches whose tallies it carries: itself, or for
+# a combined batch's representative, every sub-batch
+def batches_with_sub_batches(batches: list[Batch]) -> list[tuple[Batch, list[Batch]]]:
+    batches = with_combined_sub_batches(batches)
+    return [
+        (batch, [batch]) for batch in batches if batch.combined_batch_name is None
+    ] + [
+        (combined_batch["representative_batch"], combined_batch["sub_batches"])
+        for combined_batch in group_combined_batches(
+            [batch for batch in batches if batch.combined_batch_name is not None]
+        )
+    ]
+
+
+class SerializedBatchDiscrepancies(TypedDict):
+    name: str
+    isExtra: bool
+    discrepancies: dict[str, BatchContestDiscrepancies]
+
+
+# Keyed by jurisdiction id, then batch id
+SerializedBatchDiscrepanciesByJurisdiction = dict[
+    str, dict[str, SerializedBatchDiscrepancies]
+]
+
+
+# Every batch in the round with a discrepancy. A combined batch is listed once,
+# under its representative's id.
+def serialize_batch_discrepancies_by_jurisdiction(
+    election: Election, round: Round
+) -> SerializedBatchDiscrepanciesByJurisdiction:
+    discrepancies_by_jurisdiction = get_batch_comparison_discrepancies_by_jurisdiction(
+        election, round.id
+    )
+    drawn_batches = (
+        Batch.query.join(SampledBatchDraw)
+        .filter_by(round_id=round.id)
+        .join(Jurisdiction)
+        .filter_by(election_id=election.id)
+        .order_by(func.human_sort(Batch.name))
+        .options(selectinload(Batch.draws))
+        .all()
+    )
+    serialized_by_jurisdiction: SerializedBatchDiscrepanciesByJurisdiction = (
+        defaultdict(dict)
+    )
+    for batch, sub_batches in batches_with_sub_batches(drawn_batches):
+        name = batch.combined_batch_name or batch.name
+        discrepancies_by_contest = discrepancies_by_jurisdiction.get(
+            batch.jurisdiction_id, {}
+        ).get(name, {})
+        if not discrepancies_by_contest:
+            continue
+        serialized_by_jurisdiction[batch.jurisdiction_id][batch.id] = (
+            SerializedBatchDiscrepancies(
+                name=name,
+                isExtra=all(
+                    draw.ticket_number == EXTRA_TICKET_NUMBER
+                    for sub_batch in sub_batches
+                    for draw in sub_batch.draws
+                ),
+                discrepancies=discrepancies_by_contest,
+            )
+        )
+    return serialized_by_jurisdiction
 
 
 def get_ballot_comparison_discrepancies_by_jurisdiction(
