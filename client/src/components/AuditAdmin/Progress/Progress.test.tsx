@@ -56,6 +56,7 @@ const render = (props: Partial<IProgressProps> = {}, searchParams = '') =>
             {...routeProps}
             jurisdictions={props.jurisdictions ?? jurisdictionMocks.oneManifest}
             auditSettings={auditSettingsMocks.all}
+            contests={contestMocks.one}
             round={null}
             {...props}
           />
@@ -601,6 +602,145 @@ describe('Progress screen', () => {
       expect(footers[3]).toHaveTextContent('1')
       expect(footers[4]).toHaveTextContent('34')
       expect(footers[5]).toHaveTextContent('26')
+    })
+  })
+
+  describe('contest select', () => {
+    const jurisdiction = jurisdictionMocks.oneComplete[2] // Complete
+    const contestA = contestMocks.two[0]
+    // Contest B is only in the complete jurisdiction
+    const contestB = {
+      ...contestMocks.two[1],
+      jurisdictionIds: [jurisdiction.id],
+    }
+    // The complete jurisdiction's numbers broken down by contest
+    const jurisdictions = jurisdictionMocks.oneComplete.map(j =>
+      j.id === jurisdiction.id
+        ? {
+            ...j,
+            ballotManifest: {
+              ...j.ballotManifest,
+              numBallotsByContestId: {
+                [contestA.id]: 1500,
+                [contestB.id]: 600,
+              },
+            },
+            currentRoundStatusByContestId: {
+              [contestA.id]: {
+                numSamples: 20,
+                numSamplesAudited: 20,
+                numUnique: 20,
+                numUniqueAudited: 20,
+              },
+              [contestB.id]: {
+                numSamples: 12,
+                numSamplesAudited: 10,
+                numUnique: 10,
+                numUniqueAudited: 8,
+              },
+            },
+          }
+        : j
+    )
+
+    it('scopes a batch comparison table to the selected contest', async () => {
+      const expectedCalls = [
+        aaApiCalls.getDiscrepancies({}),
+        aaApiCalls.getLastLoginByJurisdiction({
+          response: lastLoginByJurisdictionMocks.noLogins,
+        }),
+        aaApiCalls.getMapData,
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        const { container, history } = render({
+          auditSettings: auditSettingsMocks.batchComparisonAll,
+          jurisdictions,
+          contests: [contestA, contestB],
+          round: roundMocks.singleIncomplete[0],
+        })
+        await waitFor(() => {
+          expect(container.querySelectorAll('.d3-component').length).toBe(1)
+        })
+        expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+        expect(screen.getAllByRole('row')).toHaveLength(5)
+
+        // Only the jurisdictions in the contest are listed, with the contest's
+        // ballots and unique batch counts
+        userEvent.selectOptions(
+          screen.getByRole('combobox', { name: 'Contest' }),
+          contestB.id
+        )
+        expect(history.location.search).toEqual(`?contest=${contestB.id}`)
+        const rows = screen.getAllByRole('row')
+        expect(rows).toHaveLength(3) // header, row, footer
+        const cells = within(rows[1]).getAllByRole('cell')
+        expect(cells[0]).toHaveTextContent('Jurisdiction 3')
+        expect(cells[2]).toHaveTextContent('600')
+        expect(cells[4]).toHaveTextContent('8')
+        expect(cells[5]).toHaveTextContent('2')
+        const footers = within(rows[2]).getAllByRole('cell')
+        expect(footers[2]).toHaveTextContent('600')
+        expect(footers[4]).toHaveTextContent('8')
+        expect(footers[5]).toHaveTextContent('2')
+
+        // Counting every sampled batch instead of unique ones
+        userEvent.click(screen.getByRole('checkbox'))
+        expect(cells[4]).toHaveTextContent('10')
+        expect(cells[5]).toHaveTextContent('2')
+
+        userEvent.selectOptions(
+          screen.getByRole('combobox', { name: 'Contest' }),
+          ''
+        )
+        expect(history.location.search).toEqual('')
+        expect(screen.getAllByRole('row')).toHaveLength(5)
+      })
+    })
+
+    it('is only offered during a round of a multi-contest batch comparison audit', async () => {
+      await withMockFetch(getDefaultExpectedCalls(), async () => {
+        const { container } = render({
+          auditSettings: auditSettingsMocks.batchComparisonAll,
+          jurisdictions: jurisdictionMocks.twoManifestsOneTallies,
+          contests: [contestA, contestB],
+        })
+        await waitFor(() => {
+          expect(container.querySelectorAll('.d3-component').length).toBe(1)
+        })
+        expect(
+          screen.queryByRole('combobox', { name: 'Contest' })
+        ).not.toBeInTheDocument()
+      })
+      const batchComparisonCalls = [
+        aaApiCalls.getDiscrepancies({}),
+        aaApiCalls.getLastLoginByJurisdiction({
+          response: lastLoginByJurisdictionMocks.noLogins,
+        }),
+        aaApiCalls.getMapData,
+      ]
+      await withMockFetch(batchComparisonCalls, async () => {
+        const { container } = render({
+          auditSettings: auditSettingsMocks.batchComparisonAll,
+          jurisdictions,
+          contests: [contestA],
+          round: roundMocks.singleIncomplete[0],
+        })
+        await waitFor(() => {
+          expect(container.querySelectorAll('.d3-component').length).toBe(1)
+        })
+        expect(
+          screen.queryByRole('combobox', { name: 'Contest' })
+        ).not.toBeInTheDocument()
+      })
+      await withMockFetch(getDefaultExpectedCalls(), async () => {
+        const { container } = render({ contests: [contestA, contestB] })
+        await waitFor(() => {
+          expect(container.querySelectorAll('.d3-component').length).toBe(1)
+        })
+        expect(
+          screen.queryByRole('combobox', { name: 'Contest' })
+        ).not.toBeInTheDocument()
+      })
     })
   })
 

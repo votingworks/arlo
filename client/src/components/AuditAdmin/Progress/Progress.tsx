@@ -2,7 +2,14 @@ import React, { useState, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { Column, Cell, TableInstance, SortingRule, SortByFn } from 'react-table'
-import { Button, Switch, Icon, InputGroup, Spinner } from '@blueprintjs/core'
+import {
+  Button,
+  HTMLSelect,
+  Switch,
+  Icon,
+  InputGroup,
+  Spinner,
+} from '@blueprintjs/core'
 import H2Title from '../../Atoms/H2Title'
 import {
   JurisdictionRoundStatus,
@@ -12,10 +19,12 @@ import {
   useDiscrepanciesByJurisdiction,
   DiscrepanciesByJurisdiction,
   useLastLoginByJurisdiction,
+  IRoundStatusCounts,
 } from '../../useJurisdictions'
 import JurisdictionDetail from './JurisdictionDetail'
 import { Table, sortByRank, downloadTableAsCSV } from '../../Atoms/Table'
 import { IRound } from '../useRoundsAuditAdmin'
+import { IContest } from '../../../types'
 import StatusTag, { IStatusTagProps } from '../../Atoms/StatusTag'
 import { IAuditSettings } from '../../useAuditSettings'
 import { FileProcessingStatus, IFileInfo } from '../../useCSV'
@@ -91,12 +100,14 @@ const countDiscrepanciesForJurisdiction = (
 export interface IProgressProps {
   jurisdictions: IJurisdiction[]
   auditSettings: IAuditSettings
+  contests: IContest[]
   round: IRound | null
 }
 
 const Progress: React.FC<IProgressProps> = ({
   jurisdictions,
   auditSettings,
+  contests,
   round,
 }: IProgressProps) => {
   const { electionId } = useParams<{ electionId: string }>()
@@ -115,7 +126,29 @@ const Progress: React.FC<IProgressProps> = ({
     sort?: string
     dir?: string // asc | desc
     filter?: string
+    contest?: string // Scope the table to one contest
   }>()
+  // Once a batch comparison audit of several contests is under way, the table
+  // can be viewed one contest at a time. Before then its columns are file
+  // totals, which have no per-contest version.
+  const canSelectContest =
+    round !== null && auditType === 'BATCH_COMPARISON' && contests.length > 1
+  const selectedContest = canSelectContest
+    ? contests.find(contest => contest.id === sortAndFilterState?.contest)
+    : undefined
+  // With a contest selected, the sample counts are that contest's. A
+  // jurisdiction with no draws for the contest has no entry for it.
+  const roundStatusCounts = (
+    jurisdiction: IJurisdiction
+  ): IRoundStatusCounts | null =>
+    selectedContest
+      ? (jurisdiction.currentRoundStatusByContestId?.[selectedContest.id] ?? {
+          numSamples: 0,
+          numSamplesAudited: 0,
+          numUnique: 0,
+          numUniqueAudited: 0,
+        })
+      : jurisdiction.currentRoundStatus
   const [isShowingUnique, setIsShowingUnique] = useState<boolean>(true)
   const [jurisdictionDetailId, setJurisdictionDetailId] = useState<
     string | null
@@ -297,7 +330,10 @@ const Progress: React.FC<IProgressProps> = ({
     },
     {
       Header: 'Ballots in Manifest',
-      accessor: ({ ballotManifest: { numBallots } }) => numBallots,
+      accessor: ({ ballotManifest }) =>
+        selectedContest
+          ? (ballotManifest.numBallotsByContestId?.[selectedContest.id] ?? null)
+          : ballotManifest.numBallots,
       Cell: formatNumber,
       Footer: totalFooter('Ballots in Manifest'),
     },
@@ -407,18 +443,26 @@ const Progress: React.FC<IProgressProps> = ({
     columns.push(
       {
         Header: `${ballotsOrBatches} Audited`,
-        accessor: ({ currentRoundStatus: s }) =>
-          s && (isShowingUnique ? s.numUniqueAudited : s.numSamplesAudited),
+        accessor: jurisdiction => {
+          const s = roundStatusCounts(jurisdiction)
+          return (
+            s && (isShowingUnique ? s.numUniqueAudited : s.numSamplesAudited)
+          )
+        },
         Cell: formatNumber,
         Footer: totalFooter(`${ballotsOrBatches} Audited`),
       },
       {
         Header: `${ballotsOrBatches} Remaining`,
-        accessor: ({ currentRoundStatus: s }) =>
-          s &&
-          (isShowingUnique
-            ? s.numUnique - s.numUniqueAudited
-            : s.numSamples - s.numSamplesAudited),
+        accessor: jurisdiction => {
+          const s = roundStatusCounts(jurisdiction)
+          return (
+            s &&
+            (isShowingUnique
+              ? s.numUnique - s.numUniqueAudited
+              : s.numSamples - s.numSamplesAudited)
+          )
+        },
         Cell: formatNumber,
         Footer: totalFooter(`${ballotsOrBatches} Remaining`),
       }
@@ -437,8 +481,10 @@ const Progress: React.FC<IProgressProps> = ({
     }
   }
 
-  const filteredJurisdictions = jurisdictions.filter(({ name }) =>
-    name.toLowerCase().includes(filter.toLowerCase())
+  const filteredJurisdictions = jurisdictions.filter(
+    ({ id, name }) =>
+      name.toLowerCase().includes(filter.toLowerCase()) &&
+      (!selectedContest || selectedContest.jurisdictionIds.includes(id))
   )
 
   const initialSortBy = sortAndFilterState?.sort
@@ -480,6 +526,25 @@ const Progress: React.FC<IProgressProps> = ({
         />
       )}
       <TableControls>
+        {canSelectContest && (
+          <HTMLSelect
+            aria-label="Contest"
+            value={selectedContest?.id ?? ''}
+            onChange={event =>
+              setSortAndFilterState({
+                ...sortAndFilterState,
+                contest: event.target.value || undefined,
+              })
+            }
+          >
+            <option value="">All contests</option>
+            {contests.map(contest => (
+              <option key={contest.id} value={contest.id}>
+                {contest.name}
+              </option>
+            ))}
+          </HTMLSelect>
+        )}
         <div style={{ flexGrow: 1 }} />
         {round && (
           <Switch

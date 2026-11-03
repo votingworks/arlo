@@ -213,6 +213,7 @@ const AuditAdminView: React.FC = () => {
               <Progress
                 jurisdictions={jurisdictions}
                 auditSettings={auditSettings}
+                contests={contests}
                 round={rounds.length > 0 ? rounds[rounds.length - 1] : null}
               />
             </Inner>
