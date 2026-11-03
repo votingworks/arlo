@@ -1,6 +1,6 @@
 import React, { useRef } from 'react'
 import { useParams, Redirect, useHistory } from 'react-router-dom'
-import { Spinner, H3, Intent } from '@blueprintjs/core'
+import { Spinner, H3, Intent, AnchorButton } from '@blueprintjs/core'
 import { useQueryClient } from 'react-query'
 import {
   useRounds,
@@ -20,6 +20,8 @@ import { useAuditSettings } from '../useAuditSettings'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
 import { AuditAdminStatusBox } from '../Atoms/StatusBox'
 import { RefreshTag } from '../Atoms/RefreshTag'
+import AsyncButton from '../Atoms/AsyncButton'
+import { apiDownload } from '../utilities'
 import Setup from './Setup/Setup'
 import Progress from './Progress/Progress'
 
@@ -139,7 +141,9 @@ const AuditAdminView: React.FC = () => {
           />
         </Wrapper>
       )
-    case 'progress':
+    case 'progress': {
+      const isAuditComplete =
+        rounds.length > 0 && rounds[rounds.length - 1].isAuditComplete
       return (
         <Wrapper>
           <AuditAdminStatusBox
@@ -151,12 +155,49 @@ const AuditAdminView: React.FC = () => {
             contests={contests}
             auditSettings={auditSettings}
           >
-            <RefreshTag
-              refresh={() => {
-                queryClient.invalidateQueries(roundsQueryKey(electionId))
-                queryClient.invalidateQueries(jurisdictionsQueryKey(electionId))
-              }}
-            />
+            <>
+              <RefreshTag
+                refresh={() => {
+                  queryClient.invalidateQueries(roundsQueryKey(electionId))
+                  queryClient.invalidateQueries(
+                    jurisdictionsQueryKey(electionId)
+                  )
+                }}
+              />
+              <div style={{ display: 'flex', gap: '5px', marginTop: '10px' }}>
+                {isAuditComplete && (
+                  <AsyncButton
+                    intent="primary"
+                    icon="download"
+                    onClick={() =>
+                      apiDownload(`/election/${electionId}/report`)
+                    }
+                  >
+                    Download Audit Report
+                  </AsyncButton>
+                )}
+                <AnchorButton
+                  icon="download"
+                  href={`/api/election/${electionId}/batch-tallies/summed-by-jurisdiction-csv`}
+                >
+                  Download Reported Results
+                </AnchorButton>
+                {rounds.length > 0 &&
+                  (auditSettings.auditType === 'BATCH_COMPARISON' ||
+                    auditSettings.auditType === 'BALLOT_COMPARISON') && (
+                    <AsyncButton
+                      icon="flag"
+                      onClick={() =>
+                        apiDownload(
+                          `/election/${electionId}/discrepancy-report`
+                        )
+                      }
+                    >
+                      Download Discrepancy Report
+                    </AsyncButton>
+                  )}
+              </div>
+            </>
           </AuditAdminStatusBox>
           {!drawSampleError(rounds) && (
             <Inner aria-label="Audit Progress">
@@ -169,6 +210,7 @@ const AuditAdminView: React.FC = () => {
           )}
         </Wrapper>
       )
+    }
     default:
       return (
         <Redirect

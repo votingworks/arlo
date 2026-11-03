@@ -280,6 +280,11 @@ describe('AA setup flow', () => {
       )
 
       await screen.findByRole('heading', { name: 'Audit Progress' })
+      screen.getByRole('button', { name: /Download Reported Results/ })
+      // Only batch and ballot comparison audits have a discrepancy report
+      expect(
+        screen.queryByRole('button', { name: /Download Discrepancy Report/ })
+      ).not.toBeInTheDocument()
       expect(history.location.pathname).toEqual('/election/1/progress')
     })
   })
@@ -394,8 +399,63 @@ it('finishes a round', async () => {
   await withMockFetch(expectedCalls, async () => {
     render('progress')
     await screen.findByRole('heading', { name: 'Audit Progress' })
+    expect(
+      screen.queryByRole('button', { name: /Download Audit Report/ })
+    ).not.toBeInTheDocument()
     userEvent.click(screen.getByRole('button', { name: 'Finish Round 1' }))
     await screen.findByText('Congratulations - the audit is complete!')
+
+    // The audit report is downloaded from the start of the downloads row
+    const mockDownloadWindow: { onbeforeunload?: () => void } = {}
+    window.open = vi.fn().mockReturnValue(mockDownloadWindow)
+    const downloadReportButton = await screen.findByRole('button', {
+      name: /Download Audit Report/,
+    })
+    expect(downloadReportButton.nextElementSibling).toHaveTextContent(
+      'Download Reported Results'
+    )
+    userEvent.click(downloadReportButton)
+    expect(downloadReportButton).toBeDisabled()
+    await waitFor(() => {
+      expect(window.open).toHaveBeenCalledTimes(1)
+      expect(window.open).toBeCalledWith('/api/election/1/report')
+    })
+    mockDownloadWindow.onbeforeunload!()
+    await waitFor(() => {
+      expect(downloadReportButton).toBeEnabled()
+    })
+  })
+})
+
+it('downloads the discrepancy report of a comparison audit', async () => {
+  const expectedCalls = [
+    aaApiCalls.getUser,
+    aaApiCalls.getRounds(roundMocks.singleIncomplete),
+    aaApiCalls.getJurisdictions,
+    aaApiCalls.getContests(contestMocks.filledTargeted),
+    aaApiCalls.getSettings(auditSettingsMocks.batchComparisonAll),
+    aaApiCalls.getDiscrepancies({}),
+    aaApiCalls.getLastLoginByJurisdiction(),
+    aaApiCalls.getMapData,
+  ]
+  await withMockFetch(expectedCalls, async () => {
+    render('progress')
+    await screen.findByRole('heading', { name: 'Audit Progress' })
+    const downloadReportButton = screen.getByRole('button', {
+      name: /Download Discrepancy Report/,
+    })
+    const mockDownloadWindow: { onbeforeunload?: () => void } = {}
+    window.open = vi.fn().mockReturnValue(mockDownloadWindow)
+    userEvent.click(downloadReportButton)
+    expect(downloadReportButton).toBeDisabled()
+    await waitFor(() => {
+      expect(window.open).toHaveBeenCalledTimes(1)
+      expect(window.open).toBeCalledWith('/api/election/1/discrepancy-report')
+    })
+    mockDownloadWindow.onbeforeunload!()
+    await waitFor(() => {
+      expect(downloadReportButton).toBeEnabled()
+    })
   })
 })
 
@@ -439,6 +499,8 @@ it('sends the new random seed when starting the next round of a Providence audit
   await withMockFetch(expectedCalls, async () => {
     render('progress')
     await screen.findByText('Round 2 Sample Sizes')
+    // The downloads stay available between rounds
+    screen.getByRole('button', { name: /Download Reported Results/ })
     userEvent.click(screen.getByRole('button', { name: 'Start Round 2' }))
     const modal = screen
       .getByRole('heading', { name: 'Enter Random Seed for Round 2' })

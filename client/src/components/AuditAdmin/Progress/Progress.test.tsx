@@ -347,10 +347,6 @@ describe('Progress screen', () => {
       expect(footers[2]).toHaveTextContent('6,351')
       expect(footers[3]).toHaveTextContent('34')
       expect(footers[4]).toHaveTextContent('26')
-
-      expect(
-        screen.queryByRole('button', { name: /Download Discrepancy Report/ })
-      ).not.toBeInTheDocument()
     })
   })
 
@@ -493,22 +489,6 @@ describe('Progress screen', () => {
       await waitFor(() => {
         expect(dialog).not.toBeInTheDocument()
       })
-
-      const downloadReportButton = screen.getByRole('button', {
-        name: /Download Discrepancy Report/,
-      })
-      const mockDownloadWindow: { onbeforeunload?: () => void } = {}
-      window.open = vi.fn().mockReturnValue(mockDownloadWindow)
-      userEvent.click(downloadReportButton)
-      expect(downloadReportButton).toBeDisabled()
-      await waitFor(() => {
-        expect(window.open).toHaveBeenCalledTimes(1)
-        expect(window.open).toBeCalledWith(`/api/election/1/discrepancy-report`)
-      })
-      mockDownloadWindow.onbeforeunload!()
-      await waitFor(() => {
-        expect(downloadReportButton).toBeEnabled()
-      })
     })
   })
 
@@ -621,22 +601,6 @@ describe('Progress screen', () => {
       expect(footers[3]).toHaveTextContent('1')
       expect(footers[4]).toHaveTextContent('34')
       expect(footers[5]).toHaveTextContent('26')
-
-      const downloadReportButton = screen.getByRole('button', {
-        name: /Download Discrepancy Report/,
-      })
-      const mockDownloadWindow: { onbeforeunload?: () => void } = {}
-      window.open = vi.fn().mockReturnValue(mockDownloadWindow)
-      userEvent.click(downloadReportButton)
-      expect(downloadReportButton).toBeDisabled()
-      await waitFor(() => {
-        expect(window.open).toHaveBeenCalledTimes(1)
-        expect(window.open).toBeCalledWith(`/api/election/1/discrepancy-report`)
-      })
-      mockDownloadWindow.onbeforeunload!()
-      await waitFor(() => {
-        expect(downloadReportButton).toBeEnabled()
-      })
     })
   })
 

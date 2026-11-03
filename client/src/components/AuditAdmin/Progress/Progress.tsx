@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { Column, Cell, TableInstance, SortingRule, SortByFn } from 'react-table'
-import { Button, Switch, Icon, AnchorButton, Spinner } from '@blueprintjs/core'
+import { Button, Switch, Icon, Spinner } from '@blueprintjs/core'
 import H2Title from '../../Atoms/H2Title'
 import {
   JurisdictionRoundStatus,
@@ -26,8 +26,7 @@ import { IAuditSettings } from '../../useAuditSettings'
 import { FileProcessingStatus, IFileInfo } from '../../useCSV'
 import ProgressMap from './ProgressMap'
 import { sum } from '../../../utils/number'
-import { apiDownload, assert } from '../../utilities'
-import AsyncButton from '../../Atoms/AsyncButton'
+import { assert } from '../../utilities'
 import useSearchParams from '../../useSearchParams'
 import { JurisdictionDiscrepancies } from './JurisdictionDiscrepancies'
 
@@ -457,42 +456,6 @@ const Progress: React.FC<IProgressProps> = ({
     [sortAndFilterState, setSortAndFilterState]
   )
 
-  const downloadButtons = (
-    <div style={{ display: 'flex', alignSelf: 'end', gap: '5px' }}>
-      <AnchorButton
-        icon="download"
-        href={`/api/election/${electionId}/batch-tallies/summed-by-jurisdiction-csv`}
-      >
-        Download Reported Results
-      </AnchorButton>
-      <Button
-        icon="download"
-        onClick={() => {
-          downloadTableAsCSV({
-            tableId: 'progress-table',
-            fileName: `audit-progress-${
-              auditSettings.auditName
-            }-${new Date().toISOString()}.csv`,
-          })
-        }}
-      >
-        Download Table as CSV
-      </Button>
-      {showDiscrepancies && (
-        <AsyncButton
-          icon="flag"
-          onClick={() =>
-            apiDownload(`/election/${electionId}/discrepancy-report`)
-          }
-        >
-          Download Discrepancy Report
-        </AsyncButton>
-      )}
-    </div>
-  )
-
-  const splitTableControlsAcrossTwoRows = Boolean(showDiscrepancies)
-
   if (!lastLoginQuery.isSuccess) {
     return null
   }
@@ -510,40 +473,40 @@ const Progress: React.FC<IProgressProps> = ({
           auditType={auditType}
         />
       )}
-      <TableControls
-        style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            width: '100%',
+      <TableControls>
+        <div style={{ flexGrow: 1 }}>
+          <FilterInput
+            placeholder="Filter by jurisdiction name..."
+            value={filter}
+            onChange={value =>
+              setSortAndFilterState({
+                ...sortAndFilterState,
+                filter: value || undefined,
+              })
+            }
+          />
+        </div>
+        {round && (
+          <Switch
+            checked={isShowingUnique}
+            label={`Count unique sampled ${ballotsOrBatches.toLowerCase()}`}
+            onChange={() => setIsShowingUnique(!isShowingUnique)}
+            style={{ marginBottom: 0 }}
+          />
+        )}
+        <Button
+          icon="download"
+          onClick={() => {
+            downloadTableAsCSV({
+              tableId: 'progress-table',
+              fileName: `audit-progress-${
+                auditSettings.auditName
+              }-${new Date().toISOString()}.csv`,
+            })
           }}
         >
-          <div style={{ flexGrow: 1 }}>
-            <FilterInput
-              placeholder="Filter by jurisdiction name..."
-              value={filter}
-              onChange={value =>
-                setSortAndFilterState({
-                  ...sortAndFilterState,
-                  filter: value || undefined,
-                })
-              }
-            />
-          </div>
-          {round && (
-            <Switch
-              checked={isShowingUnique}
-              label={`Count unique sampled ${ballotsOrBatches.toLowerCase()}`}
-              onChange={() => setIsShowingUnique(!isShowingUnique)}
-              style={{ marginBottom: 0 }}
-            />
-          )}
-          {!splitTableControlsAcrossTwoRows && downloadButtons}
-        </div>
-        {splitTableControlsAcrossTwoRows && downloadButtons}
+          Download Table as CSV
+        </Button>
       </TableControls>
       <Table
         data={filteredJurisdictions}
