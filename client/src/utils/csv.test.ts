@@ -1,7 +1,7 @@
 import Papa from 'papaparse'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 
-import { redactCsvColumn } from './csv'
+import { BOM, redactCsvColumn } from './csv'
 
 const createCsvFile = (contents: BlobPart) =>
   new File([contents], 'cvr.csv', { type: 'text/csv' })
@@ -146,10 +146,10 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId
   })
 
   test.each([
-    { description: 'UTF-8', bytes: new TextEncoder().encode('José') },
+    { description: 'UTF-8', bytes: new TextEncoder().encode('Café') },
     {
       description: 'Windows-1252',
-      bytes: new Uint8Array([0x4a, 0x6f, 0x73, 0xe9]), // José
+      bytes: new Uint8Array([0x4a, 0x6f, 0x73, 0xe9]), // Café
     },
     {
       description: 'ISO-8859-1 that happens to be valid UTF-8',
@@ -183,8 +183,8 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId
     // é is 2 bytes in UTF-8. With 5-byte chunks, the first byte of "é" is the
     // last byte of a chunk.
     await expectRedactedFile(
-      'a\nb\nc\nCvrNumber,RecordId\n10,20\nJosé,3\n',
-      'a\nb\nc\nCvrNumber,RecordId\n10,REDACTED\nJosé,REDACTED\n'
+      'a\nb\nc\nCvrNumber,RecordId\n10,20\nCafé,3\n',
+      'a\nb\nc\nCvrNumber,RecordId\n10,REDACTED\nCafé,REDACTED\n'
     )
   })
 
@@ -248,6 +248,66 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId
       await expectRedactedFile(input, expectedOutput, (file: File) =>
         redactCsvColumn(file, 'RecordId', { numRowsToSkip })
       )
+    }
+  )
+
+  test('preserves a UTF-8 byte order mark', async () => {
+    await expectRedactedFile(
+      new Blob([BOM.UTF8, 'a\nb\nc\nCvrNumber,RecordId\n1,2\n']),
+      new Blob([BOM.UTF8, 'a\nb\nc\nCvrNumber,RecordId\n1,REDACTED\n'])
+    )
+  })
+
+  test('preserves a UTF-8 byte order mark and non-ASCII bytes', async () => {
+    const cafe = new TextEncoder().encode('Café')
+    await expectRedactedFile(
+      new Blob([BOM.UTF8, cafe, '\nb\nc\nCvrNumber,RecordId\n', cafe, ',2\n']),
+      new Blob([
+        BOM.UTF8,
+        cafe,
+        '\nb\nc\nCvrNumber,RecordId\n',
+        cafe,
+        ',REDACTED\n',
+      ])
+    )
+  })
+
+  test('preserves a UTF-8 byte order mark across chunks', async () => {
+    const originalParse = Papa.parse
+    vi.spyOn(Papa, 'parse').mockImplementation(((
+      input: File,
+      config: Papa.ParseLocalConfig<string[], File>
+    ) =>
+      originalParse(input, { ...config, chunkSize: 5 })) as typeof Papa.parse)
+    await expectRedactedFile(
+      new Blob([BOM.UTF8, 'a\nb\nc\nCvrNumber,RecordId\n10,20\nCaf\u00e9,3\n']),
+      new Blob([
+        BOM.UTF8,
+        'a\nb\nc\nCvrNumber,RecordId\n10,REDACTED\nCaf\u00e9,REDACTED\n',
+      ])
+    )
+  })
+
+  test('finds the column when it is the first cell after a UTF-8 byte order mark', async () => {
+    await expectRedactedFile(
+      new Blob([BOM.UTF8, 'RecordId,CvrNumber\n1,2']),
+      new Blob([BOM.UTF8, 'RecordId,CvrNumber\nREDACTED,2']),
+      (file: File) => redactCsvColumn(file, 'RecordId')
+    )
+  })
+
+  test.each([
+    { description: 'UTF-16 LE', bom: BOM.UTF16LE, highByteFirst: false },
+    { description: 'UTF-16 BE', bom: BOM.UTF16BE, highByteFirst: true },
+  ])(
+    'returns the original file for $description with a byte order mark',
+    async ({ bom }) => {
+      const text = 'RecordId,CvrNumber\n1,2\n' // Not actually UTF-16 but fine for this test
+      const parseSpy = vi.spyOn(Papa, 'parse')
+      await expectOriginalFile(new Blob([bom, text]), (file: File) =>
+        redactCsvColumn(file, 'RecordId')
+      )
+      expect(parseSpy).not.toHaveBeenCalled()
     }
   )
 })
