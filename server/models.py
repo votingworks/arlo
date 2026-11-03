@@ -408,6 +408,13 @@ class JurisdictionAdministration(BaseModel):
     __table_args__ = (PrimaryKeyConstraint("user_id", "jurisdiction_id"),)
 
 
+class BatchDiscrepancyStatus(str, enum.Enum):
+    NEEDS_REVIEW = "NEEDS_REVIEW"
+    JURISDICTION_CONTACTED = "JURISDICTION_CONTACTED"
+    RE_TALLYING = "RE_TALLYING"
+    ACCEPTED = "ACCEPTED"
+
+
 # A batch represents a group of ballots in a jurisdiction (usually one physical
 # box or bin).
 class Batch(BaseModel):
@@ -454,6 +461,15 @@ class Batch(BaseModel):
     # users can flag batches to be guaranteed inclusion in the audit sample,
     # though they will only count towards the RLA if randomly sampled as well.
     required = Column(Boolean, nullable=False, server_default="false")
+
+    discrepancy_status = Column(Enum(BatchDiscrepancyStatus))
+    discrepancy_notes = relationship(
+        "BatchDiscrepancyNote",
+        uselist=True,
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+        order_by="BatchDiscrepancyNote.created_at",
+    )
 
     draws = relationship(
         "SampledBatchDraw",
@@ -986,6 +1002,18 @@ class SampledBatchDraw(BaseModel):
 # (Experimental) To we add extra batches on top of the sample, give them a
 # special ticket number to flag them.
 EXTRA_TICKET_NUMBER = "EXTRA"
+
+
+# A note support keeps about a batch's discrepancies
+class BatchDiscrepancyNote(BaseModel):
+    id = Column(String(200), primary_key=True)
+    batch_id = Column(
+        String(200),
+        ForeignKey("batch.id", ondelete="cascade"),
+        nullable=False,
+    )
+    user_email = Column(String(200), nullable=False)
+    text = Column(Text, nullable=False)
 
 
 # In a batch comparison audit, audit boards will record votes on tally sheets.
