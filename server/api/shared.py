@@ -249,6 +249,17 @@ def contest_ids_to_audit_in_round(round: Round, batch: Batch) -> list[str]:
     ]
 
 
+# Whether the batch, or any batch it's combined with, was drawn in a round
+# before this one
+def audited_in_earlier_round(round: Round, batch: Batch) -> bool:
+    round_num_by_id = {r.id: r.round_num for r in round.election.rounds}
+    return any(
+        round_num_by_id[draw.round_id] < round.round_num
+        for sub_batch in with_combined_sub_batches([batch])
+        for draw in sub_batch.draws
+    )
+
+
 def jurisdiction_ids_with_batches_to_audit(round: Round) -> set[str]:
     sampled_batches = (
         Batch.query.join(SampledBatchDraw)

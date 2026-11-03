@@ -5,6 +5,7 @@ import pytest
 from flask.testing import FlaskClient
 
 from ...models import *
+from ...api.shared import combined_batch_representative
 from ..helpers import *
 
 
@@ -1386,6 +1387,16 @@ def test_batch_comparison_combined_batches(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches/finalize",
     )
     assert_ok(rv)
+
+    # The combined batch's discrepancy status is on its representative
+    sub_batches = Batch.query.filter_by(
+        jurisdiction_id=jurisdiction_ids[0], combined_batch_name="Combined Batch"
+    ).all()
+    representative_batch = combined_batch_representative(sub_batches)
+    assert {batch.id: batch.discrepancy_status for batch in sub_batches} == {
+        **{batch.id: None for batch in sub_batches},
+        representative_batch.id: BatchDiscrepancyStatus.NEEDS_REVIEW,
+    }
 
     # End the round
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)

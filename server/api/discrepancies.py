@@ -13,6 +13,7 @@ from ..audit_math import macro
 from .shared import (
     ContestVoteDeltas,
     ballot_vote_deltas,
+    contest_ids_to_audit_in_round,
     batch_tallies,
     batch_vote_deltas,
     cvrs_for_contest,
@@ -190,7 +191,8 @@ def get_batch_comparison_discrepancies_by_jurisdiction(
     return discrepancies_by_jurisdiction
 
 
-# In multi-jurisdiction audits, hide discrepancies if the jurisdiction hasn't finalized tallies
+# In multi-jurisdiction audits, hide discrepancies if the jurisdiction hasn't
+# finalized tallies, unless it was unfinalized to re-tally a batch
 def show_batch_comparison_discrepancies_by_jurisdiction(
     election: Election,
 ) -> dict[str, bool]:
@@ -206,9 +208,22 @@ def show_batch_comparison_discrepancies_by_jurisdiction(
             BatchResultsFinalized.jurisdiction_id
         )
     }
+    re_tallying_jurisdiction_ids = {
+        jurisdiction_id
+        for (jurisdiction_id,) in Batch.query.join(Jurisdiction)
+        .filter(
+            Jurisdiction.election_id == election.id,
+            Batch.discrepancy_status == BatchDiscrepancyStatus.RE_TALLYING,
+        )
+        .with_entities(Batch.jurisdiction_id)
+        .distinct()
+    }
 
     return {
-        jurisdiction.id: (jurisdiction.id in finalized_jurisdiction_ids)
+        jurisdiction.id: (
+            jurisdiction.id in finalized_jurisdiction_ids
+            or jurisdiction.id in re_tallying_jurisdiction_ids
+        )
         for jurisdiction in jurisdictions
     }
 
@@ -225,6 +240,53 @@ def batches_with_sub_batches(batches: list[Batch]) -> list[tuple[Batch, list[Bat
             [batch for batch in batches if batch.combined_batch_name is not None]
         )
     ]
+
+
+# A batch is judged on the contests it was audited for this round: it needs
+# review if it has a discrepancy in one of them, and is accepted otherwise
+def record_batch_results_finalized(
+    round: Round,
+    batches_in_round: list[Batch],
+    discrepancies_by_batch_name: dict[str, dict[str, BatchContestDiscrepancies]],
+):
+    for batch, _ in batches_with_sub_batches(batches_in_round):
+        audited_contest_ids = contest_ids_to_audit_in_round(round, batch)
+        has_discrepancy = any(
+            contest_id in audited_contest_ids
+            for contest_id in discrepancies_by_batch_name.get(
+                batch.combined_batch_name or batch.name, {}
+            )
+        )
+        batch.discrepancy_status = (  # ty: ignore[invalid-assignment]
+            BatchDiscrepancyStatus.NEEDS_REVIEW
+            if has_discrepancy
+            else BatchDiscrepancyStatus.ACCEPTED
+        )
+
+
+# Unfinalizing reopens every batch, so each one is being re-tallied, whatever
+# had been decided about it
+def record_batch_results_unfinalized(batches_in_round: list[Batch]):
+    for batch, _ in batches_with_sub_batches(batches_in_round):
+        batch.discrepancy_status = BatchDiscrepancyStatus.RE_TALLYING  # ty: ignore[invalid-assignment]
+
+
+# Finishing a round accepts the discrepancies still under review: the audit
+# math has counted them and the audit is moving on
+def record_round_finished(round: Round):
+    drawn_batches = (
+        Batch.query.join(SampledBatchDraw)
+        .filter_by(round_id=round.id)
+        .join(Jurisdiction)
+        .filter_by(election_id=round.election_id)
+        .all()
+    )
+    for batch in with_combined_sub_batches(drawn_batches):
+        if batch.discrepancy_status in [
+            BatchDiscrepancyStatus.NEEDS_REVIEW,
+            BatchDiscrepancyStatus.JURISDICTION_CONTACTED,
+        ]:
+            batch.discrepancy_status = BatchDiscrepancyStatus.ACCEPTED  # ty: ignore[invalid-assignment]
 
 
 class SerializedBatchDiscrepancies(TypedDict):

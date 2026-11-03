@@ -1266,3 +1266,171 @@ def test_finalize_batch_results_before_sample_drawn(
         ).count()
         == 0
     )
+
+
+def test_batch_discrepancy_status_transitions(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_id: str,
+    round_1_id: str,
+):
+    batches_url = f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches"
+
+    def log_in_as_jurisdiction_admin():
+        set_logged_in_user(
+            client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+        )
+
+    log_in_as_jurisdiction_admin()
+    rv = client.get(batches_url)
+    batches = json.loads(rv.data)["batches"]
+    choice_ids = [choice.id for choice in Contest.query.get(contest_id).choices]
+    batch_tallies = Jurisdiction.query.get(jurisdiction_ids[0]).batch_tallies
+
+    def reported_results(batch):
+        return {
+            choice_id: batch_tallies[batch["name"]][contest_id][choice_id]
+            for choice_id in choice_ids
+        }
+
+    def record_results(batch, results):
+        log_in_as_jurisdiction_admin()
+        rv = put_json(
+            client,
+            f"{batches_url}/{batch['id']}/results",
+            [{"name": "Tally Sheet #1", "results": results}],
+        )
+        assert_ok(rv)
+
+    def finalize():
+        log_in_as_jurisdiction_admin()
+        rv = post_json(client, f"{batches_url}/finalize")
+        assert_ok(rv)
+
+    def unfinalize():
+        set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+        rv = client.delete(f"{batches_url}/finalize")
+        assert_ok(rv)
+
+    def status(batch):
+        return Batch.query.get(batch["id"]).discrepancy_status
+
+    def discrepant_batch_names():
+        set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+        rv = client.get(f"/api/election/{election_id}/discrepancy")
+        return [
+            batch["name"]
+            for batch in json.loads(rv.data).get(jurisdiction_ids[0], {}).values()
+        ]
+
+    # Every batch matches its reported tallies except Batch 1, one vote short
+    batch_1 = next(batch for batch in batches if batch["name"] == "Batch 1")
+    matching_batches = [batch for batch in batches if batch is not batch_1]
+    for batch in matching_batches:
+        record_results(batch, reported_results(batch))
+    record_results(batch_1, {**reported_results(batch_1), choice_ids[0]: 499})
+
+    # Finalizing flags the batch with a discrepancy for review and accepts the
+    # rest
+    finalize()
+    assert status(batch_1) == BatchDiscrepancyStatus.NEEDS_REVIEW
+    for batch in matching_batches:
+        assert status(batch) == BatchDiscrepancyStatus.ACCEPTED
+    assert discrepant_batch_names() == ["Batch 1"]
+
+    # Unfinalizing marks every batch as being re-tallied and keeps the
+    # discrepancy visible
+    unfinalize()
+    assert status(batch_1) == BatchDiscrepancyStatus.RE_TALLYING
+    for batch in matching_batches:
+        assert status(batch) == BatchDiscrepancyStatus.RE_TALLYING
+    assert discrepant_batch_names() == ["Batch 1"]
+
+    # Re-finalizing with the discrepancy corrected accepts it
+    record_results(batch_1, reported_results(batch_1))
+    finalize()
+    assert status(batch_1) == BatchDiscrepancyStatus.ACCEPTED
+    assert discrepant_batch_names() == []
+
+    # Reopening re-tallies every batch, accepted ones included
+    unfinalize()
+    assert status(batch_1) == BatchDiscrepancyStatus.RE_TALLYING
+
+    # Re-finalizing with a new discrepancy flags it for review again
+    record_results(batch_1, {**reported_results(batch_1), choice_ids[1]: 249})
+    finalize()
+    assert status(batch_1) == BatchDiscrepancyStatus.NEEDS_REVIEW
+
+    # Reopening replaces a status support set
+    Batch.query.get(
+        batch_1["id"]
+    ).discrepancy_status = BatchDiscrepancyStatus.JURISDICTION_CONTACTED
+    db_session.commit()
+    unfinalize()
+    assert status(batch_1) == BatchDiscrepancyStatus.RE_TALLYING
+
+    # Undoing the round start clears the status
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
+    rv = client.delete(f"/api/support/rounds/{round_1_id}")
+    assert_ok(rv)
+    assert status(batch_1) is None
+
+
+def test_batch_discrepancy_status_at_round_finish(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_id: str,
+    round_1_id: str,
+):
+    choice_ids = [choice.id for choice in Contest.query.get(contest_id).choices]
+
+    # Every batch matches its reported tallies, except one in the first
+    # jurisdiction that's one vote short
+    def record_results_and_finalize(jurisdiction_id, discrepant_batch_name=None):
+        set_logged_in_user(
+            client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+        )
+        batches_url = f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/batches"
+        rv = client.get(batches_url)
+        batches = json.loads(rv.data)["batches"]
+        batch_tallies = Jurisdiction.query.get(jurisdiction_id).batch_tallies
+        for batch in batches:
+            results = {
+                choice_id: batch_tallies[batch["name"]][contest_id][choice_id]
+                for choice_id in choice_ids
+            }
+            if batch["name"] == discrepant_batch_name:
+                results[choice_ids[0]] -= 1
+            rv = put_json(
+                client,
+                f"{batches_url}/{batch['id']}/results",
+                [{"name": "Tally Sheet #1", "results": results}],
+            )
+            assert_ok(rv)
+        rv = post_json(client, f"{batches_url}/finalize")
+        assert_ok(rv)
+        return batches
+
+    jurisdiction_1_batches = record_results_and_finalize(
+        jurisdiction_ids[0], discrepant_batch_name="Batch 1"
+    )
+    record_results_and_finalize(jurisdiction_ids[1])
+
+    def status(batch):
+        return Batch.query.get(batch["id"]).discrepancy_status
+
+    batch_1 = next(
+        batch for batch in jurisdiction_1_batches if batch["name"] == "Batch 1"
+    )
+    assert status(batch_1) == BatchDiscrepancyStatus.NEEDS_REVIEW
+
+    # Finishing the round accepts the discrepancies still under review
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
+    assert_ok(rv)
+    assert status(batch_1) == BatchDiscrepancyStatus.ACCEPTED
+    for batch in jurisdiction_1_batches:
+        if batch is not batch_1:
+            assert status(batch) == BatchDiscrepancyStatus.ACCEPTED

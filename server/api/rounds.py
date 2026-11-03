@@ -12,6 +12,7 @@ from . import api
 from ..database import db_session
 from ..models import *
 from .shared import (
+    audited_in_earlier_round,
     contest_ids_to_audit_in_round,
     jurisdiction_ids_with_batches_to_audit,
     tally_sheets_for_contests,
@@ -51,6 +52,7 @@ from ..audit_math import (
     suite,
 )
 from .ballot_manifest import hybrid_contest_total_ballots
+from .discrepancies import record_round_finished
 from ..worker.tasks import (
     UserError,
     background_task,
@@ -660,6 +662,13 @@ def delete_round_and_corresponding_sampled_ballots(round: Round):
             )
             .all()
         ):
+            # A batch audited in an earlier round goes back to the status that
+            # round ended with, which accepted whatever was still open
+            batch.discrepancy_status = (  # ty: ignore[invalid-assignment]
+                BatchDiscrepancyStatus.ACCEPTED
+                if audited_in_earlier_round(round, batch)
+                else None
+            )
             for tally_sheet in tally_sheets_for_contests(
                 batch, contest_ids_to_audit_in_round(round, batch)
             ):
@@ -762,6 +771,8 @@ def finish_round(election: Election):
     count_audited_votes(election, current_round)
     escalating_contest_ids = calculate_risk_measurements(election, current_round)
     current_round.ended_at = datetime.now(timezone.utc)  # ty: ignore[invalid-assignment]
+    if election.audit_type == AuditType.BATCH_COMPARISON:
+        record_round_finished(current_round)
 
     db_session.flush()  # Ensure round contest results are queryable by is_audit_complete
     audit_complete = is_audit_complete(current_round)

@@ -28,7 +28,11 @@ from ..activity_log.activity_log import (
     activity_base,
     record_activity,
 )
-from .discrepancies import get_batch_comparison_discrepancies_by_jurisdiction
+from .discrepancies import (
+    get_batch_comparison_discrepancies_by_jurisdiction,
+    record_batch_results_finalized,
+    record_batch_results_unfinalized,
+)
 from ..util.get_json import safe_get_json_list
 
 
@@ -408,7 +412,8 @@ def finalize_batch_results(
     ):
         raise Conflict("Results have already been finalized")
 
-    for batch, contest_ids in batches_to_audit_in_round(jurisdiction, round):
+    batches_to_audit = batches_to_audit_in_round(jurisdiction, round)
+    for batch, contest_ids in batches_to_audit:
         if len(tally_sheets_for_contests(batch, contest_ids)) == 0:
             raise Conflict(
                 "Cannot finalize batch results until all batches have audit results recorded."
@@ -420,6 +425,11 @@ def finalize_batch_results(
 
     discrepancies_by_jurisdiction = get_batch_comparison_discrepancies_by_jurisdiction(
         election, round.id
+    )
+    record_batch_results_finalized(
+        round,
+        [batch for batch, _ in batches_to_audit],
+        discrepancies_by_jurisdiction.get(jurisdiction.id, {}),
     )
 
     record_activity(
@@ -458,6 +468,10 @@ def unfinalize_batch_results(
     ).delete()
     if num_deleted == 0:
         raise Conflict("Results have not been finalized")
+
+    record_batch_results_unfinalized(
+        [batch for batch, _ in batches_to_audit_in_round(jurisdiction, round)]
+    )
 
     db_session.commit()
 
