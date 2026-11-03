@@ -1,7 +1,7 @@
 """ActivityLogRecord.posted_to_slack_channels
 
 Revision ID: 1bb07ba303d2
-Revises: d889caea4d7c
+Revises: 1f3a9c2e7b5d
 Create Date: 2026-10-29 23:07:56.036733+00:00
 
 """
@@ -13,7 +13,7 @@ from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision = "1bb07ba303d2"
-down_revision = "d889caea4d7c"
+down_revision = "1f3a9c2e7b5d"
 branch_labels = None
 depends_on = None
 
