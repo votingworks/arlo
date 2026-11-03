@@ -71,6 +71,28 @@ def test_batch_discrepancy_review(
     assert_ok(rv)
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
 
+    # The discrepancy listing carries each batch's status, notes, and margin impact
+    rv = client.get(f"/api/election/{election_id}/discrepancy")
+    review = json.loads(rv.data)[jurisdiction_id]
+    assert set(review) == {batch["id"] for batch in batches}
+    for batch in batches:
+        if batch is not batch_1:
+            assert review[batch["id"]]["status"] == "ACCEPTED"
+            assert review[batch["id"]]["discrepancies"] == {}
+    batch_1_review = review[batch_1["id"]]
+    assert batch_1_review["name"] == "Batch 1"
+    assert batch_1_review["isExtra"] is False
+    assert batch_1_review["status"] == "NEEDS_REVIEW"
+    assert batch_1_review["notes"] == []
+    contest_review = batch_1_review["discrepancies"][contest_id]
+    assert contest_review["discrepancies"] == {
+        choice_ids[0]: 1,
+        choice_ids[1]: 0,
+        choice_ids[2]: 0,
+    }
+    assert contest_review["changeInMargin"] == 1
+    assert contest_review["numBallots"] == 500
+
     # Support can mark the discrepancy accepted or the jurisdiction contacted
     rv = put_json(
         client, review_url(batch_1, "discrepancy-status"), {"status": "ACCEPTED"}
@@ -107,6 +129,17 @@ def test_batch_discrepancy_review(
     support_note = (DEFAULT_SUPPORT_EMAIL, "One vote off")
     assert notes(batch_1) == [admin_note, support_note]
 
+    # The listing carries the notes, with ids for deleting them
+    rv = client.get(f"/api/election/{election_id}/discrepancy")
+    listed_notes = json.loads(rv.data)[jurisdiction_id][batch_1["id"]]["notes"]
+    assert [(note["userEmail"], note["text"]) for note in listed_notes] == [
+        admin_note,
+        support_note,
+    ]
+    assert [note["id"] for note in listed_notes] == [
+        note.id for note in Batch.query.get(batch_1["id"]).discrepancy_notes
+    ]
+
     # A note needs text
     rv = post_json(client, review_url(batch_1, "discrepancy-notes"), {"text": ""})
     assert rv.status_code == 400
@@ -131,6 +164,10 @@ def test_batch_discrepancy_review(
     rv = client.delete(f"{batches_url}/finalize")
     assert_ok(rv)
     assert status(batch_1) == BatchDiscrepancyStatus.RE_TALLYING
+    rv = client.get(f"/api/election/{election_id}/discrepancy")
+    assert (
+        json.loads(rv.data)[jurisdiction_id][batch_1["id"]]["status"] == "RE_TALLYING"
+    )
     rv = put_json(
         client, review_url(batch_1, "discrepancy-status"), {"status": "ACCEPTED"}
     )

@@ -756,6 +756,22 @@ def ballot_vote_deltas(
     return deltas  # ty: ignore[unsound-return-statement]
 
 
+# How much a batch's audited tallies move the contest's margin, counted as the
+# audit math counts it
+def batch_change_in_margin(
+    contest: Contest,
+    reported_results: macro.ChoiceVotes,
+    audited_results: macro.ChoiceVotes,
+) -> int | None:
+    error = macro.compute_error(
+        {contest.id: reported_results},
+        {contest.id: audited_results},
+        sampler_contest.from_db_contest(contest),
+        0,
+    )
+    return error["counted_as"] if error else None
+
+
 def batch_vote_deltas(
     reported_results: macro.ChoiceVotes, audited_results: macro.ChoiceVotes
 ) -> ContestVoteDeltas | None:

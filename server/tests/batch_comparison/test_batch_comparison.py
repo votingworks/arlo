@@ -784,8 +784,12 @@ def test_batch_comparison_batches_sampled_multiple_times(
     # Check discrepancies
     rv = client.get(f"/api/election/{election_id}/discrepancy")
     discrepancies = json.loads(rv.data)
-    assert jurisdictions[0]["id"] not in discrepancies
-    assert jurisdictions[1]["id"] not in discrepancies
+    # Every finalized batch is listed; none has a discrepancy
+    for jurisdiction in jurisdictions[:2]:
+        assert all(
+            batch["discrepancies"] == {}
+            for batch in discrepancies[jurisdiction["id"]].values()
+        )
 
     # End the round
     rv = client.post(f"/api/election/{election_id}/round/current/finish")

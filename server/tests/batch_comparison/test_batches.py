@@ -1316,13 +1316,14 @@ def test_batch_discrepancy_status_transitions(
     def status(batch):
         return Batch.query.get(batch["id"]).discrepancy_status
 
-    def discrepant_batch_names():
+    # Each listed batch's status and the contests it currently has discrepancies in
+    def batch_review():
         set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
         rv = client.get(f"/api/election/{election_id}/discrepancy")
-        return [
-            batch["name"]
+        return {
+            batch["name"]: (batch["status"], list(batch["discrepancies"]))
             for batch in json.loads(rv.data).get(jurisdiction_ids[0], {}).values()
-        ]
+        }
 
     # Every batch matches its reported tallies except Batch 1, one vote short
     batch_1 = next(batch for batch in batches if batch["name"] == "Batch 1")
@@ -1337,7 +1338,13 @@ def test_batch_discrepancy_status_transitions(
     assert status(batch_1) == BatchDiscrepancyStatus.NEEDS_REVIEW
     for batch in matching_batches:
         assert status(batch) == BatchDiscrepancyStatus.ACCEPTED
-    assert discrepant_batch_names() == ["Batch 1"]
+    accepted_matching_batches = {
+        batch["name"]: ("ACCEPTED", []) for batch in matching_batches
+    }
+    assert batch_review() == {
+        "Batch 1": ("NEEDS_REVIEW", [contest_id]),
+        **accepted_matching_batches,
+    }
 
     # Unfinalizing marks every batch as being re-tallied and keeps the
     # discrepancy visible
@@ -1345,13 +1352,16 @@ def test_batch_discrepancy_status_transitions(
     assert status(batch_1) == BatchDiscrepancyStatus.RE_TALLYING
     for batch in matching_batches:
         assert status(batch) == BatchDiscrepancyStatus.RE_TALLYING
-    assert discrepant_batch_names() == ["Batch 1"]
+    assert batch_review() == {
+        "Batch 1": ("RE_TALLYING", [contest_id]),
+        **{batch["name"]: ("RE_TALLYING", []) for batch in matching_batches},
+    }
 
     # Re-finalizing with the discrepancy corrected accepts it
     record_results(batch_1, reported_results(batch_1))
     finalize()
     assert status(batch_1) == BatchDiscrepancyStatus.ACCEPTED
-    assert discrepant_batch_names() == []
+    assert batch_review() == {"Batch 1": ("ACCEPTED", []), **accepted_matching_batches}
 
     # Reopening re-tallies every batch, accepted ones included
     unfinalize()

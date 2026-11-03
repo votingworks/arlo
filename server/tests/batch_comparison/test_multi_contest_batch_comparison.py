@@ -1018,8 +1018,11 @@ def test_multi_contest_batch_comparison_round_2(
         ]["discrepancies"][contest_1_choice_ids[0]]
         == 50
     )
-    assert jurisdiction_ids[1] not in discrepancies
-    assert jurisdiction_ids[2] not in discrepancies
+    for jurisdiction_id in jurisdiction_ids[1:]:
+        assert all(
+            batch["discrepancies"] == {}
+            for batch in discrepancies[jurisdiction_id].values()
+        )
 
     #
     # End round 1
@@ -1180,9 +1183,11 @@ def test_multi_contest_batch_comparison_round_2(
     rv = client.get(f"/api/election/{election_id}/discrepancy")
     discrepancies = json.loads(rv.data)
 
-    assert jurisdiction_ids[0] not in discrepancies
-    assert jurisdiction_ids[1] not in discrepancies
-    assert jurisdiction_ids[2] not in discrepancies
+    for jurisdiction_id in jurisdiction_ids:
+        assert all(
+            batch["discrepancies"] == {}
+            for batch in discrepancies[jurisdiction_id].values()
+        )
 
     #
     # End round 2 / finish audit
@@ -1776,6 +1781,8 @@ def test_multi_contest_batch_comparison_combined_batch_tallied_in_two_rounds(
                 contest_2_choice_ids[0]: -15,
                 contest_2_choice_ids[1]: 15,
             },
+            "changeInMargin": -30,
+            "numBallots": 200,
         }
     }
 
