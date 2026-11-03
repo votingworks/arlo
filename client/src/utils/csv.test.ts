@@ -1,13 +1,13 @@
 import Papa from 'papaparse'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 
-import { BOM, redactCsvColumn } from './csv'
+import { BOM, redactCsvColumns } from './csv'
 
 const createCsvFile = (contents: BlobPart) =>
   new File([contents], 'cvr.csv', { type: 'text/csv' })
 
-const redactDominionRecordIdColumn = (file: File) =>
-  redactCsvColumn(file, 'RecordId', {
+const redactDominionColumns = (file: File) =>
+  redactCsvColumns(file, ['RecordId', 'ImprintedId'], {
     // Dominion CVRs have 3 metadata rows above the header row
     numRowsToSkip: 3,
   })
@@ -15,7 +15,7 @@ const redactDominionRecordIdColumn = (file: File) =>
 const expectRedactedFile = async (
   input: BlobPart,
   expectedOutput: BlobPart,
-  redactFn: (file: File) => Promise<File> = redactDominionRecordIdColumn
+  redactFn: (file: File) => Promise<File> = redactDominionColumns
 ) => {
   const inputFile = createCsvFile(input)
   const outputFile = await redactFn(inputFile)
@@ -33,7 +33,7 @@ const expectRedactedFile = async (
 
 const expectOriginalFile = async (
   input: BlobPart,
-  redactFn: (file: File) => Promise<File> = redactDominionRecordIdColumn
+  redactFn: (file: File) => Promise<File> = redactDominionColumns
 ) => {
   const inputFile = createCsvFile(input)
   const outputFile = await redactFn(inputFile)
@@ -56,16 +56,16 @@ const DOMINION_CVR_REDACTED = `Test Audit CVR Upload,5.2.16.1,,,,,,,,,
 (Vote For=1)",Contest 1 (Vote For=1),Contest 2 (Vote For=1)
 ,,,,,,,,Choice 1-1,Choice 1-2,"Choice ""2-1"", Jr."
 CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM,LBR
-1,TABULATOR1,BATCH1,REDACTED,1-1-1,Election Day,12345,COUNTY,0,1,1
-2,TABULATOR1,BATCH1,REDACTED,1-1-2,Election Day,12345,COUNTY,1,0,1
+1,TABULATOR1,BATCH1,REDACTED,REDACTED,Election Day,12345,COUNTY,0,1,1
+2,TABULATOR1,BATCH1,REDACTED,REDACTED,Election Day,12345,COUNTY,1,0,1
 `
 
 afterEach(() => {
   vi.restoreAllMocks()
 })
 
-describe('redactCsvColumn', () => {
-  test('redacts the column in all rows after the header row', async () => {
+describe('redactCsvColumns', () => {
+  test('redacts the columns in all rows after the header row', async () => {
     await expectRedactedFile(DOMINION_CVR, DOMINION_CVR_REDACTED)
   })
 
@@ -78,6 +78,45 @@ describe('redactCsvColumn', () => {
     ) =>
       originalParse(input, { ...config, chunkSize: 5 })) as typeof Papa.parse)
     await expectRedactedFile(DOMINION_CVR, DOMINION_CVR_REDACTED)
+  })
+
+  test('redacts multiple columns regardless of their order in the header row', async () => {
+    await expectRedactedFile(
+      'a\nb\nc\nImprintedId,CvrNumber,RecordId\n1,2,3\n4,5,6\n',
+      'a\nb\nc\nImprintedId,CvrNumber,RecordId\nREDACTED,2,REDACTED\nREDACTED,5,REDACTED\n'
+    )
+  })
+
+  test('redacts every column with a matching name', async () => {
+    await expectRedactedFile(
+      'a\nb\nc\nRecordId,CvrNumber,RecordId\n1,2,3\n',
+      'a\nb\nc\nRecordId,CvrNumber,RecordId\nREDACTED,2,REDACTED\n'
+    )
+  })
+
+  test('leaves blank lines unchanged when redacting the first column', async () => {
+    await expectRedactedFile(
+      'a\nb\nc\nRecordId,CvrNumber\n1,2\n\n3,4\n',
+      'a\nb\nc\nRecordId,CvrNumber\nREDACTED,2\n\nREDACTED,4\n'
+    )
+  })
+
+  test('only marks a value redacted if there was something there', async () => {
+    await expectRedactedFile(
+      'a\nb\nc\nBatchId,RecordId,CvrNumber\n1,,3\n4,5,6\n',
+      'a\nb\nc\nBatchId,RecordId,CvrNumber\n1,,3\n4,REDACTED,6\n'
+    )
+  })
+
+  test('skips columns that are not in the header row', async () => {
+    await expectRedactedFile(
+      'a\nb\nc\nCvrNumber,RecordId\n1,2\n',
+      'a\nb\nc\nCvrNumber,RecordId\n1,REDACTED\n'
+    )
+  })
+
+  test('returns the original file if none of the columns are present', async () => {
+    await expectOriginalFile('a\nb\nc\nCvrNumber,BatchId\n1,2\n')
   })
 
   test('preserves values with leading equal signs', async () => {
@@ -246,7 +285,7 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId
     'numRowsToSkip ignores the specified number of rows and treats the first after as the header row',
     async ({ numRowsToSkip, input, expectedOutput }) => {
       await expectRedactedFile(input, expectedOutput, (file: File) =>
-        redactCsvColumn(file, 'RecordId', { numRowsToSkip })
+        redactCsvColumns(file, ['RecordId'], { numRowsToSkip })
       )
     }
   )
@@ -292,7 +331,7 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId
     await expectRedactedFile(
       new Blob([BOM.UTF8, 'RecordId,CvrNumber\n1,2']),
       new Blob([BOM.UTF8, 'RecordId,CvrNumber\nREDACTED,2']),
-      (file: File) => redactCsvColumn(file, 'RecordId')
+      (file: File) => redactCsvColumns(file, ['RecordId'])
     )
   })
 
@@ -305,7 +344,7 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId
       const text = 'RecordId,CvrNumber\n1,2\n' // Not actually UTF-16 but fine for this test
       const parseSpy = vi.spyOn(Papa, 'parse')
       await expectOriginalFile(new Blob([bom, text]), (file: File) =>
-        redactCsvColumn(file, 'RecordId')
+        redactCsvColumns(file, ['RecordId'])
       )
       expect(parseSpy).not.toHaveBeenCalled()
     }

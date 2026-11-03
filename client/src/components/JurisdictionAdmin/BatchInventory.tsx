@@ -21,7 +21,7 @@ import {
   useUploadedFile,
 } from '../useFileUpload'
 import { apiDownload, assert } from '../utilities'
-import { redactCsvColumn } from '../../utils/csv'
+import { redactCsvColumns } from '../../utils/csv'
 import LinkButton from '../Atoms/LinkButton'
 import {
   StepPanel,
@@ -150,10 +150,10 @@ const useBatchInventoryCVR = (
     }),
     uploadFiles: async files => {
       const file =
-        // Redact the Dominion RecordId column before uploading since we don't
-        // need it
+        // Redact the Dominion RecordId and ImprintedId columns before
+        // uploading since we don't need them
         systemType === CvrFileType.DOMINION
-          ? await redactCsvColumn(files[0], 'RecordId', {
+          ? await redactCsvColumns(files[0], ['RecordId', 'ImprintedId'], {
               // Dominion CVRs have 3 metadata rows above the header row
               numRowsToSkip: 3,
             })

@@ -76,11 +76,15 @@ async function parseBom(file: File): Promise<FileContents> {
   }
 }
 
-function findCsvColumnIndex(
+/**
+ * Returns the indices of all header row cells that match one of the given
+ * column names, in ascending order.
+ */
+function findCsvColumnIndices(
   { fileWithoutBom }: FileContents,
-  columnName: string,
+  columnNames: readonly string[],
   numRowsToSkip: number
-): Promise<number | null> {
+): Promise<number[]> {
   return new Promise((resolve, reject) => {
     Papa.parse<string[]>(fileWithoutBom, {
       ...DEFAULT_PARSE_OPTIONS,
@@ -95,19 +99,24 @@ function findCsvColumnIndex(
           return
         }
         const headerRow = data[numRowsToSkip]
-        const columnIndex = headerRow.indexOf(columnName)
-        resolve(columnIndex === -1 ? null : columnIndex)
+        const columnIndices = headerRow
+          .map((value, columnIndex) =>
+            columnNames.includes(value) ? columnIndex : null
+          )
+          .filter(index => index !== null)
+        resolve(columnIndices)
       },
       error: reject,
     })
   })
 }
 
-function redactCsvColumnAtIndex(
+function redactCsvColumnsAtIndices(
   { bom, fileWithoutBom }: FileContents,
-  columnIndexToRedact: number,
+  columnIndicesToRedact: readonly number[],
   numRowsToSkip: number
 ): Promise<File> {
+  const columnIndicesToRedactSet = new Set(columnIndicesToRedact)
   return new Promise((resolve, reject) => {
     let output = bom ? new Blob([bom.bytes]) : new Blob([])
     let rowsProcessed = 0
@@ -121,13 +130,16 @@ function redactCsvColumnAtIndex(
           if (data.length === 0) {
             return
           }
-          const rows = data.map((row, rowIndex) =>
-            rowsProcessed + rowIndex < numRowsToSkip + 1 // + 1 for the header row
+          const rows = data.map((row, rowIndex) => {
+            const isHeaderOrAbove = rowsProcessed + rowIndex < numRowsToSkip + 1
+            return isHeaderOrAbove
               ? row
               : row.map((value, columnIndex) =>
-                  columnIndex === columnIndexToRedact ? 'REDACTED' : value
+                  value !== '' && columnIndicesToRedactSet.has(columnIndex)
+                    ? 'REDACTED'
+                    : value
                 )
-          )
+          })
           const csv = Papa.unparse(rows, {
             escapeFormulae: false,
             newline: meta.linebreak,
@@ -157,14 +169,19 @@ function redactCsvColumnAtIndex(
   })
 }
 
-interface RedactCsvColumnOptions {
+interface RedactCsvColumnsOptions {
   numRowsToSkip?: number
 }
 
-export async function redactCsvColumn(
+/**
+ * Replaces every non-empty value in the specified columns with "REDACTED".
+ * Columns that aren't in the header row are skipped. Returns the original file
+ * if none of the columns are found or if anything goes wrong.
+ */
+export async function redactCsvColumns(
   file: File,
-  columnName: string,
-  { numRowsToSkip = 0 }: RedactCsvColumnOptions = {}
+  columnNames: readonly string[],
+  { numRowsToSkip = 0 }: RedactCsvColumnsOptions = {}
 ): Promise<File> {
   try {
     const fileContents = await parseBom(file)
@@ -175,14 +192,18 @@ export async function redactCsvColumn(
       throw new Error('UTF-16-encoded files not yet handled')
     }
 
-    const columnIndex = await findCsvColumnIndex(
+    const columnIndices = await findCsvColumnIndices(
       fileContents,
-      columnName,
+      columnNames,
       numRowsToSkip
     )
-    return columnIndex === null
+    return columnIndices.length === 0
       ? file
-      : await redactCsvColumnAtIndex(fileContents, columnIndex, numRowsToSkip)
+      : await redactCsvColumnsAtIndices(
+          fileContents,
+          columnIndices,
+          numRowsToSkip
+        )
   } catch (error) {
     // oxlint-disable-next-line no-console
     console.error(error instanceof Error ? error.message : String(error))
