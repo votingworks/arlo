@@ -3,7 +3,28 @@ import Papa from 'papaparse'
 const DEFAULT_PARSE_OPTIONS = {
   chunkSize: 1024 * 1024, // 1MB
   delimiter: ',',
+  /**
+   * We don't know the file's encoding (UTF-8, Windows-1252, etc.), and
+   * decoding with the wrong one could corrupt characters. Instead, decode as
+   * x-user-defined, which maps ASCII bytes to themselves and bytes
+   * 0x80-0xFF to U+F780-U+F7FF. See {@link encodeXUserDefined} for the inverse
+   * logic.
+   */
+  encoding: 'x-user-defined',
 } as const
+
+/**
+ * Given a string decoded as an x-user-defined string, returns the original
+ * bytes.
+ */
+function encodeXUserDefined(text: string): Uint8Array<ArrayBuffer> {
+  const bytes = new Uint8Array(text.length)
+  for (let i = 0; i < text.length; i += 1) {
+    const charCode = text.charCodeAt(i)
+    bytes[i] = charCode < 0x80 ? charCode : charCode - 0xf700
+  }
+  return bytes
+}
 
 function findCsvColumnIndex(
   file: File,
@@ -63,8 +84,7 @@ function redactCsvColumnAtIndex(
           })
           output = new Blob([
             output,
-            rowsProcessed > 0 ? meta.linebreak : '',
-            csv,
+            encodeXUserDefined((rowsProcessed > 0 ? meta.linebreak : '') + csv),
           ])
           rowsProcessed += rows.length
         } catch (error) {

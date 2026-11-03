@@ -3,13 +3,6 @@ import { afterEach, describe, expect, test, vi } from 'vitest'
 
 import { redactCsvColumn } from './csv'
 
-const readFileText = (file: File) =>
-  new Promise<string>(resolve => {
-    const reader = new FileReader()
-    reader.onload = () => resolve(reader.result as string)
-    reader.readAsText(file)
-  })
-
 const createCsvFile = (contents: BlobPart) =>
   new File([contents], 'cvr.csv', { type: 'text/csv' })
 
@@ -20,13 +13,20 @@ const redactDominionRecordIdColumn = (file: File) =>
   })
 
 const expectRedactedFile = async (
-  input: string,
-  expectedOutput: string,
+  input: BlobPart,
+  expectedOutput: BlobPart,
   redactFn: (file: File) => Promise<File> = redactDominionRecordIdColumn
 ) => {
   const inputFile = createCsvFile(input)
   const outputFile = await redactFn(inputFile)
-  expect(await readFileText(outputFile)).toEqual(expectedOutput)
+  if (typeof input === 'string' && typeof expectedOutput === 'string') {
+    // Present a more readable diff if possible
+    expect(await outputFile.text()).toEqual(expectedOutput)
+  } else {
+    expect(new Uint8Array(await outputFile.arrayBuffer())).toEqual(
+      new Uint8Array(await new Blob([expectedOutput]).arrayBuffer())
+    )
+  }
   expect(outputFile.name).toEqual(inputFile.name)
   expect(outputFile.type).toEqual(inputFile.type)
 }
@@ -37,7 +37,9 @@ const expectOriginalFile = async (
 ) => {
   const inputFile = createCsvFile(input)
   const outputFile = await redactFn(inputFile)
-  expect(outputFile).toEqual(inputFile)
+  expect(new Uint8Array(await outputFile.arrayBuffer())).toEqual(
+    new Uint8Array(await inputFile.arrayBuffer())
+  )
 }
 
 const DOMINION_CVR = `Test Audit CVR Upload,5.2.16.1,,,,,,,,,
@@ -141,6 +143,49 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId
     },
   ])('returns the original file for $description', async ({ contents }) => {
     await expectOriginalFile(contents)
+  })
+
+  test.each([
+    { description: 'UTF-8', bytes: new TextEncoder().encode('José') },
+    {
+      description: 'Windows-1252',
+      bytes: new Uint8Array([0x4a, 0x6f, 0x73, 0xe9]), // José
+    },
+    {
+      description: 'ISO-8859-1 that happens to be valid UTF-8',
+      bytes: new Uint8Array([0xc3, 0xa9]), // Ã©, or é in UTF-8
+    },
+    {
+      description: 'every non-ASCII byte',
+      bytes: Uint8Array.from({ length: 0x80 }, (_, i) => 0x80 + i),
+    },
+  ])('preserves non-ASCII bytes - $description', async ({ bytes }) => {
+    const input = new Blob([
+      'a\nb\nc\nCvrNumber,RecordId,BatchId\n1,2,',
+      bytes,
+      '\n',
+    ])
+    const expectedOutput = new Blob([
+      'a\nb\nc\nCvrNumber,RecordId,BatchId\n1,REDACTED,',
+      bytes,
+      '\n',
+    ])
+    await expectRedactedFile(input, expectedOutput)
+  })
+
+  test('handles multi-byte characters split across chunks', async () => {
+    const originalParse = Papa.parse
+    vi.spyOn(Papa, 'parse').mockImplementation(((
+      input: File,
+      config: Papa.ParseLocalConfig<string[], File>
+    ) =>
+      originalParse(input, { ...config, chunkSize: 5 })) as typeof Papa.parse)
+    // é is 2 bytes in UTF-8. With 5-byte chunks, the first byte of "é" is the
+    // last byte of a chunk.
+    await expectRedactedFile(
+      'a\nb\nc\nCvrNumber,RecordId\n10,20\nJosé,3\n',
+      'a\nb\nc\nCvrNumber,RecordId\n10,REDACTED\nJosé,REDACTED\n'
+    )
   })
 
   test('returns the original file if reading throws', async () => {
