@@ -1135,7 +1135,11 @@ class ActivityLogRecord(Base):
     activity_name = Column(String(200), nullable=False)
     info = Column(postgresql.JSON, nullable=False)
 
+    # Set once the activity has been posted to all of its Slack channels
     posted_to_slack_at = Column(UTCDateTime)
+    posted_to_slack_channels = Column(
+        postgresql.ARRAY(String(200)), nullable=False, server_default="{}"
+    )
 
 
 class BatchInventoryData(BaseModel):
