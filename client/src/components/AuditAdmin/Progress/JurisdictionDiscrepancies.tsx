@@ -1,10 +1,7 @@
 import React from 'react'
 import { Classes, Colors, Dialog, H6, HTMLTable } from '@blueprintjs/core'
 import styled from 'styled-components'
-import {
-  IJurisdiction,
-  DiscrepanciesByJurisdiction,
-} from '../../useJurisdictions'
+import { IJurisdiction, DiscrepanciesByContest } from '../../useJurisdictions'
 import useContestsJurisdictionAdmin from '../../JurisdictionAdmin/useContestsJurisdictionAdmin'
 import { IContest } from '../../../types'
 import { assert } from '../../utilities'
@@ -65,7 +62,7 @@ function formatVoteCount(val: string | number | undefined): string {
 }
 
 export interface IJurisdictionDiscrepanciesProps {
-  discrepancies: DiscrepanciesByJurisdiction
+  discrepancies: Record<string, DiscrepanciesByContest> // [batch or ballot name]
   electionId: string
   handleClose: () => void
   jurisdiction: IJurisdiction
@@ -86,7 +83,6 @@ const JurisdictionDiscrepancies: React.FC<IJurisdictionDiscrepanciesProps> = ({
     return null
   }
 
-  const discrepanciesByBatchOrBallot = discrepancies[jurisdiction.id]
   const contests = contestsQuery.data
 
   return (
@@ -97,7 +93,7 @@ const JurisdictionDiscrepancies: React.FC<IJurisdictionDiscrepanciesProps> = ({
       title={`${jurisdiction.name} Discrepancies`}
     >
       <div className={Classes.DIALOG_BODY} style={{ marginBottom: 0 }}>
-        {Object.entries(discrepanciesByBatchOrBallot).map(
+        {Object.entries(discrepancies).map(
           ([batchOrBallotName, discrepanciesByContest]) => {
             return Object.entries(discrepanciesByContest).map(
               ([contestId, contestDiscrepancies]) => (

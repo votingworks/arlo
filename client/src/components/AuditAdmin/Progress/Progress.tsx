@@ -17,7 +17,8 @@ import {
   getJurisdictionStatus,
   JurisdictionProgressStatus,
   useDiscrepanciesByJurisdiction,
-  DiscrepanciesByJurisdiction,
+  useBatchDiscrepanciesByJurisdiction,
+  DiscrepanciesByContest,
   useLastLoginByJurisdiction,
   IRoundStatusCounts,
 } from '../../useJurisdictions'
@@ -86,16 +87,14 @@ const sortDiscrepanciesFirst: SortByFn<IJurisdiction> = (
 
 // We count the number of batch-contest pairs with discrepancies, not the number
 // of batches with discrepancies.
-const countDiscrepanciesForJurisdiction = (
-  discrepancies: DiscrepanciesByJurisdiction,
-  jurisdictionId: string
-) => {
-  return sum(
-    Object.values(discrepancies[jurisdictionId] ?? {}).map(
-      contestDiscrepancies => Object.keys(contestDiscrepancies).length
+const countDiscrepancies = (
+  discrepanciesByBatchOrBallot: Record<string, DiscrepanciesByContest>
+) =>
+  sum(
+    Object.values(discrepanciesByBatchOrBallot).map(
+      discrepanciesByContest => Object.keys(discrepanciesByContest).length
     )
   )
-}
 
 export interface IProgressProps {
   jurisdictions: IJurisdiction[]
@@ -112,12 +111,18 @@ const Progress: React.FC<IProgressProps> = ({
 }: IProgressProps) => {
   const { electionId } = useParams<{ electionId: string }>()
   const { auditType } = auditSettings
-  const showDiscrepancies =
-    Boolean(round) &&
-    (auditType === 'BALLOT_COMPARISON' || auditType === 'BATCH_COMPARISON')
-  const discrepancyQuery = useDiscrepanciesByJurisdiction(electionId, {
-    enabled: showDiscrepancies,
+  const showBallotDiscrepancies =
+    Boolean(round) && auditType === 'BALLOT_COMPARISON'
+  const showBatchDiscrepancies =
+    Boolean(round) && auditType === 'BATCH_COMPARISON'
+  const showDiscrepancies = showBallotDiscrepancies || showBatchDiscrepancies
+  const ballotDiscrepancyQuery = useDiscrepanciesByJurisdiction(electionId, {
+    enabled: showBallotDiscrepancies,
   })
+  const batchDiscrepancyQuery = useBatchDiscrepanciesByJurisdiction(
+    electionId,
+    { enabled: showBatchDiscrepancies }
+  )
   const lastLoginQuery = useLastLoginByJurisdiction(electionId)
 
   // Store sort and filter state in URL search params to allow it to persist
@@ -127,7 +132,28 @@ const Progress: React.FC<IProgressProps> = ({
     dir?: string // asc | desc
     filter?: string
     contest?: string // Scope the table to one contest
+    hideExtras?: string // 'true' hides extra batches' discrepancies
   }>()
+  const hideExtraBatches = sortAndFilterState?.hideExtras === 'true'
+  // A jurisdiction's discrepancies to show, keyed by batch or ballot name, or
+  // null until they've loaded
+  const jurisdictionDiscrepancies = (
+    jurisdictionId: string
+  ): Record<string, DiscrepanciesByContest> | null => {
+    if (showBatchDiscrepancies) {
+      if (!batchDiscrepancyQuery.isSuccess) return null
+      return Object.fromEntries(
+        Object.values(batchDiscrepancyQuery.data[jurisdictionId] ?? {})
+          .filter(batch => !(hideExtraBatches && batch.isExtra))
+          .map(batch => [batch.name, batch.discrepancies])
+      )
+    }
+    if (!ballotDiscrepancyQuery.isSuccess) return null
+    return ballotDiscrepancyQuery.data[jurisdictionId] ?? {}
+  }
+  const isLoadingDiscrepancies = showBatchDiscrepancies
+    ? batchDiscrepancyQuery.isLoading
+    : ballotDiscrepancyQuery.isLoading
   // Once a batch comparison audit of several contests is under way, the table
   // can be viewed one contest at a time. Before then its columns are file
   // totals, which have no per-contest version.
@@ -411,14 +437,15 @@ const Progress: React.FC<IProgressProps> = ({
     if (showDiscrepancies) {
       columns.push({
         Header: 'Discrepancies',
-        accessor: ({ id }) =>
-          discrepancyQuery.isSuccess &&
-          countDiscrepanciesForJurisdiction(discrepancyQuery.data, id),
+        accessor: ({ id }) => {
+          const discrepancies = jurisdictionDiscrepancies(id)
+          return discrepancies && countDiscrepancies(discrepancies)
+        },
         Cell: ({
           value,
           row: { original: jurisdiction },
         }: Cell<IJurisdiction>) => {
-          if (discrepancyQuery.isLoading) {
+          if (isLoadingDiscrepancies) {
             return (
               <div style={{ display: 'flex', justifyContent: 'start' }}>
                 <Spinner size={Spinner.SIZE_SMALL} />
@@ -435,7 +462,7 @@ const Progress: React.FC<IProgressProps> = ({
             </Button>
           )
         },
-        Footer: discrepancyQuery.isLoading
+        Footer: isLoadingDiscrepancies
           ? () => null
           : totalFooter('Discrepancies'),
       })
@@ -554,6 +581,19 @@ const Progress: React.FC<IProgressProps> = ({
             style={{ marginBottom: 0 }}
           />
         )}
+        {showBatchDiscrepancies && (
+          <Switch
+            checked={hideExtraBatches}
+            label="Hide extra batches"
+            onChange={() =>
+              setSortAndFilterState({
+                ...sortAndFilterState,
+                hideExtras: hideExtraBatches ? undefined : 'true',
+              })
+            }
+            style={{ marginBottom: 0 }}
+          />
+        )}
       </TableControls>
       <Table
         data={filteredJurisdictions}
@@ -599,7 +639,9 @@ const Progress: React.FC<IProgressProps> = ({
       )}
       {jurisdictionDiscrepanciesId && (
         <JurisdictionDiscrepancies
-          discrepancies={discrepancyQuery.data!}
+          discrepancies={jurisdictionDiscrepancies(
+            jurisdictionDiscrepanciesId
+          )!}
           jurisdiction={jurisdictions.find(
             jurisdiction => jurisdiction.id === jurisdictionDiscrepanciesId
           )!}
