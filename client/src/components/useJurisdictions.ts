@@ -181,19 +181,32 @@ export const useLastLoginByJurisdiction = (
   })
 }
 
-export type DiscrepanciesByJurisdiction = Record<
-  string, // [jurisdictionId]
-  Record<
-    string, // [batchName]
-    Record<string, ContestDiscrepancies> // [contestId]: contestDiscrepancies
-  >
->
-
-type ContestDiscrepancies = {
+export type ContestDiscrepancies = {
   reportedVotes: Record<string, number | string> // `Record` keys are choiceId
   auditedVotes: Record<string, number | string> // `Record` values are counts, "o" (overvote), "u" (undervote)
   discrepancies: Record<string, number | string>
 }
+
+// [contestId]: contestDiscrepancies, for one batch or ballot
+export type DiscrepanciesByContest = Record<string, ContestDiscrepancies>
+
+// Ballot comparison audits: [jurisdictionId][ballotName]
+export type DiscrepanciesByJurisdiction = Record<
+  string,
+  Record<string, DiscrepanciesByContest>
+>
+
+export interface IBatchDiscrepancies {
+  name: string
+  isExtra: boolean // Sampled only as an extra batch, not by the audit math
+  discrepancies: DiscrepanciesByContest
+}
+
+// Batch comparison audits: [jurisdictionId][batchId]
+export type BatchDiscrepanciesByJurisdiction = Record<
+  string,
+  Record<string, IBatchDiscrepancies>
+>
 
 const discrepanciesByJurisdictionQueryKey = (electionId: string): string[] =>
   jurisdictionsQueryKey(electionId).concat('discrepanciesByJurisdiction')
@@ -204,6 +217,19 @@ export const useDiscrepanciesByJurisdiction = (
 ): UseQueryResult<DiscrepanciesByJurisdiction, ApiError> => {
   return useQuery(
     discrepanciesByJurisdictionQueryKey(electionId),
+    () => fetchApi(`/api/election/${electionId}/discrepancy`),
+    options
+  )
+}
+
+export const useBatchDiscrepanciesByJurisdiction = (
+  electionId: string,
+  options: { enabled?: boolean }
+): UseQueryResult<BatchDiscrepanciesByJurisdiction, ApiError> => {
+  return useQuery(
+    jurisdictionsQueryKey(electionId).concat(
+      'batchDiscrepanciesByJurisdiction'
+    ),
     () => fetchApi(`/api/election/${electionId}/discrepancy`),
     options
   )

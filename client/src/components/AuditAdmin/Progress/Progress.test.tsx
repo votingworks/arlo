@@ -497,11 +497,15 @@ describe('Progress screen', () => {
     const expectedCalls = [
       aaApiCalls.getDiscrepancies({
         [jurisdictionMocks.oneComplete[2].id]: {
-          batch1: {
-            [contestMocks.one[0].id]: {
-              reportedVotes: { [contestMocks.one[0].choices[0].id]: 5 },
-              auditedVotes: { [contestMocks.one[0].choices[0].id]: 6 },
-              discrepancies: { [contestMocks.one[0].choices[0].id]: 1 },
+          'batch-id-1': {
+            name: 'batch1',
+            isExtra: false,
+            discrepancies: {
+              [contestMocks.one[0].id]: {
+                reportedVotes: { [contestMocks.one[0].choices[0].id]: 5 },
+                auditedVotes: { [contestMocks.one[0].choices[0].id]: 6 },
+                discrepancies: { [contestMocks.one[0].choices[0].id]: 1 },
+              },
             },
           },
         },
@@ -605,6 +609,76 @@ describe('Progress screen', () => {
     })
   })
 
+  it('excludes extra batches from batch comparison discrepancies', async () => {
+    const jurisdiction = jurisdictionMocks.oneComplete[2] // Complete
+    const contest = contestMocks.one[0]
+    const contestDiscrepancy = {
+      reportedVotes: { [contest.choices[0].id]: 5 },
+      auditedVotes: { [contest.choices[0].id]: 6 },
+      discrepancies: { [contest.choices[0].id]: 1 },
+    }
+    const expectedCalls = [
+      aaApiCalls.getDiscrepancies({
+        [jurisdiction.id]: {
+          'batch-id-1': {
+            name: 'batch1',
+            isExtra: false,
+            discrepancies: { [contest.id]: contestDiscrepancy },
+          },
+          'batch-id-2': {
+            name: 'batch2',
+            isExtra: true,
+            discrepancies: { [contest.id]: contestDiscrepancy },
+          },
+        },
+      }),
+      aaApiCalls.getLastLoginByJurisdiction({
+        response: lastLoginByJurisdictionMocks.noLogins,
+      }),
+      aaApiCalls.getMapData,
+      jaApiCalls.getJurisdictionContests([contest], jurisdiction.id),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { container, history } = render({
+        auditSettings: auditSettingsMocks.batchComparisonAll,
+        jurisdictions: jurisdictionMocks.oneComplete,
+        round: roundMocks.singleIncomplete[0],
+      })
+      await waitFor(() => {
+        expect(container.querySelectorAll('.d3-component').length).toBe(1)
+      })
+      expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+      screen.getByRole('button', { name: /Review 2/ })
+
+      // Excluding extra batches leaves the batch the audit math drew, and sticks
+      // in the URL
+      userEvent.click(
+        screen.getByRole('checkbox', { name: 'Exclude extra batches' })
+      )
+      expect(history.location.search).toEqual('?excludeExtras=true')
+      userEvent.click(screen.getByRole('button', { name: /Review 1/ }))
+      const dialog = (
+        await screen.findByRole('heading', {
+          name: /Jurisdiction 3 Discrepancies/,
+        })
+      ).closest('.bp3-dialog')! as HTMLElement
+      within(dialog).getByText('batch1 - Contest 1')
+      expect(
+        within(dialog).queryByText('batch2 - Contest 1')
+      ).not.toBeInTheDocument()
+      userEvent.click(within(dialog).getByRole('button', { name: 'Close' }))
+      await waitFor(() => {
+        expect(dialog).not.toBeInTheDocument()
+      })
+
+      userEvent.click(
+        screen.getByRole('checkbox', { name: 'Exclude extra batches' })
+      )
+      expect(history.location.search).toEqual('')
+      screen.getByRole('button', { name: /Review 2/ })
+    })
+  })
+
   describe('contest select', () => {
     const jurisdiction = jurisdictionMocks.oneComplete[2] // Complete
     const contestA = contestMocks.two[0]
@@ -684,7 +758,9 @@ describe('Progress screen', () => {
         expect(footers[5]).toHaveTextContent('2')
 
         // Counting every sampled batch instead of unique ones
-        userEvent.click(screen.getByRole('checkbox'))
+        userEvent.click(
+          screen.getByRole('checkbox', { name: /Count unique sampled/ })
+        )
         expect(cells[4]).toHaveTextContent('10')
         expect(cells[5]).toHaveTextContent('2')
 
