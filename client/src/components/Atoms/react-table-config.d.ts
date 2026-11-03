@@ -1,6 +1,7 @@
 // See docs for instructions on this file:
 // https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react-table
 
+import type { ReactNode } from 'react'
 import {
   UseFiltersColumnOptions,
   UseFiltersColumnProps,
@@ -30,7 +31,11 @@ declare module 'react-table' {
     extends UseFiltersState<D>, UseSortByState<D> {}
 
   export interface ColumnInterface<D extends object = {}>
-    extends UseFiltersColumnOptions<D>, UseSortByColumnOptions<D> {}
+    extends UseFiltersColumnOptions<D>, UseSortByColumnOptions<D> {
+    // Rendered in the header cell under the column's title, outside the sort
+    // toggle, for controls that apply to the column
+    subHeader?: ReactNode
+  }
 
   export interface ColumnInstance<D extends object = {}>
     extends UseFiltersColumnProps<D>, UseSortByColumnProps<D> {}

@@ -888,9 +888,7 @@ describe('Progress screen', () => {
 
       expect(history.location.search).toEqual('')
 
-      const filter = screen.getByPlaceholderText(
-        'Filter by jurisdiction name...'
-      )
+      const filter = screen.getByPlaceholderText('Filter by name...')
       userEvent.type(filter, '1')
       expect(screen.getAllByRole('row')).toHaveLength(1 + 2) // includes headers and footers
       screen.getByRole('cell', { name: 'Jurisdiction 1' })

@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { Column, Cell, TableInstance, SortingRule, SortByFn } from 'react-table'
-import { Button, Switch, Icon, Spinner } from '@blueprintjs/core'
+import { Button, Switch, Icon, InputGroup, Spinner } from '@blueprintjs/core'
 import H2Title from '../../Atoms/H2Title'
 import {
   JurisdictionRoundStatus,
@@ -14,12 +14,7 @@ import {
   useLastLoginByJurisdiction,
 } from '../../useJurisdictions'
 import JurisdictionDetail from './JurisdictionDetail'
-import {
-  Table,
-  sortByRank,
-  FilterInput,
-  downloadTableAsCSV,
-} from '../../Atoms/Table'
+import { Table, sortByRank, downloadTableAsCSV } from '../../Atoms/Table'
 import { IRound } from '../useRoundsAuditAdmin'
 import StatusTag, { IStatusTagProps } from '../../Atoms/StatusTag'
 import { IAuditSettings } from '../../useAuditSettings'
@@ -40,9 +35,8 @@ const Wrapper = styled.div`
 const TableControls = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
   gap: 20px;
+  margin-bottom: 0.5rem;
 `
 
 const formatNumber = ({ value }: { value: number | null }) =>
@@ -129,12 +123,25 @@ const Progress: React.FC<IProgressProps> = ({
   const [jurisdictionDiscrepanciesId, setJurisdictionDiscrepanciesId] =
     useState<string | null>(null)
 
+  const filter = sortAndFilterState?.filter || ''
   const ballotsOrBatches =
     auditType === 'BATCH_COMPARISON' ? 'Batches' : 'Ballots'
 
   const columns: Column<IJurisdiction>[] = [
     {
       Header: 'Jurisdiction',
+      subHeader: (
+        <InputGroup
+          placeholder="Filter by name..."
+          value={filter}
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+            setSortAndFilterState({
+              ...sortAndFilterState,
+              filter: event.target.value || undefined,
+            })
+          }
+        />
+      ),
       accessor: ({ name }) => name,
       Cell: ({ row: { original: jurisdiction } }: Cell<IJurisdiction>) => (
         <Button
@@ -430,7 +437,6 @@ const Progress: React.FC<IProgressProps> = ({
     }
   }
 
-  const filter = sortAndFilterState?.filter || ''
   const filteredJurisdictions = jurisdictions.filter(({ name }) =>
     name.toLowerCase().includes(filter.toLowerCase())
   )
@@ -474,18 +480,7 @@ const Progress: React.FC<IProgressProps> = ({
         />
       )}
       <TableControls>
-        <div style={{ flexGrow: 1 }}>
-          <FilterInput
-            placeholder="Filter by jurisdiction name..."
-            value={filter}
-            onChange={value =>
-              setSortAndFilterState({
-                ...sortAndFilterState,
-                filter: value || undefined,
-              })
-            }
-          />
-        </div>
+        <div style={{ flexGrow: 1 }} />
         {round && (
           <Switch
             checked={isShowingUnique}
@@ -494,7 +489,24 @@ const Progress: React.FC<IProgressProps> = ({
             style={{ marginBottom: 0 }}
           />
         )}
+      </TableControls>
+      <Table
+        data={filteredJurisdictions}
+        columns={columns}
+        id="progress-table"
+        initialSortBy={initialSortBy}
+        onSortByChange={onSortByChange}
+      />
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          marginTop: '8px',
+        }}
+      >
         <Button
+          minimal
+          small
           icon="download"
           onClick={() => {
             downloadTableAsCSV({
@@ -507,14 +519,7 @@ const Progress: React.FC<IProgressProps> = ({
         >
           Download Table as CSV
         </Button>
-      </TableControls>
-      <Table
-        data={filteredJurisdictions}
-        columns={columns}
-        id="progress-table"
-        initialSortBy={initialSortBy}
-        onSortByChange={onSortByChange}
-      />
+      </div>
       {jurisdictionDetailId && (
         <JurisdictionDetail
           jurisdiction={jurisdictions.find(

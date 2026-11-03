@@ -118,15 +118,19 @@ export const Table = <T extends object>({
   /* eslint-disable react/jsx-key */
   /* All the keys are added automatically by react-table */
 
+  // With controls under some titles, the titles line up along the top
+  const hasSubHeaders = headers.some(column => column.subHeader)
+
   return (
     <StyledTable id={id} {...getTableProps()}>
       <thead>
         <tr>
           {headers.map(column => (
             <th
-              {...column.getHeaderProps(
-                column.getSortByToggleProps({ title: column.Header })
-              )}
+              {...column.getHeaderProps([
+                column.getSortByToggleProps({ title: column.Header }),
+                { style: { verticalAlign: hasSubHeaders ? 'top' : undefined } },
+              ])}
             >
               <div
                 style={{
@@ -152,6 +156,16 @@ export const Table = <T extends object>({
                   </span>
                 )}
               </div>
+              {column.subHeader && (
+                // Clicking the controls shouldn't toggle the column's sort
+                <div
+                  role="presentation"
+                  style={{ marginTop: '6px', fontWeight: 'normal' }}
+                  onClick={event => event.stopPropagation()}
+                >
+                  {column.subHeader}
+                </div>
+              )}
             </th>
           ))}
         </tr>
