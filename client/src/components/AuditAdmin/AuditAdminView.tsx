@@ -156,15 +156,24 @@ const AuditAdminView: React.FC = () => {
             auditSettings={auditSettings}
           >
             <>
-              <RefreshTag
-                refresh={() => {
-                  queryClient.invalidateQueries(roundsQueryKey(electionId))
-                  queryClient.invalidateQueries(
-                    jurisdictionsQueryKey(electionId)
-                  )
+              {/* Nothing changes once the audit is complete, so no refreshing */}
+              {!isAuditComplete && (
+                <RefreshTag
+                  refresh={() => {
+                    queryClient.invalidateQueries(roundsQueryKey(electionId))
+                    queryClient.invalidateQueries(
+                      jurisdictionsQueryKey(electionId)
+                    )
+                  }}
+                />
+              )}
+              <div
+                style={{
+                  display: 'flex',
+                  gap: '5px',
+                  marginTop: isAuditComplete ? '20px' : '10px',
                 }}
-              />
-              <div style={{ display: 'flex', gap: '5px', marginTop: '10px' }}>
+              >
                 {isAuditComplete && (
                   <AsyncButton
                     intent="primary"

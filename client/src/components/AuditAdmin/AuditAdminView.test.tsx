@@ -402,8 +402,10 @@ it('finishes a round', async () => {
     expect(
       screen.queryByRole('button', { name: /Download Audit Report/ })
     ).not.toBeInTheDocument()
+    screen.getByText(/Will refresh in/)
     userEvent.click(screen.getByRole('button', { name: 'Finish Round 1' }))
     await screen.findByText('Congratulations - the audit is complete!')
+    expect(screen.queryByText(/Will refresh in/)).not.toBeInTheDocument()
 
     // The audit report is downloaded from the start of the downloads row
     const mockDownloadWindow: { onbeforeunload?: () => void } = {}
