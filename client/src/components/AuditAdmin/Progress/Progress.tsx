@@ -21,6 +21,7 @@ import {
   DiscrepanciesByContest,
   useLastLoginByJurisdiction,
   IRoundStatusCounts,
+  IBatchRoundStatusCounts,
 } from '../../useJurisdictions'
 import JurisdictionDetail from './JurisdictionDetail'
 import { Table, sortByRank, downloadTableAsCSV } from '../../Atoms/Table'
@@ -84,6 +85,29 @@ const sortDiscrepanciesFirst: SortByFn<IJurisdiction> = (
 
   return a - b
 }
+
+const NO_DRAWS: IBatchRoundStatusCounts = {
+  numSamples: 0,
+  numSamplesAudited: 0,
+  numUnique: 0,
+  numUniqueAudited: 0,
+  extras: {
+    numSamples: 0,
+    numSamplesAudited: 0,
+    numUnique: 0,
+    numUniqueAudited: 0,
+  },
+}
+
+const withoutExtras = (
+  counts: IRoundStatusCounts,
+  extras: IRoundStatusCounts
+): IRoundStatusCounts => ({
+  numSamples: counts.numSamples - extras.numSamples,
+  numSamplesAudited: counts.numSamplesAudited - extras.numSamplesAudited,
+  numUnique: counts.numUnique - extras.numUnique,
+  numUniqueAudited: counts.numUniqueAudited - extras.numUniqueAudited,
+})
 
 // We count the number of batch-contest pairs with discrepancies, not the number
 // of batches with discrepancies.
@@ -163,18 +187,19 @@ const Progress: React.FC<IProgressProps> = ({
     ? contests.find(contest => contest.id === sortAndFilterState?.contest)
     : undefined
   // With a contest selected, the sample counts are that contest's. A
-  // jurisdiction with no draws for the contest has no entry for it.
+  // jurisdiction with no draws for the contest has no entry for it. With
+  // extra batches hidden, only the batches the audit math drew count.
   const roundStatusCounts = (
     jurisdiction: IJurisdiction
-  ): IRoundStatusCounts | null =>
-    selectedContest
-      ? (jurisdiction.currentRoundStatusByContestId?.[selectedContest.id] ?? {
-          numSamples: 0,
-          numSamplesAudited: 0,
-          numUnique: 0,
-          numUniqueAudited: 0,
-        })
+  ): IRoundStatusCounts | null => {
+    const counts = selectedContest
+      ? (jurisdiction.currentRoundStatusByContestId?.[selectedContest.id] ??
+        NO_DRAWS)
       : jurisdiction.currentRoundStatus
+    return counts && hideExtraBatches && counts.extras
+      ? withoutExtras(counts, counts.extras)
+      : counts
+  }
   const [isShowingUnique, setIsShowingUnique] = useState<boolean>(true)
   const [jurisdictionDetailId, setJurisdictionDetailId] = useState<
     string | null

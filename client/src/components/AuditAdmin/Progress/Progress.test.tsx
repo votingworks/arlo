@@ -638,10 +638,30 @@ describe('Progress screen', () => {
       aaApiCalls.getMapData,
       jaApiCalls.getJurisdictionContests([contest], jurisdiction.id),
     ]
+    // One of the complete jurisdiction's 30 batches is an extra that hasn't
+    // been audited
+    const jurisdictions = jurisdictionMocks.oneComplete.map(j =>
+      j.id === jurisdiction.id
+        ? {
+            ...j,
+            currentRoundStatus: {
+              ...j.currentRoundStatus!,
+              numSamplesAudited: 30,
+              numUniqueAudited: 29,
+              extras: {
+                numSamples: 2,
+                numSamplesAudited: 1,
+                numUnique: 2,
+                numUniqueAudited: 1,
+              },
+            },
+          }
+        : j
+    )
     await withMockFetch(expectedCalls, async () => {
       const { container, history } = render({
         auditSettings: auditSettingsMocks.batchComparisonAll,
-        jurisdictions: jurisdictionMocks.oneComplete,
+        jurisdictions,
         round: roundMocks.singleIncomplete[0],
       })
       await waitFor(() => {
@@ -649,13 +669,19 @@ describe('Progress screen', () => {
       })
       expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
       screen.getByRole('button', { name: /Review 2/ })
+      const cells = () =>
+        within(screen.getAllByRole('row')[3]).getAllByRole('cell')
+      expect(cells()[4]).toHaveTextContent('29')
+      expect(cells()[5]).toHaveTextContent('1')
 
-      // Hiding extra batches leaves the batch the audit math drew, and sticks
-      // in the URL
+      // Hiding extra batches leaves the batches the audit math drew, in the
+      // discrepancies and the counts, and sticks in the URL
       userEvent.click(
         screen.getByRole('checkbox', { name: 'Hide extra batches' })
       )
       expect(history.location.search).toEqual('?hideExtras=true')
+      expect(cells()[4]).toHaveTextContent('28')
+      expect(cells()[5]).toHaveTextContent('0')
       userEvent.click(screen.getByRole('button', { name: /Review 1/ }))
       const dialog = (
         await screen.findByRole('heading', {
@@ -681,6 +707,12 @@ describe('Progress screen', () => {
 
   describe('contest select', () => {
     const jurisdiction = jurisdictionMocks.oneComplete[2] // Complete
+    const noExtras = {
+      numSamples: 0,
+      numSamplesAudited: 0,
+      numUnique: 0,
+      numUniqueAudited: 0,
+    }
     const contestA = contestMocks.two[0]
     // Contest B is only in the complete jurisdiction
     const contestB = {
@@ -705,12 +737,14 @@ describe('Progress screen', () => {
                 numSamplesAudited: 20,
                 numUnique: 20,
                 numUniqueAudited: 20,
+                extras: noExtras,
               },
               [contestB.id]: {
                 numSamples: 12,
                 numSamplesAudited: 10,
                 numUnique: 10,
                 numUniqueAudited: 8,
+                extras: noExtras,
               },
             },
           }

@@ -489,96 +489,118 @@ def batch_round_status_by_contest(round: Round) -> dict[str, dict[str, JSONDict]
             ).values(*by_jurisdiction_and_contest, count)
         }
 
-    sample_counts = count_by_jurisdiction_and_contest(
-        draws_in_round, func.count(SampledBatchDraw.ticket_number)
+    # The sample counts over the given draws, for each jurisdiction and contest
+    # with any
+    def sample_counts(draws) -> dict[tuple[str, str], JSONDict]:  # noqa: ANN001
+        sample_count = count_by_jurisdiction_and_contest(
+            draws, func.count(SampledBatchDraw.ticket_number)
+        )
+        audited_sample_count = count_by_jurisdiction_and_contest(
+            draws.filter(draw_has_results), func.count(SampledBatchDraw.ticket_number)
+        )
+        batch_count = count_by_jurisdiction_and_contest(
+            draws, func.count(SampledBatchDraw.batch_id.distinct())
+        )
+        audited_batch_count = count_by_jurisdiction_and_contest(
+            draws.filter(draw_has_results),
+            func.count(SampledBatchDraw.batch_id.distinct()),
+        )
+        return {
+            key: {
+                "numSamples": num_samples,
+                "numSamplesAudited": audited_sample_count.get(key, 0),
+                "numUnique": batch_count[key],
+                "numUniqueAudited": audited_batch_count.get(key, 0),
+            }
+            for key, num_samples in sample_count.items()
+        }
+
+    counts = sample_counts(draws_in_round)
+    # The share of those counts that are extra batches, sampled on top of what
+    # the audit math drew
+    extra_counts = sample_counts(
+        draws_in_round.filter(SampledBatchDraw.ticket_number == EXTRA_TICKET_NUMBER)
     )
-    audited_sample_counts = count_by_jurisdiction_and_contest(
-        draws_in_round.filter(draw_has_results),
-        func.count(SampledBatchDraw.ticket_number),
-    )
-    batch_counts = count_by_jurisdiction_and_contest(
-        draws_in_round, func.count(SampledBatchDraw.batch_id.distinct())
-    )
-    audited_batch_counts = count_by_jurisdiction_and_contest(
-        draws_in_round.filter(draw_has_results),
-        func.count(SampledBatchDraw.batch_id.distinct()),
-    )
+    no_draws: JSONDict = {
+        "numSamples": 0,
+        "numSamplesAudited": 0,
+        "numUnique": 0,
+        "numUniqueAudited": 0,
+    }
 
     status_by_contest_by_jurisdiction: dict[str, dict[str, JSONDict]] = defaultdict(
         dict
     )
-    for (jurisdiction_id, contest_id), num_samples in sample_counts.items():
+    for (jurisdiction_id, contest_id), contest_counts in counts.items():
         status_by_contest_by_jurisdiction[jurisdiction_id][contest_id] = {
-            "numSamples": num_samples,
-            "numSamplesAudited": audited_sample_counts.get(
-                (jurisdiction_id, contest_id), 0
-            ),
-            "numUnique": batch_counts[(jurisdiction_id, contest_id)],
-            "numUniqueAudited": audited_batch_counts.get(
-                (jurisdiction_id, contest_id), 0
-            ),
+            **contest_counts,
+            "extras": extra_counts.get((jurisdiction_id, contest_id), no_draws),
         }
     return status_by_contest_by_jurisdiction
 
 
 def batch_round_status(election: Election, round: Round) -> dict[str, JSONDict]:
-    sample_count_by_jurisdiction = dict(
-        SampledBatchDraw.query.filter_by(round_id=round.id)
-        .join(Batch)
-        .group_by(Batch.jurisdiction_id)
-        .values(
-            Batch.jurisdiction_id,
-            func.count(
-                distinct(
-                    tuple_(
-                        SampledBatchDraw.batch_id,
-                        SampledBatchDraw.contest_id,
-                        SampledBatchDraw.ticket_number,
-                    )
-                )
-            ),
-        )
-    )
+    draws_in_round = SampledBatchDraw.query.filter_by(round_id=round.id).join(Batch)
     draw_has_results = sampled_batch_draw_has_results()
-    audited_sample_count_by_jurisdiction = dict(
-        SampledBatchDraw.query.filter_by(round_id=round.id)
-        .join(Batch)
-        .filter(draw_has_results)
-        .group_by(Batch.jurisdiction_id)
-        .values(
-            Batch.jurisdiction_id,
-            func.count(
-                distinct(
-                    tuple_(
-                        SampledBatchDraw.batch_id,
-                        SampledBatchDraw.contest_id,
-                        SampledBatchDraw.ticket_number,
-                    )
-                )
-            ),
-        )
-    )
 
-    batch_count_by_jurisdiction = dict(
-        Batch.query.join(SampledBatchDraw)
-        .filter_by(round_id=round.id)
-        .group_by(Batch.jurisdiction_id)
-        .values(Batch.jurisdiction_id, func.count(Batch.id.distinct()))
-    )
-    # A batch drawn for an audited contest and a new one isn't audited until
-    # the new contest's results are entered
-    batches_with_draws_without_results = (
-        SampledBatchDraw.query.filter_by(round_id=round.id)
-        .filter(~draw_has_results)
-        .with_entities(SampledBatchDraw.batch_id)
-        .subquery()
-    )
-    audited_batch_count_by_jurisdiction = dict(
-        Batch.query.join(SampledBatchDraw)
-        .filter_by(round_id=round.id)
-        .filter(Batch.id.notin_(batches_with_draws_without_results))
-        .group_by(Batch.jurisdiction_id)
-        .values(Batch.jurisdiction_id, func.count(Batch.id.distinct()))
+    # Each jurisdiction's sample counts over the given draws
+    def sample_counts_by_jurisdiction(draws) -> dict[str, JSONDict]:  # noqa: ANN001
+        num_samples = func.count(
+            distinct(
+                tuple_(
+                    SampledBatchDraw.batch_id,
+                    SampledBatchDraw.contest_id,
+                    SampledBatchDraw.ticket_number,
+                )
+            )
+        )
+        num_batches = func.count(Batch.id.distinct())
+        sample_count_by_jurisdiction = dict(
+            draws.group_by(Batch.jurisdiction_id).values(
+                Batch.jurisdiction_id, num_samples
+            )
+        )
+        audited_sample_count_by_jurisdiction = dict(
+            draws.filter(draw_has_results)
+            .group_by(Batch.jurisdiction_id)
+            .values(Batch.jurisdiction_id, num_samples)
+        )
+        batch_count_by_jurisdiction = dict(
+            draws.group_by(Batch.jurisdiction_id).values(
+                Batch.jurisdiction_id, num_batches
+            )
+        )
+        # A batch drawn for an audited contest and a new one isn't audited until
+        # the new contest's results are entered
+        batches_with_draws_without_results = (
+            draws.filter(~draw_has_results)
+            .with_entities(SampledBatchDraw.batch_id)
+            .subquery()
+        )
+        audited_batch_count_by_jurisdiction = dict(
+            draws.filter(Batch.id.notin_(batches_with_draws_without_results))
+            .group_by(Batch.jurisdiction_id)
+            .values(Batch.jurisdiction_id, num_batches)
+        )
+        return {
+            jurisdiction.id: {
+                "numSamples": sample_count_by_jurisdiction.get(jurisdiction.id, 0),
+                "numSamplesAudited": audited_sample_count_by_jurisdiction.get(
+                    jurisdiction.id, 0
+                ),
+                "numUnique": batch_count_by_jurisdiction.get(jurisdiction.id, 0),
+                "numUniqueAudited": audited_batch_count_by_jurisdiction.get(
+                    jurisdiction.id, 0
+                ),
+            }
+            for jurisdiction in election.jurisdictions
+        }
+
+    counts_by_jurisdiction = sample_counts_by_jurisdiction(draws_in_round)
+    # The share of those counts that are extra batches, sampled on top of what
+    # the audit math drew
+    extra_counts_by_jurisdiction = sample_counts_by_jurisdiction(
+        draws_in_round.filter(SampledBatchDraw.ticket_number == EXTRA_TICKET_NUMBER)
     )
 
     finalized_jurisdiction_ids = {
@@ -588,18 +610,6 @@ def batch_round_status(election: Election, round: Round) -> dict[str, JSONDict]:
         ).values(BatchResultsFinalized.jurisdiction_id)
     }
     jurisdiction_ids_to_audit = jurisdiction_ids_with_batches_to_audit(round)
-
-    def num_samples(jurisdiction_id: str) -> int:
-        return sample_count_by_jurisdiction.get(jurisdiction_id, 0)  # ty: ignore[unsound-return-statement]
-
-    def num_samples_audited(jurisdiction_id: str) -> int:
-        return audited_sample_count_by_jurisdiction.get(jurisdiction_id, 0)  # ty: ignore[unsound-return-statement]
-
-    def num_batches(jurisdiction_id: str) -> int:
-        return batch_count_by_jurisdiction.get(jurisdiction_id, 0)  # ty: ignore[unsound-return-statement]
-
-    def num_batches_audited(jurisdiction_id: str) -> int:
-        return audited_batch_count_by_jurisdiction.get(jurisdiction_id, 0)  # ty: ignore[unsound-return-statement]
 
     # NOT_STARTED = the jurisdiction hasn’t audited any batches yet
     # IN_PROGRESS = the jurisdiction is auditing batches
@@ -611,7 +621,7 @@ def batch_round_status(election: Election, round: Round) -> dict[str, JSONDict]:
         # round
         if jurisdiction_id not in jurisdiction_ids_to_audit:
             return JurisdictionStatus.COMPLETE
-        if num_samples_audited(jurisdiction_id) == 0:
+        if counts_by_jurisdiction[jurisdiction_id]["numSamplesAudited"] == 0:
             return JurisdictionStatus.NOT_STARTED
         if jurisdiction_id not in finalized_jurisdiction_ids:
             return JurisdictionStatus.IN_PROGRESS
@@ -621,10 +631,8 @@ def batch_round_status(election: Election, round: Round) -> dict[str, JSONDict]:
     return {
         jurisdiction.id: {
             "status": status(jurisdiction.id),
-            "numSamples": num_samples(jurisdiction.id),
-            "numSamplesAudited": num_samples_audited(jurisdiction.id),
-            "numUnique": num_batches(jurisdiction.id),
-            "numUniqueAudited": num_batches_audited(jurisdiction.id),
+            **counts_by_jurisdiction[jurisdiction.id],
+            "extras": extra_counts_by_jurisdiction[jurisdiction.id],
         }
         for jurisdiction in election.jurisdictions
     }
