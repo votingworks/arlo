@@ -1,11 +1,14 @@
 from collections import defaultdict
+from typing import TypedDict
 from werkzeug.exceptions import Conflict
 from flask import jsonify
 
 from . import api
 from ..models import *
 from ..auth import restrict_access, UserType
+from ..audit_math import macro
 from .shared import (
+    ContestVoteDeltas,
     ballot_vote_deltas,
     batch_tallies,
     batch_vote_deltas,
@@ -20,18 +23,29 @@ from .jurisdictions import (
     jurisdiction_audit_board_status,
 )
 
-DiscrepanciesByJurisdiction = dict[
-    str, dict[str, dict[str, dict[str, dict[str, int] | dict[str, str]]]]
+
+class BatchContestDiscrepancies(TypedDict):
+    reportedVotes: macro.ChoiceVotes
+    auditedVotes: macro.ChoiceVotes
+    discrepancies: ContestVoteDeltas
+
+
+# Ballot comparison compares CVRs, whose votes are strings: ES&S records an
+# overvote as "o" and an undervote as "u"
+class BallotContestDiscrepancies(TypedDict):
+    reportedVotes: dict[str, str]
+    auditedVotes: dict[str, str]
+    discrepancies: ContestVoteDeltas
+
+
+# Keyed by jurisdiction id, then batch name, then contest id
+BatchContestDiscrepanciesByJurisdiction = dict[
+    str, dict[str, dict[str, BatchContestDiscrepancies]]
 ]
-# DiscrepanciesByJurisdiction = {
-#     jurisdictionID: {
-#         batchName/ballotReadableIdentifier: {
-#             contestID: {
-#                 reportedVotes:  {choiceID: int/str}, // 8, -1, o, u
-#                 auditedVotes:   {choiceID: int/str},
-#                 discrepancies:  {choiceID: int/str}, // only int
-#     }
-# }
+# Keyed by jurisdiction id, then a readable ballot identifier, then contest id
+BallotDiscrepanciesByJurisdiction = dict[
+    str, dict[str, dict[str, BallotContestDiscrepancies]]
+]
 
 
 @api.route("/election/<election_id>/discrepancy", methods=["GET"])
@@ -41,7 +55,9 @@ def get_discrepancies_by_jurisdiction(election: Election):
     if not current_round:
         raise Conflict("Audit not started")
 
-    discrepancies_by_jurisdiction: DiscrepanciesByJurisdiction = {}
+    discrepancies_by_jurisdiction: (
+        BatchContestDiscrepanciesByJurisdiction | BallotDiscrepanciesByJurisdiction
+    ) = {}
 
     if election.audit_type == AuditType.BATCH_COMPARISON:
         discrepancies_by_jurisdiction = (
@@ -63,9 +79,9 @@ def get_discrepancies_by_jurisdiction(election: Election):
 
 def get_batch_comparison_discrepancies_by_jurisdiction(
     election: Election, round_id: str
-) -> DiscrepanciesByJurisdiction:
-    discrepancies_by_jurisdiction: DiscrepanciesByJurisdiction = defaultdict(
-        lambda: defaultdict(dict)
+) -> BatchContestDiscrepanciesByJurisdiction:
+    discrepancies_by_jurisdiction: BatchContestDiscrepanciesByJurisdiction = (
+        defaultdict(lambda: defaultdict(dict))
     )
 
     batch_keys_in_round = set(
@@ -197,8 +213,8 @@ def show_batch_comparison_discrepancies_by_jurisdiction(
 
 def get_ballot_comparison_discrepancies_by_jurisdiction(
     election: Election, round: Round
-) -> DiscrepanciesByJurisdiction:
-    discrepancies_by_jurisdiction: DiscrepanciesByJurisdiction = defaultdict(
+) -> BallotDiscrepanciesByJurisdiction:
+    discrepancies_by_jurisdiction: BallotDiscrepanciesByJurisdiction = defaultdict(
         lambda: defaultdict(dict)
     )
 
