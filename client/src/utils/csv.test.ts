@@ -132,7 +132,7 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId
 ,,,,
 ,,,,
 CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId
-"=""1""","=""TABULATOR1""","=""BATCH1""",REDACTED,"=""1-1-1"""
+"=""1""","=""TABULATOR1""","=""BATCH1""",REDACTED,REDACTED
 `
     )
   })
