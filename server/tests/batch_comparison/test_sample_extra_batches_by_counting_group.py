@@ -428,6 +428,22 @@ def test_sample_extra_batches_min_percentage_of_jurisdiction_ballots_selected(
     ]
     assert j1_status["numSamples"] == len(j1_batch_names)
     assert j1_status["numUnique"] == len(j1_batch_names)
+    # The extra batches' share of those counts is reported separately
+    num_extra_batches = (
+        SampledBatchDraw.query.filter_by(
+            round_id=round1_id, ticket_number=EXTRA_TICKET_NUMBER
+        )
+        .join(Batch)
+        .filter_by(jurisdiction_id=jurisdiction_ids[0])
+        .count()
+    )
+    assert num_extra_batches > 0
+    assert j1_status["extras"] == {
+        "numSamples": num_extra_batches,
+        "numSamplesAudited": 0,
+        "numUnique": num_extra_batches,
+        "numUniqueAudited": 0,
+    }
 
 
 @pytest.mark.parametrize(

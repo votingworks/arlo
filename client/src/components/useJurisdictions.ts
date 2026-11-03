@@ -56,8 +56,9 @@ export interface IJurisdiction {
     numUnique: number
     numUniqueAudited: number
     numBatchesAudited?: number
+    extras?: IRoundStatusCounts // Only in batch comparison audits
   } | null
-  currentRoundStatusByContestId?: Record<string, IRoundStatusCounts> | null
+  currentRoundStatusByContestId?: Record<string, IBatchRoundStatusCounts> | null
 }
 
 export interface IRoundStatusCounts {
@@ -65,6 +66,12 @@ export interface IRoundStatusCounts {
   numSamplesAudited: number
   numUnique: number
   numUniqueAudited: number
+}
+
+// Batch comparison audits also report the extra batches' share of the counts:
+// batches sampled on top of what the audit math drew
+export interface IBatchRoundStatusCounts extends IRoundStatusCounts {
+  extras: IRoundStatusCounts
 }
 
 export const getJurisdictionStatus = (
