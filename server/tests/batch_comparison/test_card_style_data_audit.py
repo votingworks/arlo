@@ -295,6 +295,15 @@ def test_card_style_data_end_to_end(
         name: total_cards(name) for name in CONTEST_NAMES
     }
 
+    # And each jurisdiction's ballots for each of its contests
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    for jurisdiction in json.loads(rv.data)["jurisdictions"]:
+        assert jurisdiction["ballotManifest"]["numBallotsByContestId"] == {
+            contest_ids[name]: num_ballots_for_jurisdiction(jurisdiction["name"], name)
+            for name in CONTEST_NAMES
+            if jurisdiction["name"] in contest_jurisdiction_names(name)
+        }
+
     # So does the reported results CSV, per jurisdiction
     rv = client.get(
         f"/api/election/{election_id}/batch-tallies/summed-by-jurisdiction-csv"

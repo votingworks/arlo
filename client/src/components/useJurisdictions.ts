@@ -8,6 +8,9 @@ import { IActivity } from './AuditAdmin/ActivityLog'
 export interface IBallotManifestInfo extends IFileInfo {
   numBallots: number | null
   numBatches: number | null
+  // Only in batch comparison audits: [contestId]: the manifest's ballots for
+  // that contest, using its per-contest counts
+  numBallotsByContestId?: Record<string, number>
   // Only in Hybrid audits
   numBallotsCvr?: number | null
   numBallotsNonCvr?: number | null
@@ -54,6 +57,14 @@ export interface IJurisdiction {
     numUniqueAudited: number
     numBatchesAudited?: number
   } | null
+  currentRoundStatusByContestId?: Record<string, IRoundStatusCounts> | null
+}
+
+export interface IRoundStatusCounts {
+  numSamples: number
+  numSamplesAudited: number
+  numUnique: number
+  numUniqueAudited: number
 }
 
 export const getJurisdictionStatus = (
