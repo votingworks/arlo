@@ -150,13 +150,14 @@ const useBatchInventoryCVR = (
     }),
     uploadFiles: async files => {
       const file =
-        // Redact the Dominion RecordId and ImprintedId columns before
-        // uploading since we don't need them
+        // Redact the Dominion columns that we don't need
         systemType === CvrFileType.DOMINION
-          ? await redactCsvColumns(files[0], ['RecordId', 'ImprintedId'], {
+          ? await redactCsvColumns(
+              files[0],
+              ['ImprintedId', 'RecordId', 'UniqueIdentifier'],
               // Dominion CVRs have 3 metadata rows above the header row
-              numRowsToSkip: 3,
-            })
+              { numRowsToSkip: 3 }
+            )
           : files[0]
       return uploadFiles.mutateAsync({ file })
     },
