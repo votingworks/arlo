@@ -476,3 +476,26 @@ def test_card_style_data_end_to_end(
 
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)
+
+    # Sampled batches show the number of cards carrying each contest, blank for
+    # contests outside the batch's jurisdiction
+    report = rv.data.decode("utf-8")
+    sampled_batches = list(
+        csv.DictReader(
+            io.StringIO(report.split("######## SAMPLED BATCHES ########")[1].strip())
+        )
+    )
+    *batch_rows, totals_row = sampled_batches
+    assert len(batch_rows) > 0
+    for row in batch_rows:
+        cards_by_contest = BATCHES[row["Jurisdiction Name"]][row["Batch Name"]][
+            "cards_by_contest"
+        ]
+        for name in CONTEST_NAMES:
+            assert row[f"Ballots in Batch: {name}"] == str(
+                cards_by_contest.get(name, "")
+            )
+    for name in CONTEST_NAMES:
+        assert totals_row[f"Ballots in Batch: {name}"] == str(
+            sum(int(row[f"Ballots in Batch: {name}"] or 0) for row in batch_rows)
+        )
