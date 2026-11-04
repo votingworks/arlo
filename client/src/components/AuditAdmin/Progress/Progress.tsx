@@ -678,6 +678,7 @@ const Progress: React.FC<IProgressProps> = ({
             jurisdiction => jurisdiction.id === jurisdictionDiscrepanciesId
           )!}
           electionId={electionId}
+          round={round!}
           handleClose={() => setJurisdictionDiscrepanciesId(null)}
         />
       )}

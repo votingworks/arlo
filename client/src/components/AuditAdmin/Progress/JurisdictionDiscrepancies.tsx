@@ -9,7 +9,14 @@ import {
   HTMLTable,
 } from '@blueprintjs/core'
 import styled from 'styled-components'
-import { IJurisdiction, DiscrepanciesByContest } from '../../useJurisdictions'
+import {
+  IJurisdiction,
+  DiscrepanciesByContest,
+  JurisdictionRoundStatus,
+  useUnfinalizeBatchTallies,
+} from '../../useJurisdictions'
+import { IRound } from '../useRoundsAuditAdmin'
+import AsyncButton from '../../Atoms/AsyncButton'
 import useContestsJurisdictionAdmin from '../../JurisdictionAdmin/useContestsJurisdictionAdmin'
 import { IContest } from '../../../types'
 import { IAuditSettings } from '../../useAuditSettings'
@@ -87,6 +94,7 @@ export interface IJurisdictionDiscrepanciesProps {
   electionId: string
   handleClose: () => void
   jurisdiction: IJurisdiction
+  round: IRound
 }
 
 const JurisdictionDiscrepancies: React.FC<IJurisdictionDiscrepanciesProps> = ({
@@ -95,11 +103,17 @@ const JurisdictionDiscrepancies: React.FC<IJurisdictionDiscrepanciesProps> = ({
   handleClose,
   jurisdiction,
   electionId,
+  round,
 }) => {
   const contestsQuery = useContestsJurisdictionAdmin(
     electionId,
     jurisdiction.id
   )
+  const unfinalize = useUnfinalizeBatchTallies(electionId)
+  const canUnfinalize =
+    auditType === 'BATCH_COMPARISON' &&
+    round.endedAt === null &&
+    jurisdiction.currentRoundStatus!.status === JurisdictionRoundStatus.COMPLETE
 
   if (!contestsQuery.isSuccess) {
     return null
@@ -132,6 +146,21 @@ const JurisdictionDiscrepancies: React.FC<IJurisdictionDiscrepanciesProps> = ({
             </div>
           ))}
         </div>
+        {canUnfinalize && (
+          <div style={{ ...rowStyle, justifyContent: 'flex-end' }}>
+            <AsyncButton
+              intent="danger"
+              onClick={() =>
+                unfinalize.mutateAsync({
+                  jurisdictionId: jurisdiction.id,
+                  roundId: round.id,
+                })
+              }
+            >
+              Unfinalize Tallies
+            </AsyncButton>
+          </div>
+        )}
         <Divider style={{ margin: '16px 0' }} />
         {discrepancies.map(({ name, isExtra, discrepancies: byContest }) => (
           <div key={name} style={{ marginBottom: '16px' }}>

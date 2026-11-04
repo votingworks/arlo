@@ -525,6 +525,29 @@ describe('Progress screen', () => {
         [contestMocks.one[0]],
         jurisdictionMocks.oneComplete[2].id
       ),
+      {
+        url: `/api/election/1/jurisdiction/${jurisdictionMocks.oneComplete[2].id}/round/round-1/batches/finalize`,
+        options: { method: 'DELETE' },
+        response: { status: 'ok' },
+      },
+      aaApiCalls.getDiscrepancies({
+        [jurisdictionMocks.oneComplete[2].id]: {
+          'batch-id-1': {
+            name: 'batch1',
+            isExtra: false,
+            discrepancies: {
+              [contestMocks.one[0].id]: {
+                reportedVotes: { [contestMocks.one[0].choices[0].id]: 5 },
+                auditedVotes: { [contestMocks.one[0].choices[0].id]: 6 },
+                discrepancies: { [contestMocks.one[0].choices[0].id]: 1 },
+              },
+            },
+          },
+        },
+      }),
+      aaApiCalls.getLastLoginByJurisdiction({
+        response: lastLoginByJurisdictionMocks.noLogins,
+      }),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({
@@ -637,6 +660,62 @@ describe('Progress screen', () => {
       expect(footers[3]).toHaveTextContent('1')
       expect(footers[4]).toHaveTextContent('34')
       expect(footers[5]).toHaveTextContent('26')
+
+      userEvent.click(
+        within(dialog).getByRole('button', { name: 'Unfinalize Tallies' })
+      )
+      await waitFor(() => {
+        expect(
+          within(dialog).getByRole('button', { name: 'Unfinalize Tallies' })
+        ).toBeEnabled()
+      })
+    })
+  })
+
+  it("doesn't offer unfinalizing tallies after the round ends", async () => {
+    const expectedCalls = [
+      aaApiCalls.getDiscrepancies({
+        [jurisdictionMocks.oneComplete[2].id]: {
+          'batch-id-1': {
+            name: 'batch1',
+            isExtra: false,
+            discrepancies: {
+              [contestMocks.one[0].id]: {
+                reportedVotes: { [contestMocks.one[0].choices[0].id]: 5 },
+                auditedVotes: { [contestMocks.one[0].choices[0].id]: 6 },
+                discrepancies: { [contestMocks.one[0].choices[0].id]: 1 },
+              },
+            },
+          },
+        },
+      }),
+      aaApiCalls.getLastLoginByJurisdiction({
+        response: lastLoginByJurisdictionMocks.noLogins,
+      }),
+      aaApiCalls.getMapData,
+      jaApiCalls.getJurisdictionContests(
+        [contestMocks.one[0]],
+        jurisdictionMocks.oneComplete[2].id
+      ),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { container } = render({
+        auditSettings: auditSettingsMocks.batchComparisonAll,
+        jurisdictions: jurisdictionMocks.oneComplete,
+        round: roundMocks.singleComplete[0],
+      })
+      await waitFor(() => {
+        expect(container.querySelectorAll('.d3-component').length).toBe(1)
+      })
+      userEvent.click(screen.getByRole('button', { name: /Review 1/ }))
+      const dialog = (
+        await screen.findByRole('heading', {
+          name: /Jurisdiction 3 Discrepancies/,
+        })
+      ).closest('.bp3-dialog')! as HTMLElement
+      expect(
+        within(dialog).queryByRole('button', { name: 'Unfinalize Tallies' })
+      ).not.toBeInTheDocument()
     })
   })
 
