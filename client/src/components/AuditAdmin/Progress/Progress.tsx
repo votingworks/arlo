@@ -277,9 +277,10 @@ const Progress: React.FC<IProgressProps> = ({
         ).length
         const filesUploadedText = `${numComplete}/${uploads.length} files uploaded`
 
+        const lastLogin = lastLoginQuery.data![jurisdiction.id]
         const jurisdictionStatus = getJurisdictionStatus(
           jurisdiction,
-          lastLoginQuery.data![jurisdiction.id]
+          lastLogin
         )
 
         switch (jurisdictionStatus) {
@@ -310,15 +311,22 @@ const Progress: React.FC<IProgressProps> = ({
           case JurisdictionProgressStatus.UPLOADS_IN_PROGRESS:
             return <Status intent="in-progress">{filesUploadedText}</Status>
           case JurisdictionProgressStatus.UPLOADS_NOT_STARTED_LOGGED_IN:
-            return <Status intent="warning">Logged in</Status>
+          case JurisdictionProgressStatus.AUDIT_NOT_STARTED_LOGGED_IN:
+            return (
+              <Tooltip
+                content={`${lastLogin.user!.key} at ${new Date(
+                  lastLogin.timestamp
+                ).toLocaleString()}`}
+              >
+                <Status intent="warning">Logged in</Status>
+              </Tooltip>
+            )
           case JurisdictionProgressStatus.UPLOADS_NOT_STARTED_NO_LOGIN:
             return <Status>Not logged in</Status>
           case JurisdictionProgressStatus.AUDIT_IN_PROGRESS:
             return <Status intent="in-progress">In progress</Status>
           case JurisdictionProgressStatus.AUDIT_COMPLETE:
             return <Status intent="success">Complete</Status>
-          case JurisdictionProgressStatus.AUDIT_NOT_STARTED_LOGGED_IN:
-            return <Status intent="warning">Logged in</Status>
           case JurisdictionProgressStatus.AUDIT_NOT_STARTED_NO_LOGIN:
             return <Status>Not logged in</Status>
           /* istanbul ignore next - unreachable when exhaustive */

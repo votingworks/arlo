@@ -115,6 +115,10 @@ describe('Progress screen', () => {
       expect(row2[0]).toHaveTextContent('Jurisdiction 2')
       expectStatusTag(row2[1], 'Logged in', 'warning')
       expect(row2[2]).toBeEmpty()
+      userEvent.hover(within(row2[1]).getByText('Logged in'))
+      await screen.findByText(
+        `ja-2@example.com at ${lastLoginByJurisdictionMocks.allLogins['jurisdiction-id-2'].timestamp}`
+      )
       const row3 = within(rows[3]).getAllByRole('cell')
       expect(row3[0]).toHaveTextContent('Jurisdiction 3')
       expectStatusTag(row3[1], 'Manifest uploaded', 'success')
