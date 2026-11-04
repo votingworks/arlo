@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { Callout, H1, Text } from '@blueprintjs/core'
 import { toast } from 'react-toastify'
-import { apiDownload } from '../utilities'
 import { Inner } from './Wrapper'
 import { IJurisdiction, JurisdictionRoundStatus } from '../useJurisdictions'
 import { FileProcessingStatus, IFileInfo } from '../useCSV'
@@ -272,7 +271,9 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
         roundNum={roundNum}
         fullHandTallyRequired={endedWithFullTallyEscalation}
         startNextRound={startNextRound}
-      />
+      >
+        {children}
+      </AuditAdminAnotherRoundStatusBox>
     )
   }
 
@@ -282,14 +283,6 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
       auditName={auditSettings.auditName}
       headline="Congratulations - the audit is complete!"
       details={[]}
-      action={
-        <AsyncButton
-          intent="primary"
-          onClick={() => apiDownload(`/election/${electionId}/report`)}
-        >
-          Download Audit Report
-        </AsyncButton>
-      }
     >
       {children}
     </StatusBox>

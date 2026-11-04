@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { Column, Cell, TableInstance, SortingRule, SortByFn } from 'react-table'
-import { Button, Switch, Icon, AnchorButton, Spinner } from '@blueprintjs/core'
+import { Button, Switch, Icon, InputGroup, Spinner } from '@blueprintjs/core'
 import H2Title from '../../Atoms/H2Title'
 import {
   JurisdictionRoundStatus,
@@ -14,20 +14,14 @@ import {
   useLastLoginByJurisdiction,
 } from '../../useJurisdictions'
 import JurisdictionDetail from './JurisdictionDetail'
-import {
-  Table,
-  sortByRank,
-  FilterInput,
-  downloadTableAsCSV,
-} from '../../Atoms/Table'
+import { Table, sortByRank, downloadTableAsCSV } from '../../Atoms/Table'
 import { IRound } from '../useRoundsAuditAdmin'
 import StatusTag, { IStatusTagProps } from '../../Atoms/StatusTag'
 import { IAuditSettings } from '../../useAuditSettings'
 import { FileProcessingStatus, IFileInfo } from '../../useCSV'
 import ProgressMap from './ProgressMap'
 import { sum } from '../../../utils/number'
-import { apiDownload, assert } from '../../utilities'
-import AsyncButton from '../../Atoms/AsyncButton'
+import { assert } from '../../utilities'
 import useSearchParams from '../../useSearchParams'
 import { JurisdictionDiscrepancies } from './JurisdictionDiscrepancies'
 
@@ -41,9 +35,8 @@ const Wrapper = styled.div`
 const TableControls = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
   gap: 20px;
+  margin-bottom: 0.5rem;
 `
 
 const formatNumber = ({ value }: { value: number | null }) =>
@@ -130,12 +123,25 @@ const Progress: React.FC<IProgressProps> = ({
   const [jurisdictionDiscrepanciesId, setJurisdictionDiscrepanciesId] =
     useState<string | null>(null)
 
+  const filter = sortAndFilterState?.filter || ''
   const ballotsOrBatches =
     auditType === 'BATCH_COMPARISON' ? 'Batches' : 'Ballots'
 
   const columns: Column<IJurisdiction>[] = [
     {
       Header: 'Jurisdiction',
+      subHeader: (
+        <InputGroup
+          placeholder="Filter by name..."
+          value={filter}
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+            setSortAndFilterState({
+              ...sortAndFilterState,
+              filter: event.target.value || undefined,
+            })
+          }
+        />
+      ),
       accessor: ({ name }) => name,
       Cell: ({ row: { original: jurisdiction } }: Cell<IJurisdiction>) => (
         <Button
@@ -431,7 +437,6 @@ const Progress: React.FC<IProgressProps> = ({
     }
   }
 
-  const filter = sortAndFilterState?.filter || ''
   const filteredJurisdictions = jurisdictions.filter(({ name }) =>
     name.toLowerCase().includes(filter.toLowerCase())
   )
@@ -457,42 +462,6 @@ const Progress: React.FC<IProgressProps> = ({
     [sortAndFilterState, setSortAndFilterState]
   )
 
-  const downloadButtons = (
-    <div style={{ display: 'flex', alignSelf: 'end', gap: '5px' }}>
-      <AnchorButton
-        icon="download"
-        href={`/api/election/${electionId}/batch-tallies/summed-by-jurisdiction-csv`}
-      >
-        Download Reported Results
-      </AnchorButton>
-      <Button
-        icon="download"
-        onClick={() => {
-          downloadTableAsCSV({
-            tableId: 'progress-table',
-            fileName: `audit-progress-${
-              auditSettings.auditName
-            }-${new Date().toISOString()}.csv`,
-          })
-        }}
-      >
-        Download Table as CSV
-      </Button>
-      {showDiscrepancies && (
-        <AsyncButton
-          icon="flag"
-          onClick={() =>
-            apiDownload(`/election/${electionId}/discrepancy-report`)
-          }
-        >
-          Download Discrepancy Report
-        </AsyncButton>
-      )}
-    </div>
-  )
-
-  const splitTableControlsAcrossTwoRows = Boolean(showDiscrepancies)
-
   if (!lastLoginQuery.isSuccess) {
     return null
   }
@@ -510,40 +479,16 @@ const Progress: React.FC<IProgressProps> = ({
           auditType={auditType}
         />
       )}
-      <TableControls
-        style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            width: '100%',
-          }}
-        >
-          <div style={{ flexGrow: 1 }}>
-            <FilterInput
-              placeholder="Filter by jurisdiction name..."
-              value={filter}
-              onChange={value =>
-                setSortAndFilterState({
-                  ...sortAndFilterState,
-                  filter: value || undefined,
-                })
-              }
-            />
-          </div>
-          {round && (
-            <Switch
-              checked={isShowingUnique}
-              label={`Count unique sampled ${ballotsOrBatches.toLowerCase()}`}
-              onChange={() => setIsShowingUnique(!isShowingUnique)}
-              style={{ marginBottom: 0 }}
-            />
-          )}
-          {!splitTableControlsAcrossTwoRows && downloadButtons}
-        </div>
-        {splitTableControlsAcrossTwoRows && downloadButtons}
+      <TableControls>
+        <div style={{ flexGrow: 1 }} />
+        {round && (
+          <Switch
+            checked={isShowingUnique}
+            label={`Count unique sampled ${ballotsOrBatches.toLowerCase()}`}
+            onChange={() => setIsShowingUnique(!isShowingUnique)}
+            style={{ marginBottom: 0 }}
+          />
+        )}
       </TableControls>
       <Table
         data={filteredJurisdictions}
@@ -552,6 +497,29 @@ const Progress: React.FC<IProgressProps> = ({
         initialSortBy={initialSortBy}
         onSortByChange={onSortByChange}
       />
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          marginTop: '8px',
+        }}
+      >
+        <Button
+          minimal
+          small
+          icon="download"
+          onClick={() => {
+            downloadTableAsCSV({
+              tableId: 'progress-table',
+              fileName: `audit-progress-${
+                auditSettings.auditName
+              }-${new Date().toISOString()}.csv`,
+            })
+          }}
+        >
+          Download Table as CSV
+        </Button>
+      </div>
       {jurisdictionDetailId && (
         <JurisdictionDetail
           jurisdiction={jurisdictions.find(

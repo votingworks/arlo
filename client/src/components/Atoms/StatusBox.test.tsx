@@ -523,38 +523,6 @@ describe('StatusBox', () => {
         </Router>
       )
       screen.getByText('Congratulations - the audit is complete!')
-      screen.getByText('Download Audit Report')
-    })
-
-    it('downloads audit report', async () => {
-      const mockDownloadWindow: { onbeforeunload?: () => void } = {}
-      window.open = vi.fn().mockReturnValue(mockDownloadWindow)
-      render(
-        <Router>
-          <AuditAdminStatusBox
-            rounds={roundMocks.singleComplete}
-            startNextRound={vi.fn()}
-            finishRound={vi.fn()}
-            undoRoundStart={vi.fn()}
-            jurisdictions={jurisdictionMocks.allComplete}
-            contests={contestMocks.filledTargeted}
-            auditSettings={auditSettingsMocks.all}
-          />
-        </Router>
-      )
-      const downloadReportButton = screen.getByRole('button', {
-        name: 'Download Audit Report',
-      })
-      userEvent.click(downloadReportButton)
-      expect(downloadReportButton).toBeDisabled()
-      await waitFor(() => {
-        expect(window.open).toHaveBeenCalledTimes(1)
-        expect(window.open).toBeCalledWith(`/api/election/1/report`)
-      })
-      mockDownloadWindow.onbeforeunload!()
-      await waitFor(() => {
-        expect(downloadReportButton).toBeEnabled()
-      })
     })
 
     it('shows a message when a full hand tally is required', () => {
