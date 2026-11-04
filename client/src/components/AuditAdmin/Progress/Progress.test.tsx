@@ -1062,20 +1062,78 @@ describe('Progress screen', () => {
       })
     })
 
-    it('is only offered during a round of a multi-contest batch comparison audit', async () => {
+    it('scopes a pre-round batch comparison table to the selected contest', async () => {
+      // Jurisdiction 3 has processed both files, with its manifest and valid
+      // voted ballots broken down by contest and an expected count for the
+      // whole jurisdiction
+      const preRoundJurisdictions = [
+        ...jurisdictionMocks.twoManifestsOneTallies.slice(0, 2),
+        {
+          ...jurisdictionMocks.twoManifestsOneTallies[2],
+          expectedBallotManifestNumBallots: 2000,
+          ballotManifest: {
+            ...manifestMocks.processed,
+            numBallotsByContestId: { [contestA.id]: 2117, [contestB.id]: 600 },
+          },
+          batchTallies: {
+            ...talliesMocks.processed,
+            numBallotsByContestId: { [contestA.id]: 1400, [contestB.id]: 550 },
+          },
+        },
+      ]
+      const header = (name: string) =>
+        screen.queryByRole('columnheader', { name })
       await withMockFetch(getDefaultExpectedCalls(), async () => {
         const { container } = render({
           auditSettings: auditSettingsMocks.batchComparisonAll,
-          jurisdictions: jurisdictionMocks.twoManifestsOneTallies,
+          jurisdictions: preRoundJurisdictions,
           contests: [contestA, contestB],
         })
         await waitFor(() => {
           expect(container.querySelectorAll('.d3-component').length).toBe(1)
         })
+        expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+        expect(screen.getAllByRole('row')).toHaveLength(5)
+        expect(header('Expected Ballots in Manifest')).toBeInTheDocument()
+        expect(header('Difference From Expected Ballots')).toBeInTheDocument()
+        expect(header('Valid Voted Ballots in Batches')).toBeInTheDocument()
+
+        // With a contest selected: only its jurisdictions, its manifest and
+        // valid voted ballots, and no comparison to the whole-jurisdiction
+        // expected count
+        userEvent.selectOptions(
+          screen.getByRole('combobox', { name: 'Contest' }),
+          contestB.id
+        )
+        let rows = screen.getAllByRole('row')
+        expect(rows).toHaveLength(3) // header, row, footer
+        expect(header('Expected Ballots in Manifest')).not.toBeInTheDocument()
         expect(
-          screen.queryByRole('combobox', { name: 'Contest' })
+          header('Difference From Expected Ballots')
         ).not.toBeInTheDocument()
+        expect(header('Valid Voted Ballots in Batches')).toBeInTheDocument()
+        const cells = within(rows[1]).getAllByRole('cell')
+        expect(cells[0]).toHaveTextContent('Jurisdiction 3')
+        expect(cells[2]).toHaveTextContent('600')
+        expect(cells[4]).toHaveTextContent('550')
+        const footers = within(rows[2]).getAllByRole('cell')
+        expect(footers[2]).toHaveTextContent('600')
+        expect(footers[4]).toHaveTextContent('550')
+
+        userEvent.selectOptions(
+          screen.getByRole('combobox', { name: 'Contest' }),
+          contestA.id
+        )
+        rows = screen.getAllByRole('row')
+        expect(rows).toHaveLength(5)
+        expect(header('Expected Ballots in Manifest')).not.toBeInTheDocument()
+        const row3 = within(rows[3]).getAllByRole('cell')
+        expect(row3[2]).toHaveTextContent('2,117')
+        expect(row3[4]).toHaveTextContent('1,400')
       })
+    })
+
+    it('is only offered for a multi-contest batch comparison audit', async () => {
       const batchComparisonCalls = [
         aaApiCalls.getDiscrepancies({}),
         aaApiCalls.getLastLoginByJurisdiction({
@@ -1708,9 +1766,7 @@ describe('Progress screen', () => {
         'success'
       )
 
-      userEvent.hover(
-        within(rows[1]).getByText('Tallies upload failed')
-      )
+      userEvent.hover(within(rows[1]).getByText('Tallies upload failed'))
       await screen.findByText('Invalid CSV')
 
       // Toggle sorting by status

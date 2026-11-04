@@ -190,11 +190,8 @@ const Progress: React.FC<IProgressProps> = ({
       ([name, discrepancies]) => ({ name, discrepancies })
     )
   }
-  // Once a batch comparison audit of several contests is under way, the table
-  // can be viewed one contest at a time. Before then its columns are file
-  // totals, which have no per-contest version.
   const canSelectContest =
-    round !== null && auditType === 'BATCH_COMPARISON' && contests.length > 1
+    auditType === 'BATCH_COMPARISON' && contests.length > 1
   const selectedContest = canSelectContest
     ? contests.find(contest => contest.id === sortAndFilterState?.contest)
     : undefined
@@ -426,7 +423,8 @@ const Progress: React.FC<IProgressProps> = ({
     const hasExpectedNumBallots = jurisdictions.some(
       jurisdiction => jurisdiction.expectedBallotManifestNumBallots !== null
     )
-    if (hasExpectedNumBallots) {
+    // The expected count is for all of a jurisdiction's ballots
+    if (hasExpectedNumBallots && !selectedContest) {
       columns.push({
         Header: 'Expected Ballots in Manifest',
         accessor: ({ expectedBallotManifestNumBallots }) =>
@@ -457,7 +455,11 @@ const Progress: React.FC<IProgressProps> = ({
       })
       columns.push({
         Header: 'Valid Voted Ballots in Batches',
-        accessor: ({ batchTallies }) => batchTallies!.numBallots,
+        accessor: ({ batchTallies }) =>
+          selectedContest
+            ? (batchTallies!.numBallotsByContestId?.[selectedContest.id] ??
+              null)
+            : batchTallies!.numBallots,
         Cell: formatNumber,
         Footer: totalFooter('Valid Voted Ballots in Batches'),
       })
