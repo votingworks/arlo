@@ -932,6 +932,131 @@ describe('Progress screen', () => {
       })
     })
 
+    it("opens a jurisdiction's discrepancies on the selected contest", async () => {
+      const discrepancy = (contest: typeof contestA) => ({
+        reportedVotes: { [contest.choices[0].id]: 5 },
+        auditedVotes: { [contest.choices[0].id]: 6 },
+        discrepancies: { [contest.choices[0].id]: 1 },
+      })
+      // Contest C has no batches drawn in this jurisdiction; contest D does,
+      // without discrepancies
+      const contestC = {
+        ...contestMocks.two[1],
+        id: 'contest-id-3',
+        name: 'Contest 3',
+        jurisdictionIds: [jurisdiction.id],
+      }
+      const contestD = {
+        ...contestMocks.two[1],
+        id: 'contest-id-4',
+        name: 'Contest 4',
+        jurisdictionIds: [jurisdiction.id],
+      }
+      const jurisdictionsWithContestD = jurisdictions.map(j =>
+        j.id === jurisdiction.id
+          ? {
+              ...j,
+              currentRoundStatusByContestId: {
+                ...j.currentRoundStatusByContestId,
+                [contestD.id]: {
+                  numSamples: 3,
+                  numSamplesAudited: 3,
+                  numUnique: 3,
+                  numUniqueAudited: 3,
+                  extras: noExtras,
+                },
+              },
+            }
+          : j
+      )
+      const expectedCalls = [
+        aaApiCalls.getDiscrepancies({
+          [jurisdiction.id]: {
+            'batch-id-1': {
+              name: 'batch1',
+              isExtra: false,
+              discrepancies: {
+                [contestA.id]: discrepancy(contestA),
+                [contestB.id]: discrepancy(contestB),
+              },
+            },
+            'batch-id-2': {
+              name: 'batch2',
+              isExtra: false,
+              discrepancies: { [contestA.id]: discrepancy(contestA) },
+            },
+          },
+        }),
+        aaApiCalls.getLastLoginByJurisdiction({
+          response: lastLoginByJurisdictionMocks.noLogins,
+        }),
+        aaApiCalls.getMapData,
+        jaApiCalls.getJurisdictionContests(
+          [contestA, contestB, contestC, contestD],
+          jurisdiction.id
+        ),
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        const { container, history } = render({
+          auditSettings: auditSettingsMocks.batchComparisonAll,
+          jurisdictions: jurisdictionsWithContestD,
+          contests: [contestA, contestB],
+          round: roundMocks.singleIncomplete[0],
+        })
+        await waitFor(() => {
+          expect(container.querySelectorAll('.d3-component').length).toBe(1)
+        })
+        expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+        screen.getByRole('button', { name: /Review 3/ })
+
+        // The dialog opens on the selected contest
+        userEvent.selectOptions(
+          screen.getByRole('combobox', { name: 'Contest' }),
+          contestB.id
+        )
+        userEvent.click(screen.getByRole('button', { name: /Review 3/ }))
+        const dialog = (
+          await screen.findByRole('heading', {
+            name: /Jurisdiction 3 Discrepancies/,
+          })
+        ).closest('.bp3-dialog')! as HTMLElement
+        const batchHeadings = () =>
+          within(dialog)
+            .queryAllByRole('heading', { level: 5 })
+            .map(heading => heading.querySelector('span')!.textContent)
+        const contestHeadings = () =>
+          within(dialog)
+            .getAllByRole('heading', { level: 6 })
+            .map(heading => heading.querySelector('span')!.textContent)
+        const dialogSelect = within(dialog).getByRole('combobox', {
+          name: 'Contest',
+        })
+        expect(dialogSelect).toHaveValue(contestB.id)
+        expect(batchHeadings()).toEqual(['batch1'])
+        expect(contestHeadings()).toEqual(['Contest 2'])
+
+        // The dialog's select only changes the dialog
+        userEvent.selectOptions(dialogSelect, '')
+        expect(batchHeadings()).toEqual(['batch1', 'batch2'])
+        expect(contestHeadings()).toEqual([
+          'Contest 1',
+          'Contest 2',
+          'Contest 1',
+        ])
+        userEvent.selectOptions(dialogSelect, contestA.id)
+        expect(batchHeadings()).toEqual(['batch1', 'batch2'])
+        expect(contestHeadings()).toEqual(['Contest 1', 'Contest 1'])
+        userEvent.selectOptions(dialogSelect, contestC.id)
+        expect(batchHeadings()).toEqual([])
+        within(dialog).getByText('No batches sampled for this contest')
+        userEvent.selectOptions(dialogSelect, contestD.id)
+        expect(batchHeadings()).toEqual([])
+        within(dialog).getByText('No discrepancies for this contest')
+        expect(history.location.search).toEqual(`?contest=${contestB.id}`)
+        screen.getByRole('button', { name: /Review 3/ })
+      })
+    })
+
     it('is only offered during a round of a multi-contest batch comparison audit', async () => {
       await withMockFetch(getDefaultExpectedCalls(), async () => {
         const { container } = render({

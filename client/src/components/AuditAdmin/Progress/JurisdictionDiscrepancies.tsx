@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
   Classes,
   Colors,
@@ -22,6 +22,7 @@ import { IContest } from '../../../types'
 import { IAuditSettings } from '../../useAuditSettings'
 import { assert } from '../../utilities'
 import CopyToClipboard from '../../Atoms/CopyToClipboard'
+import ContestSelect from './ContestSelect'
 
 const ContestDiscrepanciesTable = styled(HTMLTable).attrs({
   bordered: true,
@@ -95,6 +96,7 @@ export interface IJurisdictionDiscrepanciesProps {
   handleClose: () => void
   jurisdiction: IJurisdiction
   round: IRound
+  initialContestId?: string
 }
 
 const JurisdictionDiscrepancies: React.FC<IJurisdictionDiscrepanciesProps> = ({
@@ -104,12 +106,16 @@ const JurisdictionDiscrepancies: React.FC<IJurisdictionDiscrepanciesProps> = ({
   jurisdiction,
   electionId,
   round,
+  initialContestId,
 }) => {
   const contestsQuery = useContestsJurisdictionAdmin(
     electionId,
     jurisdiction.id
   )
   const unfinalize = useUnfinalizeBatchTallies(electionId)
+  const [selectedContestId, setSelectedContestId] = useState(
+    initialContestId ?? ''
+  )
   const canUnfinalize =
     auditType === 'BATCH_COMPARISON' &&
     round.endedAt === null &&
@@ -120,6 +126,13 @@ const JurisdictionDiscrepancies: React.FC<IJurisdictionDiscrepanciesProps> = ({
   }
 
   const contests = contestsQuery.data
+  const canSelectContest =
+    auditType === 'BATCH_COMPARISON' && contests.length > 1
+  const shownBatches = selectedContestId
+    ? discrepancies.filter(
+        ({ discrepancies: byContest }) => selectedContestId in byContest
+      )
+    : discrepancies
 
   return (
     <Dialog
@@ -146,39 +159,60 @@ const JurisdictionDiscrepancies: React.FC<IJurisdictionDiscrepanciesProps> = ({
             </div>
           ))}
         </div>
-        {canUnfinalize && (
-          <div style={{ ...rowStyle, justifyContent: 'flex-end' }}>
-            <AsyncButton
-              intent="danger"
-              onClick={() =>
-                unfinalize.mutateAsync({
-                  jurisdictionId: jurisdiction.id,
-                  roundId: round.id,
-                })
-              }
-            >
-              Unfinalize Tallies
-            </AsyncButton>
+        {(canSelectContest || canUnfinalize) && (
+          <div style={rowStyle}>
+            {canSelectContest && (
+              <ContestSelect
+                contests={contests}
+                value={selectedContestId}
+                onChange={setSelectedContestId}
+              />
+            )}
+            <div style={{ flexGrow: 1 }} />
+            {canUnfinalize && (
+              <AsyncButton
+                intent="danger"
+                onClick={() =>
+                  unfinalize.mutateAsync({
+                    jurisdictionId: jurisdiction.id,
+                    roundId: round.id,
+                  })
+                }
+              >
+                Unfinalize Tallies
+              </AsyncButton>
+            )}
           </div>
         )}
         <Divider style={{ margin: '16px 0' }} />
-        {discrepancies.map(({ name, isExtra, discrepancies: byContest }) => (
-          <div key={name} style={{ marginBottom: '16px' }}>
-            <H5 style={rowStyle}>
-              <span>
-                {isExtra && '(Extra) '}
-                {name}
-              </span>
-              {auditType === 'BATCH_COMPARISON' && (
-                <CopyToClipboard
-                  iconOnly
-                  label="Copy batch name"
-                  getText={() => ({ text: name, format: 'text/plain' })}
-                />
-              )}
-            </H5>
-            {Object.entries(byContest).map(
-              ([contestId, contestDiscrepancies]) => (
+        {selectedContestId && shownBatches.length === 0 && (
+          <p className={Classes.TEXT_MUTED}>
+            {jurisdiction.currentRoundStatusByContestId![selectedContestId]
+              ? 'No discrepancies for this contest'
+              : 'No batches sampled for this contest'}
+          </p>
+        )}
+        {shownBatches.map(({ name, isExtra, discrepancies: byContest }) => {
+          const shownContests = Object.entries(byContest).filter(
+            ([contestId]) =>
+              !selectedContestId || contestId === selectedContestId
+          )
+          return (
+            <div key={name} style={{ marginBottom: '16px' }}>
+              <H5 style={rowStyle}>
+                <span>
+                  {isExtra && '(Extra) '}
+                  {name}
+                </span>
+                {auditType === 'BATCH_COMPARISON' && (
+                  <CopyToClipboard
+                    iconOnly
+                    label="Copy batch name"
+                    getText={() => ({ text: name, format: 'text/plain' })}
+                  />
+                )}
+              </H5>
+              {shownContests.map(([contestId, contestDiscrepancies]) => (
                 <div key={contestId}>
                   <TableHeader style={rowStyle}>
                     <span>{getContestName(contests, contestId)}</span>
@@ -231,10 +265,10 @@ const JurisdictionDiscrepancies: React.FC<IJurisdictionDiscrepanciesProps> = ({
                     </tbody>
                   </ContestDiscrepanciesTable>
                 </div>
-              )
-            )}
-          </div>
-        ))}
+              ))}
+            </div>
+          )
+        })}
       </div>
     </Dialog>
   )

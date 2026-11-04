@@ -2,14 +2,7 @@ import React, { useState, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { Column, Cell, TableInstance, SortingRule, SortByFn } from 'react-table'
-import {
-  Button,
-  HTMLSelect,
-  Switch,
-  Icon,
-  InputGroup,
-  Spinner,
-} from '@blueprintjs/core'
+import { Button, Switch, Icon, InputGroup, Spinner } from '@blueprintjs/core'
 import H2Title from '../../Atoms/H2Title'
 import {
   JurisdictionRoundStatus,
@@ -39,6 +32,7 @@ import {
   IBatchOrBallotDiscrepancies,
   JurisdictionDiscrepancies,
 } from './JurisdictionDiscrepancies'
+import ContestSelect from './ContestSelect'
 
 const Wrapper = styled.div`
   flex-grow: 1;
@@ -585,23 +579,16 @@ const Progress: React.FC<IProgressProps> = ({
       )}
       <TableControls>
         {canSelectContest && (
-          <HTMLSelect
-            aria-label="Contest"
+          <ContestSelect
+            contests={contests}
             value={selectedContest?.id ?? ''}
-            onChange={event =>
+            onChange={contestId =>
               setSortAndFilterState({
                 ...sortAndFilterState,
-                contest: event.target.value || undefined,
+                contest: contestId || undefined,
               })
             }
-          >
-            <option value="">All contests</option>
-            {contests.map(contest => (
-              <option key={contest.id} value={contest.id}>
-                {contest.name}
-              </option>
-            ))}
-          </HTMLSelect>
+          />
         )}
         <div style={{ flexGrow: 1 }} />
         {round && (
@@ -679,6 +666,7 @@ const Progress: React.FC<IProgressProps> = ({
           )!}
           electionId={electionId}
           round={round!}
+          initialContestId={selectedContest?.id}
           handleClose={() => setJurisdictionDiscrepanciesId(null)}
         />
       )}
