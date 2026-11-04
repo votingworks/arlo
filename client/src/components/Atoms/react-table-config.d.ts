@@ -32,8 +32,6 @@ declare module 'react-table' {
 
   export interface ColumnInterface<D extends object = {}>
     extends UseFiltersColumnOptions<D>, UseSortByColumnOptions<D> {
-    // Rendered in the header cell under the column's title, outside the sort
-    // toggle, for controls that apply to the column
     subHeader?: ReactNode
   }
 
