@@ -1704,6 +1704,11 @@ describe('Progress screen', () => {
         'success'
       )
 
+      userEvent.hover(
+        within(rows[1]).getByText('Tallies upload failed')
+      )
+      await screen.findByText('Invalid CSV')
+
       // Toggle sorting by status
       const statusHeader = screen.getByRole('columnheader', {
         name: 'Status',

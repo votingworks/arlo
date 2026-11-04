@@ -2,7 +2,14 @@ import React, { useState, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { Column, Cell, TableInstance, SortingRule, SortByFn } from 'react-table'
-import { Button, Switch, Icon, InputGroup, Spinner } from '@blueprintjs/core'
+import {
+  Button,
+  Switch,
+  Icon,
+  InputGroup,
+  Spinner,
+  Tooltip,
+} from '@blueprintjs/core'
 import H2Title from '../../Atoms/H2Title'
 import {
   JurisdictionRoundStatus,
@@ -285,10 +292,20 @@ const Progress: React.FC<IProgressProps> = ({
               </Status>
             )
           case JurisdictionProgressStatus.UPLOADS_FAILED: {
-            const [failedUpload] = uploads.find(
+            const [failedUpload, failedProcessing] = uploads.find(
               ([, f]) => f && f.status === FileProcessingStatus.ERRORED
             )!
-            return <Status intent="danger">{failedUpload} upload failed</Status>
+            return (
+              <Tooltip
+                content={
+                  <div style={{ maxWidth: '400px' }}>
+                    {failedProcessing!.error}
+                  </div>
+                }
+              >
+                <Status intent="danger">{failedUpload} upload failed</Status>
+              </Tooltip>
+            )
           }
           case JurisdictionProgressStatus.UPLOADS_IN_PROGRESS:
             return <Status intent="in-progress">{filesUploadedText}</Status>
