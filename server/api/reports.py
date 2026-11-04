@@ -1067,8 +1067,10 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
         contest.id: {choice.id: 0 for choice in contest.choices} for contest in contests
     }
 
+    # The rows span every round, so a jurisdiction's results show once it has
+    # finalized any round
     show_discrepancies_by_jurisdiction = (
-        show_batch_comparison_discrepancies_by_jurisdiction(election)
+        show_batch_comparison_discrepancies_by_jurisdiction(election, None)
     )
 
     sampled_batch_rows: list[list[str | int]] = []
