@@ -1,5 +1,5 @@
 import React from 'react'
-import { Classes, Colors, Dialog, H6, HTMLTable } from '@blueprintjs/core'
+import { Classes, Colors, Dialog, H5, H6, HTMLTable } from '@blueprintjs/core'
 import styled from 'styled-components'
 import { IJurisdiction, DiscrepanciesByContest } from '../../useJurisdictions'
 import useContestsJurisdictionAdmin from '../../JurisdictionAdmin/useContestsJurisdictionAdmin'
@@ -12,7 +12,7 @@ const ContestDiscrepanciesTable = styled(HTMLTable).attrs({
 })`
   background: #ffffff;
   border: 1px solid ${Colors.LIGHT_GRAY1};
-  margin-bottom: 32px;
+  margin-bottom: 16px;
   table-layout: fixed;
   width: 100%;
 
@@ -22,9 +22,7 @@ const ContestDiscrepanciesTable = styled(HTMLTable).attrs({
 `
 
 const TableHeader = styled(H6)`
-  &:first-child {
-    margin-top: 8px;
-  }
+  margin-bottom: 4px;
 `
 
 function getContestName(contests: IContest[], contestId: string) {
@@ -61,8 +59,14 @@ function formatVoteCount(val: string | number | undefined): string {
   }
 }
 
+export interface IBatchOrBallotDiscrepancies {
+  name: string
+  isExtra?: boolean // Batch comparison only
+  discrepancies: DiscrepanciesByContest
+}
+
 export interface IJurisdictionDiscrepanciesProps {
-  discrepancies: Record<string, DiscrepanciesByContest> // [batch or ballot name]
+  discrepancies: IBatchOrBallotDiscrepancies[]
   electionId: string
   handleClose: () => void
   jurisdiction: IJurisdiction
@@ -93,13 +97,17 @@ const JurisdictionDiscrepancies: React.FC<IJurisdictionDiscrepanciesProps> = ({
       title={`${jurisdiction.name} Discrepancies`}
     >
       <div className={Classes.DIALOG_BODY} style={{ marginBottom: 0 }}>
-        {Object.entries(discrepancies).map(
-          ([batchOrBallotName, discrepanciesByContest]) => {
-            return Object.entries(discrepanciesByContest).map(
+        {discrepancies.map(({ name, isExtra, discrepancies: byContest }) => (
+          <div key={name} style={{ marginBottom: '16px' }}>
+            <H5>
+              {isExtra && '(Extra) '}
+              {name}
+            </H5>
+            {Object.entries(byContest).map(
               ([contestId, contestDiscrepancies]) => (
                 <div key={contestId}>
                   <TableHeader>
-                    {batchOrBallotName} - {getContestName(contests, contestId)}
+                    {getContestName(contests, contestId)}
                   </TableHeader>
                   <ContestDiscrepanciesTable>
                     <thead>
@@ -142,9 +150,9 @@ const JurisdictionDiscrepancies: React.FC<IJurisdictionDiscrepanciesProps> = ({
                   </ContestDiscrepanciesTable>
                 </div>
               )
-            )
-          }
-        )}
+            )}
+          </div>
+        ))}
       </div>
     </Dialog>
   )

@@ -19,7 +19,7 @@ import {
   useDiscrepanciesByJurisdiction,
   BallotDiscrepanciesByJurisdiction,
   BatchDiscrepanciesByJurisdiction,
-  DiscrepanciesByContest,
+  IBatchDiscrepancies,
   useLastLoginByJurisdiction,
   IRoundStatusCounts,
   IBatchRoundStatusCounts,
@@ -35,7 +35,10 @@ import ProgressMap from './ProgressMap'
 import { sum } from '../../../utils/number'
 import { assert } from '../../utilities'
 import useSearchParams from '../../useSearchParams'
-import { JurisdictionDiscrepancies } from './JurisdictionDiscrepancies'
+import {
+  IBatchOrBallotDiscrepancies,
+  JurisdictionDiscrepancies,
+} from './JurisdictionDiscrepancies'
 
 const Wrapper = styled.div`
   flex-grow: 1;
@@ -112,13 +115,18 @@ const withoutExtras = (
 
 // We count the number of batch-contest pairs with discrepancies, not the number
 // of batches with discrepancies.
-const countDiscrepancies = (
-  discrepanciesByBatchOrBallot: Record<string, DiscrepanciesByContest>
-) =>
+const countDiscrepancies = (batchesOrBallots: IBatchOrBallotDiscrepancies[]) =>
   sum(
-    Object.values(discrepanciesByBatchOrBallot).map(
-      discrepanciesByContest => Object.keys(discrepanciesByContest).length
+    batchesOrBallots.map(
+      ({ discrepancies }) => Object.keys(discrepancies).length
     )
+  )
+
+const sortBatches = (batches: IBatchDiscrepancies[]) =>
+  [...batches].sort(
+    (a, b) =>
+      Number(a.isExtra) - Number(b.isExtra) ||
+      a.name.localeCompare(b.name, undefined, { numeric: true })
   )
 
 export interface IProgressProps {
@@ -161,18 +169,20 @@ const Progress: React.FC<IProgressProps> = ({
   )
   const jurisdictionDiscrepancies = (
     jurisdictionId: string
-  ): Record<string, DiscrepanciesByContest> | null => {
+  ): IBatchOrBallotDiscrepancies[] | null => {
     if (!discrepancyQuery.data) return null
     if (auditType === 'BATCH_COMPARISON') {
       const batches = discrepancyQuery.data as BatchDiscrepanciesByJurisdiction
-      return Object.fromEntries(
-        Object.values(batches[jurisdictionId] ?? {})
-          .filter(batch => !(excludeExtraBatches && batch.isExtra))
-          .map(batch => [batch.name, batch.discrepancies])
+      return sortBatches(
+        Object.values(batches[jurisdictionId] ?? {}).filter(
+          batch => !(excludeExtraBatches && batch.isExtra)
+        )
       )
     }
     const ballots = discrepancyQuery.data as BallotDiscrepanciesByJurisdiction
-    return ballots[jurisdictionId] ?? {}
+    return Object.entries(ballots[jurisdictionId] ?? {}).map(
+      ([name, discrepancies]) => ({ name, discrepancies })
+    )
   }
   // Once a batch comparison audit of several contests is under way, the table
   // can be viewed one contest at a time. Before then its columns are file

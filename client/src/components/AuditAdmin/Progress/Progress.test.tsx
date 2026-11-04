@@ -450,7 +450,8 @@ describe('Progress screen', () => {
           name: /Jurisdiction 2 Discrepancies/,
         })
       ).closest('.bp3-dialog')! as HTMLElement
-      within(dialog).getByText('ballot1 - Contest 1')
+      within(dialog).getByText('ballot1')
+      within(dialog).getByRole('heading', { level: 6, name: /Contest 1/ })
 
       const discrepancyTableHeaders =
         within(dialog).getAllByRole('columnheader')
@@ -584,7 +585,8 @@ describe('Progress screen', () => {
           name: /Jurisdiction 3 Discrepancies/,
         })
       ).closest('.bp3-dialog')! as HTMLElement
-      within(dialog).getByText('batch1 - Contest 1')
+      within(dialog).getByText('batch1')
+      within(dialog).getByRole('heading', { level: 6, name: /Contest 1/ })
       const discrepancyTableHeaders =
         within(dialog).getAllByRole('columnheader')
       expect(discrepancyTableHeaders).toHaveLength(4)
@@ -672,11 +674,28 @@ describe('Progress screen', () => {
         expect(container.querySelectorAll('.d3-component').length).toBe(1)
       })
       expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
-      screen.getByRole('button', { name: /Review 2/ })
       const cells = () =>
         within(screen.getAllByRole('row')[3]).getAllByRole('cell')
       expect(cells()[4]).toHaveTextContent('29')
       expect(cells()[5]).toHaveTextContent('1')
+
+      userEvent.click(screen.getByRole('button', { name: /Review 2/ }))
+      const dialogWithExtras = (
+        await screen.findByRole('heading', {
+          name: /Jurisdiction 3 Discrepancies/,
+        })
+      ).closest('.bp3-dialog')! as HTMLElement
+      expect(
+        within(dialogWithExtras)
+          .getAllByRole('heading', { level: 5 })
+          .map(heading => heading.textContent)
+      ).toEqual(['batch1', '(Extra) batch2'])
+      userEvent.click(
+        within(dialogWithExtras).getByRole('button', { name: 'Close' })
+      )
+      await waitFor(() => {
+        expect(dialogWithExtras).not.toBeInTheDocument()
+      })
 
       // Excluding extra batches leaves the batches the audit math drew, in the
       // discrepancies and the counts, and sticks in the URL
@@ -692,10 +711,8 @@ describe('Progress screen', () => {
           name: /Jurisdiction 3 Discrepancies/,
         })
       ).closest('.bp3-dialog')! as HTMLElement
-      within(dialog).getByText('batch1 - Contest 1')
-      expect(
-        within(dialog).queryByText('batch2 - Contest 1')
-      ).not.toBeInTheDocument()
+      within(dialog).getByText('batch1')
+      expect(within(dialog).queryByText('batch2')).not.toBeInTheDocument()
       userEvent.click(within(dialog).getByRole('button', { name: 'Close' }))
       await waitFor(() => {
         expect(dialog).not.toBeInTheDocument()
