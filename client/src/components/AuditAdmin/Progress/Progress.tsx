@@ -673,6 +673,7 @@ const Progress: React.FC<IProgressProps> = ({
           discrepancies={jurisdictionDiscrepancies(
             jurisdictionDiscrepanciesId
           )!}
+          auditType={auditType}
           jurisdiction={jurisdictions.find(
             jurisdiction => jurisdiction.id === jurisdictionDiscrepanciesId
           )!}

@@ -23,8 +23,14 @@ import {
 } from '../../_mocks'
 import Progress, { IProgressProps } from './Progress'
 import { dummyBallots } from '../../AuditBoard/_mocks'
+import copy from 'copy-to-clipboard'
 import * as utilities from '../../utilities'
 import { ExtendedIntent } from '../../Atoms/StatusTag'
+
+vi.mock(import('copy-to-clipboard'), async importActual => ({
+  ...(await importActual()),
+  default: vi.fn(() => true),
+}))
 
 const mockSavePDF = vi.hoisted(() => vi.fn())
 vi.mock(import('jspdf'), async importActual => {
@@ -585,8 +591,27 @@ describe('Progress screen', () => {
           name: /Jurisdiction 3 Discrepancies/,
         })
       ).closest('.bp3-dialog')! as HTMLElement
+      within(dialog).getByText('Jurisdiction admins')
+      within(dialog).getByText('jurisdiction-3@example.com')
+      within(dialog).getByText('jurisdiction-3-deputy@example.com')
+      const copyEmailButtons = within(dialog).getAllByRole('button', {
+        name: 'Copy email',
+      })
+      expect(copyEmailButtons).toHaveLength(2)
+      userEvent.click(copyEmailButtons[1])
+      expect(copy).toHaveBeenCalledWith('jurisdiction-3-deputy@example.com', {
+        format: 'text/plain',
+      })
       within(dialog).getByText('batch1')
       within(dialog).getByRole('heading', { level: 6, name: /Contest 1/ })
+      userEvent.click(
+        within(dialog).getByRole('button', { name: 'Copy batch name' })
+      )
+      expect(copy).toHaveBeenCalledWith('batch1', { format: 'text/plain' })
+      userEvent.click(
+        within(dialog).getByRole('button', { name: 'Copy contest name' })
+      )
+      expect(copy).toHaveBeenCalledWith('Contest 1', { format: 'text/plain' })
       const discrepancyTableHeaders =
         within(dialog).getAllByRole('columnheader')
       expect(discrepancyTableHeaders).toHaveLength(4)
@@ -688,7 +713,7 @@ describe('Progress screen', () => {
       expect(
         within(dialogWithExtras)
           .getAllByRole('heading', { level: 5 })
-          .map(heading => heading.textContent)
+          .map(heading => heading.querySelector('span')!.textContent)
       ).toEqual(['batch1', '(Extra) batch2'])
       userEvent.click(
         within(dialogWithExtras).getByRole('button', { name: 'Close' })

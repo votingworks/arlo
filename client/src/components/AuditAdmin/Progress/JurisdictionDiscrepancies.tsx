@@ -1,10 +1,20 @@
 import React from 'react'
-import { Classes, Colors, Dialog, H5, H6, HTMLTable } from '@blueprintjs/core'
+import {
+  Classes,
+  Colors,
+  Dialog,
+  Divider,
+  H5,
+  H6,
+  HTMLTable,
+} from '@blueprintjs/core'
 import styled from 'styled-components'
 import { IJurisdiction, DiscrepanciesByContest } from '../../useJurisdictions'
 import useContestsJurisdictionAdmin from '../../JurisdictionAdmin/useContestsJurisdictionAdmin'
 import { IContest } from '../../../types'
+import { IAuditSettings } from '../../useAuditSettings'
 import { assert } from '../../utilities'
+import CopyToClipboard from '../../Atoms/CopyToClipboard'
 
 const ContestDiscrepanciesTable = styled(HTMLTable).attrs({
   bordered: true,
@@ -24,6 +34,12 @@ const ContestDiscrepanciesTable = styled(HTMLTable).attrs({
 const TableHeader = styled(H6)`
   margin-bottom: 4px;
 `
+
+const rowStyle: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: '8px',
+}
 
 function getContestName(contests: IContest[], contestId: string) {
   const contest = contests.find(c => c.id === contestId)
@@ -67,6 +83,7 @@ export interface IBatchOrBallotDiscrepancies {
 
 export interface IJurisdictionDiscrepanciesProps {
   discrepancies: IBatchOrBallotDiscrepancies[]
+  auditType: IAuditSettings['auditType']
   electionId: string
   handleClose: () => void
   jurisdiction: IJurisdiction
@@ -74,6 +91,7 @@ export interface IJurisdictionDiscrepanciesProps {
 
 const JurisdictionDiscrepancies: React.FC<IJurisdictionDiscrepanciesProps> = ({
   discrepancies,
+  auditType,
   handleClose,
   jurisdiction,
   electionId,
@@ -97,17 +115,52 @@ const JurisdictionDiscrepancies: React.FC<IJurisdictionDiscrepanciesProps> = ({
       title={`${jurisdiction.name} Discrepancies`}
     >
       <div className={Classes.DIALOG_BODY} style={{ marginBottom: 0 }}>
+        <div style={{ marginBottom: '16px' }}>
+          <div className={`${Classes.TEXT_MUTED} ${Classes.TEXT_SMALL}`}>
+            {jurisdiction.adminEmails.length > 1
+              ? 'Jurisdiction admins'
+              : 'Jurisdiction admin'}
+          </div>
+          {jurisdiction.adminEmails.map(email => (
+            <div key={email} style={rowStyle}>
+              {email}
+              <CopyToClipboard
+                iconOnly
+                label="Copy email"
+                getText={() => ({ text: email, format: 'text/plain' })}
+              />
+            </div>
+          ))}
+        </div>
+        <Divider style={{ margin: '16px 0' }} />
         {discrepancies.map(({ name, isExtra, discrepancies: byContest }) => (
           <div key={name} style={{ marginBottom: '16px' }}>
-            <H5>
-              {isExtra && '(Extra) '}
-              {name}
+            <H5 style={rowStyle}>
+              <span>
+                {isExtra && '(Extra) '}
+                {name}
+              </span>
+              {auditType === 'BATCH_COMPARISON' && (
+                <CopyToClipboard
+                  iconOnly
+                  label="Copy batch name"
+                  getText={() => ({ text: name, format: 'text/plain' })}
+                />
+              )}
             </H5>
             {Object.entries(byContest).map(
               ([contestId, contestDiscrepancies]) => (
                 <div key={contestId}>
-                  <TableHeader>
-                    {getContestName(contests, contestId)}
+                  <TableHeader style={rowStyle}>
+                    <span>{getContestName(contests, contestId)}</span>
+                    <CopyToClipboard
+                      iconOnly
+                      label="Copy contest name"
+                      getText={() => ({
+                        text: getContestName(contests, contestId),
+                        format: 'text/plain',
+                      })}
+                    />
                   </TableHeader>
                   <ContestDiscrepanciesTable>
                     <thead>
