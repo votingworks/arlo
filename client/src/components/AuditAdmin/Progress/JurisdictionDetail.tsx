@@ -20,6 +20,7 @@ import useSampleCount from '../../JurisdictionAdmin/useBallots'
 import AsyncButton from '../../Atoms/AsyncButton'
 import { JAFileDownloadButtons } from '../../JurisdictionAdmin/RoundManagement'
 import FileUpload from '../../Atoms/FileUpload'
+import JurisdictionAdmins from './JurisdictionAdmins'
 import {
   useBallotManifest,
   useBatchTallies,
@@ -83,6 +84,7 @@ const JurisdictionDetail: React.FC<IJurisdictionDetailProps> = ({
   return (
     <Dialog onClose={handleClose} title={jurisdiction.name} isOpen>
       <div className={Classes.DIALOG_BODY} style={{ marginBottom: 0 }}>
+        <JurisdictionAdmins jurisdiction={jurisdiction} />
         <Section>
           <H5>Jurisdiction Files</H5>
           <StatusCard>

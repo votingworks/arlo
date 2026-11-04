@@ -23,6 +23,7 @@ import { IAuditSettings } from '../../useAuditSettings'
 import { assert } from '../../utilities'
 import CopyToClipboard from '../../Atoms/CopyToClipboard'
 import ContestSelect from './ContestSelect'
+import JurisdictionAdmins from './JurisdictionAdmins'
 
 const ContestDiscrepanciesTable = styled(HTMLTable).attrs({
   bordered: true,
@@ -142,23 +143,7 @@ const JurisdictionDiscrepancies: React.FC<IJurisdictionDiscrepanciesProps> = ({
       title={`${jurisdiction.name} Discrepancies`}
     >
       <div className={Classes.DIALOG_BODY} style={{ marginBottom: 0 }}>
-        <div style={{ marginBottom: '16px' }}>
-          <div className={`${Classes.TEXT_MUTED} ${Classes.TEXT_SMALL}`}>
-            {jurisdiction.adminEmails.length > 1
-              ? 'Jurisdiction admins'
-              : 'Jurisdiction admin'}
-          </div>
-          {jurisdiction.adminEmails.map(email => (
-            <div key={email} style={rowStyle}>
-              {email}
-              <CopyToClipboard
-                iconOnly
-                label="Copy email"
-                getText={() => ({ text: email, format: 'text/plain' })}
-              />
-            </div>
-          ))}
-        </div>
+        <JurisdictionAdmins jurisdiction={jurisdiction} />
         {(canSelectContest || canUnfinalize) && (
           <div style={rowStyle}>
             {canSelectContest && (

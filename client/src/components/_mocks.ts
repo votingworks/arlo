@@ -2138,6 +2138,7 @@ export const aaApiCalls = {
         {
           id: 'jurisdiction-id-1',
           name: 'Jurisdiction One',
+          adminEmails: ['jurisdiction-1@example.com'],
           ballotManifest: {
             file: null,
             processing: null,
@@ -2150,6 +2151,7 @@ export const aaApiCalls = {
         {
           id: 'jurisdiction-id-2',
           name: 'Jurisdiction Two',
+          adminEmails: ['jurisdiction-2@example.com'],
           ballotManifest: {
             file: null,
             processing: null,
