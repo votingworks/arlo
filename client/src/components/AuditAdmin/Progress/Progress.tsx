@@ -109,10 +109,15 @@ const withoutExtras = (
 
 // We count the number of batch-contest pairs with discrepancies, not the number
 // of batches with discrepancies.
-const countDiscrepancies = (batchesOrBallots: IBatchOrBallotDiscrepancies[]) =>
+const countDiscrepancies = (
+  batchesOrBallots: IBatchOrBallotDiscrepancies[],
+  contestId?: string
+) =>
   sum(
     batchesOrBallots.map(
-      ({ discrepancies }) => Object.keys(discrepancies).length
+      ({ discrepancies }) =>
+        Object.keys(discrepancies).filter(id => !contestId || id === contestId)
+          .length
     )
   )
 
@@ -464,7 +469,10 @@ const Progress: React.FC<IProgressProps> = ({
         Header: 'Discrepancies',
         accessor: ({ id }) => {
           const discrepancies = jurisdictionDiscrepancies(id)
-          return discrepancies && countDiscrepancies(discrepancies)
+          return (
+            discrepancies &&
+            countDiscrepancies(discrepancies, selectedContest?.id)
+          )
         },
         Cell: ({
           value,

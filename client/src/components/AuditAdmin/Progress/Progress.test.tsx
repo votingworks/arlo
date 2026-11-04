@@ -1009,12 +1009,12 @@ describe('Progress screen', () => {
         expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
         screen.getByRole('button', { name: /Review 3/ })
 
-        // The dialog opens on the selected contest
+        // Only the selected contest's discrepancies are counted and shown
         userEvent.selectOptions(
           screen.getByRole('combobox', { name: 'Contest' }),
           contestB.id
         )
-        userEvent.click(screen.getByRole('button', { name: /Review 3/ }))
+        userEvent.click(screen.getByRole('button', { name: /Review 1/ }))
         const dialog = (
           await screen.findByRole('heading', {
             name: /Jurisdiction 3 Discrepancies/,
@@ -1053,7 +1053,7 @@ describe('Progress screen', () => {
         expect(batchHeadings()).toEqual([])
         within(dialog).getByText('No discrepancies for this contest')
         expect(history.location.search).toEqual(`?contest=${contestB.id}`)
-        screen.getByRole('button', { name: /Review 3/ })
+        screen.getByRole('button', { name: /Review 1/ })
       })
     })
 
