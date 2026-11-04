@@ -688,7 +688,7 @@ def list_jurisdictions(election: Election):
         .all()
     )
 
-    manifest_num_ballots_by_jurisdiction_id = (
+    manifest_num_ballots_by_contest_by_jurisdiction_id = (
         manifest_num_ballots_by_contest_id(election)
         if election.audit_type == AuditType.BATCH_COMPARISON
         else {}
@@ -703,7 +703,7 @@ def list_jurisdictions(election: Election):
             election,
             jurisdiction,
             round_status[jurisdiction.id],
-            manifest_num_ballots_by_jurisdiction_id.get(jurisdiction.id, {}),
+            manifest_num_ballots_by_contest_by_jurisdiction_id.get(jurisdiction.id, {}),
             (
                 round_status_by_contest_by_jurisdiction_id.get(jurisdiction.id, {})
                 if round_status_by_contest_by_jurisdiction_id is not None
