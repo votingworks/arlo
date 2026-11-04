@@ -246,6 +246,7 @@ const Progress: React.FC<IProgressProps> = ({
     },
     {
       Header: 'Status',
+      minWidth: 210, // Room for the longest status on one line in the default fonts
       accessor: jurisdiction => {
         const { ballotManifest, batchTallies, cvrs } = jurisdiction
 
@@ -253,18 +254,21 @@ const Progress: React.FC<IProgressProps> = ({
           <StatusTag
             {...props}
             interactive
+            multiline
             onClick={() => setJurisdictionDetailId(jurisdiction.id)}
           />
         )
 
-        const files: IFileInfo['processing'][] = [ballotManifest.processing]
-        if (batchTallies) files.push(batchTallies.processing)
-        if (cvrs) files.push(cvrs.processing)
+        const uploads: [string, IFileInfo['processing']][] = [
+          ['Manifest', ballotManifest.processing],
+        ]
+        if (batchTallies) uploads.push(['Tallies', batchTallies.processing])
+        if (cvrs) uploads.push(['CVR', cvrs.processing])
 
-        const numComplete = files.filter(
-          f => f && f.status === FileProcessingStatus.PROCESSED
+        const numComplete = uploads.filter(
+          ([, f]) => f && f.status === FileProcessingStatus.PROCESSED
         ).length
-        const filesUploadedText = `${numComplete}/${files.length} files uploaded`
+        const filesUploadedText = `${numComplete}/${uploads.length} files uploaded`
 
         const jurisdictionStatus = getJurisdictionStatus(
           jurisdiction,
@@ -280,14 +284,12 @@ const Progress: React.FC<IProgressProps> = ({
                   : filesUploadedText}
               </Status>
             )
-          case JurisdictionProgressStatus.UPLOADS_FAILED:
-            return (
-              <Status intent="danger">
-                {auditType === 'BALLOT_POLLING'
-                  ? 'Manifest upload failed'
-                  : 'Upload failed'}
-              </Status>
-            )
+          case JurisdictionProgressStatus.UPLOADS_FAILED: {
+            const [failedUpload] = uploads.find(
+              ([, f]) => f && f.status === FileProcessingStatus.ERRORED
+            )!
+            return <Status intent="danger">{failedUpload} upload failed</Status>
+          }
           case JurisdictionProgressStatus.UPLOADS_IN_PROGRESS:
             return <Status intent="in-progress">{filesUploadedText}</Status>
           case JurisdictionProgressStatus.UPLOADS_NOT_STARTED_LOGGED_IN:

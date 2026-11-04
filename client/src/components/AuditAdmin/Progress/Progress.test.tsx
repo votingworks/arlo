@@ -18,6 +18,7 @@ import {
   roundMocks,
   auditBoardMocks,
   manifestMocks,
+  talliesMocks,
   contestMocks,
   lastLoginByJurisdictionMocks,
 } from '../../_mocks'
@@ -1180,7 +1181,7 @@ describe('Progress screen', () => {
       const rows = screen.getAllByRole('row')
       // Jurisdiction 1 - manifest errored, no ballot/batches count shown
       const row1 = within(rows[1]).getAllByRole('cell')
-      expectStatusTag(row1[1], 'Upload failed', 'danger')
+      expectStatusTag(row1[1], 'Manifest upload failed', 'danger')
       expect(row1[2]).toBeEmpty()
       expect(row1[3]).toBeEmpty()
       expect(row1[4]).toBeEmpty()
@@ -1668,7 +1669,14 @@ describe('Progress screen', () => {
     const expectedCalls = getDefaultExpectedCalls()
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({
-        jurisdictions: jurisdictionMocks.twoManifestsOneTallies,
+        jurisdictions: [
+          {
+            ...jurisdictionMocks.twoManifestsOneTallies[0],
+            ballotManifest: manifestMocks.processed,
+            batchTallies: talliesMocks.errored,
+          },
+          ...jurisdictionMocks.twoManifestsOneTallies.slice(1),
+        ],
         auditSettings: auditSettingsMocks.batchComparisonAll,
       })
 
@@ -1682,7 +1690,7 @@ describe('Progress screen', () => {
 
       expectStatusTag(
         within(rows[1]).getAllByRole('cell')[1],
-        'Upload failed',
+        'Tallies upload failed',
         'danger'
       )
       expectStatusTag(
@@ -1702,7 +1710,7 @@ describe('Progress screen', () => {
       })
       userEvent.click(statusHeader)
       rows = screen.getAllByRole('row')
-      within(rows[1]).getByText('Upload failed')
+      within(rows[1]).getByText('Tallies upload failed')
 
       userEvent.click(statusHeader)
       rows = screen.getAllByRole('row')
