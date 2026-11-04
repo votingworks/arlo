@@ -561,6 +561,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-1',
       name: 'Jurisdiction 1',
+      adminEmails: ['jurisdiction-1@example.com'],
       ballotManifest: manifestMocks.empty,
       expectedBallotManifestNumBallots: null,
       currentRoundStatus: null,
@@ -568,6 +569,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-2',
       name: 'Jurisdiction 2',
+      adminEmails: ['jurisdiction-2@example.com'],
       ballotManifest: manifestMocks.empty,
       expectedBallotManifestNumBallots: null,
       currentRoundStatus: null,
@@ -575,6 +577,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-3',
       name: 'Jurisdiction 3',
+      adminEmails: ['jurisdiction-3@example.com'],
       ballotManifest: manifestMocks.empty,
       expectedBallotManifestNumBallots: null,
       currentRoundStatus: null,
@@ -584,6 +587,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-1',
       name: 'Jurisdiction 1',
+      adminEmails: ['jurisdiction-1@example.com'],
       ballotManifest: manifestMocks.errored,
       expectedBallotManifestNumBallots: null,
       currentRoundStatus: null,
@@ -591,6 +595,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-2',
       name: 'Jurisdiction 2',
+      adminEmails: ['jurisdiction-2@example.com'],
       ballotManifest: manifestMocks.empty,
       expectedBallotManifestNumBallots: null,
       currentRoundStatus: null,
@@ -598,6 +603,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-3',
       name: 'Jurisdiction 3',
+      adminEmails: ['jurisdiction-3@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       currentRoundStatus: null,
@@ -607,6 +613,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-1',
       name: 'Jurisdiction 1',
+      adminEmails: ['jurisdiction-1@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       currentRoundStatus: null,
@@ -614,6 +621,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-2',
       name: 'Jurisdiction 2',
+      adminEmails: ['jurisdiction-2@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       currentRoundStatus: null,
@@ -621,6 +629,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-3',
       name: 'Jurisdiction 3',
+      adminEmails: ['jurisdiction-3@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       currentRoundStatus: null,
@@ -631,6 +640,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-1',
       name: 'Jurisdiction 1',
+      adminEmails: ['jurisdiction-1@example.com'],
       ballotManifest: manifestMocks.empty,
       expectedBallotManifestNumBallots: null,
       batchTallies: talliesMocks.empty,
@@ -639,6 +649,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-2',
       name: 'Jurisdiction 2',
+      adminEmails: ['jurisdiction-2@example.com'],
       ballotManifest: manifestMocks.empty,
       expectedBallotManifestNumBallots: null,
       batchTallies: talliesMocks.empty,
@@ -647,6 +658,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-3',
       name: 'Jurisdiction 3',
+      adminEmails: ['jurisdiction-3@example.com'],
       ballotManifest: manifestMocks.empty,
       expectedBallotManifestNumBallots: null,
       batchTallies: talliesMocks.empty,
@@ -657,6 +669,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-1',
       name: 'Jurisdiction 1',
+      adminEmails: ['jurisdiction-1@example.com'],
       ballotManifest: manifestMocks.errored,
       expectedBallotManifestNumBallots: null,
       batchTallies: talliesMocks.empty,
@@ -665,6 +678,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-2',
       name: 'Jurisdiction 2',
+      adminEmails: ['jurisdiction-2@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       batchTallies: talliesMocks.empty,
@@ -673,6 +687,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-3',
       name: 'Jurisdiction 3',
+      adminEmails: ['jurisdiction-3@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       batchTallies: talliesMocks.processed,
@@ -683,6 +698,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-1',
       name: 'Jurisdiction 1',
+      adminEmails: ['jurisdiction-1@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       batchTallies: talliesMocks.processed,
@@ -691,6 +707,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-2',
       name: 'Jurisdiction 2',
+      adminEmails: ['jurisdiction-2@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       batchTallies: talliesMocks.processed,
@@ -699,6 +716,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-3',
       name: 'Jurisdiction 3',
+      adminEmails: ['jurisdiction-3@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       batchTallies: talliesMocks.processed,
@@ -710,6 +728,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-1',
       name: 'Jurisdiction 1',
+      adminEmails: ['jurisdiction-1@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       batchTallies: talliesMocks.processed,
@@ -724,6 +743,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-2',
       name: 'Jurisdiction 2',
+      adminEmails: ['jurisdiction-2@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       batchTallies: talliesMocks.processed,
@@ -738,6 +758,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-3',
       name: 'Jurisdiction 3',
+      adminEmails: ['jurisdiction-3@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       batchTallies: talliesMocks.processed,
@@ -754,6 +775,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-1',
       name: 'Jurisdiction 1',
+      adminEmails: ['jurisdiction-1@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       batchTallies: talliesMocks.processed,
@@ -768,6 +790,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-2',
       name: 'Jurisdiction 2',
+      adminEmails: ['jurisdiction-2@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       batchTallies: talliesMocks.processed,
@@ -782,6 +805,10 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-3',
       name: 'Jurisdiction 3',
+      adminEmails: [
+        'jurisdiction-3@example.com',
+        'jurisdiction-3-deputy@example.com',
+      ],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       batchTallies: talliesMocks.processed,
@@ -798,6 +825,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-1',
       name: 'Jurisdiction 1',
+      adminEmails: ['jurisdiction-1@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       batchTallies: talliesMocks.processed,
@@ -812,6 +840,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-2',
       name: 'Jurisdiction 2',
+      adminEmails: ['jurisdiction-2@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       batchTallies: talliesMocks.processed,
@@ -826,6 +855,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-3',
       name: 'Jurisdiction 3',
+      adminEmails: ['jurisdiction-3@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       batchTallies: talliesMocks.processed,
@@ -843,6 +873,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-1',
       name: 'Jurisdiction 1',
+      adminEmails: ['jurisdiction-1@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       cvrs: cvrsMocks.empty,
@@ -851,6 +882,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-2',
       name: 'Jurisdiction 2',
+      adminEmails: ['jurisdiction-2@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       cvrs: cvrsMocks.processed,
@@ -859,6 +891,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-3',
       name: 'Jurisdiction 3',
+      adminEmails: ['jurisdiction-3@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       cvrs: cvrsMocks.empty,
@@ -869,6 +902,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-1',
       name: 'Jurisdiction 1',
+      adminEmails: ['jurisdiction-1@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       cvrs: cvrsMocks.processed,
@@ -877,6 +911,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-2',
       name: 'Jurisdiction 2',
+      adminEmails: ['jurisdiction-2@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       cvrs: cvrsMocks.processed,
@@ -885,6 +920,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-3',
       name: 'Jurisdiction 3',
+      adminEmails: ['jurisdiction-3@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       cvrs: cvrsMocks.processed,
@@ -895,6 +931,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-1',
       name: 'Jurisdiction 1',
+      adminEmails: ['jurisdiction-1@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       cvrs: cvrsMocks.processed,
@@ -909,6 +946,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-2',
       name: 'Jurisdiction 2',
+      adminEmails: ['jurisdiction-2@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       cvrs: cvrsMocks.processed,
@@ -923,6 +961,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-3',
       name: 'Jurisdiction 3',
+      adminEmails: ['jurisdiction-3@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       cvrs: cvrsMocks.processed,
@@ -940,6 +979,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-1',
       name: 'Jurisdiction 1',
+      adminEmails: ['jurisdiction-1@example.com'],
       ballotManifest: {
         ...manifestMocks.processed,
         numBallotsCvr: 2000,
@@ -952,6 +992,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-2',
       name: 'Jurisdiction 2',
+      adminEmails: ['jurisdiction-2@example.com'],
       ballotManifest: {
         ...manifestMocks.processed,
         numBallotsCvr: 1000,
@@ -964,6 +1005,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-3',
       name: 'Jurisdiction 3',
+      adminEmails: ['jurisdiction-3@example.com'],
       ballotManifest: manifestMocks.empty,
       expectedBallotManifestNumBallots: null,
       cvrs: cvrsMocks.empty,
@@ -974,6 +1016,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-1',
       name: 'Jackson',
+      adminEmails: ['jackson@example.com'],
       ballotManifest: manifestMocks.errored,
       expectedBallotManifestNumBallots: null,
       batchTallies: talliesMocks.processed,
@@ -982,6 +1025,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-2',
       name: 'Baldwin',
+      adminEmails: ['baldwin@example.com'],
       ballotManifest: manifestMocks.empty,
       expectedBallotManifestNumBallots: null,
       batchTallies: talliesMocks.empty,
@@ -990,6 +1034,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-3',
       name: 'Geneva',
+      adminEmails: ['geneva@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       batchTallies: talliesMocks.empty,
@@ -1000,6 +1045,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-1',
       name: 'Jackson',
+      adminEmails: ['jackson@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       batchTallies: talliesMocks.processed,
@@ -1014,6 +1060,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-2',
       name: 'Baldwin County',
+      adminEmails: ['baldwin-county@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       batchTallies: talliesMocks.processed,
@@ -1028,6 +1075,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-3',
       name: 'Geneva',
+      adminEmails: ['geneva@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       batchTallies: talliesMocks.processed,
@@ -1044,6 +1092,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-1',
       name: 'Jurisdiction 1',
+      adminEmails: ['jurisdiction-1@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       batchTallies: talliesMocks.processed,
@@ -1058,6 +1107,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-2',
       name: 'Jurisdiction 2',
+      adminEmails: ['jurisdiction-2@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       batchTallies: talliesMocks.processed,
@@ -1072,6 +1122,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-3',
       name: 'Geneva',
+      adminEmails: ['geneva@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       batchTallies: talliesMocks.processed,
@@ -1088,6 +1139,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-1',
       name: 'Jurisdiction 1',
+      adminEmails: ['jurisdiction-1@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       batchTallies: talliesMocks.processed,
@@ -1102,6 +1154,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-2',
       name: 'Baldwin County',
+      adminEmails: ['baldwin-county@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       batchTallies: talliesMocks.processed,
@@ -1116,6 +1169,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
     {
       id: 'jurisdiction-id-3',
       name: 'Geneva',
+      adminEmails: ['geneva@example.com'],
       ballotManifest: manifestMocks.processed,
       expectedBallotManifestNumBallots: null,
       batchTallies: talliesMocks.processed,
