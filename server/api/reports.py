@@ -142,6 +142,23 @@ def pretty_combined_batch_ticket_numbers(
     return ticket_numbers_for_contests
 
 
+# For card style data audits, counts how many ballots in the given batches include
+# each contest. Contests outside the batches' jurisdiction are left blank.
+def batch_ballots_for_contests(
+    batches: list[Batch],
+    contests: list[Contest],
+    contest_jurisdiction_ids: dict[str, set[str]],
+) -> list[int | str]:
+    return [
+        (
+            sum(batch.num_ballots_for_contest(contest.id) for batch in batches)
+            if batches[0].jurisdiction_id in contest_jurisdiction_ids[contest.id]
+            else ""
+        )
+        for contest in contests
+    ]
+
+
 # (contest_id, interpretation, selected_choice_names, comment, is_overvote, has_invalid_write_in)
 InterpretationTuple = tuple[str, str, list[str], str, bool, bool]
 
@@ -979,6 +996,44 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
         election.contests if jurisdiction is None else jurisdiction.contests
     )
 
+    contest_jurisdiction_ids = {
+        contest.id: {jurisdiction.id for jurisdiction in contest.jurisdictions}
+        for contest in contests
+    }
+    # Every batch shown in the report, including combined batches' unsampled sub-batches
+    report_batches = [
+        batch for batch in batches if not batch.combined_batch_name
+    ] + combined_sub_batches
+    # Card style data audits show how many ballots in each batch include a contest,
+    # unless every batch with the contest has it on all of its ballots.
+    if election.audit_math_type == AuditMathType.MACRO_CARD_STYLE_DATA:
+        ballot_count_contests = [
+            contest
+            for contest in contests
+            if any(
+                cell not in ("", batch.num_ballots)
+                for batch in report_batches
+                for cell in batch_ballots_for_contests(
+                    [batch], [contest], contest_jurisdiction_ids
+                )
+            )
+        ]
+    else:
+        ballot_count_contests = []
+    total_ballots_by_contest = {contest.id: 0 for contest in ballot_count_contests}
+
+    def ballot_count_cells(batches: list[Batch]) -> list[int | str]:
+        cells = batch_ballots_for_contests(
+            batches, ballot_count_contests, contest_jurisdiction_ids
+        )
+        for contest, cell in zip(ballot_count_contests, cells):
+            if isinstance(cell, int):
+                total_ballots_by_contest[contest.id] += cell
+        return cells
+
+    ballot_count_columns = [
+        f"Ballots in Batch: {contest.name}" for contest in ballot_count_contests
+    ]
     ticket_number_columns = []
     result_columns = []
     for contest in contests:
@@ -993,6 +1048,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
         "Jurisdiction Name",
         "Batch Name",
         "Ballots in Batch",
+        *ballot_count_columns,
         *ticket_number_columns,
         "Audited?",
         *result_columns,
@@ -1035,6 +1091,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
             representative_batch.jurisdiction.name,
             representative_batch.combined_batch_name,
             sum(batch.num_ballots for batch in sub_batches),
+            *ballot_count_cells(sub_batches),
             *pretty_combined_batch_ticket_numbers(
                 sub_batches, round_id_to_num, contests
             ),
@@ -1189,6 +1246,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
             batch.jurisdiction.name,
             batch.name,
             batch.num_ballots,
+            *ballot_count_cells([batch]),
             *pretty_batch_ticket_numbers(batch, round_id_to_num, contests),
         ]
         if not show_discrepancies_by_jurisdiction[batch.jurisdiction.id]:
@@ -1303,7 +1361,10 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
             for combined_batch in combined_batches
             for sub_batch in combined_batch["sub_batches"]
         )
-    totals_row = ["Totals", "", total_ballots]
+    totals_row: list[int | str] = ["Totals", "", total_ballots]
+    totals_row += [
+        total_ballots_by_contest[contest.id] for contest in ballot_count_contests
+    ]
     totals_row += ["" for _ in contests]  # Ticket number cols - not relevant to totals
     totals_row += [""]  # Audited flag - not relevant to totals
     for contest in contests:

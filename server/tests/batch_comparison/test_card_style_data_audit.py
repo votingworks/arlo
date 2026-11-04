@@ -476,3 +476,46 @@ def test_card_style_data_end_to_end(
 
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)
+
+    # Sampled batches show the number of cards carrying each contest, blank for
+    # contests outside the batch's jurisdiction, except for contests on every
+    # card of every sampled batch that carries them
+    report = rv.data.decode("utf-8")
+    sampled_batches = list(
+        csv.DictReader(
+            io.StringIO(report.split("######## SAMPLED BATCHES ########")[1].strip())
+        )
+    )
+    *batch_rows, totals_row = sampled_batches
+    assert len(batch_rows) > 0
+    sampled_cards_by_contest = [
+        BATCHES[row["Jurisdiction Name"]][row["Batch Name"]]["cards_by_contest"]
+        for row in batch_rows
+    ]
+    shown_contest_names = [
+        name
+        for name in CONTEST_NAMES
+        if any(
+            cards_by_contest.get(name, CARDS_PER_BATCH) != CARDS_PER_BATCH
+            for cards_by_contest in sampled_cards_by_contest
+        )
+    ]
+    assert shown_contest_names == [
+        "US House District 7",
+        "US House District 13",
+        "State Senate District 5",
+    ]
+    assert [
+        column
+        for column in sampled_batches[0]
+        if column.startswith("Ballots in Batch: ")
+    ] == [f"Ballots in Batch: {name}" for name in shown_contest_names]
+    for row, cards_by_contest in zip(batch_rows, sampled_cards_by_contest):
+        for name in shown_contest_names:
+            assert row[f"Ballots in Batch: {name}"] == str(
+                cards_by_contest.get(name, "")
+            )
+    for name in shown_contest_names:
+        assert totals_row[f"Ballots in Batch: {name}"] == str(
+            sum(int(row[f"Ballots in Batch: {name}"] or 0) for row in batch_rows)
+        )
