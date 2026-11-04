@@ -187,19 +187,25 @@ def serialize_jurisdiction(
                 / contest.votes_allowed
             )  # ty: ignore[unsound-return-statement]
 
-        min_num_ballots = None
-        contests = list(jurisdiction.contests)
-        if jurisdiction.batch_tallies and len(contests) > 0:
-            # Because a ballot can contain multiple contests, don't sum minimums across contests.
-            # Just take the maximum minimum as the overall minimum.
-            min_num_ballots = max(
-                min_num_ballots_for_contest(contest) for contest in contests
-            )
-
+        num_ballots_by_contest_id = (
+            {
+                contest.id: min_num_ballots_for_contest(contest)
+                for contest in jurisdiction.contests
+            }
+            if jurisdiction.batch_tallies
+            else None
+        )
         json_jurisdiction["batchTallies"] = {
             "file": serialize_file(jurisdiction.batch_tallies_file),
             "processing": serialize_file_processing(jurisdiction.batch_tallies_file),
-            "numBallots": min_num_ballots,
+            # Because a ballot can contain multiple contests, don't sum minimums across contests.
+            # Just take the maximum minimum as the overall minimum.
+            "numBallots": (
+                max(num_ballots_by_contest_id.values())
+                if num_ballots_by_contest_id
+                else None
+            ),
+            "numBallotsByContestId": num_ballots_by_contest_id,
         }
 
     if election.audit_type in [AuditType.BALLOT_COMPARISON, AuditType.HYBRID]:

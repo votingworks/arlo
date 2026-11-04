@@ -117,6 +117,7 @@ def test_batch_tallies_upload(
                 "error": None,
             },
             "numBallots": (111 + 222 + 333) / 2,
+            "numBallotsByContestId": {contest_id: (111 + 222 + 333) / 2},
         },
     )
 

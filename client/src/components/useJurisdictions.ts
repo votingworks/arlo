@@ -28,6 +28,7 @@ export interface ICvrFileInfo extends IFileInfo {
 
 export interface IBatchTalliesFileInfo extends IFileInfo {
   numBallots: number | null
+  numBallotsByContestId?: Record<string, number> | null
 }
 
 export enum JurisdictionRoundStatus {

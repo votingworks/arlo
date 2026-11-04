@@ -486,6 +486,14 @@ def test_multi_contest_batch_comparison_end_to_end(
     assert [
         jurisdiction["batchTallies"]["numBallots"] for jurisdiction in jurisdictions
     ] == [500, 250, 250]
+    assert [
+        jurisdiction["batchTallies"]["numBallotsByContestId"]
+        for jurisdiction in jurisdictions
+    ] == [
+        {contest_ids[0]: 500, contest_ids[1]: 250},
+        {contest_ids[0]: 250},
+        {contest_ids[0]: 250},
+    ]
 
     #
     # Start audit
