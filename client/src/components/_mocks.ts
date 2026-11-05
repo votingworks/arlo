@@ -21,7 +21,7 @@ import {
   IBallotManifestInfo,
   IBatchTalliesFileInfo,
   IJurisdiction,
-  DiscrepanciesByJurisdiction,
+  BallotDiscrepanciesByJurisdiction,
   BatchDiscrepanciesByJurisdiction,
 } from './useJurisdictions'
 import { IStandardizedContest } from './useStandardizedContests'
@@ -2285,7 +2285,9 @@ export const aaApiCalls = {
     response: mapTopology,
   },
   getDiscrepancies: (
-    response: DiscrepanciesByJurisdiction | BatchDiscrepanciesByJurisdiction
+    response:
+      | BallotDiscrepanciesByJurisdiction
+      | BatchDiscrepanciesByJurisdiction
   ) => ({
     url: '/api/election/1/discrepancy',
     response,
