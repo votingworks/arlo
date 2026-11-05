@@ -124,8 +124,19 @@ function redactCsvColumnsAtIndices(
       ...DEFAULT_PARSE_OPTIONS,
       chunk: ({ data, errors, meta }, parser) => {
         try {
-          if (errors.length > 0) {
-            throw new Error(errors[0].message)
+          // Papaparse doesn't return the last row of a chunk (unless it's the
+          // final chunk) because the row may be incomplete. Instead, it
+          // re-parses that row from the start as part of the next chunk.
+          // Errors attached to that discarded row (error.row === data.length)
+          // can be spurious, e.g., a chunk boundary between the \r and \n of
+          // a \r\n after a quoted field triggers "Trailing quote on quoted
+          // field is malformed". Ignore them. Any real error will resurface
+          // when the row is re-parsed in the next chunk.
+          const realErrors = errors.filter(
+            error => error.row === undefined || error.row < data.length
+          )
+          if (realErrors.length > 0) {
+            throw new Error(realErrors[0].message)
           }
           if (data.length === 0) {
             return

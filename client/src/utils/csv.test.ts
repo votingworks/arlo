@@ -80,6 +80,33 @@ describe('redactCsvColumns', () => {
     await expectRedactedFile(DOMINION_CVR, DOMINION_CVR_REDACTED)
   })
 
+  test('handles CRLF line endings split across chunks after quoted fields', async () => {
+    // Papaparse reports a spurious "Trailing quote on quoted field is
+    // malformed" error when a chunk boundary falls between the \r and \n of a
+    // \r\n after a quoted field. Try every chunk size to hit every boundary.
+    const input =
+      '"a"\r\n"b"\r\n"c"\r\n"CvrNumber","RecordId"\r\n"1","2"\r\n"3","4"\r\n"5","6"\r\n'
+    const expectedOutput =
+      'a\r\nb\r\nc\r\nCvrNumber,RecordId\r\n1,REDACTED\r\n3,REDACTED\r\n5,REDACTED\r\n'
+    // Papaparse guesses the line ending from the first chunk, so the first
+    // chunk needs to contain at least two complete line endings
+    const minChunkSize = input.indexOf('\r\n', input.indexOf('\r\n') + 2) + 2
+    const originalParse = Papa.parse
+    for (
+      let chunkSize = minChunkSize;
+      chunkSize <= input.length;
+      chunkSize += 1
+    ) {
+      vi.spyOn(Papa, 'parse').mockImplementation(((
+        file: File,
+        config: Papa.ParseLocalConfig<string[], File>
+      ) => originalParse(file, { ...config, chunkSize })) as typeof Papa.parse)
+      // oxlint-disable-next-line no-await-in-loop
+      await expectRedactedFile(input, expectedOutput)
+      vi.restoreAllMocks()
+    }
+  })
+
   test('redacts multiple columns regardless of their order in the header row', async () => {
     await expectRedactedFile(
       'a\nb\nc\nImprintedId,CvrNumber,RecordId\n1,2,3\n4,5,6\n',
