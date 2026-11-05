@@ -22,6 +22,7 @@ import {
 } from '../useFileUpload'
 import { apiDownload, assert } from '../utilities'
 import { redactCsvColumns } from '../../utils/csv'
+import { shouldRedactDominionBatchAuditFilePrepCvrs } from '../../utils/config'
 import LinkButton from '../Atoms/LinkButton'
 import {
   StepPanel,
@@ -151,7 +152,8 @@ const useBatchInventoryCVR = (
     uploadFiles: async files => {
       const file =
         // Redact the Dominion columns that we don't need
-        systemType === CvrFileType.DOMINION
+        systemType === CvrFileType.DOMINION &&
+        shouldRedactDominionBatchAuditFilePrepCvrs()
           ? await redactCsvColumns(
               files[0],
               ['ImprintedId', 'RecordId', 'UniqueVotingIdentifier'],

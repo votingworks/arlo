@@ -7,9 +7,7 @@ import { Integrations } from '@sentry/tracing'
 import { FocusStyleManager } from '@blueprintjs/core'
 import './index.css'
 import App from './App'
-
-const getMetaContent = (name: string): string | undefined =>
-  document.querySelector<HTMLMetaElement>(`meta[name="${name}"]`)?.content
+import { getMetaContent } from './utils/config'
 
 if (process.env.NODE_ENV === 'production') {
   Sentry.init({

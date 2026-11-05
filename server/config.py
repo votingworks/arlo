@@ -164,6 +164,10 @@ SENTRY_DSN = os.environ.get("SENTRY_DSN")
 
 SLACK_WEBHOOK_URL = os.environ.get("SLACK_WEBHOOK_URL")
 
+REDACT_DOMINION_BATCH_AUDIT_FILE_PREP_CVRS = parse_bool(
+    read_env_var("REDACT_DOMINION_BATCH_AUDIT_FILE_PREP_CVRS", default="True")
+)
+
 RUN_BACKGROUND_TASKS_IMMEDIATELY = parse_bool(
     read_env_var("RUN_BACKGROUND_TASKS_IMMEDIATELY", default="False")
 )
