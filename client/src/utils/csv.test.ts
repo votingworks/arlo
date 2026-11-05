@@ -363,8 +363,8 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId
   })
 
   test.each([
-    { description: 'UTF-16 LE', bom: BOM.UTF16LE, highByteFirst: false },
-    { description: 'UTF-16 BE', bom: BOM.UTF16BE, highByteFirst: true },
+    { description: 'UTF-16 LE', bom: BOM.UTF16LE },
+    { description: 'UTF-16 BE', bom: BOM.UTF16BE },
   ])(
     'returns the original file for $description with a byte order mark',
     async ({ bom }) => {
