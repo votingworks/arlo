@@ -17,11 +17,12 @@ from ..util.csv_download import (
 )
 from ..util.isoformat import isoformat
 from ..util.collections import group_by
-from ..audit_math import supersimple, sampler_contest, macro
+from ..audit_math import supersimple, sampler_contest
 from .ballot_manifest import hybrid_contest_total_ballots
 from .cvrs import hybrid_contest_choice_vote_counts
 from .batches import construct_batch_last_edited_by_string
 from .shared import (
+    batch_change_in_margin,
     CombinedBatch,
     ContestVoteDeltas,
     ballot_vote_deltas,
@@ -1187,13 +1188,8 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
                 choice.name: audit_results[choice.id] for choice in contest.choices
             }
 
-            error = (
-                macro.compute_error(
-                    {contest.id: reported_results},
-                    {contest.id: audit_results},
-                    sampler_contest.from_db_contest(contest),
-                    0,
-                )
+            change_in_margin = (
+                batch_change_in_margin(contest, reported_results, audit_results)
                 if reported_results and audit_results
                 else None
             )
@@ -1217,7 +1213,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
                     if reported_results and audit_results
                     else ""
                 ),
-                error["counted_as"] if error else "",
+                change_in_margin if change_in_margin is not None else "",
             ]
 
         combined_batch_row += [
@@ -1314,13 +1310,8 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
                 choice.name: audit_results[choice.id] for choice in contest.choices
             }
 
-            error = (
-                macro.compute_error(
-                    {contest.id: reported_results},
-                    {contest.id: audit_results},
-                    sampler_contest.from_db_contest(contest),
-                    0,
-                )
+            change_in_margin = (
+                batch_change_in_margin(contest, reported_results, audit_results)
                 if reported_results and audit_results
                 else None
             )
@@ -1343,7 +1334,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction | None = N
                     if reported_results and audit_results
                     else ""
                 ),
-                error["counted_as"] if error else "",
+                change_in_margin if change_in_margin is not None else "",
             ]
 
         row += [construct_batch_last_edited_by_string(batch)]
