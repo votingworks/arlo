@@ -454,11 +454,11 @@ describe('Progress screen', () => {
       })
       userEvent.click(reviewDiscrepanciesButton)
       await waitFor(() => {
-        screen.getByText('Jurisdiction 2 Discrepancies')
+        screen.getByText('Jurisdiction 2 Review')
       })
       const dialog = (
         await screen.findByRole('heading', {
-          name: /Jurisdiction 2 Discrepancies/,
+          name: /Jurisdiction 2 Review/,
         })
       ).closest('.bp3-dialog')! as HTMLElement
       within(dialog).getByText('ballot1')
@@ -509,14 +509,17 @@ describe('Progress screen', () => {
     const expectedCalls = [
       aaApiCalls.getDiscrepancies({
         [jurisdictionMocks.oneComplete[2].id]: {
-          'batch-id-1': {
-            name: 'batch1',
-            isExtra: false,
-            discrepancies: {
-              [contestMocks.one[0].id]: {
-                reportedVotes: { [contestMocks.one[0].choices[0].id]: 5 },
-                auditedVotes: { [contestMocks.one[0].choices[0].id]: 6 },
-                discrepancies: { [contestMocks.one[0].choices[0].id]: 1 },
+          notes: [],
+          batches: {
+            'batch-id-1': {
+              name: 'batch1',
+              isExtra: false,
+              discrepancies: {
+                [contestMocks.one[0].id]: {
+                  reportedVotes: { [contestMocks.one[0].choices[0].id]: 5 },
+                  auditedVotes: { [contestMocks.one[0].choices[0].id]: 6 },
+                  discrepancies: { [contestMocks.one[0].choices[0].id]: 1 },
+                },
               },
             },
           },
@@ -537,14 +540,17 @@ describe('Progress screen', () => {
       },
       aaApiCalls.getDiscrepancies({
         [jurisdictionMocks.oneComplete[2].id]: {
-          'batch-id-1': {
-            name: 'batch1',
-            isExtra: false,
-            discrepancies: {
-              [contestMocks.one[0].id]: {
-                reportedVotes: { [contestMocks.one[0].choices[0].id]: 5 },
-                auditedVotes: { [contestMocks.one[0].choices[0].id]: 6 },
-                discrepancies: { [contestMocks.one[0].choices[0].id]: 1 },
+          notes: [],
+          batches: {
+            'batch-id-1': {
+              name: 'batch1',
+              isExtra: false,
+              discrepancies: {
+                [contestMocks.one[0].id]: {
+                  reportedVotes: { [contestMocks.one[0].choices[0].id]: 5 },
+                  auditedVotes: { [contestMocks.one[0].choices[0].id]: 6 },
+                  discrepancies: { [contestMocks.one[0].choices[0].id]: 1 },
+                },
               },
             },
           },
@@ -612,11 +618,11 @@ describe('Progress screen', () => {
       })
       userEvent.click(reviewDiscrepanciesButton)
       await waitFor(() => {
-        screen.getByText('Jurisdiction 3 Discrepancies')
+        screen.getByText('Jurisdiction 3 Review')
       })
       const dialog = (
         await screen.findByRole('heading', {
-          name: /Jurisdiction 3 Discrepancies/,
+          name: /Jurisdiction 3 Review/,
         })
       ).closest('.bp3-dialog')! as HTMLElement
       within(dialog).getByText('Jurisdiction admins')
@@ -681,14 +687,17 @@ describe('Progress screen', () => {
     const expectedCalls = [
       aaApiCalls.getDiscrepancies({
         [jurisdictionMocks.oneComplete[2].id]: {
-          'batch-id-1': {
-            name: 'batch1',
-            isExtra: false,
-            discrepancies: {
-              [contestMocks.one[0].id]: {
-                reportedVotes: { [contestMocks.one[0].choices[0].id]: 5 },
-                auditedVotes: { [contestMocks.one[0].choices[0].id]: 6 },
-                discrepancies: { [contestMocks.one[0].choices[0].id]: 1 },
+          notes: [],
+          batches: {
+            'batch-id-1': {
+              name: 'batch1',
+              isExtra: false,
+              discrepancies: {
+                [contestMocks.one[0].id]: {
+                  reportedVotes: { [contestMocks.one[0].choices[0].id]: 5 },
+                  auditedVotes: { [contestMocks.one[0].choices[0].id]: 6 },
+                  discrepancies: { [contestMocks.one[0].choices[0].id]: 1 },
+                },
               },
             },
           },
@@ -715,12 +724,90 @@ describe('Progress screen', () => {
       userEvent.click(screen.getByRole('button', { name: /Review 1/ }))
       const dialog = (
         await screen.findByRole('heading', {
-          name: /Jurisdiction 3 Discrepancies/,
+          name: /Jurisdiction 3 Review/,
         })
       ).closest('.bp3-dialog')! as HTMLElement
       expect(
         within(dialog).queryByRole('button', { name: 'Unfinalize Tallies' })
       ).not.toBeInTheDocument()
+    })
+  })
+
+  it('keeps a noted jurisdiction in review and takes notes', async () => {
+    const [reTallying, , finalized] = jurisdictionMocks.oneComplete
+    const note = {
+      createdAt: '2026-11-05T15:00:00+00:00',
+      text: 'Unfinalized tallies',
+    }
+    const newNote = {
+      createdAt: '2026-11-05T16:00:00+00:00',
+      text: 'JA is re-tallying Batch 1',
+    }
+    const expectedCalls = [
+      aaApiCalls.getDiscrepancies({
+        [reTallying.id]: { notes: [note], batches: {} },
+        [finalized.id]: { notes: [note], batches: {} },
+      }),
+      aaApiCalls.getLastLoginByJurisdiction({
+        response: lastLoginByJurisdictionMocks.noLogins,
+      }),
+      aaApiCalls.getMapData,
+      jaApiCalls.getJurisdictionContests([contestMocks.one[0]], reTallying.id),
+      {
+        url: `/api/election/1/jurisdiction/${reTallying.id}/discrepancy-notes`,
+        options: {
+          method: 'POST',
+          body: JSON.stringify({ text: newNote.text }),
+          headers: { 'Content-Type': 'application/json' },
+        },
+        response: { status: 'ok' },
+      },
+      aaApiCalls.getDiscrepancies({
+        [reTallying.id]: { notes: [note, newNote], batches: {} },
+        [finalized.id]: { notes: [note], batches: {} },
+      }),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { container } = render({
+        auditSettings: auditSettingsMocks.batchComparisonAll,
+        jurisdictions: jurisdictionMocks.oneComplete,
+        round: roundMocks.singleIncomplete[0],
+      })
+      await waitFor(() => {
+        expect(container.querySelectorAll('.d3-component').length).toBe(1)
+      })
+
+      const rows = screen.getAllByRole('row')
+      // The icon's name is part of the button's accessible name
+      const reTallyingReview = within(rows[1]).getByRole('button', {
+        name: 'Review',
+      })
+      expect(
+        within(rows[2]).queryByRole('button', { name: /Review/ })
+      ).not.toBeInTheDocument()
+      const finalizedReview = within(rows[3]).getByRole('button', {
+        name: /Review/,
+      })
+      expect(
+        finalizedReview.querySelector('.bp3-icon-tick-circle')
+      ).toBeInTheDocument()
+
+      userEvent.click(reTallyingReview)
+      const dialog = (
+        await screen.findByRole('heading', {
+          name: /Jurisdiction 1 Review/,
+        })
+      ).closest('.bp3-dialog')! as HTMLElement
+      within(dialog).getByText('Notes')
+      within(dialog).getByText('Re-tallying')
+      within(dialog).getByText(note.text)
+      within(dialog).getByText(new Date(note.createdAt).toLocaleString())
+      const addNote = within(dialog).getByRole('button', { name: 'Add Note' })
+      expect(addNote).toBeDisabled()
+      userEvent.type(within(dialog).getByRole('textbox'), newNote.text)
+      userEvent.click(addNote)
+      await within(dialog).findByText(newNote.text)
+      expect(within(dialog).getByRole('textbox')).toHaveValue('')
     })
   })
 
@@ -735,15 +822,18 @@ describe('Progress screen', () => {
     const expectedCalls = [
       aaApiCalls.getDiscrepancies({
         [jurisdiction.id]: {
-          'batch-id-1': {
-            name: 'batch1',
-            isExtra: false,
-            discrepancies: { [contest.id]: contestDiscrepancy },
-          },
-          'batch-id-2': {
-            name: 'batch2',
-            isExtra: true,
-            discrepancies: { [contest.id]: contestDiscrepancy },
+          notes: [],
+          batches: {
+            'batch-id-1': {
+              name: 'batch1',
+              isExtra: false,
+              discrepancies: { [contest.id]: contestDiscrepancy },
+            },
+            'batch-id-2': {
+              name: 'batch2',
+              isExtra: true,
+              discrepancies: { [contest.id]: contestDiscrepancy },
+            },
           },
         },
       }),
@@ -791,7 +881,7 @@ describe('Progress screen', () => {
       userEvent.click(screen.getByRole('button', { name: /Review 2/ }))
       const dialogWithExtras = (
         await screen.findByRole('heading', {
-          name: /Jurisdiction 3 Discrepancies/,
+          name: /Jurisdiction 3 Review/,
         })
       ).closest('.bp3-dialog')! as HTMLElement
       expect(
@@ -817,7 +907,7 @@ describe('Progress screen', () => {
       userEvent.click(screen.getByRole('button', { name: /Review 1/ }))
       const dialog = (
         await screen.findByRole('heading', {
-          name: /Jurisdiction 3 Discrepancies/,
+          name: /Jurisdiction 3 Review/,
         })
       ).closest('.bp3-dialog')! as HTMLElement
       within(dialog).getByText('batch1')
@@ -977,18 +1067,21 @@ describe('Progress screen', () => {
       const expectedCalls = [
         aaApiCalls.getDiscrepancies({
           [jurisdiction.id]: {
-            'batch-id-1': {
-              name: 'batch1',
-              isExtra: false,
-              discrepancies: {
-                [contestA.id]: discrepancy(contestA),
-                [contestB.id]: discrepancy(contestB),
+            notes: [],
+            batches: {
+              'batch-id-1': {
+                name: 'batch1',
+                isExtra: false,
+                discrepancies: {
+                  [contestA.id]: discrepancy(contestA),
+                  [contestB.id]: discrepancy(contestB),
+                },
               },
-            },
-            'batch-id-2': {
-              name: 'batch2',
-              isExtra: false,
-              discrepancies: { [contestA.id]: discrepancy(contestA) },
+              'batch-id-2': {
+                name: 'batch2',
+                isExtra: false,
+                discrepancies: { [contestA.id]: discrepancy(contestA) },
+              },
             },
           },
         }),
@@ -1022,7 +1115,7 @@ describe('Progress screen', () => {
         userEvent.click(screen.getByRole('button', { name: /Review 1/ }))
         const dialog = (
           await screen.findByRole('heading', {
-            name: /Jurisdiction 3 Discrepancies/,
+            name: /Jurisdiction 3 Review/,
           })
         ).closest('.bp3-dialog')! as HTMLElement
         const batchHeadings = () =>

@@ -37,8 +37,8 @@ import { assert } from '../../utilities'
 import useSearchParams from '../../useSearchParams'
 import {
   IBatchOrBallotDiscrepancies,
-  JurisdictionDiscrepancies,
-} from './JurisdictionDiscrepancies'
+  JurisdictionReview,
+} from './JurisdictionReview'
 import ContestSelect from './ContestSelect'
 
 const Wrapper = styled.div`
@@ -180,7 +180,7 @@ const Progress: React.FC<IProgressProps> = ({
     if (auditType === 'BATCH_COMPARISON') {
       const batches = discrepancyQuery.data as BatchDiscrepanciesByJurisdiction
       return sortBatches(
-        Object.values(batches[jurisdictionId] ?? {}).filter(
+        Object.values(batches[jurisdictionId]?.batches ?? {}).filter(
           batch => !(excludeExtraBatches && batch.isExtra)
         )
       )
@@ -190,6 +190,12 @@ const Progress: React.FC<IProgressProps> = ({
       ([name, discrepancies]) => ({ name, discrepancies })
     )
   }
+  const jurisdictionNotes = (jurisdictionId: string) =>
+    auditType === 'BATCH_COMPARISON'
+      ? (discrepancyQuery.data as BatchDiscrepanciesByJurisdiction)[
+          jurisdictionId
+        ]?.notes
+      : undefined
   const canSelectContest =
     auditType === 'BATCH_COMPARISON' && contests.length > 1
   const selectedContest = canSelectContest
@@ -213,8 +219,9 @@ const Progress: React.FC<IProgressProps> = ({
   const [jurisdictionDetailId, setJurisdictionDetailId] = useState<
     string | null
   >(null)
-  const [jurisdictionDiscrepanciesId, setJurisdictionDiscrepanciesId] =
-    useState<string | null>(null)
+  const [jurisdictionReviewId, setJurisdictionReviewId] = useState<
+    string | null
+  >(null)
 
   const filter = sortAndFilterState?.filter || ''
   const ballotsOrBatches =
@@ -504,7 +511,7 @@ const Progress: React.FC<IProgressProps> = ({
           )
         },
         Cell: ({
-          value,
+          value: numDiscrepancies,
           row: { original: jurisdiction },
         }: Cell<IJurisdiction>) => {
           if (discrepancyQuery.isLoading) {
@@ -514,13 +521,25 @@ const Progress: React.FC<IProgressProps> = ({
               </div>
             )
           }
-          if (!value) return null
+          const isUnderReview =
+            discrepancyQuery.data?.[jurisdiction.id] !== undefined
+          if (!numDiscrepancies && !isUnderReview) return null
+          const isFinalized =
+            jurisdiction.currentRoundStatus?.status ===
+            JurisdictionRoundStatus.COMPLETE
+          const icon = numDiscrepancies ? (
+            <Icon icon="flag" intent="danger" />
+          ) : (
+            isFinalized && <Icon icon="tick-circle" intent="success" />
+          )
           return (
             <Button
-              onClick={() => setJurisdictionDiscrepanciesId(jurisdiction.id)}
-              icon={<Icon icon="flag" intent="danger" />}
+              onClick={() => setJurisdictionReviewId(jurisdiction.id)}
+              icon={icon}
             >
-              Review {value.toLocaleString()}
+              {numDiscrepancies
+                ? `Review ${numDiscrepancies.toLocaleString()}`
+                : 'Review'}
             </Button>
           )
         },
@@ -692,19 +711,19 @@ const Progress: React.FC<IProgressProps> = ({
           auditSettings={auditSettings}
         />
       )}
-      {jurisdictionDiscrepanciesId && (
-        <JurisdictionDiscrepancies
-          discrepancies={jurisdictionDiscrepancies(
-            jurisdictionDiscrepanciesId
-          )!}
+      {jurisdictionReviewId && (
+        <JurisdictionReview
+          discrepancies={jurisdictionDiscrepancies(jurisdictionReviewId)!}
+          notes={jurisdictionNotes(jurisdictionReviewId)}
+          isSingleJurisdictionAudit={jurisdictions.length === 1}
           auditType={auditType}
           jurisdiction={jurisdictions.find(
-            jurisdiction => jurisdiction.id === jurisdictionDiscrepanciesId
+            jurisdiction => jurisdiction.id === jurisdictionReviewId
           )!}
           electionId={electionId}
           round={round!}
           initialContestId={selectedContest?.id}
-          handleClose={() => setJurisdictionDiscrepanciesId(null)}
+          handleClose={() => setJurisdictionReviewId(null)}
         />
       )}
     </Wrapper>

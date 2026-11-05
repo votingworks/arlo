@@ -7,12 +7,15 @@ import {
   H5,
   H6,
   HTMLTable,
+  TextArea,
 } from '@blueprintjs/core'
 import styled from 'styled-components'
 import {
   IJurisdiction,
   DiscrepanciesByContest,
+  IDiscrepancyNote,
   JurisdictionRoundStatus,
+  useAddJurisdictionDiscrepancyNote,
   useUnfinalizeBatchTallies,
 } from '../../useJurisdictions'
 import { IRound } from '../useRoundsAuditAdmin'
@@ -23,6 +26,7 @@ import { IAuditSettings } from '../../useAuditSettings'
 import { assert } from '../../utilities'
 import CopyToClipboard from '../../Atoms/CopyToClipboard'
 import ContestSelect from './ContestSelect'
+import StatusTag from '../../Atoms/StatusTag'
 import JurisdictionAdmins from './JurisdictionAdmins'
 
 const ContestDiscrepanciesTable = styled(HTMLTable).attrs({
@@ -90,8 +94,10 @@ export interface IBatchOrBallotDiscrepancies {
   discrepancies: DiscrepanciesByContest
 }
 
-export interface IJurisdictionDiscrepanciesProps {
+export interface IJurisdictionReviewProps {
   discrepancies: IBatchOrBallotDiscrepancies[]
+  notes?: IDiscrepancyNote[]
+  isSingleJurisdictionAudit: boolean
   auditType: IAuditSettings['auditType']
   electionId: string
   handleClose: () => void
@@ -100,8 +106,10 @@ export interface IJurisdictionDiscrepanciesProps {
   initialContestId?: string
 }
 
-const JurisdictionDiscrepancies: React.FC<IJurisdictionDiscrepanciesProps> = ({
+const JurisdictionReview: React.FC<IJurisdictionReviewProps> = ({
   discrepancies,
+  notes,
+  isSingleJurisdictionAudit,
   auditType,
   handleClose,
   jurisdiction,
@@ -114,13 +122,22 @@ const JurisdictionDiscrepancies: React.FC<IJurisdictionDiscrepanciesProps> = ({
     jurisdiction.id
   )
   const unfinalize = useUnfinalizeBatchTallies(electionId)
+  const addNote = useAddJurisdictionDiscrepancyNote(electionId)
   const [selectedContestId, setSelectedContestId] = useState(
     initialContestId ?? ''
   )
-  const canUnfinalize =
-    auditType === 'BATCH_COMPARISON' &&
-    round.endedAt === null &&
+  const [noteText, setNoteText] = useState('')
+  const isFinalized =
     jurisdiction.currentRoundStatus!.status === JurisdictionRoundStatus.COMPLETE
+  const canUnfinalize =
+    auditType === 'BATCH_COMPARISON' && round.endedAt === null && isFinalized
+  // A jurisdiction under review has finalized, so one that isn't finalized now
+  // has unfinalized, except in a single-jurisdiction audit, where review
+  // starts before any finalize
+  const isReTallying =
+    auditType === 'BATCH_COMPARISON' &&
+    !isFinalized &&
+    !isSingleJurisdictionAudit
 
   if (!contestsQuery.isSuccess) {
     return null
@@ -140,12 +157,50 @@ const JurisdictionDiscrepancies: React.FC<IJurisdictionDiscrepanciesProps> = ({
       isOpen
       onClose={handleClose}
       style={{ width: '600px' }}
-      title={`${jurisdiction.name} Discrepancies`}
+      title={`${jurisdiction.name} Review`}
     >
       <div className={Classes.DIALOG_BODY} style={{ marginBottom: 0 }}>
         <JurisdictionAdmins jurisdiction={jurisdiction} />
-        {(canSelectContest || canUnfinalize) && (
-          <div style={rowStyle}>
+        {notes && (
+          <div style={{ marginBottom: '16px' }}>
+            <div className={`${Classes.TEXT_MUTED} ${Classes.TEXT_SMALL}`}>
+              Notes
+            </div>
+            {notes.map(note => (
+              <div key={note.createdAt} style={{ marginTop: '8px' }}>
+                <div style={{ whiteSpace: 'pre-wrap' }}>{note.text}</div>
+                <div className={`${Classes.TEXT_MUTED} ${Classes.TEXT_SMALL}`}>
+                  {new Date(note.createdAt).toLocaleString()}
+                </div>
+              </div>
+            ))}
+            <TextArea
+              fill
+              growVertically
+              disabled={addNote.isLoading}
+              placeholder="Add a note"
+              value={noteText}
+              onChange={e => setNoteText(e.currentTarget.value)}
+              style={{ marginTop: '8px' }}
+            />
+            <AsyncButton
+              disabled={noteText.trim() === ''}
+              onClick={async () => {
+                await addNote.mutateAsync({
+                  jurisdictionId: jurisdiction.id,
+                  text: noteText.trim(),
+                })
+                setNoteText('')
+              }}
+              style={{ marginTop: '8px' }}
+            >
+              Add Note
+            </AsyncButton>
+          </div>
+        )}
+        <Divider style={{ margin: '16px 0' }} />
+        {(canSelectContest || canUnfinalize || isReTallying) && (
+          <div style={{ ...rowStyle, marginBottom: '16px' }}>
             {canSelectContest && (
               <ContestSelect
                 contests={contests}
@@ -167,9 +222,11 @@ const JurisdictionDiscrepancies: React.FC<IJurisdictionDiscrepanciesProps> = ({
                 Unfinalize Tallies
               </AsyncButton>
             )}
+            {isReTallying && (
+              <StatusTag intent="warning">Re-tallying</StatusTag>
+            )}
           </div>
         )}
-        <Divider style={{ margin: '16px 0' }} />
         {selectedContestId && shownBatches.length === 0 && (
           <p className={Classes.TEXT_MUTED}>
             {jurisdiction.currentRoundStatusByContestId![selectedContestId]
@@ -259,4 +316,4 @@ const JurisdictionDiscrepancies: React.FC<IJurisdictionDiscrepanciesProps> = ({
   )
 }
 
-export { JurisdictionDiscrepancies }
+export { JurisdictionReview }
