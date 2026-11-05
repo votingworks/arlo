@@ -209,7 +209,8 @@ def get_batch_comparison_discrepancies_by_jurisdiction(
 
 
 # In multi-jurisdiction audits, hide discrepancies if the jurisdiction hasn't finalized tallies
-# Finalized in the given round, or in any round when round is None
+# Finalized in the given round, or in any round when round is None, or with a
+# note from the given round (every finalize and unfinalize leaves one)
 def show_batch_comparison_discrepancies_by_jurisdiction(
     election: Election, round: Round | None
 ) -> dict[str, bool]:
@@ -222,15 +223,17 @@ def show_batch_comparison_discrepancies_by_jurisdiction(
     finalized = BatchResultsFinalized.query
     if round is not None:
         finalized = finalized.filter_by(round_id=round.id)
-    finalized_jurisdiction_ids = {
+    shown_jurisdiction_ids = {
         jurisdiction_id
         for (jurisdiction_id,) in finalized.with_entities(
             BatchResultsFinalized.jurisdiction_id
         )
     }
+    if round is not None:
+        shown_jurisdiction_ids |= jurisdiction_ids_with_notes_in_round(election, round)
 
     return {
-        jurisdiction.id: (jurisdiction.id in finalized_jurisdiction_ids)
+        jurisdiction.id: (jurisdiction.id in shown_jurisdiction_ids)
         for jurisdiction in jurisdictions
     }
 
