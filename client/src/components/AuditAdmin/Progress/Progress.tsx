@@ -2,7 +2,14 @@ import React, { useState, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { Column, Cell, TableInstance, SortingRule, SortByFn } from 'react-table'
-import { Button, Switch, Icon, InputGroup, Spinner } from '@blueprintjs/core'
+import {
+  Button,
+  Switch,
+  Icon,
+  InputGroup,
+  Spinner,
+  Tooltip,
+} from '@blueprintjs/core'
 import H2Title from '../../Atoms/H2Title'
 import {
   JurisdictionRoundStatus,
@@ -183,11 +190,8 @@ const Progress: React.FC<IProgressProps> = ({
       ([name, discrepancies]) => ({ name, discrepancies })
     )
   }
-  // Once a batch comparison audit of several contests is under way, the table
-  // can be viewed one contest at a time. Before then its columns are file
-  // totals, which have no per-contest version.
   const canSelectContest =
-    round !== null && auditType === 'BATCH_COMPARISON' && contests.length > 1
+    auditType === 'BATCH_COMPARISON' && contests.length > 1
   const selectedContest = canSelectContest
     ? contests.find(contest => contest.id === sortAndFilterState?.contest)
     : undefined
@@ -246,6 +250,7 @@ const Progress: React.FC<IProgressProps> = ({
     },
     {
       Header: 'Status',
+      minWidth: 210, // Room for the longest status on one line in the default fonts
       accessor: jurisdiction => {
         const { ballotManifest, batchTallies, cvrs } = jurisdiction
 
@@ -253,22 +258,26 @@ const Progress: React.FC<IProgressProps> = ({
           <StatusTag
             {...props}
             interactive
+            multiline
             onClick={() => setJurisdictionDetailId(jurisdiction.id)}
           />
         )
 
-        const files: IFileInfo['processing'][] = [ballotManifest.processing]
-        if (batchTallies) files.push(batchTallies.processing)
-        if (cvrs) files.push(cvrs.processing)
+        const uploads: [string, IFileInfo['processing']][] = [
+          ['Manifest', ballotManifest.processing],
+        ]
+        if (batchTallies) uploads.push(['Tallies', batchTallies.processing])
+        if (cvrs) uploads.push(['CVR', cvrs.processing])
 
-        const numComplete = files.filter(
-          f => f && f.status === FileProcessingStatus.PROCESSED
+        const numComplete = uploads.filter(
+          ([, f]) => f && f.status === FileProcessingStatus.PROCESSED
         ).length
-        const filesUploadedText = `${numComplete}/${files.length} files uploaded`
+        const filesUploadedText = `${numComplete}/${uploads.length} files uploaded`
 
+        const lastLogin = lastLoginQuery.data![jurisdiction.id]
         const jurisdictionStatus = getJurisdictionStatus(
           jurisdiction,
-          lastLoginQuery.data![jurisdiction.id]
+          lastLogin
         )
 
         switch (jurisdictionStatus) {
@@ -280,26 +289,41 @@ const Progress: React.FC<IProgressProps> = ({
                   : filesUploadedText}
               </Status>
             )
-          case JurisdictionProgressStatus.UPLOADS_FAILED:
+          case JurisdictionProgressStatus.UPLOADS_FAILED: {
+            const [failedUpload, failedProcessing] = uploads.find(
+              ([, f]) => f && f.status === FileProcessingStatus.ERRORED
+            )!
             return (
-              <Status intent="danger">
-                {auditType === 'BALLOT_POLLING'
-                  ? 'Manifest upload failed'
-                  : 'Upload failed'}
-              </Status>
+              <Tooltip
+                content={
+                  <div style={{ maxWidth: '400px' }}>
+                    {failedProcessing!.error}
+                  </div>
+                }
+              >
+                <Status intent="danger">{failedUpload} upload failed</Status>
+              </Tooltip>
             )
+          }
           case JurisdictionProgressStatus.UPLOADS_IN_PROGRESS:
             return <Status intent="in-progress">{filesUploadedText}</Status>
           case JurisdictionProgressStatus.UPLOADS_NOT_STARTED_LOGGED_IN:
-            return <Status intent="warning">Logged in</Status>
+          case JurisdictionProgressStatus.AUDIT_NOT_STARTED_LOGGED_IN:
+            return (
+              <Tooltip
+                content={`${lastLogin.user!.key} at ${new Date(
+                  lastLogin.timestamp
+                ).toLocaleString()}`}
+              >
+                <Status intent="warning">Logged in</Status>
+              </Tooltip>
+            )
           case JurisdictionProgressStatus.UPLOADS_NOT_STARTED_NO_LOGIN:
             return <Status>Not logged in</Status>
           case JurisdictionProgressStatus.AUDIT_IN_PROGRESS:
             return <Status intent="in-progress">In progress</Status>
           case JurisdictionProgressStatus.AUDIT_COMPLETE:
             return <Status intent="success">Complete</Status>
-          case JurisdictionProgressStatus.AUDIT_NOT_STARTED_LOGGED_IN:
-            return <Status intent="warning">Logged in</Status>
           case JurisdictionProgressStatus.AUDIT_NOT_STARTED_NO_LOGIN:
             return <Status>Not logged in</Status>
           /* istanbul ignore next - unreachable when exhaustive */
@@ -399,7 +423,8 @@ const Progress: React.FC<IProgressProps> = ({
     const hasExpectedNumBallots = jurisdictions.some(
       jurisdiction => jurisdiction.expectedBallotManifestNumBallots !== null
     )
-    if (hasExpectedNumBallots) {
+    // The expected count is for all of a jurisdiction's ballots
+    if (hasExpectedNumBallots && !selectedContest) {
       columns.push({
         Header: 'Expected Ballots in Manifest',
         accessor: ({ expectedBallotManifestNumBallots }) =>
@@ -430,7 +455,11 @@ const Progress: React.FC<IProgressProps> = ({
       })
       columns.push({
         Header: 'Valid Voted Ballots in Batches',
-        accessor: ({ batchTallies }) => batchTallies!.numBallots,
+        accessor: ({ batchTallies }) =>
+          selectedContest
+            ? (batchTallies!.numBallotsByContestId?.[selectedContest.id] ??
+              null)
+            : batchTallies!.numBallots,
         Cell: formatNumber,
         Footer: totalFooter('Valid Voted Ballots in Batches'),
       })

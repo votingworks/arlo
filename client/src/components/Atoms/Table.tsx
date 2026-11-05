@@ -129,7 +129,13 @@ export const Table = <T extends object>({
             <th
               {...column.getHeaderProps([
                 column.getSortByToggleProps({ title: column.Header }),
-                { style: { verticalAlign: hasSubHeaders ? 'top' : undefined } },
+                {
+                  style: {
+                    verticalAlign: hasSubHeaders ? 'top' : undefined,
+                    // Columns share the width equally unless given one
+                    width: column.minWidth || undefined,
+                  },
+                },
               ])}
             >
               <div
