@@ -2,7 +2,12 @@ import os
 from flask import send_from_directory, render_template
 
 
-from .config import STATIC_FOLDER, FLASK_ENV, SENTRY_DSN
+from .config import (
+    STATIC_FOLDER,
+    FLASK_ENV,
+    SENTRY_DSN,
+    REDACT_DOMINION_BATCH_AUDIT_FILE_PREP_CVRS,
+)
 from .app import app
 from .auth.auth_helpers import allow_public_access
 
@@ -15,5 +20,10 @@ def serve(path="index.html"):  # noqa: ANN001
     if path != "index.html" and os.path.exists(os.path.join(STATIC_FOLDER, path)):
         return send_from_directory(STATIC_FOLDER, path)
     return render_template(
-        "index.html", flask_env=FLASK_ENV, sentry_dsn=SENTRY_DSN or ""
+        "index.html",
+        flask_env=FLASK_ENV,
+        sentry_dsn=SENTRY_DSN or "",
+        redact_dominion_batch_audit_file_prep_cvrs=str(
+            REDACT_DOMINION_BATCH_AUDIT_FILE_PREP_CVRS
+        ).lower(),
     )
