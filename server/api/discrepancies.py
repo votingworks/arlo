@@ -1,7 +1,8 @@
 from collections import defaultdict
+import uuid
 from typing import TypedDict
 from werkzeug.exceptions import Conflict
-from flask import jsonify
+from flask import jsonify, request
 
 from sqlalchemy import func
 from sqlalchemy.orm import selectinload
@@ -9,6 +10,9 @@ from sqlalchemy.orm import selectinload
 from . import api
 from ..models import *
 from ..auth import restrict_access, UserType
+from ..database import db_session
+from ..util.get_json import safe_get_json_dict
+from ..util.jsonschema import validate
 from ..audit_math import macro
 from .shared import (
     ContestVoteDeltas,
@@ -229,6 +233,36 @@ def show_batch_comparison_discrepancies_by_jurisdiction(
         jurisdiction.id: (jurisdiction.id in finalized_jurisdiction_ids)
         for jurisdiction in jurisdictions
     }
+
+
+def add_jurisdiction_note(jurisdiction: Jurisdiction, text: str):
+    db_session.add(
+        JurisdictionNote(
+            id=str(uuid.uuid4()), jurisdiction_id=jurisdiction.id, text=text
+        )
+    )
+
+
+JURISDICTION_DISCREPANCY_NOTE_SCHEMA = {
+    "type": "object",
+    "properties": {"text": {"type": "string", "minLength": 1}},
+    "required": ["text"],
+    "additionalProperties": False,
+}
+
+
+@api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/discrepancy-notes",
+    methods=["POST"],
+)
+@restrict_access([UserType.AUDIT_ADMIN])
+def create_jurisdiction_note(election: Election, jurisdiction: Jurisdiction):
+    note = safe_get_json_dict(request)
+    validate(note, JURISDICTION_DISCREPANCY_NOTE_SCHEMA)
+    add_jurisdiction_note(jurisdiction, note["text"])
+    db_session.commit()
+
+    return jsonify(status="ok")
 
 
 # Each batch paired with the batches whose tallies it carries: itself, or for
