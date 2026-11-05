@@ -497,11 +497,15 @@ describe('Progress screen', () => {
     const expectedCalls = [
       aaApiCalls.getDiscrepancies({
         [jurisdictionMocks.oneComplete[2].id]: {
-          batch1: {
-            [contestMocks.one[0].id]: {
-              reportedVotes: { [contestMocks.one[0].choices[0].id]: 5 },
-              auditedVotes: { [contestMocks.one[0].choices[0].id]: 6 },
-              discrepancies: { [contestMocks.one[0].choices[0].id]: 1 },
+          'batch-id-1': {
+            name: 'batch1',
+            isExtra: false,
+            discrepancies: {
+              [contestMocks.one[0].id]: {
+                reportedVotes: { [contestMocks.one[0].choices[0].id]: 5 },
+                auditedVotes: { [contestMocks.one[0].choices[0].id]: 6 },
+                discrepancies: { [contestMocks.one[0].choices[0].id]: 1 },
+              },
             },
           },
         },
@@ -563,6 +567,10 @@ describe('Progress screen', () => {
       expect(row3[3]).toHaveTextContent('Review 1')
       expect(row3[4]).toHaveTextContent('30')
       expect(row3[5]).toHaveTextContent('0')
+      // No jurisdiction sampled extra batches, so there's nothing to exclude
+      expect(
+        screen.queryByRole('checkbox', { name: 'Exclude extra batches' })
+      ).not.toBeInTheDocument()
 
       const reviewDiscrepanciesButton = screen.getByRole('button', {
         name: /Review 1/,
@@ -605,8 +613,110 @@ describe('Progress screen', () => {
     })
   })
 
+  it('excludes extra batches from batch comparison discrepancies', async () => {
+    const jurisdiction = jurisdictionMocks.oneComplete[2] // Complete
+    const contest = contestMocks.one[0]
+    const contestDiscrepancy = {
+      reportedVotes: { [contest.choices[0].id]: 5 },
+      auditedVotes: { [contest.choices[0].id]: 6 },
+      discrepancies: { [contest.choices[0].id]: 1 },
+    }
+    const expectedCalls = [
+      aaApiCalls.getDiscrepancies({
+        [jurisdiction.id]: {
+          'batch-id-1': {
+            name: 'batch1',
+            isExtra: false,
+            discrepancies: { [contest.id]: contestDiscrepancy },
+          },
+          'batch-id-2': {
+            name: 'batch2',
+            isExtra: true,
+            discrepancies: { [contest.id]: contestDiscrepancy },
+          },
+        },
+      }),
+      aaApiCalls.getLastLoginByJurisdiction({
+        response: lastLoginByJurisdictionMocks.noLogins,
+      }),
+      aaApiCalls.getMapData,
+      jaApiCalls.getJurisdictionContests([contest], jurisdiction.id),
+    ]
+    // One of the complete jurisdiction's 30 batches is an extra that hasn't
+    // been audited
+    const jurisdictions = jurisdictionMocks.oneComplete.map(j =>
+      j.id === jurisdiction.id
+        ? {
+            ...j,
+            currentRoundStatus: {
+              ...j.currentRoundStatus!,
+              numSamplesAudited: 30,
+              numUniqueAudited: 29,
+              extras: {
+                numSamples: 2,
+                numSamplesAudited: 1,
+                numUnique: 2,
+                numUniqueAudited: 1,
+              },
+            },
+          }
+        : j
+    )
+    await withMockFetch(expectedCalls, async () => {
+      const { container, history } = render({
+        auditSettings: auditSettingsMocks.batchComparisonAll,
+        jurisdictions,
+        round: roundMocks.singleIncomplete[0],
+      })
+      await waitFor(() => {
+        expect(container.querySelectorAll('.d3-component').length).toBe(1)
+      })
+      expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+      screen.getByRole('button', { name: /Review 2/ })
+      const cells = () =>
+        within(screen.getAllByRole('row')[3]).getAllByRole('cell')
+      expect(cells()[4]).toHaveTextContent('29')
+      expect(cells()[5]).toHaveTextContent('1')
+
+      // Excluding extra batches leaves the batches the audit math drew, in the
+      // discrepancies and the counts, and sticks in the URL
+      userEvent.click(
+        screen.getByRole('checkbox', { name: 'Exclude extra batches' })
+      )
+      expect(history.location.search).toEqual('?excludeExtraBatches=true')
+      expect(cells()[4]).toHaveTextContent('28')
+      expect(cells()[5]).toHaveTextContent('0')
+      userEvent.click(screen.getByRole('button', { name: /Review 1/ }))
+      const dialog = (
+        await screen.findByRole('heading', {
+          name: /Jurisdiction 3 Discrepancies/,
+        })
+      ).closest('.bp3-dialog')! as HTMLElement
+      within(dialog).getByText('batch1 - Contest 1')
+      expect(
+        within(dialog).queryByText('batch2 - Contest 1')
+      ).not.toBeInTheDocument()
+      userEvent.click(within(dialog).getByRole('button', { name: 'Close' }))
+      await waitFor(() => {
+        expect(dialog).not.toBeInTheDocument()
+      })
+
+      userEvent.click(
+        screen.getByRole('checkbox', { name: 'Exclude extra batches' })
+      )
+      expect(history.location.search).toEqual('')
+      screen.getByRole('button', { name: /Review 2/ })
+    })
+  })
+
   describe('contest select', () => {
     const jurisdiction = jurisdictionMocks.oneComplete[2] // Complete
+    const noExtras = {
+      numSamples: 0,
+      numSamplesAudited: 0,
+      numUnique: 0,
+      numUniqueAudited: 0,
+    }
     const contestA = contestMocks.two[0]
     // Contest B is only in the complete jurisdiction
     const contestB = {
@@ -631,12 +741,14 @@ describe('Progress screen', () => {
                 numSamplesAudited: 20,
                 numUnique: 20,
                 numUniqueAudited: 20,
+                extras: noExtras,
               },
               [contestB.id]: {
                 numSamples: 12,
                 numSamplesAudited: 10,
                 numUnique: 10,
                 numUniqueAudited: 8,
+                extras: noExtras,
               },
             },
           }
@@ -684,7 +796,9 @@ describe('Progress screen', () => {
         expect(footers[5]).toHaveTextContent('2')
 
         // Counting every sampled batch instead of unique ones
-        userEvent.click(screen.getByRole('checkbox'))
+        userEvent.click(
+          screen.getByRole('checkbox', { name: /Count unique sampled/ })
+        )
         expect(cells[4]).toHaveTextContent('10')
         expect(cells[5]).toHaveTextContent('2')
 

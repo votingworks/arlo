@@ -166,3 +166,33 @@ def test_sample_extra_batches_to_ensure_one_per_jurisdiction(
         assert {batch["name"] for batch in j2_batches} == set(
             expected_base_sample + expected_extra_sample
         )
+
+        # Once tallied with a discrepancy, the discrepancy listing flags the batch as extra
+        [batch_02] = j2_batches
+        [contest] = Contest.query.filter_by(election_id=election_id).all()
+        reported_results = Jurisdiction.query.get(jurisdiction_ids[1]).batch_tallies[
+            "Batch 02"
+        ][contest.id]
+        top_choice = max(
+            contest.choices, key=lambda choice: reported_results[choice.id]
+        )
+        results = {
+            choice.id: reported_results[choice.id] - (choice is top_choice)
+            for choice in contest.choices
+        }
+        rv = put_json(
+            client,
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches/{batch_02['id']}/results",
+            [{"name": "Tally Sheet #1", "results": results}],
+        )
+        assert_ok(rv)
+        rv = post_json(
+            client,
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches/finalize",
+        )
+        assert_ok(rv)
+        set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+        rv = client.get(f"/api/election/{election_id}/discrepancy")
+        [batch_02_review] = json.loads(rv.data)[jurisdiction_ids[1]].values()
+        assert batch_02_review["name"] == "Batch 02"
+        assert batch_02_review["isExtra"] is True

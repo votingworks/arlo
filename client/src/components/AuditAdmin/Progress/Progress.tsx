@@ -17,9 +17,12 @@ import {
   getJurisdictionStatus,
   JurisdictionProgressStatus,
   useDiscrepanciesByJurisdiction,
-  DiscrepanciesByJurisdiction,
+  BallotDiscrepanciesByJurisdiction,
+  BatchDiscrepanciesByJurisdiction,
+  DiscrepanciesByContest,
   useLastLoginByJurisdiction,
   IRoundStatusCounts,
+  IBatchRoundStatusCounts,
 } from '../../useJurisdictions'
 import JurisdictionDetail from './JurisdictionDetail'
 import { Table, sortByRank, downloadTableAsCSV } from '../../Atoms/Table'
@@ -84,18 +87,39 @@ const sortDiscrepanciesFirst: SortByFn<IJurisdiction> = (
   return a - b
 }
 
+const NO_DRAWS: IBatchRoundStatusCounts = {
+  numSamples: 0,
+  numSamplesAudited: 0,
+  numUnique: 0,
+  numUniqueAudited: 0,
+  extras: {
+    numSamples: 0,
+    numSamplesAudited: 0,
+    numUnique: 0,
+    numUniqueAudited: 0,
+  },
+}
+
+const withoutExtras = (
+  counts: IRoundStatusCounts,
+  extras: IRoundStatusCounts
+): IRoundStatusCounts => ({
+  numSamples: counts.numSamples - extras.numSamples,
+  numSamplesAudited: counts.numSamplesAudited - extras.numSamplesAudited,
+  numUnique: counts.numUnique - extras.numUnique,
+  numUniqueAudited: counts.numUniqueAudited - extras.numUniqueAudited,
+})
+
 // We count the number of batch-contest pairs with discrepancies, not the number
 // of batches with discrepancies.
-const countDiscrepanciesForJurisdiction = (
-  discrepancies: DiscrepanciesByJurisdiction,
-  jurisdictionId: string
-) => {
-  return sum(
-    Object.values(discrepancies[jurisdictionId] ?? {}).map(
-      contestDiscrepancies => Object.keys(contestDiscrepancies).length
+const countDiscrepancies = (
+  discrepanciesByBatchOrBallot: Record<string, DiscrepanciesByContest>
+) =>
+  sum(
+    Object.values(discrepanciesByBatchOrBallot).map(
+      discrepanciesByContest => Object.keys(discrepanciesByContest).length
     )
   )
-}
 
 export interface IProgressProps {
   jurisdictions: IJurisdiction[]
@@ -127,7 +151,29 @@ const Progress: React.FC<IProgressProps> = ({
     dir?: string // asc | desc
     filter?: string
     contest?: string // Scope the table to one contest
+    excludeExtraBatches?: string
   }>()
+  const excludeExtraBatches = sortAndFilterState?.excludeExtraBatches === 'true'
+  // Only some organizations' audits sample extra batches
+  const hasExtraBatches = jurisdictions.some(
+    jurisdiction =>
+      (jurisdiction.currentRoundStatus?.extras?.numSamples ?? 0) > 0
+  )
+  const jurisdictionDiscrepancies = (
+    jurisdictionId: string
+  ): Record<string, DiscrepanciesByContest> | null => {
+    if (!discrepancyQuery.data) return null
+    if (auditType === 'BATCH_COMPARISON') {
+      const batches = discrepancyQuery.data as BatchDiscrepanciesByJurisdiction
+      return Object.fromEntries(
+        Object.values(batches[jurisdictionId] ?? {})
+          .filter(batch => !(excludeExtraBatches && batch.isExtra))
+          .map(batch => [batch.name, batch.discrepancies])
+      )
+    }
+    const ballots = discrepancyQuery.data as BallotDiscrepanciesByJurisdiction
+    return ballots[jurisdictionId] ?? {}
+  }
   // Once a batch comparison audit of several contests is under way, the table
   // can be viewed one contest at a time. Before then its columns are file
   // totals, which have no per-contest version.
@@ -137,18 +183,19 @@ const Progress: React.FC<IProgressProps> = ({
     ? contests.find(contest => contest.id === sortAndFilterState?.contest)
     : undefined
   // With a contest selected, the sample counts are that contest's. A
-  // jurisdiction with no draws for the contest has no entry for it.
+  // jurisdiction with no draws for the contest has no entry for it. With
+  // extra batches excluded, only the batches the audit math drew count.
   const roundStatusCounts = (
     jurisdiction: IJurisdiction
-  ): IRoundStatusCounts | null =>
-    selectedContest
-      ? (jurisdiction.currentRoundStatusByContestId?.[selectedContest.id] ?? {
-          numSamples: 0,
-          numSamplesAudited: 0,
-          numUnique: 0,
-          numUniqueAudited: 0,
-        })
+  ): IRoundStatusCounts | null => {
+    const counts = selectedContest
+      ? (jurisdiction.currentRoundStatusByContestId?.[selectedContest.id] ??
+        NO_DRAWS)
       : jurisdiction.currentRoundStatus
+    return counts && excludeExtraBatches && counts.extras
+      ? withoutExtras(counts, counts.extras)
+      : counts
+  }
   const [isShowingUnique, setIsShowingUnique] = useState<boolean>(true)
   const [jurisdictionDetailId, setJurisdictionDetailId] = useState<
     string | null
@@ -411,9 +458,10 @@ const Progress: React.FC<IProgressProps> = ({
     if (showDiscrepancies) {
       columns.push({
         Header: 'Discrepancies',
-        accessor: ({ id }) =>
-          discrepancyQuery.isSuccess &&
-          countDiscrepanciesForJurisdiction(discrepancyQuery.data, id),
+        accessor: ({ id }) => {
+          const discrepancies = jurisdictionDiscrepancies(id)
+          return discrepancies && countDiscrepancies(discrepancies)
+        },
         Cell: ({
           value,
           row: { original: jurisdiction },
@@ -554,6 +602,19 @@ const Progress: React.FC<IProgressProps> = ({
             style={{ marginBottom: 0 }}
           />
         )}
+        {auditType === 'BATCH_COMPARISON' && hasExtraBatches && (
+          <Switch
+            checked={excludeExtraBatches}
+            label="Exclude extra batches"
+            onChange={() =>
+              setSortAndFilterState({
+                ...sortAndFilterState,
+                excludeExtraBatches: excludeExtraBatches ? undefined : 'true',
+              })
+            }
+            style={{ marginBottom: 0 }}
+          />
+        )}
       </TableControls>
       <Table
         data={filteredJurisdictions}
@@ -599,7 +660,9 @@ const Progress: React.FC<IProgressProps> = ({
       )}
       {jurisdictionDiscrepanciesId && (
         <JurisdictionDiscrepancies
-          discrepancies={discrepancyQuery.data!}
+          discrepancies={jurisdictionDiscrepancies(
+            jurisdictionDiscrepanciesId
+          )!}
           jurisdiction={jurisdictions.find(
             jurisdiction => jurisdiction.id === jurisdictionDiscrepanciesId
           )!}

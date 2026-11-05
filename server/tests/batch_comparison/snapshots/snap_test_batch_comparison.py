@@ -8,6 +8,12 @@ from snapshottest import Snapshot
 snapshots = Snapshot()
 
 snapshots["test_batch_comparison_batches_sampled_multiple_times 1"] = {
+    "extras": {
+        "numSamples": 0,
+        "numSamplesAudited": 0,
+        "numUnique": 0,
+        "numUniqueAudited": 0,
+    },
     "numSamples": 5,
     "numSamplesAudited": 5,
     "numUnique": 3,
@@ -16,6 +22,12 @@ snapshots["test_batch_comparison_batches_sampled_multiple_times 1"] = {
 }
 
 snapshots["test_batch_comparison_batches_sampled_multiple_times 2"] = {
+    "extras": {
+        "numSamples": 0,
+        "numSamplesAudited": 0,
+        "numUnique": 0,
+        "numUniqueAudited": 0,
+    },
     "numSamples": 2,
     "numSamplesAudited": 2,
     "numUnique": 2,
@@ -114,6 +126,12 @@ Totals,,2700,,,candidate 1: 2700; candidate 2: 1350; candidate 3: 1350,candidate
 """
 
 snapshots["test_batch_comparison_round_1 1"] = {
+    "extras": {
+        "numSamples": 0,
+        "numSamplesAudited": 0,
+        "numUnique": 0,
+        "numUniqueAudited": 0,
+    },
     "numSamples": 9,
     "numSamplesAudited": 0,
     "numUnique": 6,
@@ -122,6 +140,12 @@ snapshots["test_batch_comparison_round_1 1"] = {
 }
 
 snapshots["test_batch_comparison_round_1 2"] = {
+    "extras": {
+        "numSamples": 0,
+        "numSamplesAudited": 0,
+        "numUnique": 0,
+        "numUniqueAudited": 0,
+    },
     "numSamples": 5,
     "numSamplesAudited": 0,
     "numUnique": 2,
@@ -130,6 +154,12 @@ snapshots["test_batch_comparison_round_1 2"] = {
 }
 
 snapshots["test_batch_comparison_round_2 1"] = {
+    "extras": {
+        "numSamples": 0,
+        "numSamplesAudited": 0,
+        "numUnique": 0,
+        "numUniqueAudited": 0,
+    },
     "numSamples": 5,
     "numSamplesAudited": 1,
     "numUnique": 5,
@@ -138,6 +168,12 @@ snapshots["test_batch_comparison_round_2 1"] = {
 }
 
 snapshots["test_batch_comparison_round_2 10"] = {
+    "extras": {
+        "numSamples": 0,
+        "numSamplesAudited": 0,
+        "numUnique": 0,
+        "numUniqueAudited": 0,
+    },
     "numSamples": 1,
     "numSamplesAudited": 1,
     "numUnique": 1,
@@ -146,6 +182,12 @@ snapshots["test_batch_comparison_round_2 10"] = {
 }
 
 snapshots["test_batch_comparison_round_2 11"] = {
+    "extras": {
+        "numSamples": 0,
+        "numSamplesAudited": 0,
+        "numUnique": 0,
+        "numUniqueAudited": 0,
+    },
     "numSamples": 1,
     "numSamplesAudited": 0,
     "numUnique": 1,
@@ -198,6 +240,12 @@ Totals,,1700,,,candidate 1: 1700; candidate 2: 850; candidate 3: 850,candidate 1
 """
 
 snapshots["test_batch_comparison_round_2 2"] = {
+    "extras": {
+        "numSamples": 0,
+        "numSamplesAudited": 0,
+        "numUnique": 0,
+        "numUniqueAudited": 0,
+    },
     "numSamples": 5,
     "numSamplesAudited": 2,
     "numUnique": 5,
@@ -206,6 +254,12 @@ snapshots["test_batch_comparison_round_2 2"] = {
 }
 
 snapshots["test_batch_comparison_round_2 3"] = {
+    "extras": {
+        "numSamples": 0,
+        "numSamplesAudited": 0,
+        "numUnique": 0,
+        "numUniqueAudited": 0,
+    },
     "numSamples": 5,
     "numSamplesAudited": 3,
     "numUnique": 5,
@@ -214,6 +268,12 @@ snapshots["test_batch_comparison_round_2 3"] = {
 }
 
 snapshots["test_batch_comparison_round_2 4"] = {
+    "extras": {
+        "numSamples": 0,
+        "numSamplesAudited": 0,
+        "numUnique": 0,
+        "numUniqueAudited": 0,
+    },
     "numSamples": 5,
     "numSamplesAudited": 4,
     "numUnique": 5,
@@ -222,6 +282,12 @@ snapshots["test_batch_comparison_round_2 4"] = {
 }
 
 snapshots["test_batch_comparison_round_2 5"] = {
+    "extras": {
+        "numSamples": 0,
+        "numSamplesAudited": 0,
+        "numUnique": 0,
+        "numUniqueAudited": 0,
+    },
     "numSamples": 5,
     "numSamplesAudited": 5,
     "numUnique": 5,
@@ -230,6 +296,12 @@ snapshots["test_batch_comparison_round_2 5"] = {
 }
 
 snapshots["test_batch_comparison_round_2 6"] = {
+    "extras": {
+        "numSamples": 0,
+        "numSamplesAudited": 0,
+        "numUnique": 0,
+        "numUniqueAudited": 0,
+    },
     "numSamples": 5,
     "numSamplesAudited": 5,
     "numUnique": 5,
@@ -238,6 +310,12 @@ snapshots["test_batch_comparison_round_2 6"] = {
 }
 
 snapshots["test_batch_comparison_round_2 7"] = {
+    "extras": {
+        "numSamples": 0,
+        "numSamplesAudited": 0,
+        "numUnique": 0,
+        "numUniqueAudited": 0,
+    },
     "numSamples": 2,
     "numSamplesAudited": 0,
     "numUnique": 1,
@@ -246,6 +324,12 @@ snapshots["test_batch_comparison_round_2 7"] = {
 }
 
 snapshots["test_batch_comparison_round_2 8"] = {
+    "extras": {
+        "numSamples": 0,
+        "numSamplesAudited": 0,
+        "numUnique": 0,
+        "numUniqueAudited": 0,
+    },
     "numSamples": 5,
     "numSamplesAudited": 5,
     "numUnique": 5,
@@ -254,6 +338,12 @@ snapshots["test_batch_comparison_round_2 8"] = {
 }
 
 snapshots["test_batch_comparison_round_2 9"] = {
+    "extras": {
+        "numSamples": 0,
+        "numSamplesAudited": 0,
+        "numUnique": 0,
+        "numUniqueAudited": 0,
+    },
     "numSamples": 2,
     "numSamplesAudited": 2,
     "numUnique": 1,

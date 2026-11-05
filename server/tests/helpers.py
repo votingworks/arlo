@@ -808,3 +808,14 @@ def results_for_batch_contests(
         }
         for sheet in tally_sheets
     ]
+
+
+# Batch comparison discrepancies are keyed by batch id; re-key a jurisdiction's
+# by batch name, down to the contest discrepancies, for readable assertions
+def discrepancies_by_batch_name(
+    jurisdiction_discrepancies: dict[str, Any],
+) -> dict[str, Any]:
+    return {
+        batch["name"]: batch["discrepancies"]
+        for batch in jurisdiction_discrepancies.values()
+    }

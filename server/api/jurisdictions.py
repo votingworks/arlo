@@ -1,6 +1,6 @@
 import logging
-from collections.abc import Mapping
-from typing import cast as typing_cast
+from collections.abc import Callable, Mapping
+from typing import Any, cast as typing_cast
 import enum
 import uuid
 import datetime
@@ -475,8 +475,43 @@ def sampled_batch_draw_has_results():  # noqa: ANN201
     )
 
 
+# The sample counts for draws given as rows of batch id and whether the draw's
+# results are entered
+def count_samples(draws: list[Any]) -> JSONDict:
+    batch_ids = {draw.batch_id for draw in draws}
+    unaudited_batch_ids = {draw.batch_id for draw in draws if not draw.has_results}
+    return {
+        "numSamples": len(draws),
+        "numSamplesAudited": sum(draw.has_results for draw in draws),
+        "numUnique": len(batch_ids),
+        "numUniqueAudited": len(batch_ids - unaudited_batch_ids),
+    }
+
+
+# The round's draws of extra batches, grouped by the given key
+def extra_batch_draws(round: Round, key: Callable[[Any], Any]) -> dict[Any, list[Any]]:
+    draws_by_key = defaultdict(list)
+    for draw in (
+        SampledBatchDraw.query.filter_by(
+            round_id=round.id, ticket_number=EXTRA_TICKET_NUMBER
+        )
+        .join(Batch)
+        .with_entities(
+            Batch.jurisdiction_id,
+            SampledBatchDraw.contest_id,
+            SampledBatchDraw.batch_id,
+            sampled_batch_draw_has_results().label("has_results"),
+        )
+    ):
+        draws_by_key[key(draw)].append(draw)
+    return draws_by_key
+
+
 # Each jurisdiction's sample counts for each contest it has draws for
 def batch_round_status_by_contest(round: Round) -> dict[str, dict[str, JSONDict]]:
+    extra_draws = extra_batch_draws(
+        round, lambda draw: (draw.jurisdiction_id, draw.contest_id)
+    )
     draws_in_round = SampledBatchDraw.query.filter_by(round_id=round.id).join(Batch)
     draw_has_results = sampled_batch_draw_has_results()
     by_jurisdiction_and_contest = [Batch.jurisdiction_id, SampledBatchDraw.contest_id]
@@ -517,11 +552,13 @@ def batch_round_status_by_contest(round: Round) -> dict[str, dict[str, JSONDict]
             "numUniqueAudited": audited_batch_counts.get(
                 (jurisdiction_id, contest_id), 0
             ),
+            "extras": count_samples(extra_draws[(jurisdiction_id, contest_id)]),
         }
     return status_by_contest_by_jurisdiction
 
 
 def batch_round_status(election: Election, round: Round) -> dict[str, JSONDict]:
+    extra_draws = extra_batch_draws(round, lambda draw: draw.jurisdiction_id)
     sample_count_by_jurisdiction = dict(
         SampledBatchDraw.query.filter_by(round_id=round.id)
         .join(Batch)
@@ -625,6 +662,7 @@ def batch_round_status(election: Election, round: Round) -> dict[str, JSONDict]:
             "numSamplesAudited": num_samples_audited(jurisdiction.id),
             "numUnique": num_batches(jurisdiction.id),
             "numUniqueAudited": num_batches_audited(jurisdiction.id),
+            "extras": count_samples(extra_draws[jurisdiction.id]),
         }
         for jurisdiction in election.jurisdictions
     }

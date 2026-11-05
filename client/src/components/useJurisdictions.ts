@@ -56,8 +56,9 @@ export interface IJurisdiction {
     numUnique: number
     numUniqueAudited: number
     numBatchesAudited?: number
+    extras?: IRoundStatusCounts // Only in batch comparison audits
   } | null
-  currentRoundStatusByContestId?: Record<string, IRoundStatusCounts> | null
+  currentRoundStatusByContestId?: Record<string, IBatchRoundStatusCounts> | null
 }
 
 export interface IRoundStatusCounts {
@@ -65,6 +66,12 @@ export interface IRoundStatusCounts {
   numSamplesAudited: number
   numUnique: number
   numUniqueAudited: number
+}
+
+// Batch comparison audits also report the extra batches' share of the counts:
+// batches sampled on top of what the audit math drew
+export interface IBatchRoundStatusCounts extends IRoundStatusCounts {
+  extras: IRoundStatusCounts
 }
 
 export const getJurisdictionStatus = (
@@ -181,19 +188,32 @@ export const useLastLoginByJurisdiction = (
   })
 }
 
-export type DiscrepanciesByJurisdiction = Record<
-  string, // [jurisdictionId]
-  Record<
-    string, // [batchName]
-    Record<string, ContestDiscrepancies> // [contestId]: contestDiscrepancies
-  >
->
-
-type ContestDiscrepancies = {
+export type ContestDiscrepancies = {
   reportedVotes: Record<string, number | string> // `Record` keys are choiceId
   auditedVotes: Record<string, number | string> // `Record` values are counts, "o" (overvote), "u" (undervote)
   discrepancies: Record<string, number | string>
 }
+
+// [contestId]: contestDiscrepancies, for one batch or ballot
+export type DiscrepanciesByContest = Record<string, ContestDiscrepancies>
+
+// Ballot comparison audits: [jurisdictionId][ballotName]
+export type BallotDiscrepanciesByJurisdiction = Record<
+  string,
+  Record<string, DiscrepanciesByContest>
+>
+
+export interface IBatchDiscrepancies {
+  name: string
+  isExtra: boolean // Sampled only as an extra batch, not by the audit math
+  discrepancies: DiscrepanciesByContest
+}
+
+// Batch comparison audits: [jurisdictionId][batchId]
+export type BatchDiscrepanciesByJurisdiction = Record<
+  string,
+  Record<string, IBatchDiscrepancies>
+>
 
 const discrepanciesByJurisdictionQueryKey = (electionId: string): string[] =>
   jurisdictionsQueryKey(electionId).concat('discrepanciesByJurisdiction')
@@ -201,7 +221,10 @@ const discrepanciesByJurisdictionQueryKey = (electionId: string): string[] =>
 export const useDiscrepanciesByJurisdiction = (
   electionId: string,
   options: { enabled?: boolean }
-): UseQueryResult<DiscrepanciesByJurisdiction, ApiError> => {
+): UseQueryResult<
+  BallotDiscrepanciesByJurisdiction | BatchDiscrepanciesByJurisdiction,
+  ApiError
+> => {
   return useQuery(
     discrepanciesByJurisdictionQueryKey(electionId),
     () => fetchApi(`/api/election/${electionId}/discrepancy`),

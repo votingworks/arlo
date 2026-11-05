@@ -413,21 +413,21 @@ def test_batch_comparison_round_2(
     rv = client.get(f"/api/election/{election_id}/discrepancy")
     discrepancies = json.loads(rv.data)
     assert (
-        discrepancies[jurisdictions[0]["id"]]["Batch 1"][contests[0]["id"]][
-            "reportedVotes"
-        ][choice_ids[0]]
+        discrepancies_by_batch_name(discrepancies[jurisdictions[0]["id"]])["Batch 1"][
+            contests[0]["id"]
+        ]["reportedVotes"][choice_ids[0]]
         == 500
     )
     assert (
-        discrepancies[jurisdictions[0]["id"]]["Batch 1"][contests[0]["id"]][
-            "auditedVotes"
-        ][choice_ids[0]]
+        discrepancies_by_batch_name(discrepancies[jurisdictions[0]["id"]])["Batch 1"][
+            contests[0]["id"]
+        ]["auditedVotes"][choice_ids[0]]
         == 400
     )
     assert (
-        discrepancies[jurisdictions[0]["id"]]["Batch 1"][contests[0]["id"]][
-            "discrepancies"
-        ][choice_ids[0]]
+        discrepancies_by_batch_name(discrepancies[jurisdictions[0]["id"]])["Batch 1"][
+            contests[0]["id"]
+        ]["discrepancies"][choice_ids[0]]
         == 100
     )
 
@@ -1280,59 +1280,59 @@ def test_batch_comparison_combined_batches(
     discrepancies = json.loads(rv.data)
     choices = contests[0]["choices"]
     assert (
-        discrepancies[jurisdiction_ids[0]]["Combined Batch"][contests[0]["id"]][
-            "discrepancies"
-        ][choices[0]["id"]]
+        discrepancies_by_batch_name(discrepancies[jurisdiction_ids[0]])[
+            "Combined Batch"
+        ][contests[0]["id"]]["discrepancies"][choices[0]["id"]]
         == 0
     )
     assert (
-        discrepancies[jurisdiction_ids[0]]["Combined Batch"][contests[0]["id"]][
-            "discrepancies"
-        ][choices[1]["id"]]
+        discrepancies_by_batch_name(discrepancies[jurisdiction_ids[0]])[
+            "Combined Batch"
+        ][contests[0]["id"]]["discrepancies"][choices[1]["id"]]
         == candidate_2_discrepancy
     )
     assert (
-        discrepancies[jurisdiction_ids[0]]["Combined Batch"][contests[0]["id"]][
-            "discrepancies"
-        ][choices[2]["id"]]
+        discrepancies_by_batch_name(discrepancies[jurisdiction_ids[0]])[
+            "Combined Batch"
+        ][contests[0]["id"]]["discrepancies"][choices[2]["id"]]
         == candidate_3_discrepancy
     )
 
     assert (
-        discrepancies[jurisdiction_ids[0]]["Combined Batch"][contests[0]["id"]][
-            "reportedVotes"
-        ][choices[0]["id"]]
+        discrepancies_by_batch_name(discrepancies[jurisdiction_ids[0]])[
+            "Combined Batch"
+        ][contests[0]["id"]]["reportedVotes"][choices[0]["id"]]
         == reported_tallies[choice_ids[0]]
     )
     assert (
-        discrepancies[jurisdiction_ids[0]]["Combined Batch"][contests[0]["id"]][
-            "reportedVotes"
-        ][choices[1]["id"]]
+        discrepancies_by_batch_name(discrepancies[jurisdiction_ids[0]])[
+            "Combined Batch"
+        ][contests[0]["id"]]["reportedVotes"][choices[1]["id"]]
         == reported_tallies[choice_ids[1]]
     )
     assert (
-        discrepancies[jurisdiction_ids[0]]["Combined Batch"][contests[0]["id"]][
-            "reportedVotes"
-        ][choices[2]["id"]]
+        discrepancies_by_batch_name(discrepancies[jurisdiction_ids[0]])[
+            "Combined Batch"
+        ][contests[0]["id"]]["reportedVotes"][choices[2]["id"]]
         == reported_tallies[choice_ids[2]]
     )
 
     assert (
-        discrepancies[jurisdiction_ids[0]]["Combined Batch"][contests[0]["id"]][
-            "auditedVotes"
-        ][choices[0]["id"]]
+        discrepancies_by_batch_name(discrepancies[jurisdiction_ids[0]])[
+            "Combined Batch"
+        ][contests[0]["id"]]["auditedVotes"][choices[0]["id"]]
         == reported_tallies[choice_ids[0]]
     )
     assert (
-        discrepancies[jurisdiction_ids[0]]["Combined Batch"][contests[0]["id"]][
-            "auditedVotes"
-        ][choices[1]["id"]]
+        discrepancies_by_batch_name(discrepancies[jurisdiction_ids[0]])[
+            "Combined Batch"
+        ][contests[0]["id"]]["auditedVotes"][choices[1]["id"]]
         == reported_tallies[choice_ids[1]] - candidate_2_discrepancy
     )
     assert (
-        discrepancies[jurisdiction_ids[0]]["Combined Batch"][contests[0]["id"]][
-            "auditedVotes"
-        ][choices[2]["id"]]
+        discrepancies_by_batch_name(discrepancies[jurisdiction_ids[0]])[
+            "Combined Batch"
+        ][contests[0]["id"]]["auditedVotes"][choices[2]["id"]]
         == reported_tallies[choice_ids[2]] - candidate_3_discrepancy
     )
 

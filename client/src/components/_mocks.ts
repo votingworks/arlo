@@ -21,7 +21,8 @@ import {
   IBallotManifestInfo,
   IBatchTalliesFileInfo,
   IJurisdiction,
-  DiscrepanciesByJurisdiction,
+  BallotDiscrepanciesByJurisdiction,
+  BatchDiscrepanciesByJurisdiction,
 } from './useJurisdictions'
 import { IStandardizedContest } from './useStandardizedContests'
 import { ISampleSizesResponse } from './AuditAdmin/Setup/Review/useSampleSizes'
@@ -2283,7 +2284,11 @@ export const aaApiCalls = {
     url: '/us-states-counties.json',
     response: mapTopology,
   },
-  getDiscrepancies: (response: DiscrepanciesByJurisdiction) => ({
+  getDiscrepancies: (
+    response:
+      | BallotDiscrepanciesByJurisdiction
+      | BatchDiscrepanciesByJurisdiction
+  ) => ({
     url: '/api/election/1/discrepancy',
     response,
   }),

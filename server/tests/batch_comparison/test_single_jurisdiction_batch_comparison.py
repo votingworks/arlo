@@ -130,9 +130,9 @@ def test_batch_comparison_single_jurisdiction_discrepancies(
     rv = client.get(f"/api/election/{election_id}/discrepancy")
     discrepancies = json.loads(rv.data)
     for batch in batches:
-        assert discrepancies[jurisdiction_ids[0]][batches[0]["name"]][contest_id][
-            "discrepancies"
-        ] == {
+        assert discrepancies_by_batch_name(discrepancies[jurisdiction_ids[0]])[
+            batches[0]["name"]
+        ][contest_id]["discrepancies"] == {
             choice_ids[0]: 1,
             choice_ids[1]: 0,
             choice_ids[2]: 0,
