@@ -386,6 +386,17 @@ class AuditAdministration(BaseModel):
     __table_args__ = (PrimaryKeyConstraint("organization_id", "user_id"),)
 
 
+# A note an audit admin keeps about a jurisdiction
+class JurisdictionNote(BaseModel):
+    id = Column(String(200), primary_key=True)
+    jurisdiction_id = Column(
+        String(200),
+        ForeignKey("jurisdiction.id", ondelete="cascade"),
+        nullable=False,
+    )
+    text = Column(Text, nullable=False)
+
+
 class JurisdictionAdministration(BaseModel):
     user_id = Column(
         String(200), ForeignKey("user.id", ondelete="cascade"), nullable=False
