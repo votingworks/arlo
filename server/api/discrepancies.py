@@ -235,6 +235,16 @@ def show_batch_comparison_discrepancies_by_jurisdiction(
     }
 
 
+def jurisdiction_ids_with_notes_in_round(election: Election, round: Round) -> set[str]:
+    return {
+        jurisdiction_id
+        for (jurisdiction_id,) in JurisdictionNote.query.join(Jurisdiction)
+        .filter_by(election_id=election.id)
+        .filter(JurisdictionNote.created_at >= round.created_at)
+        .with_entities(JurisdictionNote.jurisdiction_id)
+    }
+
+
 def add_jurisdiction_note(jurisdiction: Jurisdiction, text: str):
     db_session.add(
         JurisdictionNote(
@@ -285,19 +295,32 @@ class BatchDiscrepancies(TypedDict):
     discrepancies: dict[str, BatchContestDiscrepancies]
 
 
-# Keyed by jurisdiction id, then batch id
-BatchDiscrepanciesByJurisdiction = dict[str, dict[str, BatchDiscrepancies]]
+class DiscrepancyNote(TypedDict):
+    createdAt: str
+    text: str
 
 
-# Every batch in the round with a discrepancy. A combined batch is listed once,
-# under its representative's id.
+class JurisdictionDiscrepancies(TypedDict):
+    notes: list[DiscrepancyNote]
+    batches: dict[str, BatchDiscrepancies]  # Keyed by batch id
+
+
+# Keyed by jurisdiction id
+BatchDiscrepanciesByJurisdiction = dict[str, JurisdictionDiscrepancies]
+
+
+# Every jurisdiction with a discrepancy, or with a note this round, along with
+# all its notes and each batch in the round with a discrepancy. A combined
+# batch is listed once, under its representative's id.
 def serialize_batch_discrepancies_by_jurisdiction(
     election: Election, round: Round
 ) -> BatchDiscrepanciesByJurisdiction:
     discrepancies_by_jurisdiction = get_batch_comparison_discrepancies_by_jurisdiction(
         election, round
     )
-    serialized_by_jurisdiction: BatchDiscrepanciesByJurisdiction = defaultdict(dict)
+    batches_with_discrepancies_by_jurisdiction: dict[
+        str, dict[str, BatchDiscrepancies]
+    ] = defaultdict(dict)
     for batch, sub_batches in batches_with_sub_batches(
         drawn_batches_in_round(election, round)
     ):
@@ -307,7 +330,7 @@ def serialize_batch_discrepancies_by_jurisdiction(
         ).get(name, {})
         if not discrepancies_by_contest:
             continue
-        serialized_by_jurisdiction[batch.jurisdiction_id][batch.id] = (
+        batches_with_discrepancies_by_jurisdiction[batch.jurisdiction_id][batch.id] = (
             BatchDiscrepancies(
                 name=name,
                 isExtra=all(
@@ -319,7 +342,29 @@ def serialize_batch_discrepancies_by_jurisdiction(
                 discrepancies=discrepancies_by_contest,
             )
         )
-    return serialized_by_jurisdiction
+
+    notes_by_jurisdiction: dict[str, list[JurisdictionNote]] = defaultdict(list)
+    for note in (
+        JurisdictionNote.query.join(Jurisdiction)
+        .filter_by(election_id=election.id)
+        .order_by(JurisdictionNote.created_at)
+    ):
+        notes_by_jurisdiction[note.jurisdiction_id].append(note)
+
+    return {
+        jurisdiction_id: JurisdictionDiscrepancies(
+            notes=[
+                DiscrepancyNote(
+                    createdAt=note.created_at.isoformat(),
+                    text=note.text,
+                )
+                for note in notes_by_jurisdiction[jurisdiction_id]
+            ],
+            batches=batches_with_discrepancies_by_jurisdiction[jurisdiction_id],
+        )
+        for jurisdiction_id in batches_with_discrepancies_by_jurisdiction.keys()
+        | jurisdiction_ids_with_notes_in_round(election, round)
+    }
 
 
 def get_ballot_comparison_discrepancies_by_jurisdiction(
