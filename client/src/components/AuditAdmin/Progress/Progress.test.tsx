@@ -683,7 +683,7 @@ describe('Progress screen', () => {
       userEvent.click(
         screen.getByRole('checkbox', { name: 'Exclude extra batches' })
       )
-      expect(history.location.search).toEqual('?excludeExtras=true')
+      expect(history.location.search).toEqual('?excludeExtraBatches=true')
       expect(cells()[4]).toHaveTextContent('28')
       expect(cells()[5]).toHaveTextContent('0')
       userEvent.click(screen.getByRole('button', { name: /Review 1/ }))

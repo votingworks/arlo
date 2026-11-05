@@ -156,9 +156,9 @@ const Progress: React.FC<IProgressProps> = ({
     dir?: string // asc | desc
     filter?: string
     contest?: string // Scope the table to one contest
-    excludeExtras?: string // 'true' excludes extra batches' discrepancies
+    excludeExtraBatches?: string
   }>()
-  const excludeExtraBatches = sortAndFilterState?.excludeExtras === 'true'
+  const excludeExtraBatches = sortAndFilterState?.excludeExtraBatches === 'true'
   // Only some organizations' audits sample extra batches
   const hasExtraBatches = jurisdictions.some(
     jurisdiction =>
@@ -616,7 +616,7 @@ const Progress: React.FC<IProgressProps> = ({
             onChange={() =>
               setSortAndFilterState({
                 ...sortAndFilterState,
-                excludeExtras: excludeExtraBatches ? undefined : 'true',
+                excludeExtraBatches: excludeExtraBatches ? undefined : 'true',
               })
             }
             style={{ marginBottom: 0 }}
