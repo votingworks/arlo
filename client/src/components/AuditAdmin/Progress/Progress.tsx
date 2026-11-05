@@ -128,6 +128,19 @@ const countDiscrepancies = (
     )
   )
 
+// Batch comparison sizes discrepancies by the votes they move the margin
+const totalChangeInMargin = (
+  batches: IBatchDiscrepancies[],
+  contestId?: string
+) =>
+  sum(
+    batches.flatMap(({ discrepancies }) =>
+      Object.entries(discrepancies)
+        .filter(([id]) => !contestId || id === contestId)
+        .map(([, { changeInMargin }]) => Math.abs(changeInMargin))
+    )
+  )
+
 const sortBatches = (batches: IBatchDiscrepancies[]) =>
   [...batches].sort(
     (a, b) =>
@@ -501,13 +514,20 @@ const Progress: React.FC<IProgressProps> = ({
 
   if (round) {
     if (showDiscrepancies) {
+      const discrepanciesHeader =
+        auditType === 'BATCH_COMPARISON' ? 'Change in Margin' : 'Discrepancies'
       columns.push({
-        Header: 'Discrepancies',
+        Header: discrepanciesHeader,
         accessor: ({ id }) => {
           const discrepancies = jurisdictionDiscrepancies(id)
           return (
             discrepancies &&
-            countDiscrepancies(discrepancies, selectedContest?.id)
+            (auditType === 'BATCH_COMPARISON'
+              ? totalChangeInMargin(
+                  discrepancies as IBatchDiscrepancies[],
+                  selectedContest?.id
+                )
+              : countDiscrepancies(discrepancies, selectedContest?.id))
           )
         },
         Cell: ({
@@ -545,7 +565,7 @@ const Progress: React.FC<IProgressProps> = ({
         },
         Footer: discrepancyQuery.isLoading
           ? () => null
-          : totalFooter('Discrepancies'),
+          : totalFooter(discrepanciesHeader),
       })
     }
     columns.push(

@@ -518,7 +518,8 @@ describe('Progress screen', () => {
                 [contestMocks.one[0].id]: {
                   reportedVotes: { [contestMocks.one[0].choices[0].id]: 5 },
                   auditedVotes: { [contestMocks.one[0].choices[0].id]: 6 },
-                  discrepancies: { [contestMocks.one[0].choices[0].id]: 1 },
+                  changeInMargin: 1,
+                  numBallots: 100,
                 },
               },
             },
@@ -549,7 +550,8 @@ describe('Progress screen', () => {
                 [contestMocks.one[0].id]: {
                   reportedVotes: { [contestMocks.one[0].choices[0].id]: 5 },
                   auditedVotes: { [contestMocks.one[0].choices[0].id]: 6 },
-                  discrepancies: { [contestMocks.one[0].choices[0].id]: 1 },
+                  changeInMargin: 1,
+                  numBallots: 100,
                 },
               },
             },
@@ -579,7 +581,7 @@ describe('Progress screen', () => {
       expect(headers[0]).toHaveTextContent('Jurisdiction')
       expect(headers[1]).toHaveTextContent('Status')
       expect(headers[2]).toHaveTextContent('Ballots in Manifest')
-      expect(headers[3]).toHaveTextContent('Discrepancies')
+      expect(headers[3]).toHaveTextContent('Change in Margin')
       expect(headers[4]).toHaveTextContent('Batches Audited')
       expect(headers[5]).toHaveTextContent('Batches Remaining')
 
@@ -646,23 +648,16 @@ describe('Progress screen', () => {
         within(dialog).getByRole('button', { name: 'Copy contest name' })
       )
       expect(copy).toHaveBeenCalledWith('Contest 1', { format: 'text/plain' })
-      const discrepancyTableHeaders =
-        within(dialog).getAllByRole('columnheader')
-      expect(discrepancyTableHeaders).toHaveLength(4)
-      expect(discrepancyTableHeaders[0]).toHaveTextContent('Choice')
-      expect(discrepancyTableHeaders[1]).toHaveTextContent('Reported Votes')
-      expect(discrepancyTableHeaders[2]).toHaveTextContent('Audited Votes')
-      expect(discrepancyTableHeaders[3]).toHaveTextContent('Discrepancy')
-
-      const discrepancyTableRows = within(dialog).getAllByRole('row')
-      expect(discrepancyTableRows).toHaveLength(2)
-      const discrepancyTableRow1 = within(discrepancyTableRows[1]).getAllByRole(
-        'cell'
+      within(dialog).getByText('Choice One 5')
+      within(dialog).getByText('Choice One 6')
+      userEvent.click(
+        within(dialog).getByRole('button', { name: 'Copy audited votes' })
       )
-      expect(discrepancyTableRow1[0]).toHaveTextContent('Choice One')
-      expect(discrepancyTableRow1[1]).toHaveTextContent('5')
-      expect(discrepancyTableRow1[2]).toHaveTextContent('6')
-      expect(discrepancyTableRow1[3]).toHaveTextContent('1')
+      expect(copy).toHaveBeenCalledWith('Choice One 6', {
+        format: 'text/plain',
+      })
+      within(dialog).getByText('Ballots in batch')
+      within(dialog).getByText('100')
 
       const footers = within(rows[4]).getAllByRole('cell')
       expect(footers[0]).toHaveTextContent('Total')
@@ -696,7 +691,8 @@ describe('Progress screen', () => {
                 [contestMocks.one[0].id]: {
                   reportedVotes: { [contestMocks.one[0].choices[0].id]: 5 },
                   auditedVotes: { [contestMocks.one[0].choices[0].id]: 6 },
-                  discrepancies: { [contestMocks.one[0].choices[0].id]: 1 },
+                  changeInMargin: 1,
+                  numBallots: 100,
                 },
               },
             },
@@ -817,7 +813,8 @@ describe('Progress screen', () => {
     const contestDiscrepancy = {
       reportedVotes: { [contest.choices[0].id]: 5 },
       auditedVotes: { [contest.choices[0].id]: 6 },
-      discrepancies: { [contest.choices[0].id]: 1 },
+      changeInMargin: 1,
+      numBallots: 100,
     }
     const expectedCalls = [
       aaApiCalls.getDiscrepancies({
@@ -832,7 +829,9 @@ describe('Progress screen', () => {
             'batch-id-2': {
               name: 'batch2',
               isExtra: true,
-              discrepancies: { [contest.id]: contestDiscrepancy },
+              discrepancies: {
+                [contest.id]: { ...contestDiscrepancy, changeInMargin: -1 },
+              },
             },
           },
         },
@@ -1031,7 +1030,8 @@ describe('Progress screen', () => {
       const discrepancy = (contest: typeof contestA) => ({
         reportedVotes: { [contest.choices[0].id]: 5 },
         auditedVotes: { [contest.choices[0].id]: 6 },
-        discrepancies: { [contest.choices[0].id]: 1 },
+        changeInMargin: 1,
+        numBallots: 100,
       })
       // Contest C has no batches drawn in this jurisdiction; contest D does,
       // without discrepancies

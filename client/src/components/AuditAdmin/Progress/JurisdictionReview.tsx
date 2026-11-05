@@ -13,6 +13,8 @@ import styled from 'styled-components'
 import {
   IJurisdiction,
   DiscrepanciesByContest,
+  IBallotContestDiscrepancies,
+  IBatchContestDiscrepancies,
   IDiscrepancyNote,
   JurisdictionRoundStatus,
   useAddJurisdictionDiscrepancyNote,
@@ -72,6 +74,21 @@ function getChoiceName(
   return choice.name
 }
 
+function formatChoiceVotes(
+  contests: IContest[],
+  contestId: string,
+  votes: Record<string, number>
+) {
+  const contest = contests.find(c => c.id === contestId)
+  assert(contest !== undefined)
+  return (
+    contest.choices
+      .filter(choice => votes[choice.id] > 0)
+      .map(choice => `${choice.name} ${votes[choice.id].toLocaleString()}`)
+      .join(', ') || 'none'
+  )
+}
+
 function formatVoteCount(val: string | number | undefined): string {
   switch (val) {
     case 'o':
@@ -87,6 +104,97 @@ function formatVoteCount(val: string | number | undefined): string {
       return val.toLocaleString()
   }
 }
+
+const BatchContestDiscrepancies: React.FC<{
+  contests: IContest[]
+  contestId: string
+  contestDiscrepancies: IBatchContestDiscrepancies
+}> = ({ contests, contestId, contestDiscrepancies }) => (
+  <div
+    style={{
+      display: 'grid',
+      gridTemplateColumns: 'max-content auto',
+      columnGap: '12px',
+      rowGap: '4px',
+      marginBottom: '16px',
+    }}
+  >
+    {(
+      [
+        [
+          'Change in margin',
+          contestDiscrepancies.changeInMargin.toLocaleString(),
+        ],
+        ['Ballots in batch', contestDiscrepancies.numBallots.toLocaleString()],
+        [
+          'Reported',
+          formatChoiceVotes(
+            contests,
+            contestId,
+            contestDiscrepancies.reportedVotes
+          ),
+        ],
+        [
+          'Audited',
+          formatChoiceVotes(
+            contests,
+            contestId,
+            contestDiscrepancies.auditedVotes
+          ),
+        ],
+      ] as const
+    ).map(([label, text]) => (
+      <React.Fragment key={label}>
+        <span className={Classes.TEXT_MUTED}>{label}</span>
+        <span style={rowStyle}>
+          {text}
+          {label === 'Audited' && (
+            <CopyToClipboard
+              iconOnly
+              label="Copy audited votes"
+              getText={() => ({ text, format: 'text/plain' })}
+            />
+          )}
+        </span>
+      </React.Fragment>
+    ))}
+  </div>
+)
+
+const BallotContestDiscrepancies: React.FC<{
+  contests: IContest[]
+  contestId: string
+  contestDiscrepancies: IBallotContestDiscrepancies
+}> = ({ contests, contestId, contestDiscrepancies }) => (
+  <ContestDiscrepanciesTable>
+    <thead>
+      <tr>
+        <th>Choice</th>
+        <th>Reported Votes</th>
+        <th>Audited Votes</th>
+        <th>Discrepancy</th>
+      </tr>
+    </thead>
+    <tbody>
+      {Object.keys(contestDiscrepancies.discrepancies)
+        .filter(choiceID => contestDiscrepancies.discrepancies[choiceID] !== 0)
+        .map(choiceId => (
+          <tr key={choiceId}>
+            <td>{getChoiceName(contests, contestId, choiceId)}</td>
+            <td>
+              {formatVoteCount(contestDiscrepancies.reportedVotes[choiceId])}
+            </td>
+            <td>
+              {formatVoteCount(contestDiscrepancies.auditedVotes[choiceId])}
+            </td>
+            <td>
+              {formatVoteCount(contestDiscrepancies.discrepancies[choiceId])}
+            </td>
+          </tr>
+        ))}
+    </tbody>
+  </ContestDiscrepanciesTable>
+)
 
 export interface IBatchOrBallotDiscrepancies {
   name: string
@@ -267,45 +375,23 @@ const JurisdictionReview: React.FC<IJurisdictionReviewProps> = ({
                       })}
                     />
                   </TableHeader>
-                  <ContestDiscrepanciesTable>
-                    <thead>
-                      <tr>
-                        <th>Choice</th>
-                        <th>Reported Votes</th>
-                        <th>Audited Votes</th>
-                        <th>Discrepancy</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {Object.keys(contestDiscrepancies.discrepancies)
-                        .filter(
-                          choiceID =>
-                            contestDiscrepancies.discrepancies[choiceID] !== 0
-                        )
-                        .map(choiceId => (
-                          <tr key={choiceId}>
-                            <td>
-                              {getChoiceName(contests, contestId, choiceId)}
-                            </td>
-                            <td>
-                              {formatVoteCount(
-                                contestDiscrepancies.reportedVotes[choiceId]
-                              )}
-                            </td>
-                            <td>
-                              {formatVoteCount(
-                                contestDiscrepancies.auditedVotes[choiceId]
-                              )}
-                            </td>
-                            <td>
-                              {formatVoteCount(
-                                contestDiscrepancies.discrepancies[choiceId]
-                              )}
-                            </td>
-                          </tr>
-                        ))}
-                    </tbody>
-                  </ContestDiscrepanciesTable>
+                  {auditType === 'BATCH_COMPARISON' ? (
+                    <BatchContestDiscrepancies
+                      contests={contests}
+                      contestId={contestId}
+                      contestDiscrepancies={
+                        contestDiscrepancies as IBatchContestDiscrepancies
+                      }
+                    />
+                  ) : (
+                    <BallotContestDiscrepancies
+                      contests={contests}
+                      contestId={contestId}
+                      contestDiscrepancies={
+                        contestDiscrepancies as IBallotContestDiscrepancies
+                      }
+                    />
+                  )}
                 </div>
               ))}
             </div>
