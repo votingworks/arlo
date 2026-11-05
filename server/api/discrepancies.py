@@ -17,6 +17,7 @@ from ..audit_math import macro
 from .shared import (
     ContestVoteDeltas,
     ballot_vote_deltas,
+    batch_change_in_margin,
     batch_tallies,
     batch_vote_deltas,
     contest_ids_to_audit_in_round,
@@ -36,7 +37,8 @@ from .jurisdictions import (
 class BatchContestDiscrepancies(TypedDict):
     reportedVotes: macro.ChoiceVotes
     auditedVotes: macro.ChoiceVotes
-    discrepancies: ContestVoteDeltas
+    changeInMargin: int
+    numBallots: int
 
 
 # Ballot comparison compares CVRs, whose votes are strings: ES&S records an
@@ -109,6 +111,7 @@ def get_batch_comparison_discrepancies_by_jurisdiction(
     # A batch drawn again for a new contest keeps its earlier contests' results
     # on its tally sheet, so only the contests it's audited for this round count
     contest_ids_in_round_by_batch_key: dict[tuple[str, str], set[str]] = {}
+    sub_batches_by_batch_key: dict[tuple[str, str], list[Batch]] = {}
     for batch, sub_batches in batches_with_sub_batches(
         drawn_batches_in_round(election, round)
     ):
@@ -117,6 +120,7 @@ def get_batch_comparison_discrepancies_by_jurisdiction(
             contest_ids_in_round_by_batch_key[
                 (sub_batch.jurisdiction.name, sub_batch.name)
             ] = contest_ids
+        sub_batches_by_batch_key[(batch.jurisdiction.name, batch.name)] = sub_batches
 
     jurisdiction_name_to_id = dict(
         Jurisdiction.query.filter_by(election_id=election.id).with_entities(
@@ -202,7 +206,14 @@ def get_batch_comparison_discrepancies_by_jurisdiction(
             ][contest.id] = {
                 "reportedVotes": reported_contest_result,
                 "auditedVotes": audited_contest_result,
-                "discrepancies": vote_deltas,
+                "changeInMargin": batch_change_in_margin(
+                    contest, reported_contest_result, audited_contest_result
+                )
+                or 0,
+                "numBallots": sum(
+                    sub_batch.num_ballots_for_contest(contest.id)
+                    for sub_batch in sub_batches_by_batch_key[batch_key]
+                ),
             }
 
     return discrepancies_by_jurisdiction
