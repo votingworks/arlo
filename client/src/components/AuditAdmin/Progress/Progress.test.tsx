@@ -23,8 +23,14 @@ import {
 } from '../../_mocks'
 import Progress, { IProgressProps } from './Progress'
 import { dummyBallots } from '../../AuditBoard/_mocks'
+import copy from 'copy-to-clipboard'
 import * as utilities from '../../utilities'
 import { ExtendedIntent } from '../../Atoms/StatusTag'
+
+vi.mock(import('copy-to-clipboard'), async importActual => ({
+  ...(await importActual()),
+  default: vi.fn(() => true),
+}))
 
 const mockSavePDF = vi.hoisted(() => vi.fn())
 vi.mock(import('jspdf'), async importActual => {
@@ -450,7 +456,8 @@ describe('Progress screen', () => {
           name: /Jurisdiction 2 Discrepancies/,
         })
       ).closest('.bp3-dialog')! as HTMLElement
-      within(dialog).getByText('ballot1 - Contest 1')
+      within(dialog).getByText('ballot1')
+      within(dialog).getByRole('heading', { level: 6, name: /Contest 1/ })
 
       const discrepancyTableHeaders =
         within(dialog).getAllByRole('columnheader')
@@ -518,6 +525,29 @@ describe('Progress screen', () => {
         [contestMocks.one[0]],
         jurisdictionMocks.oneComplete[2].id
       ),
+      {
+        url: `/api/election/1/jurisdiction/${jurisdictionMocks.oneComplete[2].id}/round/round-1/batches/finalize`,
+        options: { method: 'DELETE' },
+        response: { status: 'ok' },
+      },
+      aaApiCalls.getDiscrepancies({
+        [jurisdictionMocks.oneComplete[2].id]: {
+          'batch-id-1': {
+            name: 'batch1',
+            isExtra: false,
+            discrepancies: {
+              [contestMocks.one[0].id]: {
+                reportedVotes: { [contestMocks.one[0].choices[0].id]: 5 },
+                auditedVotes: { [contestMocks.one[0].choices[0].id]: 6 },
+                discrepancies: { [contestMocks.one[0].choices[0].id]: 1 },
+              },
+            },
+          },
+        },
+      }),
+      aaApiCalls.getLastLoginByJurisdiction({
+        response: lastLoginByJurisdictionMocks.noLogins,
+      }),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({
@@ -584,7 +614,27 @@ describe('Progress screen', () => {
           name: /Jurisdiction 3 Discrepancies/,
         })
       ).closest('.bp3-dialog')! as HTMLElement
-      within(dialog).getByText('batch1 - Contest 1')
+      within(dialog).getByText('Jurisdiction admins')
+      within(dialog).getByText('jurisdiction-3@example.com')
+      within(dialog).getByText('jurisdiction-3-deputy@example.com')
+      const copyEmailButtons = within(dialog).getAllByRole('button', {
+        name: 'Copy email',
+      })
+      expect(copyEmailButtons).toHaveLength(2)
+      userEvent.click(copyEmailButtons[1])
+      expect(copy).toHaveBeenCalledWith('jurisdiction-3-deputy@example.com', {
+        format: 'text/plain',
+      })
+      within(dialog).getByText('batch1')
+      within(dialog).getByRole('heading', { level: 6, name: /Contest 1/ })
+      userEvent.click(
+        within(dialog).getByRole('button', { name: 'Copy batch name' })
+      )
+      expect(copy).toHaveBeenCalledWith('batch1', { format: 'text/plain' })
+      userEvent.click(
+        within(dialog).getByRole('button', { name: 'Copy contest name' })
+      )
+      expect(copy).toHaveBeenCalledWith('Contest 1', { format: 'text/plain' })
       const discrepancyTableHeaders =
         within(dialog).getAllByRole('columnheader')
       expect(discrepancyTableHeaders).toHaveLength(4)
@@ -610,6 +660,62 @@ describe('Progress screen', () => {
       expect(footers[3]).toHaveTextContent('1')
       expect(footers[4]).toHaveTextContent('34')
       expect(footers[5]).toHaveTextContent('26')
+
+      userEvent.click(
+        within(dialog).getByRole('button', { name: 'Unfinalize Tallies' })
+      )
+      await waitFor(() => {
+        expect(
+          within(dialog).getByRole('button', { name: 'Unfinalize Tallies' })
+        ).toBeEnabled()
+      })
+    })
+  })
+
+  it("doesn't offer unfinalizing tallies after the round ends", async () => {
+    const expectedCalls = [
+      aaApiCalls.getDiscrepancies({
+        [jurisdictionMocks.oneComplete[2].id]: {
+          'batch-id-1': {
+            name: 'batch1',
+            isExtra: false,
+            discrepancies: {
+              [contestMocks.one[0].id]: {
+                reportedVotes: { [contestMocks.one[0].choices[0].id]: 5 },
+                auditedVotes: { [contestMocks.one[0].choices[0].id]: 6 },
+                discrepancies: { [contestMocks.one[0].choices[0].id]: 1 },
+              },
+            },
+          },
+        },
+      }),
+      aaApiCalls.getLastLoginByJurisdiction({
+        response: lastLoginByJurisdictionMocks.noLogins,
+      }),
+      aaApiCalls.getMapData,
+      jaApiCalls.getJurisdictionContests(
+        [contestMocks.one[0]],
+        jurisdictionMocks.oneComplete[2].id
+      ),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { container } = render({
+        auditSettings: auditSettingsMocks.batchComparisonAll,
+        jurisdictions: jurisdictionMocks.oneComplete,
+        round: roundMocks.singleComplete[0],
+      })
+      await waitFor(() => {
+        expect(container.querySelectorAll('.d3-component').length).toBe(1)
+      })
+      userEvent.click(screen.getByRole('button', { name: /Review 1/ }))
+      const dialog = (
+        await screen.findByRole('heading', {
+          name: /Jurisdiction 3 Discrepancies/,
+        })
+      ).closest('.bp3-dialog')! as HTMLElement
+      expect(
+        within(dialog).queryByRole('button', { name: 'Unfinalize Tallies' })
+      ).not.toBeInTheDocument()
     })
   })
 
@@ -672,11 +778,28 @@ describe('Progress screen', () => {
         expect(container.querySelectorAll('.d3-component').length).toBe(1)
       })
       expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
-      screen.getByRole('button', { name: /Review 2/ })
       const cells = () =>
         within(screen.getAllByRole('row')[3]).getAllByRole('cell')
       expect(cells()[4]).toHaveTextContent('29')
       expect(cells()[5]).toHaveTextContent('1')
+
+      userEvent.click(screen.getByRole('button', { name: /Review 2/ }))
+      const dialogWithExtras = (
+        await screen.findByRole('heading', {
+          name: /Jurisdiction 3 Discrepancies/,
+        })
+      ).closest('.bp3-dialog')! as HTMLElement
+      expect(
+        within(dialogWithExtras)
+          .getAllByRole('heading', { level: 5 })
+          .map(heading => heading.querySelector('span')!.textContent)
+      ).toEqual(['batch1', '(Extra) batch2'])
+      userEvent.click(
+        within(dialogWithExtras).getByRole('button', { name: 'Close' })
+      )
+      await waitFor(() => {
+        expect(dialogWithExtras).not.toBeInTheDocument()
+      })
 
       // Excluding extra batches leaves the batches the audit math drew, in the
       // discrepancies and the counts, and sticks in the URL
@@ -692,10 +815,8 @@ describe('Progress screen', () => {
           name: /Jurisdiction 3 Discrepancies/,
         })
       ).closest('.bp3-dialog')! as HTMLElement
-      within(dialog).getByText('batch1 - Contest 1')
-      expect(
-        within(dialog).queryByText('batch2 - Contest 1')
-      ).not.toBeInTheDocument()
+      within(dialog).getByText('batch1')
+      expect(within(dialog).queryByText('batch2')).not.toBeInTheDocument()
       userEvent.click(within(dialog).getByRole('button', { name: 'Close' }))
       await waitFor(() => {
         expect(dialog).not.toBeInTheDocument()
@@ -808,6 +929,131 @@ describe('Progress screen', () => {
         )
         expect(history.location.search).toEqual('')
         expect(screen.getAllByRole('row')).toHaveLength(5)
+      })
+    })
+
+    it("opens a jurisdiction's discrepancies on the selected contest", async () => {
+      const discrepancy = (contest: typeof contestA) => ({
+        reportedVotes: { [contest.choices[0].id]: 5 },
+        auditedVotes: { [contest.choices[0].id]: 6 },
+        discrepancies: { [contest.choices[0].id]: 1 },
+      })
+      // Contest C has no batches drawn in this jurisdiction; contest D does,
+      // without discrepancies
+      const contestC = {
+        ...contestMocks.two[1],
+        id: 'contest-id-3',
+        name: 'Contest 3',
+        jurisdictionIds: [jurisdiction.id],
+      }
+      const contestD = {
+        ...contestMocks.two[1],
+        id: 'contest-id-4',
+        name: 'Contest 4',
+        jurisdictionIds: [jurisdiction.id],
+      }
+      const jurisdictionsWithContestD = jurisdictions.map(j =>
+        j.id === jurisdiction.id
+          ? {
+              ...j,
+              currentRoundStatusByContestId: {
+                ...j.currentRoundStatusByContestId,
+                [contestD.id]: {
+                  numSamples: 3,
+                  numSamplesAudited: 3,
+                  numUnique: 3,
+                  numUniqueAudited: 3,
+                  extras: noExtras,
+                },
+              },
+            }
+          : j
+      )
+      const expectedCalls = [
+        aaApiCalls.getDiscrepancies({
+          [jurisdiction.id]: {
+            'batch-id-1': {
+              name: 'batch1',
+              isExtra: false,
+              discrepancies: {
+                [contestA.id]: discrepancy(contestA),
+                [contestB.id]: discrepancy(contestB),
+              },
+            },
+            'batch-id-2': {
+              name: 'batch2',
+              isExtra: false,
+              discrepancies: { [contestA.id]: discrepancy(contestA) },
+            },
+          },
+        }),
+        aaApiCalls.getLastLoginByJurisdiction({
+          response: lastLoginByJurisdictionMocks.noLogins,
+        }),
+        aaApiCalls.getMapData,
+        jaApiCalls.getJurisdictionContests(
+          [contestA, contestB, contestC, contestD],
+          jurisdiction.id
+        ),
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        const { container, history } = render({
+          auditSettings: auditSettingsMocks.batchComparisonAll,
+          jurisdictions: jurisdictionsWithContestD,
+          contests: [contestA, contestB],
+          round: roundMocks.singleIncomplete[0],
+        })
+        await waitFor(() => {
+          expect(container.querySelectorAll('.d3-component').length).toBe(1)
+        })
+        expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+        screen.getByRole('button', { name: /Review 3/ })
+
+        // Only the selected contest's discrepancies are counted and shown
+        userEvent.selectOptions(
+          screen.getByRole('combobox', { name: 'Contest' }),
+          contestB.id
+        )
+        userEvent.click(screen.getByRole('button', { name: /Review 1/ }))
+        const dialog = (
+          await screen.findByRole('heading', {
+            name: /Jurisdiction 3 Discrepancies/,
+          })
+        ).closest('.bp3-dialog')! as HTMLElement
+        const batchHeadings = () =>
+          within(dialog)
+            .queryAllByRole('heading', { level: 5 })
+            .map(heading => heading.querySelector('span')!.textContent)
+        const contestHeadings = () =>
+          within(dialog)
+            .getAllByRole('heading', { level: 6 })
+            .map(heading => heading.querySelector('span')!.textContent)
+        const dialogSelect = within(dialog).getByRole('combobox', {
+          name: 'Contest',
+        })
+        expect(dialogSelect).toHaveValue(contestB.id)
+        expect(batchHeadings()).toEqual(['batch1'])
+        expect(contestHeadings()).toEqual(['Contest 2'])
+
+        // The dialog's select only changes the dialog
+        userEvent.selectOptions(dialogSelect, '')
+        expect(batchHeadings()).toEqual(['batch1', 'batch2'])
+        expect(contestHeadings()).toEqual([
+          'Contest 1',
+          'Contest 2',
+          'Contest 1',
+        ])
+        userEvent.selectOptions(dialogSelect, contestA.id)
+        expect(batchHeadings()).toEqual(['batch1', 'batch2'])
+        expect(contestHeadings()).toEqual(['Contest 1', 'Contest 1'])
+        userEvent.selectOptions(dialogSelect, contestC.id)
+        expect(batchHeadings()).toEqual([])
+        within(dialog).getByText('No batches sampled for this contest')
+        userEvent.selectOptions(dialogSelect, contestD.id)
+        expect(batchHeadings()).toEqual([])
+        within(dialog).getByText('No discrepancies for this contest')
+        expect(history.location.search).toEqual(`?contest=${contestB.id}`)
+        screen.getByRole('button', { name: /Review 1/ })
       })
     })
 

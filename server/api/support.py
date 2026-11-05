@@ -79,9 +79,7 @@ def get_jurisdiction_progress(election: Election, current_round: Round) -> JSOND
 def get_discrepancy_count(election: Election, current_round: Round) -> int | None:
     if election.audit_type == AuditType.BATCH_COMPARISON:
         discrepancies_by_jurisdiction = (
-            get_batch_comparison_discrepancies_by_jurisdiction(
-                election, current_round.id
-            )
+            get_batch_comparison_discrepancies_by_jurisdiction(election, current_round)
         )
     elif election.audit_type == AuditType.BALLOT_COMPARISON:
         discrepancies_by_jurisdiction = (

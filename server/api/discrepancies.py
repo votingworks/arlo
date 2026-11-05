@@ -15,6 +15,7 @@ from .shared import (
     ballot_vote_deltas,
     batch_tallies,
     batch_vote_deltas,
+    contest_ids_to_audit_in_round,
     cvrs_for_contest,
     get_current_round,
     group_combined_batches,
@@ -79,20 +80,39 @@ def get_discrepancies_by_jurisdiction(election: Election):
     return jsonify(discrepancies_by_jurisdiction)
 
 
+def drawn_batches_in_round(election: Election, round: Round) -> list[Batch]:
+    return (
+        Batch.query.join(SampledBatchDraw)  # ty: ignore[unsound-return-statement]
+        .filter_by(round_id=round.id)
+        .join(Jurisdiction)
+        .filter_by(election_id=election.id)
+        .order_by(func.human_sort(Batch.name))
+        .options(
+            selectinload(Batch.draws),
+            selectinload(Batch.jurisdiction).selectinload(Jurisdiction.contests),
+        )
+        .all()
+    )
+
+
 def get_batch_comparison_discrepancies_by_jurisdiction(
-    election: Election, round_id: str
+    election: Election, round: Round
 ) -> BatchContestDiscrepanciesByJurisdiction:
     discrepancies_by_jurisdiction: BatchContestDiscrepanciesByJurisdiction = (
         defaultdict(lambda: defaultdict(dict))
     )
 
-    batch_keys_in_round = set(
-        SampledBatchDraw.query.filter_by(round_id=round_id)
-        .join(Batch)
-        .join(Jurisdiction)
-        .with_entities(Jurisdiction.name, Batch.name)
-        .all()
-    )
+    # A batch drawn again for a new contest keeps its earlier contests' results
+    # on its tally sheet, so only the contests it's audited for this round count
+    contest_ids_in_round_by_batch_key: dict[tuple[str, str], set[str]] = {}
+    for batch, sub_batches in batches_with_sub_batches(
+        drawn_batches_in_round(election, round)
+    ):
+        contest_ids = set(contest_ids_to_audit_in_round(round, batch))
+        for sub_batch in sub_batches:
+            contest_ids_in_round_by_batch_key[
+                (sub_batch.jurisdiction.name, sub_batch.name)
+            ] = contest_ids
 
     jurisdiction_name_to_id = dict(
         Jurisdiction.query.filter_by(election_id=election.id).with_entities(
@@ -107,14 +127,6 @@ def get_batch_comparison_discrepancies_by_jurisdiction(
         .all()
     )
     combined_batches = group_combined_batches(combined_sub_batches)
-    # A combined batch is in the round if any of its sub-batches was drawn
-    for combined_batch in combined_batches:
-        sub_batch_keys = {
-            (sub_batch.jurisdiction.name, sub_batch.name)
-            for sub_batch in combined_batch["sub_batches"]
-        }
-        if len(sub_batch_keys & batch_keys_in_round) > 0:
-            batch_keys_in_round |= sub_batch_keys
 
     all_combined_batch_keys = {
         (sub_batch.jurisdiction.name, sub_batch.name)
@@ -131,7 +143,7 @@ def get_batch_comparison_discrepancies_by_jurisdiction(
     }
 
     show_discrepancies_by_jurisdiction = (
-        show_batch_comparison_discrepancies_by_jurisdiction(election)
+        show_batch_comparison_discrepancies_by_jurisdiction(election, round)
     )
 
     for contest in list(election.contests):
@@ -146,7 +158,9 @@ def get_batch_comparison_discrepancies_by_jurisdiction(
             if not show_discrepancies_by_jurisdiction[jurisdiction_id]:
                 continue
 
-            if batch_key not in batch_keys_in_round:
+            if contest.id not in contest_ids_in_round_by_batch_key.get(
+                batch_key, set()
+            ):
                 continue
 
             audited_contest_result = audited_batch_result[contest.id]
@@ -191,8 +205,9 @@ def get_batch_comparison_discrepancies_by_jurisdiction(
 
 
 # In multi-jurisdiction audits, hide discrepancies if the jurisdiction hasn't finalized tallies
+# Finalized in the given round, or in any round when round is None
 def show_batch_comparison_discrepancies_by_jurisdiction(
-    election: Election,
+    election: Election, round: Round | None
 ) -> dict[str, bool]:
     jurisdictions = list(election.jurisdictions)
     is_single_jurisdiction_election = len(jurisdictions) == 1
@@ -200,9 +215,12 @@ def show_batch_comparison_discrepancies_by_jurisdiction(
         jurisidiction_id = jurisdictions[0].id
         return {jurisidiction_id: True}
 
+    finalized = BatchResultsFinalized.query
+    if round is not None:
+        finalized = finalized.filter_by(round_id=round.id)
     finalized_jurisdiction_ids = {
         jurisdiction_id
-        for (jurisdiction_id,) in BatchResultsFinalized.query.with_entities(
+        for (jurisdiction_id,) in finalized.with_entities(
             BatchResultsFinalized.jurisdiction_id
         )
     }
@@ -243,19 +261,12 @@ def serialize_batch_discrepancies_by_jurisdiction(
     election: Election, round: Round
 ) -> BatchDiscrepanciesByJurisdiction:
     discrepancies_by_jurisdiction = get_batch_comparison_discrepancies_by_jurisdiction(
-        election, round.id
-    )
-    drawn_batches = (
-        Batch.query.join(SampledBatchDraw)
-        .filter_by(round_id=round.id)
-        .join(Jurisdiction)
-        .filter_by(election_id=election.id)
-        .order_by(func.human_sort(Batch.name))
-        .options(selectinload(Batch.draws))
-        .all()
+        election, round
     )
     serialized_by_jurisdiction: BatchDiscrepanciesByJurisdiction = defaultdict(dict)
-    for batch, sub_batches in batches_with_sub_batches(drawn_batches):
+    for batch, sub_batches in batches_with_sub_batches(
+        drawn_batches_in_round(election, round)
+    ):
         name = batch.combined_batch_name or batch.name
         discrepancies_by_contest = discrepancies_by_jurisdiction.get(
             batch.jurisdiction_id, {}

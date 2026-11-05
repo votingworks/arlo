@@ -893,8 +893,15 @@ def test_multi_contest_batch_comparison_round_2(
         contest_2_choice_ids[1]: 0,
     }
     jurisdiction_1_batch_results = {
-        # Batch 1 (with no discrepancies)
-        jurisdiction_1_batches[0]["id"]: [reported_results_for_batches_1_through_8],
+        # Batch 1 (with a small contest 2 discrepancy)
+        jurisdiction_1_batches[0]["id"]: [
+            {
+                contest_1_choice_ids[0]: 50,
+                contest_1_choice_ids[1]: 0,
+                contest_2_choice_ids[0]: 49,
+                contest_2_choice_ids[1]: 1,
+            }
+        ],
         # Batch 2 (with large contest 1 discrepancy)
         jurisdiction_1_batches[1]["id"]: [
             {
@@ -1018,6 +1025,12 @@ def test_multi_contest_batch_comparison_round_2(
         ]["discrepancies"][contest_1_choice_ids[0]]
         == 50
     )
+    assert (
+        discrepancies_by_batch_name(discrepancies[jurisdiction_ids[0]])["Batch 1"][
+            contest_ids[1]
+        ]["discrepancies"][contest_2_choice_ids[0]]
+        == 1
+    )
     assert jurisdiction_ids[1] not in discrepancies
     assert jurisdiction_ids[2] not in discrepancies
 
@@ -1126,6 +1139,26 @@ def test_multi_contest_batch_comparison_round_2(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/batches/finalize",
     )
     assert rv.status_code == 409
+    # Results entered but not yet finalized this round aren't listed as
+    # discrepancies, even though the jurisdiction finalized round 1
+    rv = put_batch_results(
+        client,
+        election_id,
+        jurisdiction_ids[0],
+        round_2_id,
+        jurisdiction_1_batches[0]["id"],
+        results_for_batch_contests(
+            jurisdiction_1_batches[0],
+            [{contest_1_choice_ids[0]: 49, contest_1_choice_ids[1]: 1}],
+        ),
+    )
+    assert_ok(rv)
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/discrepancy")
+    assert jurisdiction_ids[0] not in json.loads(rv.data)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     for batch in jurisdiction_1_batches:
         results = results_for_batch_contests(
             batch, [reported_results_for_batches_1_through_8]
@@ -1180,6 +1213,8 @@ def test_multi_contest_batch_comparison_round_2(
     rv = client.get(f"/api/election/{election_id}/discrepancy")
     discrepancies = json.loads(rv.data)
 
+    # Batch 1's round 1 contest 2 discrepancy is still on its tally sheet, but
+    # it's only audited for contest 1 this round
     assert jurisdiction_ids[0] not in discrepancies
     assert jurisdiction_ids[1] not in discrepancies
     assert jurisdiction_ids[2] not in discrepancies
@@ -1763,7 +1798,27 @@ def test_multi_contest_batch_comparison_combined_batch_tallied_in_two_rounds(
         for batch_name in ["Batch 2", "Batch 9"]:
             assert results[("J1", batch_name)][contest_id] == expected_results
 
-    # Batch 2 reports 50/0 and Batch 9 reports 25/25 for Contest 2
+    # Batch 2 reports 50/0 and Batch 9 reports 25/25 for Contest 2. The
+    # discrepancy is listed once the jurisdiction finalizes this round
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/batches"
+    )
+    for batch in json.loads(rv.data)["batches"]:
+        if batch["name"] != "Combined Batch" and batch["resultTallySheets"] == []:
+            rv = put_batch_results(
+                client,
+                election_id,
+                jurisdiction_ids[0],
+                round_2_id,
+                batch["id"],
+                results_for_batch_contests(batch, [reported_results]),
+            )
+            assert_ok(rv)
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/batches/finalize",
+    )
+    assert_ok(rv)
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/discrepancy")
     assert discrepancies_by_batch_name(json.loads(rv.data)[jurisdiction_ids[0]])[
@@ -1778,6 +1833,10 @@ def test_multi_contest_batch_comparison_combined_batch_tallied_in_two_rounds(
             },
         }
     }
+    rv = client.delete(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/batches/finalize"
+    )
+    assert_ok(rv)
 
     rv = client.get(f"/api/election/{election_id}/report")
     report_rows = list(csv.reader(io.StringIO(rv.data.decode("utf-8"))))

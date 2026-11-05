@@ -419,7 +419,7 @@ def finalize_batch_results(
     )
 
     discrepancies_by_jurisdiction = get_batch_comparison_discrepancies_by_jurisdiction(
-        election, round.id
+        election, round
     )
 
     record_activity(

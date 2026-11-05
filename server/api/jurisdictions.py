@@ -9,7 +9,7 @@ from collections import defaultdict
 from flask import jsonify, request
 from sqlalchemy import distinct, func, tuple_
 from sqlalchemy.dialects.postgresql import insert as pg_insert
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, subqueryload
 from werkzeug.exceptions import Conflict, BadRequest
 
 from . import api
@@ -154,6 +154,10 @@ def serialize_jurisdiction(
     json_jurisdiction: JSONDict = {
         "id": jurisdiction.id,
         "name": jurisdiction.name,
+        "adminEmails": sorted(
+            administration.user.email
+            for administration in jurisdiction.jurisdiction_administrations  # ty: ignore[unresolved-attribute]
+        ),
         "ballotManifest": {
             "file": serialize_file(jurisdiction.manifest_file),
             "processing": serialize_file_processing(jurisdiction.manifest_file),
@@ -722,6 +726,9 @@ def list_jurisdictions(election: Election):
             joinedload(Jurisdiction.manifest_file),
             joinedload(Jurisdiction.batch_tallies_file),
             joinedload(Jurisdiction.cvr_file),
+            subqueryload(Jurisdiction.jurisdiction_administrations).subqueryload(  # ty: ignore[unresolved-attribute]
+                JurisdictionAdministration.user
+            ),
         )
         .all()
     )

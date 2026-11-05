@@ -1,5 +1,11 @@
 import { useState, useEffect } from 'react'
-import { useQuery, UseQueryResult } from 'react-query'
+import {
+  useMutation,
+  UseMutationResult,
+  useQuery,
+  useQueryClient,
+  UseQueryResult,
+} from 'react-query'
 import { api } from './utilities'
 import { IFileInfo, FileProcessingStatus } from './useCSV'
 import { fetchApi, ApiError } from '../utils/api'
@@ -45,6 +51,7 @@ export enum JurisdictionProgressStatus {
 export interface IJurisdiction {
   id: string
   name: string
+  adminEmails: string[]
   ballotManifest: IBallotManifestInfo
   expectedBallotManifestNumBallots: number | null
   batchTallies?: IBatchTalliesFileInfo
@@ -229,5 +236,26 @@ export const useDiscrepanciesByJurisdiction = (
     discrepanciesByJurisdictionQueryKey(electionId),
     () => fetchApi(`/api/election/${electionId}/discrepancy`),
     options
+  )
+}
+
+export const useUnfinalizeBatchTallies = (
+  electionId: string
+): UseMutationResult<
+  unknown,
+  ApiError,
+  { jurisdictionId: string; roundId: string }
+> => {
+  const queryClient = useQueryClient()
+  return useMutation(
+    ({ jurisdictionId, roundId }) =>
+      fetchApi(
+        `/api/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/batches/finalize`,
+        { method: 'DELETE' }
+      ),
+    {
+      onSuccess: () =>
+        queryClient.invalidateQueries(jurisdictionsQueryKey(electionId)),
+    }
   )
 }

@@ -34,6 +34,7 @@ def test_jurisdictions_list_no_manifest(
             {
                 "id": jurisdiction_ids[0],
                 "name": "J1",
+                "adminEmails": [default_ja_email(election_id)],
                 "ballotManifest": {
                     "file": None,
                     "processing": None,
@@ -46,6 +47,7 @@ def test_jurisdictions_list_no_manifest(
             {
                 "id": jurisdiction_ids[1],
                 "name": "J2",
+                "adminEmails": [default_ja_email(election_id)],
                 "ballotManifest": {
                     "file": None,
                     "processing": None,
@@ -58,6 +60,7 @@ def test_jurisdictions_list_no_manifest(
             {
                 "id": jurisdiction_ids[2],
                 "name": "J3",
+                "adminEmails": [f"j3-{election_id}@example.com"],
                 "ballotManifest": {
                     "file": None,
                     "processing": None,
@@ -94,6 +97,7 @@ def test_jurisdictions_list_with_manifest(
             {
                 "id": jurisdiction_ids[0],
                 "name": "J1",
+                "adminEmails": [default_ja_email(election_id)],
                 "ballotManifest": {
                     "file": {
                         "name": asserts_startswith("manifest"),
@@ -114,6 +118,7 @@ def test_jurisdictions_list_with_manifest(
             {
                 "id": jurisdiction_ids[1],
                 "name": "J2",
+                "adminEmails": [default_ja_email(election_id)],
                 "ballotManifest": {
                     "file": None,
                     "processing": None,
@@ -126,6 +131,7 @@ def test_jurisdictions_list_with_manifest(
             {
                 "id": jurisdiction_ids[2],
                 "name": "J3",
+                "adminEmails": [f"j3-{election_id}@example.com"],
                 "ballotManifest": {
                     "file": None,
                     "processing": None,
@@ -175,6 +181,7 @@ def test_duplicate_batch_name(client, election_id, jurisdiction_ids):
             {
                 "id": jurisdiction_ids[0],
                 "name": "J1",
+                "adminEmails": [default_ja_email(election_id)],
                 "ballotManifest": {
                     "file": {
                         "name": asserts_startswith("manifest"),
@@ -195,6 +202,7 @@ def test_duplicate_batch_name(client, election_id, jurisdiction_ids):
             {
                 "id": jurisdiction_ids[1],
                 "name": "J2",
+                "adminEmails": [default_ja_email(election_id)],
                 "ballotManifest": {
                     "file": None,
                     "processing": None,
@@ -207,6 +215,7 @@ def test_duplicate_batch_name(client, election_id, jurisdiction_ids):
             {
                 "id": jurisdiction_ids[2],
                 "name": "J3",
+                "adminEmails": [f"j3-{election_id}@example.com"],
                 "ballotManifest": {
                     "file": None,
                     "processing": None,
