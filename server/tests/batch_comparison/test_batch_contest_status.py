@@ -203,3 +203,26 @@ def test_audit_admin_marks_a_batch_contest(
         {"contestId": audit.contest["id"], "status": "ACCEPTED"},
     )
     assert rv.status_code == 403
+
+
+def test_finishing_a_round_accepts_what_is_still_under_review(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    round_1_id: str,
+):
+    audits = [
+        Audit(client, election_id, jurisdiction_id, round_1_id)
+        for jurisdiction_id in jurisdiction_ids[:2]
+    ]
+    rv = audits[0].mark(audits[0].batches[0], "JURISDICTION_CONTACTED")
+    assert_ok(rv)
+
+    audits[0].log_in_aa()
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
+    assert_ok(rv)
+    for audit in audits:
+        assert audit.statuses() == {
+            audit.batches[0]["name"]: "ACCEPTED",
+            **{batch["name"]: "MATCHES" for batch in audit.batches[1:]},
+        }
