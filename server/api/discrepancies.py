@@ -366,16 +366,34 @@ def add_jurisdiction_note(jurisdiction: Jurisdiction, text: str):
     )
 
 
+# The decisions open to an audit admin on a batch contest, each with the
+# statuses it can be made from and its note: contact or accept a discrepancy
+# under review, or reopen an accepted one
+DECISIONS = {
+    BatchDiscrepancyStatus.JURISDICTION_CONTACTED: (
+        {BatchDiscrepancyStatus.NEEDS_REVIEW},
+        "Marked {} contacted",
+    ),
+    BatchDiscrepancyStatus.ACCEPTED: (
+        {
+            BatchDiscrepancyStatus.NEEDS_REVIEW,
+            BatchDiscrepancyStatus.JURISDICTION_CONTACTED,
+        },
+        "Accepted {}",
+    ),
+    BatchDiscrepancyStatus.NEEDS_REVIEW: (
+        {BatchDiscrepancyStatus.ACCEPTED},
+        "Marked {} needs review",
+    ),
+}
+
 BATCH_CONTEST_STATUS_SCHEMA = {
     "type": "object",
     "properties": {
         "contestId": {"type": "string"},
         "status": {
             "type": "string",
-            "enum": [
-                BatchDiscrepancyStatus.JURISDICTION_CONTACTED.value,
-                BatchDiscrepancyStatus.ACCEPTED.value,
-            ],
+            "enum": [decision.value for decision in DECISIONS],
         },
     },
     "required": ["contestId", "status"],
@@ -383,7 +401,7 @@ BATCH_CONTEST_STATUS_SCHEMA = {
 }
 
 
-# An audit admin's decision on a batch contest still under review this round
+# An audit admin's decision on one of a batch's contests audited this round
 @api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/batches/<batch_id>/discrepancy-status",
     methods=["PUT"],
@@ -400,14 +418,16 @@ def set_batch_contest_status(
     ).one_or_none()
     if batch is None:
         raise NotFound()
+    if round.ended_at is not None:
+        raise Conflict("The round has ended")
     body = safe_get_json_dict(request)
     validate(body, BATCH_CONTEST_STATUS_SCHEMA)
     status = BatchDiscrepancyStatus(body["status"])
+    from_statuses, note = DECISIONS[status]
     for contest_status in contest_statuses_in_round(round, batch):
         if (
             contest_status.contest_id == body["contestId"]
-            and contest_status.status in OUTSTANDING_STATUSES
-            and contest_status.status != status
+            and contest_status.status in from_statuses
         ):
             contest_status.status = status  # ty: ignore[invalid-assignment]
             contest = next(
@@ -416,14 +436,7 @@ def set_batch_contest_status(
                 if contest.id == contest_status.contest_id
             )
             name = f"{batch.combined_batch_name or batch.name} for {contest.name}"
-            add_jurisdiction_note(
-                jurisdiction,
-                (
-                    f"Marked {name} contacted"
-                    if status == BatchDiscrepancyStatus.JURISDICTION_CONTACTED
-                    else f"Accepted {name}"
-                ),
-            )
+            add_jurisdiction_note(jurisdiction, note.format(name))
     db_session.commit()
 
     return jsonify(status="ok")
