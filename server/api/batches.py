@@ -28,7 +28,10 @@ from ..activity_log.activity_log import (
     activity_base,
     record_activity,
 )
-from .discrepancies import get_batch_comparison_discrepancies_by_jurisdiction
+from .discrepancies import (
+    add_jurisdiction_note,
+    get_batch_comparison_discrepancies_by_jurisdiction,
+)
 from ..util.get_json import safe_get_json_list
 
 
@@ -417,6 +420,7 @@ def finalize_batch_results(
     db_session.add(
         BatchResultsFinalized(jurisdiction_id=jurisdiction.id, round_id=round.id)
     )
+    add_jurisdiction_note(jurisdiction, "Finalized tallies")
 
     discrepancies_by_jurisdiction = get_batch_comparison_discrepancies_by_jurisdiction(
         election, round
@@ -458,6 +462,8 @@ def unfinalize_batch_results(
     ).delete()
     if num_deleted == 0:
         raise Conflict("Results have not been finalized")
+
+    add_jurisdiction_note(jurisdiction, "Unfinalized tallies")
 
     db_session.commit()
 

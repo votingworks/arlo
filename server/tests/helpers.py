@@ -817,5 +817,5 @@ def discrepancies_by_batch_name(
 ) -> dict[str, Any]:
     return {
         batch["name"]: batch["discrepancies"]
-        for batch in jurisdiction_discrepancies.values()
+        for batch in jurisdiction_discrepancies["batches"].values()
     }

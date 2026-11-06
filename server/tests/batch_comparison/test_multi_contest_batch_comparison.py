@@ -1039,8 +1039,8 @@ def test_multi_contest_batch_comparison_round_2(
         ]["discrepancies"][contest_2_choice_ids[0]]
         == 1
     )
-    assert jurisdiction_ids[1] not in discrepancies
-    assert jurisdiction_ids[2] not in discrepancies
+    assert discrepancies[jurisdiction_ids[1]]["batches"] == {}
+    assert discrepancies[jurisdiction_ids[2]]["batches"] == {}
 
     #
     # End round 1
@@ -1223,9 +1223,9 @@ def test_multi_contest_batch_comparison_round_2(
 
     # Batch 1's round 1 contest 2 discrepancy is still on its tally sheet, but
     # it's only audited for contest 1 this round
-    assert jurisdiction_ids[0] not in discrepancies
-    assert jurisdiction_ids[1] not in discrepancies
-    assert jurisdiction_ids[2] not in discrepancies
+    assert discrepancies[jurisdiction_ids[0]]["batches"] == {}
+    assert discrepancies[jurisdiction_ids[1]]["batches"] == {}
+    assert discrepancies[jurisdiction_ids[2]]["batches"] == {}
 
     #
     # End round 2 / finish audit

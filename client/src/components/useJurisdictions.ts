@@ -217,10 +217,20 @@ export interface IBatchDiscrepancies {
   discrepancies: DiscrepanciesByContest
 }
 
-// Batch comparison audits: [jurisdictionId][batchId]
+export interface IDiscrepancyNote {
+  createdAt: string
+  text: string
+}
+
+export interface IJurisdictionDiscrepancies {
+  notes: IDiscrepancyNote[]
+  batches: Record<string, IBatchDiscrepancies> // [batchId]
+}
+
+// Batch comparison audits: [jurisdictionId]
 export type BatchDiscrepanciesByJurisdiction = Record<
   string,
-  Record<string, IBatchDiscrepancies>
+  IJurisdictionDiscrepancies
 >
 
 const discrepanciesByJurisdictionQueryKey = (electionId: string): string[] =>
@@ -257,6 +267,33 @@ export const useUnfinalizeBatchTallies = (
     {
       onSuccess: () =>
         queryClient.invalidateQueries(jurisdictionsQueryKey(electionId)),
+    }
+  )
+}
+
+export const useAddJurisdictionDiscrepancyNote = (
+  electionId: string
+): UseMutationResult<
+  unknown,
+  ApiError,
+  { jurisdictionId: string; text: string }
+> => {
+  const queryClient = useQueryClient()
+  return useMutation(
+    ({ jurisdictionId, text }) =>
+      fetchApi(
+        `/api/election/${electionId}/jurisdiction/${jurisdictionId}/discrepancy-notes`,
+        {
+          method: 'POST',
+          body: JSON.stringify({ text }),
+          headers: { 'Content-Type': 'application/json' },
+        }
+      ),
+    {
+      onSuccess: () =>
+        queryClient.invalidateQueries(
+          discrepanciesByJurisdictionQueryKey(electionId)
+        ),
     }
   )
 }

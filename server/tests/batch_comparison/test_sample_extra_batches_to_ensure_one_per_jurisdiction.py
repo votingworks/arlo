@@ -193,6 +193,6 @@ def test_sample_extra_batches_to_ensure_one_per_jurisdiction(
         assert_ok(rv)
         set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
         rv = client.get(f"/api/election/{election_id}/discrepancy")
-        [batch_02_review] = json.loads(rv.data)[jurisdiction_ids[1]].values()
+        [batch_02_review] = json.loads(rv.data)[jurisdiction_ids[1]]["batches"].values()
         assert batch_02_review["name"] == "Batch 02"
         assert batch_02_review["isExtra"] is True
