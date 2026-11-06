@@ -419,6 +419,14 @@ class JurisdictionAdministration(BaseModel):
     __table_args__ = (PrimaryKeyConstraint("user_id", "jurisdiction_id"),)
 
 
+class BatchDiscrepancyStatus(str, enum.Enum):
+    NEEDS_REVIEW = "NEEDS_REVIEW"
+    JURISDICTION_CONTACTED = "JURISDICTION_CONTACTED"
+    ACCEPTED = "ACCEPTED"
+    MATCHES = "MATCHES"
+    RE_TALLYING = "RE_TALLYING"
+
+
 # A batch represents a group of ballots in a jurisdiction (usually one physical
 # box or bin).
 class Batch(BaseModel):
@@ -460,6 +468,13 @@ class Batch(BaseModel):
     # batches' ballots were commingled and can't be separated, allow auditing
     # those batches together by labeling them with a combined batch name.
     combined_batch_name = Column(String(200))
+
+    contest_statuses = relationship(
+        "BatchContestStatus",
+        uselist=True,
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
 
     # For batch comparison audits with required batches enabled,
     # users can flag batches to be guaranteed inclusion in the audit sample,
@@ -1051,6 +1066,18 @@ class BatchResultsFinalized(BaseModel):
         String(200), ForeignKey("round.id", ondelete="cascade"), nullable=False
     )
     __table_args__ = (PrimaryKeyConstraint("jurisdiction_id", "round_id"),)
+
+
+# An audit admin's handling of a batch's discrepancies in a contest, set when
+# the batch's tallies are finalized
+class BatchContestStatus(BaseModel):
+    batch_id = Column(
+        String(200), ForeignKey("batch.id", ondelete="cascade"), primary_key=True
+    )
+    contest_id = Column(
+        String(200), ForeignKey("contest.id", ondelete="cascade"), primary_key=True
+    )
+    status = Column(Enum(BatchDiscrepancyStatus), nullable=False)
 
 
 # Only used in ballot comparison audits, a CvrBallot stores one row from the
