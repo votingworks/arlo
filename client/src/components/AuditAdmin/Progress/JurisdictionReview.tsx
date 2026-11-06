@@ -19,7 +19,6 @@ import {
   IBatchContestDiscrepancies,
   IDiscrepancyNote,
   JurisdictionRoundStatus,
-  isOutstanding,
   useAddJurisdictionDiscrepancyNote,
   useSetBatchContestStatus,
   useUnfinalizeBatchTallies,
@@ -44,6 +43,22 @@ export const STATUS_TAGS: Record<
   ACCEPTED: { label: 'Accepted', intent: 'success' },
   MATCHES: { label: 'Matches', intent: 'success' },
   RE_TALLYING: { label: 'Re-tallying', intent: 'in-progress' },
+}
+
+// The decisions open to an audit admin on a batch contest: contact or accept a
+// discrepancy under review, or reopen an accepted one
+const DECISIONS: Partial<
+  Record<
+    BatchDiscrepancyStatus,
+    { label: string; status: BatchContestDecision }[]
+  >
+> = {
+  NEEDS_REVIEW: [
+    { label: 'Mark Contacted', status: 'JURISDICTION_CONTACTED' },
+    { label: 'Accept', status: 'ACCEPTED' },
+  ],
+  JURISDICTION_CONTACTED: [{ label: 'Accept', status: 'ACCEPTED' }],
+  ACCEPTED: [{ label: 'Mark Needs Review', status: 'NEEDS_REVIEW' }],
 }
 
 const ContestDiscrepanciesTable = styled(HTMLTable).attrs({
@@ -375,6 +390,11 @@ const JurisdictionReview: React.FC<IJurisdictionReviewProps> = ({
                     ? (contestDiscrepancies as IBatchContestDiscrepancies)
                         .status
                     : null
+                // Decided while the round is open, like unfinalizing
+                const availableDecisions =
+                  status && round.endedAt === null
+                    ? (DECISIONS[status] ?? [])
+                    : []
                 const setStatus = (newStatus: BatchContestDecision) =>
                   setBatchContestStatus.mutateAsync({
                     jurisdictionId: jurisdiction.id,
@@ -400,25 +420,20 @@ const JurisdictionReview: React.FC<IJurisdictionReviewProps> = ({
                           {STATUS_TAGS[status].label}
                         </StatusTag>
                       )}
-                      {isOutstanding(status) && (
+                      {availableDecisions.length > 0 && (
                         <>
                           <div style={{ flexGrow: 1 }} />
-                          {status === 'NEEDS_REVIEW' && (
-                            <AsyncButton
-                              small
-                              onClick={() =>
-                                setStatus('JURISDICTION_CONTACTED')
-                              }
-                            >
-                              Mark Contacted
-                            </AsyncButton>
+                          {availableDecisions.map(
+                            ({ label, status: decision }) => (
+                              <AsyncButton
+                                key={label}
+                                small
+                                onClick={() => setStatus(decision)}
+                              >
+                                {label}
+                              </AsyncButton>
+                            )
                           )}
-                          <AsyncButton
-                            small
-                            onClick={() => setStatus('ACCEPTED')}
-                          >
-                            Accept
-                          </AsyncButton>
                         </>
                       )}
                     </TableHeader>

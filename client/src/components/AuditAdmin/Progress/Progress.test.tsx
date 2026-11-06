@@ -693,7 +693,7 @@ describe('Progress screen', () => {
     })
   })
 
-  it("doesn't offer unfinalizing tallies after the round ends", async () => {
+  it("doesn't offer unfinalizing tallies or decisions after the round ends", async () => {
     const expectedCalls = [
       aaApiCalls.getDiscrepancies({
         [jurisdictionMocks.oneComplete[2].id]: {
@@ -741,6 +741,14 @@ describe('Progress screen', () => {
       ).closest('.bp3-dialog')! as HTMLElement
       expect(
         within(dialog).queryByRole('button', { name: 'Unfinalize Tallies' })
+      ).not.toBeInTheDocument()
+      expectStatusTag(
+        within(dialog).getByRole('heading', { level: 6, name: /Contest 1/ }),
+        'Needs Review',
+        'danger'
+      )
+      expect(
+        within(dialog).queryByRole('button', { name: 'Accept' })
       ).not.toBeInTheDocument()
     })
   })
@@ -815,6 +823,14 @@ describe('Progress screen', () => {
         discrepancies('ACCEPTED', [
           'Marked batch1 for Contest 1 contacted',
           'Accepted batch1 for Contest 1',
+        ])
+      ),
+      setStatus('NEEDS_REVIEW'),
+      aaApiCalls.getDiscrepancies(
+        discrepancies('NEEDS_REVIEW', [
+          'Marked batch1 for Contest 1 contacted',
+          'Accepted batch1 for Contest 1',
+          'Marked batch1 for Contest 1 needs review',
         ])
       ),
     ]
@@ -925,6 +941,22 @@ describe('Progress screen', () => {
       ).toBeInTheDocument()
       expectStatusTag(statusCells()[0], 'Complete', 'success')
       expect(footer()).toHaveTextContent('2/3 complete')
+
+      // Accepting can be undone
+      userEvent.click(
+        within(contestHeading(/batch1/)).getByRole('button', {
+          name: 'Mark Needs Review',
+        })
+      )
+      await within(dialog).findByText(
+        'Marked batch1 for Contest 1 needs review'
+      )
+      expectStatusTag(contestHeading(/batch1/), 'Needs Review', 'danger')
+      expect(reviewCells()[0].querySelector('.bp3-icon-flag')).toHaveClass(
+        'bp3-intent-danger'
+      )
+      expectStatusTag(statusCells()[0], 'Needs Review', 'danger')
+      expect(footer()).toHaveTextContent('1/3 complete')
     })
   })
 

@@ -221,7 +221,10 @@ export const isOutstanding = (status: BatchDiscrepancyStatus | null): boolean =>
   status === 'NEEDS_REVIEW' || status === 'JURISDICTION_CONTACTED'
 
 // What an audit admin can mark a batch contest
-export type BatchContestDecision = 'JURISDICTION_CONTACTED' | 'ACCEPTED'
+export type BatchContestDecision =
+  | 'JURISDICTION_CONTACTED'
+  | 'ACCEPTED'
+  | 'NEEDS_REVIEW'
 
 export interface IBatchContestDiscrepancies {
   reportedVotes: Record<string, number> // [choiceId]

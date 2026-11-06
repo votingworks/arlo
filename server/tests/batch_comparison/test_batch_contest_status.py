@@ -82,6 +82,10 @@ def test_audit_admin_marks_a_batch_contest(
     rv = audit.mark(off, "ACCEPTED")
     assert_ok(rv)
     assert audit.statuses()[off["name"]] == "ACCEPTED"
+    # Accepting can be undone
+    rv = audit.mark(off, "NEEDS_REVIEW")
+    assert_ok(rv)
+    assert audit.statuses()[off["name"]] == "NEEDS_REVIEW"
 
     # A batch contest that matches has nothing to decide
     rv = audit.mark(fine, "ACCEPTED")
@@ -98,9 +102,10 @@ def test_audit_admin_marks_a_batch_contest(
         "Finalized tallies",
         f"Marked {off['name']} for {audit.contest['name']} contacted",
         f"Accepted {off['name']} for {audit.contest['name']}",
+        f"Marked {off['name']} for {audit.contest['name']} needs review",
     ]
 
-    # Only those two decisions, only for audit admins
+    # Only those decisions, only for audit admins
     rv = audit.mark(off, "MATCHES")
     assert rv.status_code == 400
     rv = audit.mark({"id": "not-a-batch"}, "ACCEPTED")
@@ -130,6 +135,9 @@ def test_finishing_a_round_accepts_what_is_still_under_review(
     audits[0].log_in_aa()
     rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert_ok(rv)
+    # The decisions are closed with the round
+    rv = audits[0].mark(audits[0].batches[0], "NEEDS_REVIEW")
+    assert rv.status_code == 409
     for audit in audits:
         assert audit.statuses() == {
             audit.batches[0]["name"]: "ACCEPTED",
