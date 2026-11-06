@@ -23,6 +23,12 @@ import {
   lastLoginByJurisdictionMocks,
 } from '../../_mocks'
 import Progress, { IProgressProps } from './Progress'
+import {
+  BatchContestDecision,
+  BatchDiscrepancyStatus,
+  BatchDiscrepanciesByJurisdiction,
+  IBatchDiscrepancies,
+} from '../../useJurisdictions'
 import { dummyBallots } from '../../AuditBoard/_mocks'
 import copy from 'copy-to-clipboard'
 import * as utilities from '../../utilities'
@@ -446,6 +452,7 @@ describe('Progress screen', () => {
       expectStatusTag(row3[1], 'Complete', 'success')
       expect(row3[2]).toHaveTextContent('2,117')
       expect(row3[3]).toHaveTextContent('Review 1')
+      expect(row3[3].querySelector('.bp3-icon-flag')).toBeInTheDocument()
       expect(row3[4]).toHaveTextContent('30')
       expect(row3[5]).toHaveTextContent('0')
 
@@ -520,6 +527,7 @@ describe('Progress screen', () => {
                   auditedVotes: { [contestMocks.one[0].choices[0].id]: 6 },
                   changeInMargin: 1,
                   numBallots: 100,
+                  status: 'NEEDS_REVIEW',
                 },
               },
             },
@@ -552,6 +560,7 @@ describe('Progress screen', () => {
                   auditedVotes: { [contestMocks.one[0].choices[0].id]: 6 },
                   changeInMargin: 1,
                   numBallots: 100,
+                  status: 'NEEDS_REVIEW',
                 },
               },
             },
@@ -609,6 +618,7 @@ describe('Progress screen', () => {
       expectStatusTag(row3[1], 'Complete', 'success')
       expect(row3[2]).toHaveTextContent('2,117')
       expect(row3[3]).toHaveTextContent('Review 1')
+      expect(row3[3].querySelector('.bp3-icon-flag')).toBeInTheDocument()
       expect(row3[4]).toHaveTextContent('30')
       expect(row3[5]).toHaveTextContent('0')
       // No jurisdiction sampled extra batches, so there's nothing to exclude
@@ -640,7 +650,11 @@ describe('Progress screen', () => {
         format: 'text/plain',
       })
       within(dialog).getByText('batch1')
-      within(dialog).getByRole('heading', { level: 6, name: /Contest 1/ })
+      expectStatusTag(
+        within(dialog).getByRole('heading', { level: 6, name: /Contest 1/ }),
+        'Needs Review',
+        'danger'
+      )
       userEvent.click(
         within(dialog).getByRole('button', { name: 'Copy batch name' })
       )
@@ -694,6 +708,7 @@ describe('Progress screen', () => {
                   auditedVotes: { [contestMocks.one[0].choices[0].id]: 6 },
                   changeInMargin: 1,
                   numBallots: 100,
+                  status: 'NEEDS_REVIEW',
                 },
               },
             },
@@ -730,6 +745,180 @@ describe('Progress screen', () => {
     })
   })
 
+  it('marks a batch contacted, accepts it, and sorts batches to review first', async () => {
+    const contest = contestMocks.one[0]
+    const [j1, j2, j3] = jurisdictionMocks.allComplete
+    const batch = (
+      name: string,
+      status: BatchDiscrepancyStatus,
+      changeInMargin: number
+    ): IBatchDiscrepancies => ({
+      name,
+      isExtra: false,
+      discrepancies: {
+        [contest.id]: {
+          reportedVotes: { [contest.choices[0].id]: 5 },
+          auditedVotes: { [contest.choices[0].id]: 5 + changeInMargin },
+          changeInMargin,
+          numBallots: 100,
+          status,
+        },
+      },
+    })
+    const discrepancies = (
+      batch1Status: BatchDiscrepancyStatus,
+      notes: string[]
+    ): BatchDiscrepanciesByJurisdiction => ({
+      [j1.id]: {
+        notes: notes.map((text, i) => ({
+          createdAt: `2026-11-06T15:0${i}:00+00:00`,
+          text,
+        })),
+        batches: {
+          'batch-id-1': batch('batch1', batch1Status, 1),
+          'batch-id-2': batch('batch2', 'MATCHES', 0),
+        },
+      },
+      [j2.id]: {
+        notes: [],
+        batches: { 'batch-id-3': batch('batch3', 'ACCEPTED', 5) },
+      },
+      [j3.id]: {
+        notes: [],
+        batches: { 'batch-id-4': batch('batch4', 'JURISDICTION_CONTACTED', 2) },
+      },
+    })
+    const setStatus = (status: BatchContestDecision) => ({
+      url: `/api/election/1/jurisdiction/${j1.id}/round/round-1/batches/batch-id-1/discrepancy-status`,
+      options: {
+        method: 'PUT',
+        body: JSON.stringify({ contestId: contest.id, status }),
+        headers: { 'Content-Type': 'application/json' },
+      },
+      response: { status: 'ok' },
+    })
+    const expectedCalls = [
+      aaApiCalls.getDiscrepancies(discrepancies('NEEDS_REVIEW', [])),
+      aaApiCalls.getLastLoginByJurisdiction({
+        response: lastLoginByJurisdictionMocks.noLogins,
+      }),
+      aaApiCalls.getMapData,
+      jaApiCalls.getJurisdictionContests([contest], j1.id),
+      setStatus('JURISDICTION_CONTACTED'),
+      aaApiCalls.getDiscrepancies(
+        discrepancies('JURISDICTION_CONTACTED', [
+          'Marked batch1 for Contest 1 contacted',
+        ])
+      ),
+      setStatus('ACCEPTED'),
+      aaApiCalls.getDiscrepancies(
+        discrepancies('ACCEPTED', [
+          'Marked batch1 for Contest 1 contacted',
+          'Accepted batch1 for Contest 1',
+        ])
+      ),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { container } = render({
+        auditSettings: auditSettingsMocks.batchComparisonAll,
+        jurisdictions: jurisdictionMocks.allComplete,
+        round: roundMocks.singleIncomplete[0],
+      })
+      await waitFor(() => {
+        expect(container.querySelectorAll('.d3-component').length).toBe(1)
+      })
+      expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+
+      // A jurisdiction with a batch to review is flagged; one with nothing
+      // left to review is checked off
+      const column = (index: number) =>
+        screen
+          .getAllByRole('row')
+          .slice(1, 4)
+          .map(row => within(row).getAllByRole('cell')[index])
+      const reviewCells = () => column(3)
+      const reviewButtonTexts = () =>
+        reviewCells().map(
+          cell => cell.querySelector('.bp3-button-text')!.textContent
+        )
+      expect(reviewCells()[0]).toHaveTextContent('Review 1')
+      expect(reviewCells()[0].querySelector('.bp3-icon-flag')).toHaveClass(
+        'bp3-intent-danger'
+      )
+      expect(reviewCells()[1]).toHaveTextContent('Review 5')
+      expect(
+        reviewCells()[1].querySelector('.bp3-icon-tick-circle')
+      ).toBeInTheDocument()
+      expect(reviewCells()[2]).toHaveTextContent('Review 2')
+      expect(reviewCells()[2].querySelector('.bp3-icon-flag')).toHaveClass(
+        'bp3-intent-warning'
+      )
+
+      // Jurisdictions needing review sort first, then those contacted, in
+      // both directions
+      const header = screen.getByRole('columnheader', {
+        name: 'Change in Margin',
+      })
+      userEvent.click(header)
+      expect(reviewButtonTexts()).toEqual(['Review 1', 'Review 2', 'Review 5'])
+      userEvent.click(header)
+      expect(reviewButtonTexts()).toEqual(['Review 1', 'Review 2', 'Review 5'])
+      userEvent.click(header)
+      expect(reviewButtonTexts()).toEqual(['Review 1', 'Review 5', 'Review 2'])
+
+      userEvent.click(within(reviewCells()[0]).getByRole('button'))
+      const dialog = (
+        await screen.findByRole('heading', { name: /Jurisdiction 1 Review/ })
+      ).closest('.bp3-dialog')! as HTMLElement
+      // Each batch's one contest, with the batch's status and decisions
+      const contestHeading = (batchName: RegExp) =>
+        within(
+          within(dialog).getByRole('heading', { level: 5, name: batchName })
+            .parentElement!
+        ).getByRole('heading', { level: 6 })
+      expectStatusTag(contestHeading(/batch1/), 'Needs Review', 'danger')
+      expectStatusTag(contestHeading(/batch2/), 'Matches', 'success')
+      expect(
+        within(contestHeading(/batch2/)).queryByRole('button', {
+          name: 'Accept',
+        })
+      ).not.toBeInTheDocument()
+
+      userEvent.click(
+        within(contestHeading(/batch1/)).getByRole('button', {
+          name: 'Mark Contacted',
+        })
+      )
+      await within(dialog).findByText('Marked batch1 for Contest 1 contacted')
+      expectStatusTag(contestHeading(/batch1/), 'Contacted', 'warning')
+      expect(
+        within(contestHeading(/batch1/)).queryByRole('button', {
+          name: 'Mark Contacted',
+        })
+      ).not.toBeInTheDocument()
+      expect(reviewCells()[0].querySelector('.bp3-icon-flag')).toHaveClass(
+        'bp3-intent-warning'
+      )
+
+      userEvent.click(
+        within(contestHeading(/batch1/)).getByRole('button', {
+          name: 'Accept',
+        })
+      )
+      await within(dialog).findByText('Accepted batch1 for Contest 1')
+      expectStatusTag(contestHeading(/batch1/), 'Accepted', 'success')
+      expect(
+        within(contestHeading(/batch1/)).queryByRole('button', {
+          name: 'Accept',
+        })
+      ).not.toBeInTheDocument()
+      expect(reviewCells()[0]).toHaveTextContent('Review 1')
+      expect(
+        reviewCells()[0].querySelector('.bp3-icon-tick-circle')
+      ).toBeInTheDocument()
+    })
+  })
+
   it('keeps a noted jurisdiction in review and takes notes', async () => {
     const [reTallying, , finalized] = jurisdictionMocks.oneComplete
     const note = {
@@ -740,10 +929,30 @@ describe('Progress screen', () => {
       createdAt: '2026-11-05T16:00:00+00:00',
       text: 'JA is re-tallying Batch 1',
     }
+    // A jurisdiction under review lists its audited batches with statuses
+    const contest = contestMocks.one[0]
+    const matchingBatch = {
+      'batch-id-1': {
+        name: 'batch1',
+        isExtra: false,
+        discrepancies: {
+          [contest.id]: {
+            reportedVotes: { [contest.choices[0].id]: 5 },
+            auditedVotes: { [contest.choices[0].id]: 5 },
+            changeInMargin: 0,
+            numBallots: 100,
+            status: 'MATCHES' as const,
+          },
+        },
+      },
+    }
     const expectedCalls = [
       aaApiCalls.getDiscrepancies({
-        [reTallying.id]: { notes: [note], batches: {} },
-        [finalized.id]: { notes: [note], batches: {} },
+        [reTallying.id]: {
+          notes: [note],
+          batches: matchingBatch,
+        },
+        [finalized.id]: { notes: [note], batches: matchingBatch },
       }),
       aaApiCalls.getLastLoginByJurisdiction({
         response: lastLoginByJurisdictionMocks.noLogins,
@@ -760,8 +969,11 @@ describe('Progress screen', () => {
         response: { status: 'ok' },
       },
       aaApiCalls.getDiscrepancies({
-        [reTallying.id]: { notes: [note, newNote], batches: {} },
-        [finalized.id]: { notes: [note], batches: {} },
+        [reTallying.id]: {
+          notes: [note, newNote],
+          batches: matchingBatch,
+        },
+        [finalized.id]: { notes: [note], batches: matchingBatch },
       }),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -816,6 +1028,7 @@ describe('Progress screen', () => {
       auditedVotes: { [contest.choices[0].id]: 6 },
       changeInMargin: 1,
       numBallots: 100,
+      status: 'NEEDS_REVIEW' as const,
     }
     const expectedCalls = [
       aaApiCalls.getDiscrepancies({
@@ -1033,6 +1246,7 @@ describe('Progress screen', () => {
         auditedVotes: { [contest.choices[0].id]: 6 },
         changeInMargin: 1,
         numBallots: 100,
+        status: 'NEEDS_REVIEW' as const,
       })
       // Contest C has no batches drawn in this jurisdiction; contest D does,
       // without discrepancies
