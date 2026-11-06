@@ -111,8 +111,9 @@ export const useFinishRound = (
   const queryClient = useQueryClient()
 
   return useMutation(postFinishRound, {
-    onSuccess: () => {
-      queryClient.invalidateQueries(roundsQueryKey(electionId))
+    onSuccess: async () => {
+      await queryClient.invalidateQueries(jurisdictionsQueryKey(electionId))
+      await queryClient.invalidateQueries(roundsQueryKey(electionId))
     },
   })
 }

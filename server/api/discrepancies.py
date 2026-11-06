@@ -303,6 +303,15 @@ def outstanding_contest_statuses(
                 yield batch, contest_status
 
 
+# Finishing a round accepts the discrepancies still under review: the audit
+# math has counted them and the audit is moving on
+def record_round_finished(election: Election, round: Round):
+    for _, contest_status in outstanding_contest_statuses(
+        round, drawn_batches_in_round(election, round)
+    ):
+        contest_status.status = BatchDiscrepancyStatus.ACCEPTED  # ty: ignore[invalid-assignment]
+
+
 # Unfinalizing reopens the batch-contests still under review for re-tallying;
 # the rest keep their status until the next finalize judges the tallies again
 def record_batch_results_unfinalized(round: Round, batches: list[Batch]):
