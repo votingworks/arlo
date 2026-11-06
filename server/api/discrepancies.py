@@ -308,10 +308,17 @@ def outstanding_contest_statuses(
 # Finishing a round accepts the discrepancies still under review: the audit
 # math has counted them and the audit is moving on
 def record_round_finished(election: Election, round: Round):
-    for _, contest_status in outstanding_contest_statuses(
+    accepting_jurisdictions: dict[str, Jurisdiction] = {}
+    for batch, contest_status in outstanding_contest_statuses(
         round, drawn_batches_in_round(election, round)
     ):
         contest_status.status = BatchDiscrepancyStatus.ACCEPTED  # ty: ignore[invalid-assignment]
+        accepting_jurisdictions[batch.jurisdiction_id] = batch.jurisdiction
+    for jurisdiction in accepting_jurisdictions.values():
+        add_jurisdiction_note(
+            jurisdiction,
+            f"Accepted remaining discrepancies when round {round.round_num} finished",
+        )
 
 
 # Unfinalizing reopens the batch-contests still under review for re-tallying;
@@ -395,12 +402,28 @@ def set_batch_contest_status(
         raise NotFound()
     body = safe_get_json_dict(request)
     validate(body, BATCH_CONTEST_STATUS_SCHEMA)
+    status = BatchDiscrepancyStatus(body["status"])
     for contest_status in contest_statuses_in_round(round, batch):
         if (
             contest_status.contest_id == body["contestId"]
             and contest_status.status in OUTSTANDING_STATUSES
+            and contest_status.status != status
         ):
-            contest_status.status = BatchDiscrepancyStatus(body["status"])  # ty: ignore[invalid-assignment]
+            contest_status.status = status  # ty: ignore[invalid-assignment]
+            contest = next(
+                contest
+                for contest in jurisdiction.contests
+                if contest.id == contest_status.contest_id
+            )
+            name = f"{batch.combined_batch_name or batch.name} for {contest.name}"
+            add_jurisdiction_note(
+                jurisdiction,
+                (
+                    f"Marked {name} contacted"
+                    if status == BatchDiscrepancyStatus.JURISDICTION_CONTACTED
+                    else f"Accepted {name}"
+                ),
+            )
     db_session.commit()
 
     return jsonify(status="ok")

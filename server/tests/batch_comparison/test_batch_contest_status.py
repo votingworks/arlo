@@ -178,6 +178,9 @@ def test_audit_admin_marks_a_batch_contest(
     rv = audit.mark(off, "JURISDICTION_CONTACTED")
     assert_ok(rv)
     assert audit.statuses()[off["name"]] == "JURISDICTION_CONTACTED"
+    # Marking it contacted again changes nothing, so it isn't noted again
+    rv = audit.mark(off, "JURISDICTION_CONTACTED")
+    assert_ok(rv)
     rv = audit.mark(off, "ACCEPTED")
     assert_ok(rv)
     assert audit.statuses()[off["name"]] == "ACCEPTED"
@@ -186,6 +189,18 @@ def test_audit_admin_marks_a_batch_contest(
     rv = audit.mark(fine, "ACCEPTED")
     assert_ok(rv)
     assert audit.statuses()[fine["name"]] == "MATCHES"
+
+    # Each decision leaves a note
+    assert [
+        note.text
+        for note in JurisdictionNote.query.filter_by(
+            jurisdiction_id=jurisdiction_ids[0]
+        ).order_by(JurisdictionNote.created_at)
+    ] == [
+        "Finalized tallies",
+        f"Marked {off['name']} for {audit.contest['name']} contacted",
+        f"Accepted {off['name']} for {audit.contest['name']}",
+    ]
 
     # Only those two decisions, only for audit admins
     rv = audit.mark(off, "MATCHES")
@@ -226,3 +241,10 @@ def test_finishing_a_round_accepts_what_is_still_under_review(
             audit.batches[0]["name"]: "ACCEPTED",
             **{batch["name"]: "MATCHES" for batch in audit.batches[1:]},
         }
+        assert (
+            JurisdictionNote.query.filter_by(jurisdiction_id=audit.jurisdiction_id)
+            .order_by(JurisdictionNote.created_at.desc())
+            .first()
+            .text
+            == "Accepted remaining discrepancies when round 1 finished"
+        )
