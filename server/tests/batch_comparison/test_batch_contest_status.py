@@ -6,77 +6,115 @@ from ...models import *
 from ..helpers import *
 
 
+# A jurisdiction's audit of its first contest, with every batch tallied as
+# reported except the first, which is off by one, finalized
+class Audit:
+    def __init__(
+        self, client: FlaskClient, election_id: str, jurisdiction_id: str, round_id: str
+    ):
+        self.client = client
+        self.election_id = election_id
+        self.jurisdiction_id = jurisdiction_id
+        self.round_id = round_id
+        self.finalize_url = f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/batches/finalize"
+        self.log_in_ja()
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/contest"
+        )
+        self.contest = json.loads(rv.data)["contests"][0]
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/batches"
+        )
+        self.batches = json.loads(rv.data)["batches"]
+        self.batch_tallies = Jurisdiction.query.get(jurisdiction_id).batch_tallies
+        first_choice_id = self.contest["choices"][0]["id"]
+        self.off_by_one = {
+            **self.reported_results(self.batches[0]),
+            first_choice_id: self.reported_results(self.batches[0])[first_choice_id]
+            - 1,
+        }
+        self.record(self.batches[0], self.off_by_one)
+        for batch in self.batches[1:]:
+            self.record(batch, self.reported_results(batch))
+        self.finalize()
+
+    def log_in_ja(self):
+        set_logged_in_user(
+            self.client, UserType.JURISDICTION_ADMIN, default_ja_email(self.election_id)
+        )
+
+    def log_in_aa(self):
+        set_logged_in_user(self.client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+
+    def reported_results(self, batch):
+        return {
+            choice["id"]: self.batch_tallies[batch["name"]][self.contest["id"]][
+                choice["id"]
+            ]
+            for choice in self.contest["choices"]
+        }
+
+    def record(self, batch, results):
+        self.log_in_ja()
+        rv = put_batch_results(
+            self.client,
+            self.election_id,
+            self.jurisdiction_id,
+            self.round_id,
+            batch["id"],
+            [results],
+        )
+        assert_ok(rv)
+
+    def finalize(self):
+        self.log_in_ja()
+        rv = post_json(self.client, self.finalize_url)
+        assert_ok(rv)
+
+    def unfinalize(self):
+        self.log_in_aa()
+        rv = self.client.delete(self.finalize_url)
+        assert_ok(rv)
+
+    def statuses(self):
+        self.log_in_aa()
+        rv = self.client.get(f"/api/election/{self.election_id}/discrepancy")
+        return {
+            batch["name"]: batch["discrepancies"][self.contest["id"]]["status"]
+            for batch in json.loads(rv.data)[self.jurisdiction_id]["batches"].values()
+        }
+
+    def set_status(self, batch, status):
+        contest_status = BatchContestStatus.query.get((batch["id"], self.contest["id"]))
+        contest_status.status = status
+        db_session.commit()
+
+    def mark(self, batch, status):
+        self.log_in_aa()
+        return put_json(
+            self.client,
+            f"/api/election/{self.election_id}/jurisdiction/{self.jurisdiction_id}/round/{self.round_id}/batches/{batch['id']}/discrepancy-status",
+            {"contestId": self.contest["id"], "status": status},
+        )
+
+
 def test_batch_contest_statuses_follow_the_tallies(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: list[str],
     round_1_id: str,
 ):
-    jurisdiction_id = jurisdiction_ids[0]
-    finalize_url = f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/batches/finalize"
-    set_logged_in_user(
-        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    audit = Audit(client, election_id, jurisdiction_ids[0], round_1_id)
+    batches, statuses, record, finalize, unfinalize, set_status = (
+        audit.batches,
+        audit.statuses,
+        audit.record,
+        audit.finalize,
+        audit.unfinalize,
+        audit.set_status,
     )
-    rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/contest"
-    )
-    contest = json.loads(rv.data)["contests"][0]
-    choice_ids = [choice["id"] for choice in contest["choices"]]
-    rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/batches"
-    )
-    batches = json.loads(rv.data)["batches"]
-    batch_tallies = Jurisdiction.query.get(jurisdiction_id).batch_tallies
+    reported_results, off_by_one = audit.reported_results, audit.off_by_one
 
-    def reported_results(batch):
-        return {
-            choice_id: batch_tallies[batch["name"]][contest["id"]][choice_id]
-            for choice_id in choice_ids
-        }
-
-    def record(batch, results):
-        set_logged_in_user(
-            client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
-        )
-        rv = put_batch_results(
-            client, election_id, jurisdiction_id, round_1_id, batch["id"], [results]
-        )
-        assert_ok(rv)
-
-    def finalize():
-        set_logged_in_user(
-            client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
-        )
-        rv = post_json(client, finalize_url)
-        assert_ok(rv)
-
-    def unfinalize():
-        set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-        rv = client.delete(finalize_url)
-        assert_ok(rv)
-
-    def statuses():
-        set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-        rv = client.get(f"/api/election/{election_id}/discrepancy")
-        return {
-            batch["name"]: batch["discrepancies"][contest["id"]]["status"]
-            for batch in json.loads(rv.data)[jurisdiction_id]["batches"].values()
-        }
-
-    def set_status(batch, status):
-        contest_status = BatchContestStatus.query.get((batch["id"], contest["id"]))
-        contest_status.status = status
-        db_session.commit()
-
-    # Every batch matches but the first, which is off by one
-    off_by_one = {
-        **reported_results(batches[0]),
-        choice_ids[0]: reported_results(batches[0])[choice_ids[0]] - 1,
-    }
-    record(batches[0], off_by_one)
-    for batch in batches[1:]:
-        record(batch, reported_results(batch))
-    finalize()
     assert statuses() == {
         batches[0]["name"]: "NEEDS_REVIEW",
         **{batch["name"]: "MATCHES" for batch in batches[1:]},
@@ -126,3 +164,42 @@ def test_batch_contest_statuses_follow_the_tallies(
     assert statuses()[batches[0]["name"]] == "RE_TALLYING"
     finalize()
     assert statuses()[batches[0]["name"]] == "NEEDS_REVIEW"
+
+
+def test_audit_admin_marks_a_batch_contest(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    round_1_id: str,
+):
+    audit = Audit(client, election_id, jurisdiction_ids[0], round_1_id)
+    off, fine = audit.batches[0], audit.batches[1]
+
+    rv = audit.mark(off, "JURISDICTION_CONTACTED")
+    assert_ok(rv)
+    assert audit.statuses()[off["name"]] == "JURISDICTION_CONTACTED"
+    rv = audit.mark(off, "ACCEPTED")
+    assert_ok(rv)
+    assert audit.statuses()[off["name"]] == "ACCEPTED"
+
+    # A batch contest that matches has nothing to decide
+    rv = audit.mark(fine, "ACCEPTED")
+    assert_ok(rv)
+    assert audit.statuses()[fine["name"]] == "MATCHES"
+
+    # Only those two decisions, only for audit admins
+    rv = audit.mark(off, "MATCHES")
+    assert rv.status_code == 400
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/not-a-batch/discrepancy-status",
+        {"contestId": audit.contest["id"], "status": "ACCEPTED"},
+    )
+    assert rv.status_code == 404
+    audit.log_in_ja()
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/{off['id']}/discrepancy-status",
+        {"contestId": audit.contest["id"], "status": "ACCEPTED"},
+    )
+    assert rv.status_code == 403
