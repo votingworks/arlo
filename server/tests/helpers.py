@@ -910,6 +910,15 @@ class Audit:
             for batch in json.loads(rv.data)[self.jurisdiction_id]["batches"].values()
         }
 
+    # An audit admin's decision on the batch's contest
+    def mark(self, batch, status: str):
+        self.log_in_aa()
+        return put_json(
+            self.client,
+            f"/api/election/{self.election_id}/jurisdiction/{self.jurisdiction_id}/round/{self.round_id}/batches/{batch['id']}/discrepancy-status",
+            {"contestId": self.contest["id"], "status": status},
+        )
+
     def set_status(self, batch, status: BatchDiscrepancyStatus):
         contest_status = BatchContestStatus.query.get((batch["id"], self.contest["id"]))
         contest_status.status = status

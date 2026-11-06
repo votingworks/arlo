@@ -1,7 +1,7 @@
 from collections import defaultdict
 import uuid
 from typing import AbstractSet, Iterator, TypedDict
-from werkzeug.exceptions import Conflict
+from werkzeug.exceptions import Conflict, NotFound
 from flask import jsonify, request
 
 from sqlalchemy import func
@@ -346,6 +346,56 @@ def add_jurisdiction_note(jurisdiction: Jurisdiction, text: str):
             id=str(uuid.uuid4()), jurisdiction_id=jurisdiction.id, text=text
         )
     )
+
+
+BATCH_CONTEST_STATUS_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "contestId": {"type": "string"},
+        "status": {
+            "type": "string",
+            "enum": [
+                BatchDiscrepancyStatus.JURISDICTION_CONTACTED.value,
+                BatchDiscrepancyStatus.ACCEPTED.value,
+            ],
+        },
+    },
+    "required": ["contestId", "status"],
+    "additionalProperties": False,
+}
+
+
+# An audit admin's decision on a batch contest still under review this round
+@api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/batches/<batch_id>/discrepancy-status",
+    methods=["PUT"],
+)
+@restrict_access([UserType.AUDIT_ADMIN])
+def set_batch_contest_status(
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
+    round: Round,
+    batch_id: str,
+):
+    # Competing decisions on the batch wait for each other's status
+    batch = (
+        Batch.query.filter_by(id=batch_id, jurisdiction_id=jurisdiction.id)
+        .with_for_update()
+        .one_or_none()
+    )
+    if batch is None:
+        raise NotFound()
+    body = safe_get_json_dict(request)
+    validate(body, BATCH_CONTEST_STATUS_SCHEMA)
+    for contest_status in contest_statuses_in_round(round, batch):
+        if (
+            contest_status.contest_id == body["contestId"]
+            and contest_status.status in OUTSTANDING_STATUSES
+        ):
+            contest_status.status = BatchDiscrepancyStatus(body["status"])  # ty: ignore[invalid-assignment]
+    db_session.commit()
+
+    return jsonify(status="ok")
 
 
 JURISDICTION_DISCREPANCY_NOTE_SCHEMA = {
