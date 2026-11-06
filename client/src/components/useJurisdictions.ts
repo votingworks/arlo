@@ -196,25 +196,29 @@ export const useLastLoginByJurisdiction = (
   })
 }
 
-export type ContestDiscrepancies = {
+export type IBallotContestDiscrepancies = {
   reportedVotes: Record<string, number | string> // `Record` keys are choiceId
   auditedVotes: Record<string, number | string> // `Record` values are counts, "o" (overvote), "u" (undervote)
   discrepancies: Record<string, number | string>
 }
 
-// [contestId]: contestDiscrepancies, for one batch or ballot
-export type DiscrepanciesByContest = Record<string, ContestDiscrepancies>
-
-// Ballot comparison audits: [jurisdictionId][ballotName]
+// Ballot comparison audits: [jurisdictionId][ballotName][contestId]
 export type BallotDiscrepanciesByJurisdiction = Record<
   string,
-  Record<string, DiscrepanciesByContest>
+  Record<string, Record<string, IBallotContestDiscrepancies>>
 >
+
+export interface IBatchContestDiscrepancies {
+  reportedVotes: Record<string, number> // [choiceId]
+  auditedVotes: Record<string, number> // [choiceId]
+  changeInMargin: number // In votes
+  numBallots: number
+}
 
 export interface IBatchDiscrepancies {
   name: string
   isExtra: boolean // Sampled only as an extra batch, not by the audit math
-  discrepancies: DiscrepanciesByContest
+  discrepancies: Record<string, IBatchContestDiscrepancies> // [contestId]
 }
 
 export interface IDiscrepancyNote {
@@ -226,6 +230,12 @@ export interface IJurisdictionDiscrepancies {
   notes: IDiscrepancyNote[]
   batches: Record<string, IBatchDiscrepancies> // [batchId]
 }
+
+// [contestId]: contestDiscrepancies, for one batch or ballot
+export type DiscrepanciesByContest = Record<
+  string,
+  IBatchContestDiscrepancies | IBallotContestDiscrepancies
+>
 
 // Batch comparison audits: [jurisdictionId]
 export type BatchDiscrepanciesByJurisdiction = Record<

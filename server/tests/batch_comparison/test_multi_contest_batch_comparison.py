@@ -775,8 +775,8 @@ def test_multi_contest_batch_comparison_end_to_end(
     assert (
         discrepancies_by_batch_name(discrepancies[jurisdictions[0]["id"]])["Batch 6"][
             contest_ids[0]
-        ]["discrepancies"][contest_1_choice_ids[0]]
-        == 1
+        ]["changeInMargin"]
+        == 2
     )
 
     #
@@ -1030,14 +1030,14 @@ def test_multi_contest_batch_comparison_round_2(
     assert (
         discrepancies_by_batch_name(discrepancies[jurisdiction_ids[0]])["Batch 2"][
             contest_ids[0]
-        ]["discrepancies"][contest_1_choice_ids[0]]
-        == 50
+        ]["changeInMargin"]
+        == 125
     )
     assert (
         discrepancies_by_batch_name(discrepancies[jurisdiction_ids[0]])["Batch 1"][
             contest_ids[1]
-        ]["discrepancies"][contest_2_choice_ids[0]]
-        == 1
+        ]["changeInMargin"]
+        == 2
     )
     assert discrepancies[jurisdiction_ids[1]]["batches"] == {}
     assert discrepancies[jurisdiction_ids[2]]["batches"] == {}
@@ -1835,10 +1835,8 @@ def test_multi_contest_batch_comparison_combined_batch_tallied_in_two_rounds(
         contest_ids[1]: {
             "reportedVotes": {contest_2_choice_ids[0]: 75, contest_2_choice_ids[1]: 25},
             "auditedVotes": expected_contest_2_results,
-            "discrepancies": {
-                contest_2_choice_ids[0]: -15,
-                contest_2_choice_ids[1]: 15,
-            },
+            "changeInMargin": -30,
+            "numBallots": 200,
         }
     }
     rv = client.delete(

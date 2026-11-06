@@ -427,8 +427,14 @@ def test_batch_comparison_round_2(
     assert (
         discrepancies_by_batch_name(discrepancies[jurisdictions[0]["id"]])["Batch 1"][
             contests[0]["id"]
-        ]["discrepancies"][choice_ids[0]]
-        == 100
+        ]["changeInMargin"]
+        == -100
+    )
+    assert (
+        discrepancies_by_batch_name(discrepancies[jurisdictions[0]["id"]])["Batch 1"][
+            contests[0]["id"]
+        ]["numBallots"]
+        == 500
     )
 
     # Now do the second jurisdiction
@@ -1282,20 +1288,14 @@ def test_batch_comparison_combined_batches(
     assert (
         discrepancies_by_batch_name(discrepancies[jurisdiction_ids[0]])[
             "Combined Batch"
-        ][contests[0]["id"]]["discrepancies"][choices[0]["id"]]
-        == 0
+        ][contests[0]["id"]]["changeInMargin"]
+        == 5
     )
     assert (
         discrepancies_by_batch_name(discrepancies[jurisdiction_ids[0]])[
             "Combined Batch"
-        ][contests[0]["id"]]["discrepancies"][choices[1]["id"]]
-        == candidate_2_discrepancy
-    )
-    assert (
-        discrepancies_by_batch_name(discrepancies[jurisdiction_ids[0]])[
-            "Combined Batch"
-        ][contests[0]["id"]]["discrepancies"][choices[2]["id"]]
-        == candidate_3_discrepancy
+        ][contests[0]["id"]]["numBallots"]
+        == 1500
     )
 
     assert (
