@@ -215,7 +215,7 @@ export interface IBatchOrBallotDiscrepancies {
 export interface IJurisdictionReviewProps {
   discrepancies: IBatchOrBallotDiscrepancies[]
   notes?: IDiscrepancyNote[]
-  isSingleJurisdictionAudit: boolean
+  isReTallying: boolean
   auditType: IAuditSettings['auditType']
   electionId: string
   handleClose: () => void
@@ -227,7 +227,7 @@ export interface IJurisdictionReviewProps {
 const JurisdictionReview: React.FC<IJurisdictionReviewProps> = ({
   discrepancies,
   notes,
-  isSingleJurisdictionAudit,
+  isReTallying,
   auditType,
   handleClose,
   jurisdiction,
@@ -250,13 +250,6 @@ const JurisdictionReview: React.FC<IJurisdictionReviewProps> = ({
     jurisdiction.currentRoundStatus!.status === JurisdictionRoundStatus.COMPLETE
   const canUnfinalize =
     auditType === 'BATCH_COMPARISON' && round.endedAt === null && isFinalized
-  // A jurisdiction under review has finalized, so one that isn't finalized now
-  // has unfinalized, except in a single-jurisdiction audit, where review
-  // starts before any finalize
-  const isReTallying =
-    auditType === 'BATCH_COMPARISON' &&
-    !isFinalized &&
-    !isSingleJurisdictionAudit
 
   if (!contestsQuery.isSuccess) {
     return null
@@ -342,7 +335,7 @@ const JurisdictionReview: React.FC<IJurisdictionReviewProps> = ({
               </AsyncButton>
             )}
             {isReTallying && (
-              <StatusTag intent="warning">Re-tallying</StatusTag>
+              <StatusTag intent="in-progress">Re-tallying</StatusTag>
             )}
           </div>
         )}

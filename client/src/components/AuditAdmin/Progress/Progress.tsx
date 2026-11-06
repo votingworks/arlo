@@ -277,6 +277,14 @@ const Progress: React.FC<IProgressProps> = ({
     ).map(({ status }) => status)
     return STATUS_PRIORITY.find(status => statuses.includes(status)) ?? null
   }
+  // Batch contests have statuses once the tallies have been finalized, so a
+  // jurisdiction that isn't finalized with statuses has unfinalized to re-tally
+  const isUnfinalized = (jurisdiction: IJurisdiction) =>
+    jurisdiction.currentRoundStatus?.status !==
+      JurisdictionRoundStatus.COMPLETE &&
+    batchContests(batchesByJurisdiction[jurisdiction.id] ?? []).some(
+      ({ status }) => status !== null
+    )
   // With a contest selected, the sample counts are that contest's. A
   // jurisdiction with no draws for the contest has no entry for it. With
   // extra batches excluded, only the batches the audit math drew count.
@@ -755,6 +763,9 @@ const Progress: React.FC<IProgressProps> = ({
   }
 
   const lastLoginByJurisdiction = lastLoginQuery.data
+  const reviewedJurisdiction = jurisdictions.find(
+    jurisdiction => jurisdiction.id === jurisdictionReviewId
+  )
 
   return (
     <Wrapper>
@@ -845,15 +856,13 @@ const Progress: React.FC<IProgressProps> = ({
           auditSettings={auditSettings}
         />
       )}
-      {jurisdictionReviewId && (
+      {reviewedJurisdiction && (
         <JurisdictionReview
-          discrepancies={jurisdictionDiscrepancies(jurisdictionReviewId)!}
-          notes={jurisdictionNotes(jurisdictionReviewId)}
-          isSingleJurisdictionAudit={jurisdictions.length === 1}
+          discrepancies={jurisdictionDiscrepancies(reviewedJurisdiction.id)!}
+          notes={jurisdictionNotes(reviewedJurisdiction.id)}
+          isReTallying={isUnfinalized(reviewedJurisdiction)}
           auditType={auditType}
-          jurisdiction={jurisdictions.find(
-            jurisdiction => jurisdiction.id === jurisdictionReviewId
-          )!}
+          jurisdiction={reviewedJurisdiction}
           electionId={electionId}
           round={round!}
           initialContestId={selectedContest?.id}

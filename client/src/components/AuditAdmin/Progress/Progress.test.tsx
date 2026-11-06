@@ -948,10 +948,7 @@ describe('Progress screen', () => {
     }
     const expectedCalls = [
       aaApiCalls.getDiscrepancies({
-        [reTallying.id]: {
-          notes: [note],
-          batches: matchingBatch,
-        },
+        [reTallying.id]: { notes: [note], batches: matchingBatch },
         [finalized.id]: { notes: [note], batches: matchingBatch },
       }),
       aaApiCalls.getLastLoginByJurisdiction({
@@ -1008,6 +1005,7 @@ describe('Progress screen', () => {
         })
       ).closest('.bp3-dialog')! as HTMLElement
       within(dialog).getByText('Notes')
+      // Unfinalized to re-tally, though its one batch contest matched
       within(dialog).getByText('Re-tallying')
       within(dialog).getByText(note.text)
       within(dialog).getByText(new Date(note.createdAt).toLocaleString())
