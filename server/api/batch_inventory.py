@@ -188,7 +188,14 @@ def process_batch_inventory_cvr_file(
             re.sub(r"\s+\(Vote For=", " (Vote For=", contest)
             for contest in contests_row_uncleaned
         ]
-        contest_choices_row = next(cvrs)
+        # We've encountered files with no space in between parenthetical suffixes in choice names,
+        # e.g., "Jon Ossoff (I)(Dem)" instead of "Jon Ossoff (I) (Dem)". Add the missing spaces so
+        # that the choice names are what we expect. Specifically map
+        # ) + 0 or more spaces + ( -->
+        # ) + 1 space + (
+        contest_choices_row = [
+            re.sub(r"\)\s*\(", ") (", choice_name) for choice_name in next(cvrs)
+        ]
         headers_and_affiliations = next(cvrs)
 
         expected_contest_headers = [
