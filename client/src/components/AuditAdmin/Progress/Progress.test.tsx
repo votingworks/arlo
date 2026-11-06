@@ -615,7 +615,7 @@ describe('Progress screen', () => {
       expect(row2[5]).toHaveTextContent('0')
       const row3 = within(rows[3]).getAllByRole('cell')
       expect(row3[0]).toHaveTextContent('Jurisdiction 3')
-      expectStatusTag(row3[1], 'Complete', 'success')
+      expectStatusTag(row3[1], 'Needs Review', 'danger')
       expect(row3[2]).toHaveTextContent('2,117')
       expect(row3[3]).toHaveTextContent('Review 1')
       expect(row3[3].querySelector('.bp3-icon-flag')).toBeInTheDocument()
@@ -676,7 +676,7 @@ describe('Progress screen', () => {
 
       const footers = within(rows[4]).getAllByRole('cell')
       expect(footers[0]).toHaveTextContent('Total')
-      expect(footers[1]).toHaveTextContent('1/3 complete')
+      expect(footers[1]).toHaveTextContent('0/3 complete')
       expect(footers[2]).toHaveTextContent('6,351')
       expect(footers[3]).toHaveTextContent('1')
       expect(footers[4]).toHaveTextContent('34')
@@ -841,6 +841,7 @@ describe('Progress screen', () => {
         reviewCells().map(
           cell => cell.querySelector('.bp3-button-text')!.textContent
         )
+      const statusCells = () => column(1)
       expect(reviewCells()[0]).toHaveTextContent('Review 1')
       expect(reviewCells()[0].querySelector('.bp3-icon-flag')).toHaveClass(
         'bp3-intent-danger'
@@ -853,6 +854,12 @@ describe('Progress screen', () => {
       expect(reviewCells()[2].querySelector('.bp3-icon-flag')).toHaveClass(
         'bp3-intent-warning'
       )
+      expectStatusTag(statusCells()[0], 'Needs Review', 'danger')
+      expectStatusTag(statusCells()[1], 'Complete', 'success')
+      expectStatusTag(statusCells()[2], 'Contacted', 'warning')
+      const footer = () =>
+        within(screen.getAllByRole('row')[4]).getAllByRole('cell')[1]
+      expect(footer()).toHaveTextContent('1/3 complete')
 
       // Jurisdictions needing review sort first, then those contacted, in
       // both directions
@@ -916,6 +923,8 @@ describe('Progress screen', () => {
       expect(
         reviewCells()[0].querySelector('.bp3-icon-tick-circle')
       ).toBeInTheDocument()
+      expectStatusTag(statusCells()[0], 'Complete', 'success')
+      expect(footer()).toHaveTextContent('2/3 complete')
     })
   })
 
@@ -984,6 +993,11 @@ describe('Progress screen', () => {
       })
 
       const rows = screen.getAllByRole('row')
+      expectStatusTag(
+        within(rows[1]).getAllByRole('cell')[1],
+        'Re-tallying',
+        'in-progress'
+      )
       // The icon's name is part of the button's accessible name
       const reTallyingReview = within(rows[1]).getByRole('button', {
         name: 'Review',
@@ -1246,6 +1260,7 @@ describe('Progress screen', () => {
         numBallots: 100,
         status: 'NEEDS_REVIEW' as const,
       })
+      const [reTallying, notStarted] = jurisdictionMocks.oneComplete
       // Contest C has no batches drawn in this jurisdiction; contest D does,
       // without discrepancies
       const contestC = {
@@ -1260,23 +1275,39 @@ describe('Progress screen', () => {
         name: 'Contest 4',
         jurisdictionIds: [jurisdiction.id],
       }
-      const jurisdictionsWithContestD = jurisdictions.map(j =>
-        j.id === jurisdiction.id
-          ? {
-              ...j,
-              currentRoundStatusByContestId: {
-                ...j.currentRoundStatusByContestId,
-                [contestD.id]: {
-                  numSamples: 3,
-                  numSamplesAudited: 3,
-                  numUnique: 3,
-                  numUniqueAudited: 3,
-                  extras: noExtras,
-                },
+      const oneSample = {
+        numSamples: 1,
+        numSamplesAudited: 1,
+        numUnique: 1,
+        numUniqueAudited: 1,
+        extras: noExtras,
+      }
+      const jurisdictionsWithContestD = jurisdictions.map(j => {
+        if (j.id === jurisdiction.id) {
+          return {
+            ...j,
+            currentRoundStatusByContestId: {
+              ...j.currentRoundStatusByContestId,
+              [contestD.id]: {
+                numSamples: 3,
+                numSamplesAudited: 3,
+                numUnique: 3,
+                numUniqueAudited: 3,
+                extras: noExtras,
               },
-            }
-          : j
-      )
+            },
+          }
+        }
+        // The re-tallying jurisdiction's one batch is for contest B; the
+        // not-started jurisdiction has nothing sampled for it
+        if (j.id === reTallying.id) {
+          return {
+            ...j,
+            currentRoundStatusByContestId: { [contestB.id]: oneSample },
+          }
+        }
+        return j
+      })
       const expectedCalls = [
         aaApiCalls.getDiscrepancies({
           [jurisdiction.id]: {
@@ -1287,13 +1318,33 @@ describe('Progress screen', () => {
                 isExtra: false,
                 discrepancies: {
                   [contestA.id]: discrepancy(contestA),
-                  [contestB.id]: discrepancy(contestB),
+                  [contestB.id]: {
+                    ...discrepancy(contestB),
+                    status: 'ACCEPTED',
+                  },
                 },
               },
               'batch-id-2': {
                 name: 'batch2',
                 isExtra: false,
                 discrepancies: { [contestA.id]: discrepancy(contestA) },
+              },
+            },
+          },
+          // Unfinalized to re-tally, with contest B's one batch matching
+          [reTallying.id]: {
+            notes: [],
+            batches: {
+              'batch-id-3': {
+                name: 'batch3',
+                isExtra: false,
+                discrepancies: {
+                  [contestB.id]: {
+                    ...discrepancy(contestB),
+                    changeInMargin: 0,
+                    status: 'MATCHES',
+                  },
+                },
               },
             },
           },
@@ -1311,7 +1362,13 @@ describe('Progress screen', () => {
         const { container, history } = render({
           auditSettings: auditSettingsMocks.batchComparisonAll,
           jurisdictions: jurisdictionsWithContestD,
-          contests: [contestA, contestB],
+          contests: [
+            contestA,
+            {
+              ...contestB,
+              jurisdictionIds: [reTallying.id, notStarted.id, jurisdiction.id],
+            },
+          ],
           round: roundMocks.singleIncomplete[0],
         })
         await waitFor(() => {
@@ -1319,12 +1376,32 @@ describe('Progress screen', () => {
         })
         expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
         screen.getByRole('button', { name: /Review 3/ })
+        // Across every contest the jurisdiction needs review; for a contest
+        // whose batch contests are all accepted, it stands at Accepted. The
+        // re-tallying jurisdiction says so in both views.
+        const statusCell = (name: string) =>
+          within(
+            screen.getByRole('cell', { name }).closest('tr')!
+          ).getAllByRole('cell')[1]
+        expectStatusTag(statusCell('Jurisdiction 3'), 'Needs Review', 'danger')
+        expectStatusTag(
+          statusCell('Jurisdiction 1'),
+          'Re-tallying',
+          'in-progress'
+        )
 
         // Only the selected contest's discrepancies are counted and shown
         userEvent.selectOptions(
           screen.getByRole('combobox', { name: 'Contest' }),
           contestB.id
         )
+        expectStatusTag(statusCell('Jurisdiction 3'), 'Accepted', 'success')
+        expectStatusTag(
+          statusCell('Jurisdiction 1'),
+          'Matches (Re-tallying)',
+          'success'
+        )
+        expectStatusTag(statusCell('Jurisdiction 2'), 'No samples', 'success')
         userEvent.click(screen.getByRole('button', { name: /Review 1/ }))
         const dialog = (
           await screen.findByRole('heading', {
@@ -1548,6 +1625,33 @@ describe('Progress screen', () => {
         expect(
           screen.queryByRole('columnheader', { name: /Last Tally Update/ })
         ).not.toBeInTheDocument()
+      })
+    })
+
+    it('keeps the upload statuses before the round starts', async () => {
+      await withMockFetch(getDefaultExpectedCalls(), async () => {
+        const { container } = render({
+          auditSettings: auditSettingsMocks.batchComparisonAll,
+          jurisdictions: jurisdictionMocks.twoManifestsOneTallies,
+          contests: contestMocks.two,
+        })
+        await waitFor(() => {
+          expect(container.querySelectorAll('.d3-component').length).toBe(1)
+        })
+        userEvent.selectOptions(
+          screen.getByRole('combobox', { name: 'Contest' }),
+          contestMocks.two[0].id
+        )
+        const rows = screen.getAllByRole('row')
+        const statusCell = (row: HTMLElement) =>
+          within(row).getAllByRole('cell')[1]
+        expectStatusTag(statusCell(rows[1]), 'Manifest upload failed', 'danger')
+        expectStatusTag(
+          statusCell(rows[2]),
+          '1/2 files uploaded',
+          'in-progress'
+        )
+        expectStatusTag(statusCell(rows[3]), '2/2 files uploaded', 'success')
       })
     })
   })
