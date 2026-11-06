@@ -614,7 +614,7 @@ describe('Progress screen', () => {
       expect(row2[5]).toHaveTextContent('0')
       const row3 = within(rows[3]).getAllByRole('cell')
       expect(row3[0]).toHaveTextContent('Jurisdiction 3')
-      expectStatusTag(row3[1], 'Complete', 'success')
+      expectStatusTag(row3[1], 'Needs Review', 'danger')
       expect(row3[2]).toHaveTextContent('2,117')
       expect(row3[3]).toHaveTextContent('Review 1')
       expect(row3[3].querySelector('.bp3-icon-flag')).toBeInTheDocument()
@@ -675,7 +675,7 @@ describe('Progress screen', () => {
 
       const footers = within(rows[4]).getAllByRole('cell')
       expect(footers[0]).toHaveTextContent('Total')
-      expect(footers[1]).toHaveTextContent('1/3 complete')
+      expect(footers[1]).toHaveTextContent('0/3 complete')
       expect(footers[2]).toHaveTextContent('6,351')
       expect(footers[3]).toHaveTextContent('1')
       expect(footers[4]).toHaveTextContent('34')
@@ -839,6 +839,11 @@ describe('Progress screen', () => {
         reviewCells().map(
           cell => cell.querySelector('.bp3-button-text')!.textContent
         )
+      const statusCells = () =>
+        screen
+          .getAllByRole('row')
+          .slice(1, 4)
+          .map(row => within(row).getAllByRole('cell')[1])
       let cells = reviewCells()
       expect(cells[0]).toHaveTextContent('Review 1')
       expect(cells[0].querySelector('.bp3-icon-flag')).toHaveClass(
@@ -852,6 +857,12 @@ describe('Progress screen', () => {
       expect(cells[2].querySelector('.bp3-icon-flag')).toHaveClass(
         'bp3-intent-warning'
       )
+      expectStatusTag(statusCells()[0], 'Needs Review', 'danger')
+      expectStatusTag(statusCells()[1], 'Complete', 'success')
+      expectStatusTag(statusCells()[2], 'Contacted', 'warning')
+      const footer = () =>
+        within(screen.getAllByRole('row')[4]).getAllByRole('cell')[1]
+      expect(footer()).toHaveTextContent('1/3 complete')
 
       // Jurisdictions needing review sort first, then those contacted, in
       // both directions
@@ -916,6 +927,8 @@ describe('Progress screen', () => {
       expect(
         cells[0].querySelector('.bp3-icon-tick-circle')
       ).toBeInTheDocument()
+      expectStatusTag(statusCells()[0], 'Complete', 'success')
+      expect(footer()).toHaveTextContent('2/3 complete')
     })
   })
 
@@ -984,6 +997,11 @@ describe('Progress screen', () => {
       })
 
       const rows = screen.getAllByRole('row')
+      expectStatusTag(
+        within(rows[1]).getAllByRole('cell')[1],
+        'Re-tallying',
+        'in-progress'
+      )
       // The icon's name is part of the button's accessible name
       const reTallyingReview = within(rows[1]).getByRole('button', {
         name: 'Review',
@@ -1287,7 +1305,10 @@ describe('Progress screen', () => {
                 isExtra: false,
                 discrepancies: {
                   [contestA.id]: discrepancy(contestA),
-                  [contestB.id]: discrepancy(contestB),
+                  [contestB.id]: {
+                    ...discrepancy(contestB),
+                    status: 'ACCEPTED',
+                  },
                 },
               },
               'batch-id-2': {
@@ -1319,12 +1340,20 @@ describe('Progress screen', () => {
         })
         expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
         screen.getByRole('button', { name: /Review 3/ })
+        // Across every contest the jurisdiction needs review; for a contest
+        // whose batch contests are all accepted, it stands at Accepted
+        const statusCell = () =>
+          within(
+            screen.getByRole('cell', { name: 'Jurisdiction 3' }).closest('tr')!
+          ).getAllByRole('cell')[1]
+        expectStatusTag(statusCell(), 'Needs Review', 'danger')
 
         // Only the selected contest's discrepancies are counted and shown
         userEvent.selectOptions(
           screen.getByRole('combobox', { name: 'Contest' }),
           contestB.id
         )
+        expectStatusTag(statusCell(), 'Accepted', 'success')
         userEvent.click(screen.getByRole('button', { name: /Review 1/ }))
         const dialog = (
           await screen.findByRole('heading', {

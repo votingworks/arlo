@@ -35,7 +35,7 @@ import ContestSelect from './ContestSelect'
 import StatusTag, { ExtendedIntent } from '../../Atoms/StatusTag'
 import JurisdictionAdmins from './JurisdictionAdmins'
 
-const STATUS_TAGS: Record<
+export const STATUS_TAGS: Record<
   BatchDiscrepancyStatus,
   { label: string; intent: ExtendedIntent }
 > = {

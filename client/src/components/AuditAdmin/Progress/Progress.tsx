@@ -41,6 +41,7 @@ import useSearchParams from '../../useSearchParams'
 import {
   IBatchOrBallotDiscrepancies,
   JurisdictionReview,
+  STATUS_TAGS,
 } from './JurisdictionReview'
 import ContestSelect from './ContestSelect'
 
@@ -161,6 +162,15 @@ const STATUS_PRIORITY: BatchDiscrepancyStatus[] = [
   'MATCHES',
 ]
 
+// The Status column's rank in the ascending sort
+const REVIEW_STATUS_RANK: Record<BatchDiscrepancyStatus, number> = {
+  RE_TALLYING: 2,
+  NEEDS_REVIEW: 3,
+  JURISDICTION_CONTACTED: 4,
+  ACCEPTED: 5,
+  MATCHES: 5,
+}
+
 const sortBatches = <T extends IBatchDiscrepancies>(batches: T[]) =>
   [...batches].sort(
     (a, b) =>
@@ -273,6 +283,20 @@ const Progress: React.FC<IProgressProps> = ({
     batchContests(batchesByJurisdiction[jurisdiction.id] ?? []).some(
       ({ status }) => status !== null
     )
+  // Batch comparison, once the tallies have been finalized: the most pressing
+  // status among the batch contests in scope. Across every contest, a
+  // jurisdiction that has unfinalized is re-tallying, and one with nothing
+  // left to review is simply complete, which its round status already says;
+  // a contest's view says how its batch contests stand.
+  const reviewStatus = (
+    jurisdiction: IJurisdiction
+  ): BatchDiscrepancyStatus | null => {
+    if (!selectedContest && isUnfinalized(jurisdiction)) return 'RE_TALLYING'
+    const status = scopeStatus(jurisdiction.id)
+    return !selectedContest && (status === 'ACCEPTED' || status === 'MATCHES')
+      ? null
+      : status
+  }
   // With a contest selected, the sample counts are that contest's. A
   // jurisdiction with no draws for the contest has no entry for it. With
   // extra batches excluded, only the batches the audit math drew count.
@@ -359,6 +383,14 @@ const Progress: React.FC<IProgressProps> = ({
           lastLogin
         )
 
+        const review = reviewStatus(jurisdiction)
+        if (review) {
+          return (
+            <Status intent={STATUS_TAGS[review].intent}>
+              {STATUS_TAGS[review].label}
+            </Status>
+          )
+        }
         switch (jurisdictionStatus) {
           case JurisdictionProgressStatus.UPLOADS_COMPLETE:
             return (
@@ -434,8 +466,10 @@ const Progress: React.FC<IProgressProps> = ({
          * When round has been started
          * 0: Not logged in, audit actions not taken
          * 1. Logged in, audit actions not taken
-         * 2. Audit in progress, regardless of login status
-         * 3. Audit complete, regardless of login status
+         * 2. Audit in progress or re-tallying, regardless of login status
+         * 3. Batch contests needing review
+         * 4. Batch contests contacted
+         * 5. Audit complete
          */
 
         if (!currentRoundStatus) {
@@ -453,10 +487,12 @@ const Progress: React.FC<IProgressProps> = ({
           if (numComplete === 0) return hasLoggedIn ? -1 : -2
           return numComplete
         }
+        const review = reviewStatus(jurisdiction)
+        if (review) return REVIEW_STATUS_RANK[review]
         return {
           [JurisdictionRoundStatus.NOT_STARTED]: hasLoggedIn ? 1 : 0,
           [JurisdictionRoundStatus.IN_PROGRESS]: 2,
-          [JurisdictionRoundStatus.COMPLETE]: 3,
+          [JurisdictionRoundStatus.COMPLETE]: 5,
         }[currentRoundStatus.status]
       }),
       Footer: info => {
@@ -479,7 +515,8 @@ const Progress: React.FC<IProgressProps> = ({
               return numComplete === files.length ? 1 : 0
             }
             return currentRoundStatus.status ===
-              JurisdictionRoundStatus.COMPLETE
+              JurisdictionRoundStatus.COMPLETE &&
+              !isOutstanding(scopeStatus(row.original.id))
               ? 1
               : 0
           })
