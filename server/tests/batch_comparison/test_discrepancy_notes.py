@@ -129,4 +129,4 @@ def test_finalizing_and_unfinalizing_tallies_leave_notes(
         "Finalized tallies",
         "Unfinalized tallies",
     ]
-    assert unfinalized["batches"] == finalized["batches"]
+    assert unfinalized["batches"].keys() == finalized["batches"].keys()

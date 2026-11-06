@@ -819,3 +819,12 @@ def discrepancies_by_batch_name(
         batch["name"]: batch["discrepancies"]
         for batch in jurisdiction_discrepancies["batches"].values()
     }
+
+
+# The statuses of a jurisdiction's listed batch-contests
+def batch_contest_statuses(jurisdiction_discrepancies: dict[str, Any]) -> set[str]:
+    return {
+        contest_discrepancies["status"]
+        for batch in jurisdiction_discrepancies["batches"].values()
+        for contest_discrepancies in batch["discrepancies"].values()
+    }
