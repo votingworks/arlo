@@ -56,12 +56,6 @@ const rowStyle: React.CSSProperties = {
   gap: '8px',
 }
 
-function getContestName(contests: IContest[], contestId: string) {
-  const contest = contests.find(c => c.id === contestId)
-  assert(contest !== undefined)
-  return contest.name
-}
-
 function getChoiceName(
   contests: IContest[],
   contestId: string,
@@ -343,9 +337,11 @@ const JurisdictionReview: React.FC<IJurisdictionReviewProps> = ({
           </p>
         )}
         {shownBatches.map(({ name, isExtra, discrepancies: byContest }) => {
-          const shownContests = Object.entries(byContest).filter(
-            ([contestId]) =>
-              !selectedContestId || contestId === selectedContestId
+          // In contest setup order
+          const shownContests = contests.filter(
+            contest =>
+              contest.id in byContest &&
+              (!selectedContestId || contest.id === selectedContestId)
           )
           return (
             <div key={name} style={{ marginBottom: '16px' }}>
@@ -362,15 +358,15 @@ const JurisdictionReview: React.FC<IJurisdictionReviewProps> = ({
                   />
                 )}
               </H5>
-              {shownContests.map(([contestId, contestDiscrepancies]) => (
-                <div key={contestId}>
+              {shownContests.map(contest => (
+                <div key={contest.id}>
                   <TableHeader style={rowStyle}>
-                    <span>{getContestName(contests, contestId)}</span>
+                    <span>{contest.name}</span>
                     <CopyToClipboard
                       iconOnly
                       label="Copy contest name"
                       getText={() => ({
-                        text: getContestName(contests, contestId),
+                        text: contest.name,
                         format: 'text/plain',
                       })}
                     />
@@ -378,17 +374,17 @@ const JurisdictionReview: React.FC<IJurisdictionReviewProps> = ({
                   {auditType === 'BATCH_COMPARISON' ? (
                     <BatchContestDiscrepancies
                       contests={contests}
-                      contestId={contestId}
+                      contestId={contest.id}
                       contestDiscrepancies={
-                        contestDiscrepancies as IBatchContestDiscrepancies
+                        byContest[contest.id] as IBatchContestDiscrepancies
                       }
                     />
                   ) : (
                     <BallotContestDiscrepancies
                       contests={contests}
-                      contestId={contestId}
+                      contestId={contest.id}
                       contestDiscrepancies={
-                        contestDiscrepancies as IBallotContestDiscrepancies
+                        byContest[contest.id] as IBallotContestDiscrepancies
                       }
                     />
                   )}
