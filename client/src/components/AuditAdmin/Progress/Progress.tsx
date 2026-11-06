@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { Column, Cell, TableInstance, SortingRule, SortByFn } from 'react-table'
@@ -20,6 +20,9 @@ import {
   BallotDiscrepanciesByJurisdiction,
   BatchDiscrepanciesByJurisdiction,
   IBatchDiscrepancies,
+  IBatchContestDiscrepancies,
+  BatchDiscrepancyStatus,
+  isOutstanding,
   useLastLoginByJurisdiction,
   IRoundStatusCounts,
   IBatchRoundStatusCounts,
@@ -128,20 +131,37 @@ const countDiscrepancies = (
     )
   )
 
+const batchContests = (
+  batches: IBatchDiscrepancies[],
+  contestId?: string
+): IBatchContestDiscrepancies[] =>
+  batches.flatMap(({ discrepancies }) =>
+    Object.entries(discrepancies)
+      .filter(([id]) => !contestId || id === contestId)
+      .map(([, contestDiscrepancies]) => contestDiscrepancies)
+  )
+
 // Batch comparison sizes discrepancies by the votes they move the margin
 const totalChangeInMargin = (
   batches: IBatchDiscrepancies[],
   contestId?: string
 ) =>
   sum(
-    batches.flatMap(({ discrepancies }) =>
-      Object.entries(discrepancies)
-        .filter(([id]) => !contestId || id === contestId)
-        .map(([, { changeInMargin }]) => Math.abs(changeInMargin))
+    batchContests(batches, contestId).map(({ changeInMargin }) =>
+      Math.abs(changeInMargin)
     )
   )
 
-const sortBatches = (batches: IBatchDiscrepancies[]) =>
+// Most pressing first
+const STATUS_PRIORITY: BatchDiscrepancyStatus[] = [
+  'RE_TALLYING',
+  'NEEDS_REVIEW',
+  'JURISDICTION_CONTACTED',
+  'ACCEPTED',
+  'MATCHES',
+]
+
+const sortBatches = <T extends IBatchDiscrepancies>(batches: T[]) =>
   [...batches].sort(
     (a, b) =>
       Number(a.isExtra) - Number(b.isExtra) ||
@@ -186,17 +206,35 @@ const Progress: React.FC<IProgressProps> = ({
     jurisdiction =>
       (jurisdiction.currentRoundStatus?.extras?.numSamples ?? 0) > 0
   )
+  // Batch comparison: each jurisdiction's batches with their ids, sorted once
+  // per response for every column
+  const batchesByJurisdiction = useMemo(
+    () =>
+      auditType === 'BATCH_COMPARISON' && discrepancyQuery.data
+        ? Object.fromEntries(
+            Object.entries(
+              discrepancyQuery.data as BatchDiscrepanciesByJurisdiction
+            ).map(([jurisdictionId, { batches }]) => [
+              jurisdictionId,
+              sortBatches(
+                Object.entries(batches).map(([id, batch]) => ({ id, ...batch }))
+              ),
+            ])
+          )
+        : {},
+    [auditType, discrepancyQuery.data]
+  )
+  // The batches in the table's scope
+  const shownBatches = (jurisdictionId: string) =>
+    (batchesByJurisdiction[jurisdictionId] ?? []).filter(
+      batch => !(excludeExtraBatches && batch.isExtra)
+    )
   const jurisdictionDiscrepancies = (
     jurisdictionId: string
   ): IBatchOrBallotDiscrepancies[] | null => {
     if (!discrepancyQuery.data) return null
     if (auditType === 'BATCH_COMPARISON') {
-      const batches = discrepancyQuery.data as BatchDiscrepanciesByJurisdiction
-      return sortBatches(
-        Object.values(batches[jurisdictionId]?.batches ?? {}).filter(
-          batch => !(excludeExtraBatches && batch.isExtra)
-        )
-      )
+      return shownBatches(jurisdictionId)
     }
     const ballots = discrepancyQuery.data as BallotDiscrepanciesByJurisdiction
     return Object.entries(ballots[jurisdictionId] ?? {}).map(
@@ -214,6 +252,19 @@ const Progress: React.FC<IProgressProps> = ({
   const selectedContest = canSelectContest
     ? contests.find(contest => contest.id === sortAndFilterState?.contest)
     : undefined
+  // Batch comparison: the statuses of a jurisdiction's audited batch contests
+  // in the table's scope, which they get at the first finalize
+  const batchContestStatuses = (jurisdictionId: string) =>
+    batchContests(shownBatches(jurisdictionId), selectedContest?.id).map(
+      ({ status }) => status
+    )
+  // The most pressing status among the batch contests in the table's scope
+  const scopeStatus = (
+    jurisdictionId: string
+  ): BatchDiscrepancyStatus | null => {
+    const statuses = batchContestStatuses(jurisdictionId)
+    return STATUS_PRIORITY.find(status => statuses.includes(status)) ?? null
+  }
   // With a contest selected, the sample counts are that contest's. A
   // jurisdiction with no draws for the contest has no entry for it. With
   // extra batches excluded, only the batches the audit math drew count.
@@ -541,14 +592,28 @@ const Progress: React.FC<IProgressProps> = ({
               </div>
             )
           }
+          // Batch comparison lists a jurisdiction's batches once it is under
+          // review, every one with a status after the first finalize
           const isUnderReview =
-            discrepancyQuery.data?.[jurisdiction.id] !== undefined
+            (batchesByJurisdiction[jurisdiction.id] ?? []).length > 0
           if (!numDiscrepancies && !isUnderReview) return null
           const isFinalized =
             jurisdiction.currentRoundStatus?.status ===
             JurisdictionRoundStatus.COMPLETE
-          const icon = numDiscrepancies ? (
-            <Icon icon="flag" intent="danger" />
+          // Ballot comparison flags every discrepancy; batch comparison flags
+          // what's still to review, in red until the jurisdiction is contacted
+          const status = scopeStatus(jurisdiction.id)
+          const isFlagged =
+            auditType === 'BATCH_COMPARISON'
+              ? isOutstanding(status)
+              : numDiscrepancies > 0
+          const icon = isFlagged ? (
+            <Icon
+              icon="flag"
+              intent={
+                status === 'JURISDICTION_CONTACTED' ? 'warning' : 'danger'
+              }
+            />
           ) : (
             isFinalized && <Icon icon="tick-circle" intent="success" />
           )
@@ -562,6 +627,18 @@ const Progress: React.FC<IProgressProps> = ({
                 : 'Review'}
             </Button>
           )
+        },
+        // Jurisdictions with a batch contest to review sort first in both
+        // directions, those needing review above those contacted
+        sortType: (rowA, rowB, columnId, desc) => {
+          const rank = (jurisdiction: IJurisdiction) => {
+            const status = scopeStatus(jurisdiction.id)
+            if (status === 'NEEDS_REVIEW') return 2
+            return isOutstanding(status) ? 1 : 0
+          }
+          const byRank = rank(rowB.original) - rank(rowA.original)
+          if (byRank) return desc ? -byRank : byRank
+          return sortDiscrepanciesFirst(rowA, rowB, columnId, desc)
         },
         Footer: discrepancyQuery.isLoading
           ? () => null

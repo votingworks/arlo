@@ -208,11 +208,26 @@ export type BallotDiscrepanciesByJurisdiction = Record<
   Record<string, Record<string, IBallotContestDiscrepancies>>
 >
 
+export type BatchDiscrepancyStatus =
+  | 'NEEDS_REVIEW'
+  | 'JURISDICTION_CONTACTED'
+  | 'ACCEPTED'
+  | 'MATCHES'
+  | 'RE_TALLYING'
+
+// An audit admin still has to act on the batch contest
+export const isOutstanding = (status: BatchDiscrepancyStatus | null): boolean =>
+  status === 'NEEDS_REVIEW' || status === 'JURISDICTION_CONTACTED'
+
+// What an audit admin can mark a batch contest
+export type BatchContestDecision = 'JURISDICTION_CONTACTED' | 'ACCEPTED'
+
 export interface IBatchContestDiscrepancies {
   reportedVotes: Record<string, number> // [choiceId]
   auditedVotes: Record<string, number> // [choiceId]
   changeInMargin: number // In votes
   numBallots: number
+  status: BatchDiscrepancyStatus | null // Null until the tallies first finalize
 }
 
 export interface IBatchDiscrepancies {
@@ -277,6 +292,39 @@ export const useUnfinalizeBatchTallies = (
     {
       onSuccess: () =>
         queryClient.invalidateQueries(jurisdictionsQueryKey(electionId)),
+    }
+  )
+}
+
+export const useSetBatchContestStatus = (
+  electionId: string
+): UseMutationResult<
+  unknown,
+  ApiError,
+  {
+    jurisdictionId: string
+    roundId: string
+    batchId: string
+    contestId: string
+    status: BatchContestDecision
+  }
+> => {
+  const queryClient = useQueryClient()
+  return useMutation(
+    ({ jurisdictionId, roundId, batchId, contestId, status }) =>
+      fetchApi(
+        `/api/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/batches/${batchId}/discrepancy-status`,
+        {
+          method: 'PUT',
+          body: JSON.stringify({ contestId, status }),
+          headers: { 'Content-Type': 'application/json' },
+        }
+      ),
+    {
+      onSuccess: () =>
+        queryClient.invalidateQueries(
+          discrepanciesByJurisdictionQueryKey(electionId)
+        ),
     }
   )
 }
