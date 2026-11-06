@@ -1,8 +1,6 @@
 import json
-from datetime import timedelta
 from flask.testing import FlaskClient
 
-from ...database import db_session
 from ...models import *
 from ..helpers import *
 
@@ -30,37 +28,30 @@ def test_jurisdiction_notes(
             .all()
         )
 
-    # A jurisdiction without discrepancies isn't in the response until it has
-    # a note
+    # A jurisdiction is in the response once it's under review, from its
+    # first finalize
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     assert get_discrepancies(client, election_id) == {}
+    Audit(client, election_id, jurisdiction_id, round_1_id)
 
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = post_json(client, notes_url, {"text": "Emailed the JA"})
     assert_ok(rv)
     rv = post_json(client, notes_url, {"text": "One vote off in Batch 1"})
     assert_ok(rv)
     assert [note.text for note in notes()] == [
+        "Finalized tallies",
         "Emailed the JA",
         "One vote off in Batch 1",
     ]
 
-    # The notes keep the jurisdiction in the response, oldest first
-    assert get_discrepancies(client, election_id) == {
-        jurisdiction_id: {
-            "notes": [
-                {"createdAt": note.created_at.isoformat(), "text": note.text}
-                for note in notes()
-            ],
-            "batches": {},
-        }
-    }
-
-    # Only a note written since the round started keeps it there
-    round = Round.query.get(round_1_id)
-    for note in notes():
-        note.created_at = round.created_at - timedelta(minutes=1)
-    db_session.commit()
-    assert get_discrepancies(client, election_id) == {}
+    # The response carries the notes, oldest first
+    listed = get_discrepancies(client, election_id)[jurisdiction_id]
+    assert listed["notes"] == [
+        {"createdAt": note.created_at.isoformat(), "text": note.text}
+        for note in notes()
+    ]
+    assert batch_contest_statuses(listed) == {"NEEDS_REVIEW", "MATCHES"}
 
     # A note needs text
     rv = post_json(client, notes_url, {"text": ""})

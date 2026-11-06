@@ -1,6 +1,6 @@
 from collections import defaultdict
 import uuid
-from typing import Iterator, TypedDict
+from typing import AbstractSet, Iterator, TypedDict
 from werkzeug.exceptions import Conflict
 from flask import jsonify, request
 
@@ -119,6 +119,10 @@ def get_batch_comparison_discrepancies_by_jurisdiction(
     contest_ids_in_round_by_batch_key: dict[tuple[str, str], set[str]] = {}
     sub_batches_by_batch_key: dict[tuple[str, str], list[Batch]] = {}
     status_by_batch_key: dict[tuple[str, str], dict[str, BatchContestStatus]] = {}
+    # A jurisdiction is under review once it has finalized, which gives every
+    # batch-contest it audits this round a status; unfinalizing to re-tally
+    # keeps the statuses
+    jurisdiction_ids_under_review: set[str] = set()
     for batch, sub_batches in batches_with_sub_batches(
         drawn_batches_in_round(election, round)
     ):
@@ -133,6 +137,8 @@ def get_batch_comparison_discrepancies_by_jurisdiction(
             contest_status.contest_id: contest_status
             for contest_status in batch.contest_statuses
         }
+        if contest_ids & status_by_batch_key[batch_key].keys():
+            jurisdiction_ids_under_review.add(batch.jurisdiction_id)
 
     jurisdiction_name_to_id = dict(
         Jurisdiction.query.filter_by(election_id=election.id).with_entities(
@@ -163,7 +169,9 @@ def get_batch_comparison_discrepancies_by_jurisdiction(
     }
 
     show_discrepancies_by_jurisdiction = (
-        show_batch_comparison_discrepancies_by_jurisdiction(election, round)
+        show_batch_comparison_discrepancies_by_jurisdiction(
+            election, round, jurisdiction_ids_under_review
+        )
     )
 
     for contest in list(election.contests):
@@ -303,10 +311,12 @@ def record_batch_results_unfinalized(round: Round, batches: list[Batch]):
 
 
 # In multi-jurisdiction audits, hide discrepancies if the jurisdiction hasn't finalized tallies
-# Finalized in the given round, or in any round when round is None, or with a
-# note from the given round (every finalize and unfinalize leaves one)
+# Finalized in the given round or under review in it, or finalized in any round
+# when round is None
 def show_batch_comparison_discrepancies_by_jurisdiction(
-    election: Election, round: Round | None
+    election: Election,
+    round: Round | None,
+    jurisdiction_ids_under_review: AbstractSet[str] = frozenset(),
 ) -> dict[str, bool]:
     jurisdictions = list(election.jurisdictions)
     is_single_jurisdiction_election = len(jurisdictions) == 1
@@ -322,23 +332,11 @@ def show_batch_comparison_discrepancies_by_jurisdiction(
         for (jurisdiction_id,) in finalized.with_entities(
             BatchResultsFinalized.jurisdiction_id
         )
-    }
-    if round is not None:
-        shown_jurisdiction_ids |= jurisdiction_ids_with_notes_in_round(election, round)
+    } | jurisdiction_ids_under_review
 
     return {
         jurisdiction.id: (jurisdiction.id in shown_jurisdiction_ids)
         for jurisdiction in jurisdictions
-    }
-
-
-def jurisdiction_ids_with_notes_in_round(election: Election, round: Round) -> set[str]:
-    return {
-        jurisdiction_id
-        for (jurisdiction_id,) in JurisdictionNote.query.join(Jurisdiction)
-        .filter_by(election_id=election.id)
-        .filter(JurisdictionNote.created_at >= round.created_at)
-        .with_entities(JurisdictionNote.jurisdiction_id)
     }
 
 
@@ -406,9 +404,9 @@ class JurisdictionDiscrepancies(TypedDict):
 BatchDiscrepanciesByJurisdiction = dict[str, JurisdictionDiscrepancies]
 
 
-# Every jurisdiction with a discrepancy, or with a note this round, along with
-# all its notes and each batch in the round with a discrepancy. A combined
-# batch is listed once, under its representative's id.
+# Every jurisdiction under review, with its notes and each of its batches with a
+# status or a discrepancy. A combined batch is listed once, under its
+# representative's id.
 def serialize_batch_discrepancies_by_jurisdiction(
     election: Election, round: Round
 ) -> BatchDiscrepanciesByJurisdiction:
@@ -459,8 +457,7 @@ def serialize_batch_discrepancies_by_jurisdiction(
             ],
             batches=batches_with_discrepancies_by_jurisdiction[jurisdiction_id],
         )
-        for jurisdiction_id in batches_with_discrepancies_by_jurisdiction.keys()
-        | jurisdiction_ids_with_notes_in_round(election, round)
+        for jurisdiction_id in batches_with_discrepancies_by_jurisdiction
     }
 
 
