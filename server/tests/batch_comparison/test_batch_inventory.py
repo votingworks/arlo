@@ -2825,6 +2825,64 @@ def test_batch_inventory_counts_ballots_per_contest(
     }
 
 
+def test_batch_inventory_dominion_normalizes_spaces_between_parentheticals_in_choice_names(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    choice_1_id, choice_2_id, choice_3_id = (str(uuid.uuid4()) for _ in range(3))
+    contest = {
+        "id": str(uuid.uuid4()),
+        "name": "Contest 1",
+        "isTargeted": True,
+        "choices": [
+            {"id": choice_1_id, "name": "Choice 1-1 (I) (Dem)", "numVotes": 14},
+            {"id": choice_2_id, "name": "Choice 1-2 (I) (Rep)", "numVotes": 6},
+            {"id": choice_3_id, "name": "Write-In", "numVotes": 2},
+        ],
+        "numWinners": 1,
+        "votesAllowed": 1,
+        "jurisdictionIds": jurisdiction_ids[:2],
+    }
+    rv = put_json(client, f"/api/election/{election_id}/contest", [contest])
+    assert_ok(rv)
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type",
+        {"systemType": CvrFileType.DOMINION},
+    )
+    assert_ok(rv)
+
+    # Test both no spaces and extra spaces
+    cvr = TEST_CVR.replace("Choice 1-1,", "Choice 1-1 (I)(Dem),").replace(
+        "Choice 1-2,", "Choice 1-2 (I)  (Rep),"
+    )
+    rv = upload_batch_inventory_cvr(
+        client, io.BytesIO(cvr.encode()), election_id, jurisdiction_ids[0]
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr"
+    )
+    assert json.loads(rv.data)["processing"]["status"] == ProcessingStatus.PROCESSED
+
+    election_results = BatchInventoryData.query.get(
+        jurisdiction_ids[0]
+    ).election_results
+    assert items_list_to_dict(election_results["batch_tallies"]) == {
+        ("TABULATOR1", "BATCH1"): {choice_1_id: 1, choice_2_id: 1, choice_3_id: 1},
+        ("TABULATOR1", "BATCH2"): {choice_1_id: 2, choice_2_id: 1, choice_3_id: 0},
+        ("TABULATOR2", "BATCH1"): {choice_1_id: 2, choice_2_id: 1, choice_3_id: 0},
+        ("TABULATOR2", "BATCH2"): {choice_1_id: 2, choice_2_id: 0, choice_3_id: 0},
+    }
+
+
 @pytest.mark.parametrize(
     "election_id", [AuditMathType.MACRO_CARD_STYLE_DATA], indirect=True
 )
