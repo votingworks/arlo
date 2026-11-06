@@ -78,20 +78,24 @@ def get_jurisdiction_progress(election: Election, current_round: Round) -> JSOND
 # on the audit admin progress table
 def get_discrepancy_count(election: Election, current_round: Round) -> int | None:
     if election.audit_type == AuditType.BATCH_COMPARISON:
-        discrepancies_by_jurisdiction = (
-            get_batch_comparison_discrepancies_by_jurisdiction(election, current_round)
+        # Matching batch-contests are listed for review without a discrepancy
+        return sum(
+            contest_discrepancy["hasDiscrepancy"]
+            for discrepancies in get_batch_comparison_discrepancies_by_jurisdiction(
+                election, current_round
+            ).values()
+            for contest_discrepancies in discrepancies.values()
+            for contest_discrepancy in contest_discrepancies.values()
         )
-    elif election.audit_type == AuditType.BALLOT_COMPARISON:
-        discrepancies_by_jurisdiction = (
-            get_ballot_comparison_discrepancies_by_jurisdiction(election, current_round)
+    if election.audit_type == AuditType.BALLOT_COMPARISON:
+        return sum(
+            len(contest_discrepancies)
+            for discrepancies in get_ballot_comparison_discrepancies_by_jurisdiction(
+                election, current_round
+            ).values()
+            for contest_discrepancies in discrepancies.values()
         )
-    else:
-        return None
-    return sum(
-        len(contest_discrepancies)
-        for discrepancies in discrepancies_by_jurisdiction.values()
-        for contest_discrepancies in discrepancies.values()
-    )
+    return None
 
 
 def get_round_progress(election: Election) -> JSONDict | None:

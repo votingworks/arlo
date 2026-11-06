@@ -819,3 +819,98 @@ def discrepancies_by_batch_name(
         batch["name"]: batch["discrepancies"]
         for batch in jurisdiction_discrepancies["batches"].values()
     }
+
+
+# The statuses of a jurisdiction's listed batch-contests
+def batch_contest_statuses(jurisdiction_discrepancies: dict[str, Any]) -> set[str]:
+    return {
+        contest_discrepancies["status"]
+        for batch in jurisdiction_discrepancies["batches"].values()
+        for contest_discrepancies in batch["discrepancies"].values()
+    }
+
+
+# A batch comparison jurisdiction's audit of its first contest: its first batch
+# recorded one vote off and the rest as reported, then finalized
+class Audit:
+    def __init__(
+        self, client: FlaskClient, election_id: str, jurisdiction_id: str, round_id: str
+    ):
+        self.client = client
+        self.election_id = election_id
+        self.jurisdiction_id = jurisdiction_id
+        self.round_id = round_id
+        self.log_in_ja()
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/contest"
+        )
+        self.contest = json.loads(rv.data)["contests"][0]
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/batches"
+        )
+        self.batches = json.loads(rv.data)["batches"]
+        self.batch_tallies = Jurisdiction.query.get(jurisdiction_id).batch_tallies
+        first_choice_id = self.contest["choices"][0]["id"]
+        self.off_by_one = {
+            **self.reported_results(self.batches[0]),
+            first_choice_id: self.reported_results(self.batches[0])[first_choice_id]
+            - 1,
+        }
+        self.record(self.batches[0], self.off_by_one)
+        for batch in self.batches[1:]:
+            self.record(batch, self.reported_results(batch))
+        self.finalize()
+
+    @property
+    def finalize_url(self) -> str:
+        return f"/api/election/{self.election_id}/jurisdiction/{self.jurisdiction_id}/round/{self.round_id}/batches/finalize"
+
+    def log_in_ja(self):
+        set_logged_in_user(
+            self.client, UserType.JURISDICTION_ADMIN, default_ja_email(self.election_id)
+        )
+
+    def log_in_aa(self):
+        set_logged_in_user(self.client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+
+    def reported_results(self, batch) -> dict[str, int]:
+        return {
+            choice["id"]: self.batch_tallies[batch["name"]][self.contest["id"]][
+                choice["id"]
+            ]
+            for choice in self.contest["choices"]
+        }
+
+    def record(self, batch, results):
+        self.log_in_ja()
+        rv = put_batch_results(
+            self.client,
+            self.election_id,
+            self.jurisdiction_id,
+            self.round_id,
+            batch["id"],
+            [results],
+        )
+        assert_ok(rv)
+
+    def finalize(self):
+        self.log_in_ja()
+        assert_ok(post_json(self.client, self.finalize_url))
+
+    def unfinalize(self):
+        self.log_in_aa()
+        assert_ok(self.client.delete(self.finalize_url))
+
+    # Each batch's status for the contest
+    def statuses(self) -> dict[str, str]:
+        self.log_in_aa()
+        rv = self.client.get(f"/api/election/{self.election_id}/discrepancy")
+        return {
+            batch["name"]: batch["discrepancies"][self.contest["id"]]["status"]
+            for batch in json.loads(rv.data)[self.jurisdiction_id]["batches"].values()
+        }
+
+    def set_status(self, batch, status: BatchDiscrepancyStatus):
+        contest_status = BatchContestStatus.query.get((batch["id"], self.contest["id"]))
+        contest_status.status = status
+        db_session.commit()
