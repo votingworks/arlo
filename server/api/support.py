@@ -892,6 +892,16 @@ def delete_combined_batch(jurisdiction_id: str, combined_batch_name: str):
     ).all()
     if len(batches) == 0:
         raise NotFound()
+    # The sub-batches are tallied from scratch, which the jurisdiction can't do
+    # once it has finalized its results
+    current_round = get_current_round(jurisdiction.election)
+    if (
+        current_round is not None
+        and BatchResultsFinalized.query.filter_by(
+            jurisdiction_id=jurisdiction.id, round_id=current_round.id
+        ).one_or_none()
+    ):
+        raise Conflict("Cannot uncombine batches after results are finalized")
 
     for batch in batches:
         batch.combined_batch_name = None
