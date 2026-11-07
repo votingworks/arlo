@@ -9,8 +9,8 @@ const JurisdictionAdmins: React.FC<{ jurisdiction: IJurisdiction }> = ({
   <div style={{ marginBottom: '16px' }}>
     <div className={`${Classes.TEXT_MUTED} ${Classes.TEXT_SMALL}`}>
       {jurisdiction.adminEmails.length > 1
-        ? 'Jurisdiction admins'
-        : 'Jurisdiction admin'}
+        ? 'Jurisdiction Admins'
+        : 'Jurisdiction Admin'}
     </div>
     {jurisdiction.adminEmails.map(email => (
       <div

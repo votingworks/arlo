@@ -638,7 +638,7 @@ describe('Progress screen', () => {
           name: /Jurisdiction 3 Review/,
         })
       ).closest('.bp3-dialog')! as HTMLElement
-      within(dialog).getByText('Jurisdiction admins')
+      within(dialog).getByText('Jurisdiction Admins')
       within(dialog).getByText('jurisdiction-3@example.com')
       within(dialog).getByText('jurisdiction-3-deputy@example.com')
       const copyEmailButtons = within(dialog).getAllByRole('button', {
