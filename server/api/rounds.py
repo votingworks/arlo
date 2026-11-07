@@ -11,7 +11,7 @@ from sqlalchemy.orm import selectinload
 from . import api
 from ..database import db_session
 from ..models import *
-from .discrepancies import record_round_finished
+from .discrepancies import contest_statuses_in_round, record_round_finished
 from .shared import (
     contest_ids_to_audit_in_round,
     jurisdiction_ids_with_batches_to_audit,
@@ -648,7 +648,8 @@ def validate_sample_size(round: dict[str, Any], election: Election):
 
 
 def delete_round_and_corresponding_sampled_ballots(round: Round):
-    # Batch results entered this round are for the round's contests only
+    # Batch results entered this round are for the round's contests only, as
+    # are the statuses finalizing them gave each batch contest
     if round.election.audit_type == AuditType.BATCH_COMPARISON:
         for batch in with_combined_sub_batches(
             Batch.query.join(SampledBatchDraw)
@@ -665,6 +666,8 @@ def delete_round_and_corresponding_sampled_ballots(round: Round):
                 batch, contest_ids_to_audit_in_round(round, batch)
             ):
                 db_session.delete(tally_sheet)
+            for contest_status in contest_statuses_in_round(round, batch):
+                db_session.delete(contest_status)
 
     db_session.delete(round)
 

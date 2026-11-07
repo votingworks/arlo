@@ -150,3 +150,21 @@ def test_finishing_a_round_accepts_what_is_still_under_review(
             .text
             == "Accepted remaining discrepancies when round 1 finished"
         )
+
+
+def test_undoing_a_round_start_forgets_its_statuses(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    round_1_id: str,
+):
+    audit = Audit(client, election_id, jurisdiction_ids[0], round_1_id)
+    statuses = BatchContestStatus.query.join(Batch).filter_by(
+        jurisdiction_id=jurisdiction_ids[0]
+    )
+    assert statuses.count() == len(audit.batches)
+
+    audit.log_in_aa()
+    rv = client.delete(f"/api/election/{election_id}/round/current")
+    assert_ok(rv)
+    assert statuses.count() == 0
