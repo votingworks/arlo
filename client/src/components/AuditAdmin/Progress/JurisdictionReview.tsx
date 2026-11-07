@@ -12,12 +12,15 @@ import {
 import styled from 'styled-components'
 import {
   IJurisdiction,
+  BatchContestDecision,
+  BatchDiscrepancyStatus,
   DiscrepanciesByContest,
   IBallotContestDiscrepancies,
   IBatchContestDiscrepancies,
   IDiscrepancyNote,
   JurisdictionRoundStatus,
   useAddJurisdictionDiscrepancyNote,
+  useSetBatchContestStatus,
   useUnfinalizeBatchTallies,
 } from '../../useJurisdictions'
 import { IRound } from '../useRoundsAuditAdmin'
@@ -28,8 +31,35 @@ import { IAuditSettings } from '../../useAuditSettings'
 import { assert } from '../../utilities'
 import CopyToClipboard from '../../Atoms/CopyToClipboard'
 import ContestSelect from './ContestSelect'
-import StatusTag from '../../Atoms/StatusTag'
+import StatusTag, { ExtendedIntent } from '../../Atoms/StatusTag'
 import JurisdictionAdmins from './JurisdictionAdmins'
+
+export const STATUS_TAGS: Record<
+  BatchDiscrepancyStatus,
+  { label: string; intent: ExtendedIntent }
+> = {
+  NEEDS_REVIEW: { label: 'Needs Review', intent: 'danger' },
+  JURISDICTION_CONTACTED: { label: 'Contacted', intent: 'warning' },
+  ACCEPTED: { label: 'Accepted', intent: 'success' },
+  MATCHES: { label: 'Matches', intent: 'success' },
+  RE_TALLYING: { label: 'Re-tallying', intent: 'in-progress' },
+}
+
+// The decisions open to an audit admin on a batch contest: contact or accept a
+// discrepancy under review, or reopen an accepted one
+const DECISIONS: Partial<
+  Record<
+    BatchDiscrepancyStatus,
+    { label: string; status: BatchContestDecision }[]
+  >
+> = {
+  NEEDS_REVIEW: [
+    { label: 'Mark Contacted', status: 'JURISDICTION_CONTACTED' },
+    { label: 'Accept', status: 'ACCEPTED' },
+  ],
+  JURISDICTION_CONTACTED: [{ label: 'Accept', status: 'ACCEPTED' }],
+  ACCEPTED: [{ label: 'Mark Needs Review', status: 'NEEDS_REVIEW' }],
+}
 
 const ContestDiscrepanciesTable = styled(HTMLTable).attrs({
   bordered: true,
@@ -54,12 +84,6 @@ const rowStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   gap: '8px',
-}
-
-function getContestName(contests: IContest[], contestId: string) {
-  const contest = contests.find(c => c.id === contestId)
-  assert(contest !== undefined)
-  return contest.name
 }
 
 function getChoiceName(
@@ -197,6 +221,7 @@ const BallotContestDiscrepancies: React.FC<{
 )
 
 export interface IBatchOrBallotDiscrepancies {
+  id?: string // Batch comparison only
   name: string
   isExtra?: boolean // Batch comparison only
   discrepancies: DiscrepanciesByContest
@@ -205,7 +230,7 @@ export interface IBatchOrBallotDiscrepancies {
 export interface IJurisdictionReviewProps {
   discrepancies: IBatchOrBallotDiscrepancies[]
   notes?: IDiscrepancyNote[]
-  isSingleJurisdictionAudit: boolean
+  isReTallying: boolean
   auditType: IAuditSettings['auditType']
   electionId: string
   handleClose: () => void
@@ -217,7 +242,7 @@ export interface IJurisdictionReviewProps {
 const JurisdictionReview: React.FC<IJurisdictionReviewProps> = ({
   discrepancies,
   notes,
-  isSingleJurisdictionAudit,
+  isReTallying,
   auditType,
   handleClose,
   jurisdiction,
@@ -230,6 +255,7 @@ const JurisdictionReview: React.FC<IJurisdictionReviewProps> = ({
     jurisdiction.id
   )
   const unfinalize = useUnfinalizeBatchTallies(electionId)
+  const setBatchContestStatus = useSetBatchContestStatus(electionId)
   const addNote = useAddJurisdictionDiscrepancyNote(electionId)
   const [selectedContestId, setSelectedContestId] = useState(
     initialContestId ?? ''
@@ -239,13 +265,6 @@ const JurisdictionReview: React.FC<IJurisdictionReviewProps> = ({
     jurisdiction.currentRoundStatus!.status === JurisdictionRoundStatus.COMPLETE
   const canUnfinalize =
     auditType === 'BATCH_COMPARISON' && round.endedAt === null && isFinalized
-  // A jurisdiction under review has finalized, so one that isn't finalized now
-  // has unfinalized, except in a single-jurisdiction audit, where review
-  // starts before any finalize
-  const isReTallying =
-    auditType === 'BATCH_COMPARISON' &&
-    !isFinalized &&
-    !isSingleJurisdictionAudit
 
   if (!contestsQuery.isSuccess) {
     return null
@@ -331,7 +350,7 @@ const JurisdictionReview: React.FC<IJurisdictionReviewProps> = ({
               </AsyncButton>
             )}
             {isReTallying && (
-              <StatusTag intent="warning">Re-tallying</StatusTag>
+              <StatusTag intent="in-progress">Re-tallying</StatusTag>
             )}
           </div>
         )}
@@ -342,10 +361,12 @@ const JurisdictionReview: React.FC<IJurisdictionReviewProps> = ({
               : 'No batches sampled for this contest'}
           </p>
         )}
-        {shownBatches.map(({ name, isExtra, discrepancies: byContest }) => {
-          const shownContests = Object.entries(byContest).filter(
-            ([contestId]) =>
-              !selectedContestId || contestId === selectedContestId
+        {shownBatches.map(({ id, name, isExtra, discrepancies: byContest }) => {
+          // In contest setup order
+          const shownContests = contests.filter(
+            contest =>
+              contest.id in byContest &&
+              (!selectedContestId || contest.id === selectedContestId)
           )
           return (
             <div key={name} style={{ marginBottom: '16px' }}>
@@ -362,38 +383,78 @@ const JurisdictionReview: React.FC<IJurisdictionReviewProps> = ({
                   />
                 )}
               </H5>
-              {shownContests.map(([contestId, contestDiscrepancies]) => (
-                <div key={contestId}>
-                  <TableHeader style={rowStyle}>
-                    <span>{getContestName(contests, contestId)}</span>
-                    <CopyToClipboard
-                      iconOnly
-                      label="Copy contest name"
-                      getText={() => ({
-                        text: getContestName(contests, contestId),
-                        format: 'text/plain',
-                      })}
-                    />
-                  </TableHeader>
-                  {auditType === 'BATCH_COMPARISON' ? (
-                    <BatchContestDiscrepancies
-                      contests={contests}
-                      contestId={contestId}
-                      contestDiscrepancies={
-                        contestDiscrepancies as IBatchContestDiscrepancies
-                      }
-                    />
-                  ) : (
-                    <BallotContestDiscrepancies
-                      contests={contests}
-                      contestId={contestId}
-                      contestDiscrepancies={
-                        contestDiscrepancies as IBallotContestDiscrepancies
-                      }
-                    />
-                  )}
-                </div>
-              ))}
+              {shownContests.map(contest => {
+                const contestDiscrepancies = byContest[contest.id]
+                const status =
+                  auditType === 'BATCH_COMPARISON'
+                    ? (contestDiscrepancies as IBatchContestDiscrepancies)
+                        .status
+                    : null
+                // Decided while the round is open, like unfinalizing
+                const decisions =
+                  status && round.endedAt === null
+                    ? (DECISIONS[status] ?? [])
+                    : []
+                const setStatus = (newStatus: BatchContestDecision) =>
+                  setBatchContestStatus.mutateAsync({
+                    jurisdictionId: jurisdiction.id,
+                    roundId: round.id,
+                    batchId: id!,
+                    contestId: contest.id,
+                    status: newStatus,
+                  })
+                return (
+                  <div key={contest.id}>
+                    <TableHeader style={rowStyle}>
+                      <span>{contest.name}</span>
+                      <CopyToClipboard
+                        iconOnly
+                        label="Copy contest name"
+                        getText={() => ({
+                          text: contest.name,
+                          format: 'text/plain',
+                        })}
+                      />
+                      {status && (
+                        <StatusTag intent={STATUS_TAGS[status].intent}>
+                          {STATUS_TAGS[status].label}
+                        </StatusTag>
+                      )}
+                      {decisions.length > 0 && (
+                        <>
+                          <div style={{ flexGrow: 1 }} />
+                          {decisions.map(({ label, status: decision }) => (
+                            <AsyncButton
+                              key={label}
+                              small
+                              onClick={() => setStatus(decision)}
+                            >
+                              {label}
+                            </AsyncButton>
+                          ))}
+                        </>
+                      )}
+                    </TableHeader>
+                    {auditType === 'BATCH_COMPARISON' ? (
+                      <BatchContestDiscrepancies
+                        contests={contests}
+                        contestId={contest.id}
+                        contestDiscrepancies={
+                          contestDiscrepancies as IBatchContestDiscrepancies
+                        }
+                      />
+                    ) : (
+                      <BallotContestDiscrepancies
+                        contests={contests}
+                        contestId={contest.id}
+                        contestDiscrepancies={
+                          contestDiscrepancies as IBallotContestDiscrepancies
+                        }
+                      />
+                    )}
+                  </div>
+                )
+              })}
             </div>
           )
         })}

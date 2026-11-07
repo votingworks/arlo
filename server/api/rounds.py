@@ -11,6 +11,7 @@ from sqlalchemy.orm import selectinload
 from . import api
 from ..database import db_session
 from ..models import *
+from .discrepancies import record_round_finished
 from .shared import (
     contest_ids_to_audit_in_round,
     jurisdiction_ids_with_batches_to_audit,
@@ -761,6 +762,8 @@ def finish_round(election: Election):
 
     count_audited_votes(election, current_round)
     escalating_contest_ids = calculate_risk_measurements(election, current_round)
+    if election.audit_type == AuditType.BATCH_COMPARISON:
+        record_round_finished(election, current_round)
     current_round.ended_at = datetime.now(timezone.utc)  # ty: ignore[invalid-assignment]
 
     db_session.flush()  # Ensure round contest results are queryable by is_audit_complete

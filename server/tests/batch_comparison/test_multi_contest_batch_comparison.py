@@ -1039,8 +1039,8 @@ def test_multi_contest_batch_comparison_round_2(
         ]["changeInMargin"]
         == 2
     )
-    assert discrepancies[jurisdiction_ids[1]]["batches"] == {}
-    assert discrepancies[jurisdiction_ids[2]]["batches"] == {}
+    assert batch_contest_statuses(discrepancies[jurisdiction_ids[1]]) == {"MATCHES"}
+    assert batch_contest_statuses(discrepancies[jurisdiction_ids[2]]) == {"MATCHES"}
 
     #
     # End round 1
@@ -1223,9 +1223,9 @@ def test_multi_contest_batch_comparison_round_2(
 
     # Batch 1's round 1 contest 2 discrepancy is still on its tally sheet, but
     # it's only audited for contest 1 this round
-    assert discrepancies[jurisdiction_ids[0]]["batches"] == {}
-    assert discrepancies[jurisdiction_ids[1]]["batches"] == {}
-    assert discrepancies[jurisdiction_ids[2]]["batches"] == {}
+    assert batch_contest_statuses(discrepancies[jurisdiction_ids[0]]) == {"MATCHES"}
+    assert jurisdiction_ids[1] not in discrepancies
+    assert jurisdiction_ids[2] not in discrepancies
 
     #
     # End round 2 / finish audit
@@ -1835,8 +1835,10 @@ def test_multi_contest_batch_comparison_combined_batch_tallied_in_two_rounds(
         contest_ids[1]: {
             "reportedVotes": {contest_2_choice_ids[0]: 75, contest_2_choice_ids[1]: 25},
             "auditedVotes": expected_contest_2_results,
+            "hasDiscrepancy": True,
             "changeInMargin": -30,
             "numBallots": 200,
+            "status": "NEEDS_REVIEW",
         }
     }
     rv = client.delete(

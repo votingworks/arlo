@@ -31,6 +31,8 @@ from ..activity_log.activity_log import (
 from .discrepancies import (
     add_jurisdiction_note,
     get_batch_comparison_discrepancies_by_jurisdiction,
+    record_batch_results_finalized,
+    record_batch_results_unfinalized,
 )
 from ..util.get_json import safe_get_json_list
 
@@ -65,6 +67,7 @@ def batches_to_audit_in_round(
         .filter_by(round_id=round.id)
         .order_by(func.human_sort(Batch.name))
         .options(selectinload(Batch.draws))
+        .options(selectinload(Batch.contest_statuses))
         .options(
             joinedload(Batch.result_tally_sheets).joinedload(
                 BatchResultTallySheet.results
@@ -411,7 +414,8 @@ def finalize_batch_results(
     ):
         raise Conflict("Results have already been finalized")
 
-    for batch, contest_ids in batches_to_audit_in_round(jurisdiction, round):
+    batches_to_audit = batches_to_audit_in_round(jurisdiction, round)
+    for batch, contest_ids in batches_to_audit:
         if len(tally_sheets_for_contests(batch, contest_ids)) == 0:
             raise Conflict(
                 "Cannot finalize batch results until all batches have audit results recorded."
@@ -422,8 +426,14 @@ def finalize_batch_results(
     )
     add_jurisdiction_note(jurisdiction, "Finalized tallies")
 
-    discrepancies_by_jurisdiction = get_batch_comparison_discrepancies_by_jurisdiction(
+    # The finalized row just added is what shows this jurisdiction in the
+    # listing on its first finalize, before any of its batch contests has a
+    # status
+    discrepancies_by_batch_name = get_batch_comparison_discrepancies_by_jurisdiction(
         election, round
+    ).get(jurisdiction.id, {})
+    record_batch_results_finalized(
+        round, [batch for batch, _ in batches_to_audit], discrepancies_by_batch_name
     )
 
     record_activity(
@@ -432,8 +442,12 @@ def finalize_batch_results(
             base=activity_base(election),
             jurisdiction_id=jurisdiction.id,
             jurisdiction_name=jurisdiction.name,
-            num_batches_with_discrepancies=len(
-                discrepancies_by_jurisdiction.get(jurisdiction.id, {})
+            num_batches_with_discrepancies=sum(
+                any(
+                    contest_discrepancies["hasDiscrepancy"]
+                    for contest_discrepancies in batch_discrepancies.values()
+                )
+                for batch_discrepancies in discrepancies_by_batch_name.values()
             ),
         )
     )
@@ -463,6 +477,9 @@ def unfinalize_batch_results(
     if num_deleted == 0:
         raise Conflict("Results have not been finalized")
 
+    record_batch_results_unfinalized(
+        round, [batch for batch, _ in batches_to_audit_in_round(jurisdiction, round)]
+    )
     add_jurisdiction_note(jurisdiction, "Unfinalized tallies")
 
     db_session.commit()
