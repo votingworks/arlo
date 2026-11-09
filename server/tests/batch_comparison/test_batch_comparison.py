@@ -1,11 +1,26 @@
 import csv
 import io
-from typing import Literal
+from typing import Any, Literal
 import pytest
 from flask.testing import FlaskClient
 
 from ...models import *
 from ..helpers import *
+
+
+# The round status's last tally time is checked here, not snapshotted: None
+# until the jurisdiction saves tallies in the round, then a date
+def snapshot_round_status(
+    snapshot,  # noqa: ANN001
+    round_status: dict[str, Any],
+    tallied: bool,
+):
+    last_tallied_at = round_status.pop("lastTalliedAt")
+    if tallied:
+        assert_is_date(last_tallied_at)
+    else:
+        assert last_tallied_at is None
+    snapshot.assert_match(round_status)
 
 
 def parse_vote_deltas(
@@ -240,8 +255,12 @@ def test_batch_comparison_round_1(
     # Check jurisdiction status after starting the round
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
-    snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
-    snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
+    snapshot_round_status(
+        snapshot, jurisdictions[0]["currentRoundStatus"], tallied=False
+    )
+    snapshot_round_status(
+        snapshot, jurisdictions[1]["currentRoundStatus"], tallied=False
+    )
 
     # Check that we also created RoundContest objects
     round_contests = RoundContest.query.filter_by(round_id=rounds[0]["id"]).all()
@@ -347,6 +366,7 @@ def test_batch_comparison_round_2(
         "Batch 6": {"candidate 1": 0, "candidate 2": 0, "candidate 3": 10},
     }
 
+    j1_last_tallied_at = None
     for i, (batch_id, results) in enumerate(batch_results_j1.items()):
         set_logged_in_user(
             client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -366,7 +386,10 @@ def test_batch_comparison_round_2(
         rv = client.get(f"/api/election/{election_id}/jurisdiction")
         jurisdictions = json.loads(rv.data)["jurisdictions"]
         assert jurisdictions[0]["currentRoundStatus"]["numSamplesAudited"] == i + 1
-        snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
+        j1_last_tallied_at = jurisdictions[0]["currentRoundStatus"]["lastTalliedAt"]
+        snapshot_round_status(
+            snapshot, jurisdictions[0]["currentRoundStatus"], tallied=True
+        )
 
     # Discrepancies should not show before the results are finalized
     rv = client.get(f"/api/election/{election_id}/discrepancy")
@@ -406,8 +429,14 @@ def test_batch_comparison_round_2(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
-    snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
-    snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
+    # Finalizing doesn't count as a tally update
+    assert jurisdictions[0]["currentRoundStatus"]["lastTalliedAt"] == j1_last_tallied_at
+    snapshot_round_status(
+        snapshot, jurisdictions[0]["currentRoundStatus"], tallied=True
+    )
+    snapshot_round_status(
+        snapshot, jurisdictions[1]["currentRoundStatus"], tallied=False
+    )
 
     # Check discrepancies
     rv = client.get(f"/api/election/{election_id}/discrepancy")
@@ -507,8 +536,12 @@ def test_batch_comparison_round_2(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
-    snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
-    snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
+    snapshot_round_status(
+        snapshot, jurisdictions[0]["currentRoundStatus"], tallied=True
+    )
+    snapshot_round_status(
+        snapshot, jurisdictions[1]["currentRoundStatus"], tallied=True
+    )
 
     # End the round
     rv = client.post(f"/api/election/{election_id}/round/current/finish")
@@ -536,8 +569,12 @@ def test_batch_comparison_round_2(
     # Check jurisdiction status after starting the new round
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
-    snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
-    snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
+    snapshot_round_status(
+        snapshot, jurisdictions[0]["currentRoundStatus"], tallied=False
+    )
+    snapshot_round_status(
+        snapshot, jurisdictions[1]["currentRoundStatus"], tallied=False
+    )
 
     # Check that we also created RoundContest objects
     round_contests = RoundContest.query.filter_by(round_id=rounds[1]["id"]).all()
@@ -783,8 +820,12 @@ def test_batch_comparison_batches_sampled_multiple_times(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
-    snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
-    snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
+    snapshot_round_status(
+        snapshot, jurisdictions[0]["currentRoundStatus"], tallied=True
+    )
+    snapshot_round_status(
+        snapshot, jurisdictions[1]["currentRoundStatus"], tallied=True
+    )
 
     # Check discrepancies
     rv = client.get(f"/api/election/{election_id}/discrepancy")
