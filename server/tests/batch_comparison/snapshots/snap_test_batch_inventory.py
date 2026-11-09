@@ -303,8 +303,8 @@ snapshots[
 ] = """Batch Name,Choice 1-1,Choice 1-2,Write-In\r
 BATCH1,1,2,0\r
 BATCH2,2,1,0\r
-BATCH4,1,0,1\r
 BATCH3,0,0,0\r
+BATCH4,1,0,1\r
 """
 
 snapshots[

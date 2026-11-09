@@ -2883,6 +2883,66 @@ def test_batch_inventory_dominion_normalizes_spaces_between_parentheticals_in_ch
     }
 
 
+def test_batch_inventory_dominion_downloads_sort_batches(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_id: str,  # noqa: ARG001
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type",
+        {"systemType": CvrFileType.DOMINION},
+    )
+    assert_ok(rv)
+
+    header_lines = TEST_CVR.splitlines(keepends=True)[:4]
+    data_line = TEST_CVR.splitlines(keepends=True)[4]
+    rows = [("10", "2", "Mail"), ("2", "10", "Mail"), ("2", "9", "Election Day")]
+    data_lines = [
+        data_line.replace(
+            "1,TABULATOR1,BATCH1,1,1-1-1,Election Day,",
+            f"{i},{tabulator},{batch},{i},x,{group},",
+            1,
+        )
+        for i, (tabulator, batch, group) in enumerate(rows, start=1)
+    ]
+    rv = upload_batch_inventory_cvr(
+        client,
+        io.BytesIO("".join(header_lines + data_lines).encode()),
+        election_id,
+        jurisdiction_ids[0],
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/ballot-manifest"
+    )
+    assert rv.data.decode("utf-8") == (
+        "Container,Batch Name,Number of Ballots\r\n"
+        "Election Day,2 - 9,1\r\n"
+        "Mail,2 - 10,1\r\n"
+        "Mail,10 - 2,1\r\n"
+    )
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/batch-tallies"
+    )
+    batch_names = [line.split(",")[0] for line in rv.data.decode().splitlines()[1:]]
+    assert batch_names == ["2 - 9", "2 - 10", "10 - 2"]
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/worksheet"
+    )
+    worksheet = rv.data.decode()
+    assert worksheet.index("Election Day,") < worksheet.index("Mail,")
+    assert worksheet.index("2 - 9,") < worksheet.index("2 - 10,")
+    assert worksheet.index("2 - 10,") < worksheet.index("10 - 2,")
+
+
 @pytest.mark.parametrize(
     "election_id", [AuditMathType.MACRO_CARD_STYLE_DATA], indirect=True
 )

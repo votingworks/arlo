@@ -111,6 +111,19 @@ class ElectionResults(TypedDict):
     contest_ballot_counts_by_batch: NotRequired[dict[BatchKey, dict[str, int]]]
 
 
+def sorted_batch_items(items):  # noqa: ANN001
+    def batch_sort_key(item: tuple[BatchKey, object]):
+        batch_key, _ = item
+        # Numeric IDs in numeric order (e.g., 2 before 10), then non-numeric
+        # IDs alphabetically
+        return tuple(
+            (0, int(value), "") if value.isdigit() else (1, 0, value)
+            for value in map(str, batch_key)
+        )
+
+    return sorted(items_list_to_dict(items).items(), key=batch_sort_key)
+
+
 def dict_to_items_list(dictionary):  # noqa: ANN001
     return [dict(key=key, value=value) for key, value in dictionary.items()]
 
@@ -1217,9 +1230,11 @@ def download_batch_inventory_worksheet(election: Election, jurisdiction: Jurisdi
     worksheet.writerow([])
 
     worksheet.writerow(["Ballot Group", "CVR Ballot Count", "Checked? (Type Yes/No)"])
-    for group_name, ballot_count in (
-        election_results["ballot_count_by_group"] or {}
-    ).items():
+    # We sort to ensure a deterministic output regardless of the order of rows in
+    # the CVR file
+    for group_name, ballot_count in sorted(
+        (election_results["ballot_count_by_group"] or {}).items()
+    ):
         worksheet.writerow([group_name, ballot_count, ""])
     worksheet.writerow([])
 
@@ -1234,9 +1249,11 @@ def download_batch_inventory_worksheet(election: Election, jurisdiction: Jurisdi
     worksheet.writerow([])
 
     worksheet.writerow(["Batch", "CVR Ballot Count", "Checked? (Type Yes/No)"])
-    for batch_key, ballot_count in items_list_to_dict(
+    # We sort to ensure a deterministic output regardless of the order of rows in
+    # the CVR file
+    for batch_key, ballot_count in sorted_batch_items(
         election_results["ballot_count_by_batch"]
-    ).items():
+    ):
         batch_name = batch_key_to_name(
             batch_key, batch_inventory_data.tabulator_id_to_name
         )
@@ -1385,9 +1402,11 @@ def download_batch_inventory_ballot_manifest(
     else:
         manifest_csv.writerow(["Batch Name", "Number of Ballots", *contest_headers])
 
-    for batch_key, ballot_count in items_list_to_dict(
+    # We sort to ensure a deterministic output regardless of the order of rows in
+    # the CVR file
+    for batch_key, ballot_count in sorted_batch_items(
         election_results["ballot_count_by_batch"]
-    ).items():
+    ):
         batch_name = batch_key_to_name(
             batch_key, batch_inventory_data.tabulator_id_to_name
         )
@@ -1432,9 +1451,9 @@ def download_batch_inventory_batch_tallies(
     batch_tallies = csv.writer(csv_io)
 
     batch_tallies.writerow(["Batch Name", *contest_choice_csv_headers.values()])
-    for batch_key, tallies in items_list_to_dict(
-        election_results["batch_tallies"]
-    ).items():
+    # We sort to ensure a deterministic output regardless of the order of rows in
+    # the CVR file
+    for batch_key, tallies in sorted_batch_items(election_results["batch_tallies"]):
         batch_name = batch_key_to_name(
             batch_key, batch_inventory_data.tabulator_id_to_name
         )
