@@ -377,3 +377,222 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId
     }
   )
 })
+
+describe('redactCsvColumns with shuffleRowsWithinGroupsBy', () => {
+  const redactAndShuffle = (file: File) =>
+    redactCsvColumns(file, ['CvrNumber', 'RecordId'], {
+      numRowsToSkip: 3,
+      shuffleRowsWithinGroupsBy: ['TabulatorNum', 'BatchId'],
+    })
+
+  // Rows are tagged with a unique Tag value so we can track them after
+  // CvrNumber is redacted. Batches are interleaved, and (T2, B1) shares a
+  // BatchId with (T1, B1) to check that grouping uses both columns.
+  const INPUT = `Election,5.2.16.1,,,
+,,,,Contest 1 (Vote For=1)
+,,,,Choice 1
+CvrNumber,TabulatorNum,BatchId,RecordId,Tag
+1,T1,B1,1,a
+2,T1,B2,1,b
+3,T1,B1,2,c
+4,T2,B1,1,d
+5,T1,B2,2,e
+6,T1,B1,3,f
+`
+
+  const HEADER = `Election,5.2.16.1,,,
+,,,,Contest 1 (Vote For=1)
+,,,,Choice 1
+CvrNumber,TabulatorNum,BatchId,RecordId,Tag
+`
+
+  /**
+   * With getRandomValues always returning 0, Fisher-Yates always swaps with
+   * index 0, which rotates each group left by one.
+   */
+  const EXPECTED_OUTPUT_WITH_ZERO_RANDOMNESS = `${HEADER}REDACTED,T1,B1,REDACTED,c
+REDACTED,T1,B1,REDACTED,f
+REDACTED,T1,B1,REDACTED,a
+REDACTED,T1,B2,REDACTED,e
+REDACTED,T1,B2,REDACTED,b
+REDACTED,T2,B1,REDACTED,d
+`
+
+  const mockRandomValues = (values: number[]) => {
+    const remaining = [...values]
+    return vi.spyOn(crypto, 'getRandomValues').mockImplementation(((
+      array: Uint32Array
+    ) => {
+      array.set([remaining.length > 0 ? remaining.shift()! : 0])
+      return array
+    }) as typeof crypto.getRandomValues)
+  }
+
+  const useTinyChunks = () => {
+    const originalParse = Papa.parse
+    vi.spyOn(Papa, 'parse').mockImplementation(((
+      input: File,
+      config: Papa.ParseLocalConfig<string[], File>
+    ) =>
+      originalParse(input, { ...config, chunkSize: 5 })) as typeof Papa.parse)
+  }
+
+  test('redacts and shuffles rows within each group, keeping groups in first-seen order', async () => {
+    mockRandomValues([])
+    await expectRedactedFile(
+      INPUT,
+      EXPECTED_OUTPUT_WITH_ZERO_RANDOMNESS,
+      redactAndShuffle
+    )
+  })
+
+  test('handles rows split across chunks', async () => {
+    mockRandomValues([])
+    useTinyChunks()
+    await expectRedactedFile(
+      INPUT,
+      EXPECTED_OUTPUT_WITH_ZERO_RANDOMNESS,
+      redactAndShuffle
+    )
+  })
+
+  test('rejects random values that would bias the shuffle', async () => {
+    // For a group of 3, the first draw is in [0, 3). 0xffffffff is above the
+    // largest multiple of 3 below 2^32, so it should be rejected and redrawn.
+    const spy = mockRandomValues([0xffffffff])
+    await expectRedactedFile(
+      'a\nb\nc\nCvrNumber,TabulatorNum,BatchId\n1,T1,B1\n2,T1,B1\n3,T1,B1\n',
+      'a\nb\nc\nCvrNumber,TabulatorNum,BatchId\nREDACTED,T1,B1\nREDACTED,T1,B1\nREDACTED,T1,B1\n',
+      redactAndShuffle
+    )
+    // 1 rejected + 2 accepted draws
+    expect(spy).toHaveBeenCalledTimes(3)
+  })
+
+  test('produces a permutation of each group with real randomness', async () => {
+    const tabulatorsAndBatches = [
+      ['T1', 'B1'],
+      ['T1', 'B2'],
+      ['T2', 'B1'],
+    ]
+    const numRowsPerGroup = 50
+    const dataRows = tabulatorsAndBatches.flatMap(([tabulator, batch]) =>
+      Array.from(
+        { length: numRowsPerGroup },
+        (_, i) => `${i},${tabulator},${batch},${i},${tabulator}-${batch}-${i}`
+      )
+    )
+    const input = `${HEADER}${dataRows.join('\n')}\n`
+
+    const output = await (await redactAndShuffle(createCsvFile(input))).text()
+
+    expect(output.startsWith(HEADER)).toEqual(true)
+    expect(output.endsWith('\n')).toEqual(true)
+    const outputRows = output
+      .slice(HEADER.length)
+      .trimEnd()
+      .split('\n')
+      .map(line => line.split(','))
+    expect(outputRows).toHaveLength(dataRows.length)
+
+    tabulatorsAndBatches.forEach(([tabulator, batch], groupIndex) => {
+      // Groups are contiguous and in their original order
+      const groupRows = outputRows.slice(
+        groupIndex * numRowsPerGroup,
+        (groupIndex + 1) * numRowsPerGroup
+      )
+      groupRows.forEach(row => {
+        expect(row.slice(0, 4)).toEqual([
+          'REDACTED',
+          tabulator,
+          batch,
+          'REDACTED',
+        ])
+      })
+      // Same rows as the input, but not in the same order (the chance of a
+      // shuffle of 50 rows leaving them in order is 1/50!)
+      const tags = groupRows.map(row => row[4])
+      const originalTags = Array.from(
+        { length: numRowsPerGroup },
+        (_, i) => `${tabulator}-${batch}-${i}`
+      )
+      expect([...tags].sort()).toEqual([...originalTags].sort())
+      expect(tags).not.toEqual(originalTags)
+    })
+  })
+
+  test('preserves CRLF line endings and the absence of a trailing line break', async () => {
+    mockRandomValues([])
+    await expectRedactedFile(
+      'a\r\nb\r\nc\r\nCvrNumber,TabulatorNum,BatchId,Tag\r\n1,T1,B1,x\r\n2,T1,B1,y',
+      'a\r\nb\r\nc\r\nCvrNumber,TabulatorNum,BatchId,Tag\r\nREDACTED,T1,B1,y\r\nREDACTED,T1,B1,x',
+      redactAndShuffle
+    )
+  })
+
+  test('drops blank data rows', async () => {
+    mockRandomValues([])
+    await expectRedactedFile(
+      'a\nb\nc\nCvrNumber,TabulatorNum,BatchId,Tag\n1,T1,B1,x\n\n2,T1,B1,y\n',
+      'a\nb\nc\nCvrNumber,TabulatorNum,BatchId,Tag\nREDACTED,T1,B1,y\nREDACTED,T1,B1,x\n',
+      redactAndShuffle
+    )
+  })
+
+  test('groups by raw values, including leading equal signs', async () => {
+    mockRandomValues([])
+    await expectRedactedFile(
+      'a\nb\nc\nCvrNumber,TabulatorNum,BatchId,Tag\n="1",="T1",="B1",x\n="2",="T1",="B1",y\n',
+      'a\nb\nc\nCvrNumber,TabulatorNum,BatchId,Tag\nREDACTED,"=""T1""","=""B1""",y\nREDACTED,"=""T1""","=""B1""",x\n',
+      redactAndShuffle
+    )
+  })
+
+  test('preserves a UTF-8 byte order mark and non-ASCII bytes', async () => {
+    mockRandomValues([])
+    const cafe = new TextEncoder().encode('Café')
+    await expectRedactedFile(
+      new Blob([
+        BOM.UTF8,
+        'a\nb\nc\nCvrNumber,TabulatorNum,BatchId,Tag\n1,T1,B1,x\n2,T1,B1,',
+        cafe,
+        '\n',
+      ]),
+      new Blob([
+        BOM.UTF8,
+        'a\nb\nc\nCvrNumber,TabulatorNum,BatchId,Tag\nREDACTED,T1,B1,',
+        cafe,
+        '\nREDACTED,T1,B1,x\n',
+      ]),
+      redactAndShuffle
+    )
+  })
+
+  test('returns the original file if a group-by column is missing', async () => {
+    await expectOriginalFile(
+      'a\nb\nc\nCvrNumber,TabulatorNum,Tag\n1,T1,x\n2,T1,y\n',
+      redactAndShuffle
+    )
+  })
+
+  test('returns the original file if none of the columns to redact are present', async () => {
+    await expectOriginalFile(
+      'a\nb\nc\nTabulatorNum,BatchId,Tag\nT1,B1,x\nT1,B1,y\n',
+      redactAndShuffle
+    )
+  })
+
+  test('returns the original file if processing throws', async () => {
+    vi.spyOn(Papa, 'unparse').mockImplementation(() => {
+      throw new Error('Unexpected')
+    })
+    await expectOriginalFile(INPUT, redactAndShuffle)
+  })
+
+  test('returns the original file if shuffling throws', async () => {
+    vi.spyOn(crypto, 'getRandomValues').mockImplementation(() => {
+      throw new Error('No randomness')
+    })
+    await expectOriginalFile(INPUT, redactAndShuffle)
+  })
+})

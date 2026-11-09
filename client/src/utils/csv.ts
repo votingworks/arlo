@@ -111,6 +111,36 @@ function findCsvColumnIndices(
   })
 }
 
+/**
+ * Papaparse doesn't return the last row of a chunk (unless it's the final
+ * chunk) because the row may be incomplete. Instead, it re-parses that row from
+ * the start as part of the next chunk. Errors attached to that discarded row
+ * (error.row === data.length) can be spurious, e.g., a chunk boundary between
+ * the \r and \n of a \r\n after a quoted field triggers "Trailing quote on
+ * quoted field is malformed". Ignore them. Any real error will resurface when
+ * the row is re-parsed in the next chunk.
+ */
+function throwOnRealChunkErrors(
+  data: readonly string[][],
+  errors: readonly Papa.ParseError[]
+): void {
+  const realErrors = errors.filter(
+    error => error.row === undefined || error.row < data.length
+  )
+  if (realErrors.length > 0) {
+    throw new Error(realErrors[0].message)
+  }
+}
+
+function redactRow(
+  row: readonly string[],
+  columnIndicesToRedact: ReadonlySet<number>
+): string[] {
+  return row.map((value, columnIndex) =>
+    value !== '' && columnIndicesToRedact.has(columnIndex) ? 'REDACTED' : value
+  )
+}
+
 function redactCsvColumnsAtIndices(
   { bom, fileWithoutBom }: FileContents,
   columnIndicesToRedact: readonly number[],
@@ -124,20 +154,7 @@ function redactCsvColumnsAtIndices(
       ...DEFAULT_PARSE_OPTIONS,
       chunk: ({ data, errors, meta }, parser) => {
         try {
-          // Papaparse doesn't return the last row of a chunk (unless it's the
-          // final chunk) because the row may be incomplete. Instead, it
-          // re-parses that row from the start as part of the next chunk.
-          // Errors attached to that discarded row (error.row === data.length)
-          // can be spurious, e.g., a chunk boundary between the \r and \n of
-          // a \r\n after a quoted field triggers "Trailing quote on quoted
-          // field is malformed". Ignore them. Any real error will resurface
-          // when the row is re-parsed in the next chunk.
-          const realErrors = errors.filter(
-            error => error.row === undefined || error.row < data.length
-          )
-          if (realErrors.length > 0) {
-            throw new Error(realErrors[0].message)
-          }
+          throwOnRealChunkErrors(data, errors)
           if (data.length === 0) {
             return
           }
@@ -145,11 +162,7 @@ function redactCsvColumnsAtIndices(
             const isHeaderOrAbove = rowsProcessed + rowIndex < numRowsToSkip + 1
             return isHeaderOrAbove
               ? row
-              : row.map((value, columnIndex) =>
-                  value !== '' && columnIndicesToRedactSet.has(columnIndex)
-                    ? 'REDACTED'
-                    : value
-                )
+              : redactRow(row, columnIndicesToRedactSet)
           })
           const csv = Papa.unparse(rows, {
             escapeFormulae: false,
@@ -180,19 +193,168 @@ function redactCsvColumnsAtIndices(
   })
 }
 
+/**
+ * Returns a cryptographically random integer in [0, maxExclusive), using
+ * rejection sampling to avoid modulo bias.
+ */
+function secureRandomInt(maxExclusive: number): number {
+  const limit = Math.floor(0x1_0000_0000 / maxExclusive) * maxExclusive
+  const buffer = new Uint32Array(1)
+  for (;;) {
+    crypto.getRandomValues(buffer)
+    if (buffer[0] < limit) {
+      return buffer[0] % maxExclusive
+    }
+  }
+}
+
+/**
+ * Fisher-Yates shuffle. Returns a new array.
+ */
+function shuffle<T>(items: readonly T[]): T[] {
+  const shuffled = [...items]
+  for (let i = shuffled.length - 1; i > 0; i -= 1) {
+    const j = secureRandomInt(i + 1)
+    const temp = shuffled[i]
+    shuffled[i] = shuffled[j]
+    shuffled[j] = temp
+  }
+  return shuffled
+}
+
+function encodeRow(row: readonly string[]): Uint8Array<ArrayBuffer> {
+  return encodeXUserDefined(
+    Papa.unparse([row as string[]], { escapeFormulae: false })
+  )
+}
+
+function isEmptyRow(row: readonly string[]): boolean {
+  return row.length === 0 || (row.length === 1 && row[0] === '')
+}
+
+/**
+ * Like {@link redactCsvColumnsAtIndices}, but also shuffles data rows within
+ * groups, where a group is the set of rows sharing the same values in the
+ * group-by columns. Groups appear in the order in which they're first seen in
+ * the file. Rows within a group needn't be contiguous in the input.
+ *
+ * Unlike {@link redactCsvColumnsAtIndices}, this holds all data rows in memory
+ * (as encoded bytes) until the whole file has been read. Blank data rows are
+ * dropped, though a trailing line break is preserved.
+ */
+function redactAndShuffleCsvRowsWithinGroups(
+  { bom, fileWithoutBom }: FileContents,
+  columnIndicesToRedact: readonly number[],
+  groupByColumnIndices: readonly number[],
+  numRowsToSkip: number
+): Promise<File> {
+  const columnIndicesToRedactSet = new Set(columnIndicesToRedact)
+  return new Promise((resolve, reject) => {
+    const headerAndAboveRows: Uint8Array<ArrayBuffer>[] = []
+    // Maps preserve insertion order, so groups stay in first-seen order
+    const groups = new Map<string, Uint8Array<ArrayBuffer>[]>()
+    let linebreak = '\n'
+    let lastRowWasEmpty = false
+    let rowsProcessed = 0
+    let failed = false
+    Papa.parse<string[]>(fileWithoutBom, {
+      ...DEFAULT_PARSE_OPTIONS,
+      chunk: ({ data, errors, meta }, parser) => {
+        try {
+          throwOnRealChunkErrors(data, errors)
+          if (data.length === 0) {
+            return
+          }
+          ;({ linebreak } = meta)
+          data.forEach((row, rowIndex) => {
+            const isHeaderOrAbove = rowsProcessed + rowIndex < numRowsToSkip + 1
+            if (isHeaderOrAbove) {
+              headerAndAboveRows.push(encodeRow(row))
+              lastRowWasEmpty = false
+              return
+            }
+            if (isEmptyRow(row)) {
+              lastRowWasEmpty = true
+              return
+            }
+            lastRowWasEmpty = false
+            const groupKey = JSON.stringify(
+              groupByColumnIndices.map(columnIndex => row[columnIndex] ?? '')
+            )
+            let group = groups.get(groupKey)
+            if (!group) {
+              group = []
+              groups.set(groupKey, group)
+            }
+            group.push(encodeRow(redactRow(row, columnIndicesToRedactSet)))
+          })
+          rowsProcessed += data.length
+        } catch (error) {
+          // Call reject before parser.abort because parser.abort triggers the
+          // complete callback
+          failed = true
+          reject(error)
+          parser.abort()
+        }
+      },
+      complete: () => {
+        if (failed) {
+          return
+        }
+        try {
+          const encodedLinebreak = encodeXUserDefined(linebreak)
+          const parts: BlobPart[] = bom ? [bom.bytes] : []
+          let isFirstRow = true
+          const appendRow = (row: Uint8Array<ArrayBuffer>) => {
+            if (!isFirstRow) {
+              parts.push(encodedLinebreak)
+            }
+            parts.push(row)
+            isFirstRow = false
+          }
+          headerAndAboveRows.forEach(appendRow)
+          for (const group of groups.values()) {
+            shuffle(group).forEach(appendRow)
+          }
+          if (lastRowWasEmpty) {
+            parts.push(encodedLinebreak)
+          }
+          resolve(
+            new File(parts, fileWithoutBom.name, {
+              lastModified: fileWithoutBom.lastModified,
+              type: fileWithoutBom.type,
+            })
+          )
+        } catch (error) {
+          reject(error)
+        }
+      },
+      error: reject,
+    })
+  })
+}
+
 interface RedactCsvColumnsOptions {
   numRowsToSkip?: number
+  /**
+   * If provided, data rows are also shuffled within groups of rows sharing the
+   * same values in these columns. All of these columns must be present in the
+   * header row, or the original file is returned.
+   */
+  shuffleRowsWithinGroupsBy?: readonly string[]
 }
 
 /**
  * Replaces every non-empty value in the specified columns with "REDACTED".
- * Columns that aren't in the header row are skipped. Returns the original file
- * if none of the columns are found or if anything goes wrong.
+ * Columns that aren't in the header row are skipped. Optionally shuffles data
+ * rows within groups (see {@link RedactCsvColumnsOptions}). Returns the
+ * original file if none of the columns to redact are found, if any group-by
+ * column isn't found, or if anything goes wrong.
  */
 export async function redactCsvColumns(
   file: File,
   columnNames: readonly string[],
-  { numRowsToSkip = 0 }: RedactCsvColumnsOptions = {}
+  { numRowsToSkip = 0, shuffleRowsWithinGroupsBy }: RedactCsvColumnsOptions = {}
 ): Promise<File> {
   try {
     const fileContents = await parseBom(file)
@@ -208,13 +370,32 @@ export async function redactCsvColumns(
       columnNames,
       numRowsToSkip
     )
-    return columnIndices.length === 0
-      ? file
-      : await redactCsvColumnsAtIndices(
-          fileContents,
-          columnIndices,
-          numRowsToSkip
-        )
+    if (columnIndices.length === 0) {
+      return file
+    }
+
+    if (shuffleRowsWithinGroupsBy) {
+      const groupByColumnIndices = await findCsvColumnIndices(
+        fileContents,
+        shuffleRowsWithinGroupsBy,
+        numRowsToSkip
+      )
+      if (groupByColumnIndices.length !== shuffleRowsWithinGroupsBy.length) {
+        throw new Error('Not all group-by columns found in header row')
+      }
+      return await redactAndShuffleCsvRowsWithinGroups(
+        fileContents,
+        columnIndices,
+        groupByColumnIndices,
+        numRowsToSkip
+      )
+    }
+
+    return await redactCsvColumnsAtIndices(
+      fileContents,
+      columnIndices,
+      numRowsToSkip
+    )
   } catch (error) {
     // oxlint-disable-next-line no-console
     console.error(error instanceof Error ? error.message : String(error))

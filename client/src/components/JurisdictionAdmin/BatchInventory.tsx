@@ -156,9 +156,19 @@ const useBatchInventoryCVR = (
         shouldRedactDominionBatchAuditFilePrepCvrs()
           ? await redactCsvColumns(
               files[0],
-              ['ImprintedId', 'RecordId', 'UniqueVotingIdentifier'],
-              // Dominion CVRs have 3 metadata rows above the header row
-              { numRowsToSkip: 3 }
+              [
+                'CvrNumber',
+                'ImprintedId',
+                'RecordId',
+                'UniqueVotingIdentifier',
+              ],
+              {
+                // Dominion CVRs have 3 metadata rows above the header row
+                numRowsToSkip: 3,
+                // Shuffle CVRs within each batch so that row order doesn't
+                // reveal ballot scan order
+                shuffleRowsWithinGroupsBy: ['TabulatorNum', 'BatchId'],
+              }
             )
           : files[0]
       return uploadFiles.mutateAsync({ file })
