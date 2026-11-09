@@ -1,7 +1,11 @@
+import csv
 import pytest
 from flask.testing import FlaskClient
 from ..helpers import *
-from ...api.batch_inventory import items_list_to_dict
+from ...api.batch_inventory import (
+    items_list_to_dict,
+    reprocess_batch_inventory_cvr_if_uploaded,
+)
 from ...models import Batch, BatchInventoryData
 from ..ballot_comparison.test_cvrs import (
     ESS_BALLOTS_1,
@@ -108,6 +112,20 @@ TEST_TABULATOR_STATUS = """<?xml version="1.0" standalone="yes"?>
    </ballots>
 </ExportName>
 """
+
+
+def parse_csv(contents: str) -> list[list[str]]:
+    return list(csv.reader(io.StringIO(contents, newline="")))
+
+
+def assert_is_shuffled_dominion_cvr(shuffled_cvr: str, original_cvr: str):
+    # Shuffling rewrites the CSV, which can change quoting and line endings, so
+    # compare parsed rows
+    shuffled_rows = parse_csv(shuffled_cvr)
+    original_rows = parse_csv(original_cvr)
+    # Dominion CVRs have 4 header rows (3 metadata rows + the column header row)
+    assert shuffled_rows[:4] == original_rows[:4]
+    assert sorted(shuffled_rows[4:]) == sorted(original_rows[4:])
 
 
 @pytest.fixture
@@ -372,7 +390,7 @@ def test_batch_inventory_happy_path(
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr/file"
     )
-    assert rv.data.decode("utf-8") == TEST_CVR
+    assert_is_shuffled_dominion_cvr(rv.data.decode("utf-8"), TEST_CVR)
 
     # Download tabulator status file
     rv = client.get(
@@ -583,7 +601,9 @@ def test_batch_inventory_happy_path_cvrs_with_leading_equal_signs(
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr/file"
     )
-    assert rv.data.decode("utf-8") == TEST_CVRS_WITH_LEADING_EQUAL_SIGNS
+    assert_is_shuffled_dominion_cvr(
+        rv.data.decode("utf-8"), TEST_CVRS_WITH_LEADING_EQUAL_SIGNS
+    )
 
     # Download tabulator status file
     rv = client.get(
@@ -794,7 +814,9 @@ def test_batch_inventory_happy_path_cvrs_with_extra_spaces(
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr/file"
     )
-    assert rv.data.decode("utf-8") == TEST_CVRS_WITH_EXTRA_SPACES
+    assert_is_shuffled_dominion_cvr(
+        rv.data.decode("utf-8"), TEST_CVRS_WITH_EXTRA_SPACES
+    )
 
     # Download tabulator status file
     rv = client.get(
@@ -1005,7 +1027,7 @@ def test_batch_inventory_happy_path_multi_contest_batch_comparison(
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr/file"
     )
-    assert rv.data.decode("utf-8") == TEST_CVR
+    assert_is_shuffled_dominion_cvr(rv.data.decode("utf-8"), TEST_CVR)
 
     # Download tabulator status file
     rv = client.get(
@@ -2881,6 +2903,131 @@ def test_batch_inventory_dominion_normalizes_spaces_between_parentheticals_in_ch
         ("TABULATOR2", "BATCH1"): {choice_1_id: 2, choice_2_id: 1, choice_3_id: 0},
         ("TABULATOR2", "BATCH2"): {choice_1_id: 2, choice_2_id: 0, choice_3_id: 0},
     }
+
+
+def test_batch_inventory_dominion_shuffles_stored_cvr_file(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_id: str,  # noqa: ARG001
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type",
+        {"systemType": CvrFileType.DOMINION},
+    )
+    assert_ok(rv)
+
+    header_lines = TEST_CVR.splitlines(keepends=True)[:4]
+    data_line = TEST_CVR.splitlines(keepends=True)[4]
+    # Enough rows that the chance of a shuffle leaving them in order is negligible
+    original_data_lines = [
+        data_line.replace("1,TABULATOR1,BATCH1,1,", f"{i},TABULATOR1,BATCH1,{i},", 1)
+        for i in range(1, 101)
+    ]
+    cvr = "".join(header_lines + original_data_lines)
+    rv = upload_batch_inventory_cvr(
+        client, io.BytesIO(cvr.encode()), election_id, jurisdiction_ids[0]
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr"
+    )
+    assert json.loads(rv.data)["processing"]["status"] == ProcessingStatus.PROCESSED
+    election_results = BatchInventoryData.query.get(
+        jurisdiction_ids[0]
+    ).election_results
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr/file"
+    )
+    header_rows = parse_csv("".join(header_lines))
+    original_data_rows = parse_csv("".join(original_data_lines))
+    stored_rows = parse_csv(rv.data.decode("utf-8"))
+    assert stored_rows[:4] == header_rows
+    assert sorted(stored_rows[4:]) == sorted(original_data_rows)
+    assert stored_rows[4:] != original_data_rows
+
+    # Reprocessing the shuffled file yields the same results
+    reprocess_batch_inventory_cvr_if_uploaded(
+        Jurisdiction.query.get(jurisdiction_ids[0]),
+        (UserType.JURISDICTION_ADMIN, default_ja_email(election_id)),
+        None,
+    )
+    db_session.commit()
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr"
+    )
+    assert json.loads(rv.data)["processing"]["status"] == ProcessingStatus.PROCESSED
+    db_session.expire_all()
+    reprocessed_election_results = BatchInventoryData.query.get(
+        jurisdiction_ids[0]
+    ).election_results
+    for key in [
+        "ballot_count_by_batch",
+        "batch_to_counting_group",
+        "batch_tallies",
+        "contest_ballot_counts_by_batch",
+    ]:
+        assert items_list_to_dict(
+            reprocessed_election_results[key]
+        ) == items_list_to_dict(election_results[key])
+    assert (
+        reprocessed_election_results["ballot_count_by_group"]
+        == election_results["ballot_count_by_group"]
+    )
+    # And reshuffles the file
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr/file"
+    )
+    reshuffled_rows = parse_csv(rv.data.decode("utf-8"))
+    assert reshuffled_rows[:4] == header_rows
+    assert sorted(reshuffled_rows[4:]) == sorted(original_data_rows)
+    assert reshuffled_rows[4:] != stored_rows[4:]
+
+
+def test_batch_inventory_dominion_utf16_cvr_file(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_id: str,  # noqa: ARG001
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type",
+        {"systemType": CvrFileType.DOMINION},
+    )
+    assert_ok(rv)
+
+    # UTF-16 big endian with a byte order mark parses fine, but shuffling
+    # would corrupt it, so we reject it instead
+    cvr = b"\xfe\xff" + TEST_CVR.encode("utf-16-be")
+    rv = upload_batch_inventory_cvr(
+        client, io.BytesIO(cvr), election_id, jurisdiction_ids[0]
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr"
+    )
+    processing = json.loads(rv.data)["processing"]
+    assert processing["status"] == ProcessingStatus.ERRORED
+    assert processing["error"] == (
+        "UTF-16- and UTF-32-encoded CSV files aren't supported. Please save the file as UTF-8 and upload it again."
+    )
+
+    # The stored file is left as is
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr/file"
+    )
+    assert rv.data == cvr
 
 
 def test_batch_inventory_dominion_downloads_sort_batches(

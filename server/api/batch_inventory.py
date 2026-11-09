@@ -18,6 +18,7 @@ from werkzeug.exceptions import BadRequest, Conflict
 from sqlalchemy.orm import Session
 
 from server.util.collections import diff_file_lists_ignoring_order_and_case
+from server.util.csv_shuffle import shuffle_csv_rows
 from server.util.cvr_snapshot_parse import read_cvr_snapshots
 from server.util.string import strip_optional_string
 
@@ -48,6 +49,7 @@ from ..util.file import (
     get_jurisdiction_folder_path,
     read_zip_filenames,
     validate_and_get_standard_file_upload_request_params,
+    replace_file_contents,
     retrieve_file,
     retrieve_file_to_buffer,
     serialize_file,
@@ -348,6 +350,19 @@ def process_batch_inventory_cvr_file(
                     support_user_email=support_user_email,
                 ),
             )
+
+        # Shuffle rows to obfuscate the file
+        input_file = retrieve_file_to_buffer(
+            batch_inventory_data.cvr_file, working_directory
+        )
+        with (
+            input_file,
+            tempfile.TemporaryFile(dir=working_directory) as shuffled_file,
+        ):
+            # Dominion CVRs have 3 metadata rows above the header row
+            shuffle_csv_rows(input_file, shuffled_file, num_rows_to_skip=3)
+            shuffled_file.seek(0)
+            replace_file_contents(batch_inventory_data.cvr_file, shuffled_file)
 
     def process_ess():
         ballot_count_by_batch: dict[BatchKey, int] = defaultdict(int)
