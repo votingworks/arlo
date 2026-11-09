@@ -156,7 +156,12 @@ const useBatchInventoryCVR = (
         shouldRedactDominionBatchAuditFilePrepCvrs()
           ? await redactCsvColumns(
               files[0],
-              ['ImprintedId', 'RecordId', 'UniqueVotingIdentifier'],
+              [
+                'CvrNumber',
+                'ImprintedId',
+                'RecordId',
+                'UniqueVotingIdentifier',
+              ],
               // Dominion CVRs have 3 metadata rows above the header row
               { numRowsToSkip: 3 }
             )
