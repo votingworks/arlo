@@ -454,6 +454,7 @@ def test_slack_worker_channels():
 
     # States with their own channel
     for state, state_channel in [
+        ("CT", "#arlo-activity-ct"),
         ("GA", "#arlo-activity-ga"),
         ("MD", "#arlo-activity-md"),
         ("TX", "#arlo-activity-tx"),

@@ -34,6 +34,7 @@ ALL_ACTIVITY_CHANNEL = "#arlo-activity"
 CRITICAL_CHANNEL = "#arlo-activity-critical"
 OTHER_STATES_CHANNEL = "#arlo-activity-others"
 STATE_CHANNELS = {
+    USState.Connecticut.value: "#arlo-activity-ct",
     USState.Georgia.value: "#arlo-activity-ga",
     USState.Maryland.value: "#arlo-activity-md",
     USState.Texas.value: "#arlo-activity-tx",
