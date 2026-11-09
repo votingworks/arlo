@@ -102,6 +102,21 @@ def retrieve_file_to_buffer(file: File, working_directory: str) -> BinaryIO:
         return open(file.storage_path, "rb")
 
 
+def replace_file_contents(file: File, contents: IO[bytes]) -> None:
+    """
+    Overwrites the stored contents of an existing file, keeping its storage path.
+    """
+    if config.FILE_UPLOAD_STORAGE_PATH.startswith("s3://"):
+        assert file.storage_path.startswith(config.FILE_UPLOAD_STORAGE_PATH)
+        parsed_path = urlparse(file.storage_path)
+        bucket_name = parsed_path.netloc
+        key = parsed_path.path[1:]
+        s3().upload_fileobj(contents, bucket_name, key)
+    else:
+        with open(file.storage_path, "wb") as system_file:
+            shutil.copyfileobj(contents, system_file)
+
+
 def delete_file(file: File):
     if config.FILE_UPLOAD_STORAGE_PATH.startswith("s3://"):
         assert file.storage_path.startswith("s3://")

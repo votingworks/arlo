@@ -16,6 +16,7 @@ from ...util.file import (
     delete_file,
     get_full_storage_path,
     read_zip_filenames,
+    replace_file_contents,
     retrieve_file,
     retrieve_file_to_buffer,
     store_file,
@@ -413,3 +414,31 @@ def test_unzip_files_sanitizes_path_traversal_names():
             assert os.path.commonpath(
                 [full_path, os.path.realpath(directory)]
             ) == os.path.realpath(directory)
+
+
+@patch("boto3.client", autospec=True)
+def test_replace_file_contents_s3(mock_boto_client):
+    original_file_upload_storage_path = config.FILE_UPLOAD_STORAGE_PATH
+    config.FILE_UPLOAD_STORAGE_PATH = "s3://test_bucket"
+    try:
+        contents = io.BytesIO(b"new contents")
+        replace_file_contents(
+            File(storage_path="s3://test_bucket/test_dir/test_file.csv"), contents
+        )
+        mock_boto_client.return_value.upload_fileobj.assert_called_once_with(
+            contents, "test_bucket", "test_dir/test_file.csv"
+        )
+        with pytest.raises(AssertionError):
+            replace_file_contents(File(storage_path="invalid/path"), contents)
+    finally:
+        config.FILE_UPLOAD_STORAGE_PATH = original_file_upload_storage_path
+
+
+def test_replace_file_contents_local():
+    with tempfile.TemporaryDirectory() as temp_dir:
+        path = os.path.join(temp_dir, "test_file.csv")
+        with open(path, "wb") as f:
+            f.write(b"old contents that are longer")
+        replace_file_contents(File(storage_path=path), io.BytesIO(b"new contents"))
+        with open(path, "rb") as f:
+            assert f.read() == b"new contents"
