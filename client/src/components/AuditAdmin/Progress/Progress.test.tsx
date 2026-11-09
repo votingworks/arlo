@@ -577,13 +577,14 @@ describe('Progress screen', () => {
       screen.getByText('Audit Progress')
 
       const headers = screen.getAllByRole('columnheader')
-      expect(headers).toHaveLength(6)
+      expect(headers).toHaveLength(7)
       expect(headers[0]).toHaveTextContent('Jurisdiction')
       expect(headers[1]).toHaveTextContent('Status')
       expect(headers[2]).toHaveTextContent('Ballots in Manifest')
       expect(headers[3]).toHaveTextContent('Change in Margin')
       expect(headers[4]).toHaveTextContent('Batches Audited')
       expect(headers[5]).toHaveTextContent('Batches Remaining')
+      expect(headers[6]).toHaveTextContent('Last Tally Update')
 
       const rows = screen.getAllByRole('row')
       expect(rows).toHaveLength(jurisdictionMocks.oneComplete.length + 2) // includes headers and footers
@@ -1255,6 +1256,85 @@ describe('Progress screen', () => {
         })
         expect(
           screen.queryByRole('combobox', { name: 'Contest' })
+        ).not.toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('last tally update', () => {
+    const lastTalliedAt: Record<string, string> = {
+      'jurisdiction-id-1': '2026-11-09T14:14:00+00:00',
+      'jurisdiction-id-3': '2026-11-08T09:05:00+00:00',
+    }
+    const jurisdictions = jurisdictionMocks.oneComplete.map(jurisdiction => ({
+      ...jurisdiction,
+      currentRoundStatus: jurisdiction.currentRoundStatus && {
+        ...jurisdiction.currentRoundStatus,
+        lastTalliedAt: lastTalliedAt[jurisdiction.id] ?? null,
+      },
+    }))
+    const expectedCalls = () => [
+      aaApiCalls.getDiscrepancies({}),
+      aaApiCalls.getLastLoginByJurisdiction({
+        response: lastLoginByJurisdictionMocks.noLogins,
+      }),
+      aaApiCalls.getMapData,
+    ]
+
+    it('shows and sorts by when each jurisdiction last saved tallies', async () => {
+      await withMockFetch(expectedCalls(), async () => {
+        const { container } = render({
+          auditSettings: auditSettingsMocks.batchComparisonAll,
+          jurisdictions,
+          round: roundMocks.singleIncomplete[0],
+        })
+        await waitFor(() => {
+          expect(container.querySelectorAll('.d3-component').length).toBe(1)
+        })
+        const header = screen.getByRole('columnheader', {
+          name: /Last Tally Update/,
+        })
+        const column = () =>
+          screen
+            .getAllByRole('row')
+            .slice(1, -1)
+            .map(row => within(row).getAllByRole('cell'))
+            .map(cells => [cells[0].textContent, cells[6].textContent])
+        expect(column()).toEqual([
+          ['Jurisdiction 1', 'Nov 9, 2:14 PM'],
+          ['Jurisdiction 2', ''],
+          ['Jurisdiction 3', 'Nov 8, 9:05 AM'],
+        ])
+
+        // Oldest first, then newest first; a jurisdiction yet to save stays
+        // at the bottom either way
+        userEvent.click(header)
+        expect(column().map(([name]) => name)).toEqual([
+          'Jurisdiction 3',
+          'Jurisdiction 1',
+          'Jurisdiction 2',
+        ])
+        userEvent.click(header)
+        expect(column().map(([name]) => name)).toEqual([
+          'Jurisdiction 1',
+          'Jurisdiction 3',
+          'Jurisdiction 2',
+        ])
+      })
+    })
+
+    it('is hidden once the round ends', async () => {
+      await withMockFetch(expectedCalls(), async () => {
+        const { container } = render({
+          auditSettings: auditSettingsMocks.batchComparisonAll,
+          jurisdictions,
+          round: roundMocks.singleComplete[0],
+        })
+        await waitFor(() => {
+          expect(container.querySelectorAll('.d3-component').length).toBe(1)
+        })
+        expect(
+          screen.queryByRole('columnheader', { name: /Last Tally Update/ })
         ).not.toBeInTheDocument()
       })
     })

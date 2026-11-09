@@ -65,6 +65,22 @@ const totalFooter =
 
 // Sorts rows with a discrepancy first, then zeros, then empty rows, so
 // discrepancies aren't buried below the zeros/empty on either sort direction.
+// Jurisdictions that haven't saved tallies yet stay at the bottom either way
+const sortLastTalliedAt: SortByFn<IJurisdiction> = (
+  rowA,
+  rowB,
+  columnId,
+  desc
+) => {
+  const a: string | null = rowA.values[columnId]
+  const b: string | null = rowB.values[columnId]
+  const aBelowB = desc ? -1 : 1
+  if (a === b) return 0
+  if (a === null) return aBelowB
+  if (b === null) return -aBelowB
+  return Date.parse(a) - Date.parse(b)
+}
+
 const sortDiscrepanciesFirst: SortByFn<IJurisdiction> = (
   rowA,
   rowB,
@@ -518,6 +534,7 @@ const Progress: React.FC<IProgressProps> = ({
         auditType === 'BATCH_COMPARISON' ? 'Change in Margin' : 'Discrepancies'
       columns.push({
         Header: discrepanciesHeader,
+        minWidth: 140, // Room for the Review button and its count on one line
         accessor: ({ id }) => {
           const discrepancies = jurisdictionDiscrepancies(id)
           return (
@@ -595,6 +612,28 @@ const Progress: React.FC<IProgressProps> = ({
         Footer: totalFooter(`${ballotsOrBatches} Remaining`),
       }
     )
+    // How recently each jurisdiction has saved tallies, which stops mattering
+    // once the round closes
+    if (auditType === 'BATCH_COMPARISON' && round.endedAt === null) {
+      columns.push({
+        Header: 'Last Tally Update',
+        minWidth: 150, // Room for a date and time on one line
+        accessor: ({ currentRoundStatus }) =>
+          currentRoundStatus?.lastTalliedAt ?? null,
+        Cell: ({ value }: { value: string | null }) =>
+          value && (
+            <span title={new Date(value).toLocaleString()}>
+              {new Date(value).toLocaleString(undefined, {
+                month: 'short',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit',
+              })}
+            </span>
+          ),
+        sortType: sortLastTalliedAt,
+      })
+    }
     // Special column for full hand tally
     if (
       jurisdictions[0].currentRoundStatus &&
