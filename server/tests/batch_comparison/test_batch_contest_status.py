@@ -172,3 +172,71 @@ def test_undoing_a_round_start_forgets_its_statuses(
     rv = client.delete(f"/api/election/{election_id}/round/current")
     assert_ok(rv)
     assert statuses.count() == 0
+
+
+def test_combining_batches_forgets_their_statuses(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    round_1_id: str,
+):
+    audit = Audit(client, election_id, jurisdiction_ids[0], round_1_id)
+    off_by_one_batch = audit.batches[0]
+    assert_ok(audit.mark(off_by_one_batch, "ACCEPTED"))
+    audit.unfinalize()
+
+    unsampled_batch = (
+        Batch.query.filter_by(jurisdiction_id=jurisdiction_ids[0])
+        .filter(~Batch.draws.any())
+        .order_by(Batch.name)
+        .first()
+    )
+    sub_batch_statuses = BatchContestStatus.query.filter(
+        BatchContestStatus.batch_id.in_([off_by_one_batch["id"], unsampled_batch.id])
+    )
+    combined_batches_url = (
+        f"/api/support/jurisdictions/{jurisdiction_ids[0]}/combined-batches"
+    )
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
+    rv = post_json(
+        client,
+        combined_batches_url,
+        dict(
+            name="Combined Batch 1",
+            subBatchIds=[off_by_one_batch["id"], unsampled_batch.id],
+        ),
+    )
+    assert_ok(rv)
+    assert sub_batch_statuses.count() == 0
+
+    # The combined batch is judged from scratch, not by the acceptance
+    audit.log_in_ja()
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches"
+    )
+    combined_batch = next(
+        batch
+        for batch in json.loads(rv.data)["batches"]
+        if batch["name"] == "Combined Batch 1"
+    )
+    unsampled_results = audit.reported_results({"name": unsampled_batch.name})
+    audit.record(
+        combined_batch,
+        {
+            choice_id: votes + unsampled_results[choice_id]
+            for choice_id, votes in audit.off_by_one.items()
+        },
+    )
+    audit.finalize()
+    assert audit.statuses()["Combined Batch 1"] == "NEEDS_REVIEW"
+
+    # And so are the sub-batches once uncombined
+    assert_ok(audit.mark(combined_batch, "ACCEPTED"))
+    audit.unfinalize()
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
+    assert_ok(client.delete(f"{combined_batches_url}/Combined Batch 1"))
+    assert sub_batch_statuses.count() == 0
+
+    audit.record(off_by_one_batch, audit.off_by_one)
+    audit.finalize()
+    assert audit.statuses()[off_by_one_batch["name"]] == "NEEDS_REVIEW"

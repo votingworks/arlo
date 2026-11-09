@@ -1662,6 +1662,72 @@ def test_multi_contest_batch_comparison_combined_batches(
     combine_batch_4_and_batch_9()
 
 
+def test_multi_contest_batch_comparison_uncombining_forgets_statuses(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
+    election_settings,
+    manifests,
+    batch_tallies,
+    round_1_id: str,
+):
+    # Batch 2 is drawn for Contest 1 only and Batch 8 for Contest 2 only, so
+    # whichever sub-batch holds the combined batch's statuses, one contest is
+    # drawn through the other
+    batch_ids_by_name = {
+        batch.name: batch.id
+        for batch in Batch.query.filter_by(jurisdiction_id=jurisdiction_ids[0])
+    }
+    sub_batch_ids = [batch_ids_by_name["Batch 2"], batch_ids_by_name["Batch 8"]]
+    combined_batches_url = (
+        f"/api/support/jurisdictions/{jurisdiction_ids[0]}/combined-batches"
+    )
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
+    rv = post_json(
+        client,
+        combined_batches_url,
+        dict(name="Combined Batch", subBatchIds=sub_batch_ids),
+    )
+    assert_ok(rv)
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/contest")
+    reported_results = {
+        choice["id"]: votes
+        for contest in json.loads(rv.data)["contests"]
+        for choice, votes in zip(contest["choices"], [50, 0])
+    }
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches"
+    )
+    for batch in json.loads(rv.data)["batches"]:
+        rv = put_batch_results(
+            client,
+            election_id,
+            jurisdiction_ids[0],
+            round_1_id,
+            batch["id"],
+            results_for_batch_contests(batch, [reported_results]),
+        )
+        assert_ok(rv)
+    finalize_url = f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/finalize"
+    assert_ok(post_json(client, finalize_url))
+    statuses = BatchContestStatus.query.filter(
+        BatchContestStatus.batch_id.in_(sub_batch_ids)
+    )
+    assert {status.contest_id for status in statuses} == set(contest_ids)
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    assert_ok(client.delete(finalize_url))
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
+    assert_ok(client.delete(f"{combined_batches_url}/Combined Batch"))
+    assert statuses.count() == 0
+
+
 def test_multi_contest_batch_comparison_combined_batch_tallied_in_two_rounds(
     client: FlaskClient,
     election_id: str,

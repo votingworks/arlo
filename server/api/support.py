@@ -41,6 +41,7 @@ from ..util.get_json import safe_get_json_dict
 from .shared import group_combined_batches, is_sample_drawn
 from .jurisdictions import JurisdictionStatus, round_status_by_jurisdiction
 from .discrepancies import (
+    contest_statuses_in_round,
     get_ballot_comparison_discrepancies_by_jurisdiction,
     get_batch_comparison_discrepancies_by_jurisdiction,
 )
@@ -869,10 +870,13 @@ def create_combined_batch(jurisdiction_id: str):
     ).one_or_none():
         raise Conflict("Cannot combine batches after results are finalized")
 
-    # Tallies entered for a batch on its own don't cover the combined batch
+    # Tallies entered for a batch on its own don't cover the combined batch,
+    # and neither does a review of them
     for batch in batches:
         batch.combined_batch_name = combined_batch["name"]
         batch.result_tally_sheets = []
+        for contest_status in contest_statuses_in_round(current_round, batch):
+            db_session.delete(contest_status)
 
     db_session.commit()
 
@@ -903,6 +907,11 @@ def delete_combined_batch(jurisdiction_id: str, combined_batch_name: str):
     ):
         raise Conflict("Cannot uncombine batches after results are finalized")
 
+    # The statuses cover every sub-batch's contests only while still combined
+    if current_round is not None:
+        for batch in batches:
+            for contest_status in contest_statuses_in_round(current_round, batch):
+                db_session.delete(contest_status)
     for batch in batches:
         batch.combined_batch_name = None
         batch.result_tally_sheets = []
