@@ -1132,6 +1132,7 @@ def test_multi_contest_batch_comparison_round_2(
         "numUnique": 4,
         "numUniqueAudited": 2,
         "extras": NO_EXTRA_BATCHES,
+        "lastTalliedAt": None,
     }
 
     #
@@ -1177,14 +1178,18 @@ def test_multi_contest_batch_comparison_round_2(
         assert_ok(rv)
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
-    assert json.loads(rv.data)["jurisdictions"][0]["currentRoundStatus"] == {
-        "status": "IN_PROGRESS",
-        "numSamples": 4,
-        "numSamplesAudited": 4,
-        "numUnique": 4,
-        "numUniqueAudited": 4,
-        "extras": NO_EXTRA_BATCHES,
-    }
+    compare_json(
+        json.loads(rv.data)["jurisdictions"][0]["currentRoundStatus"],
+        {
+            "status": "IN_PROGRESS",
+            "numSamples": 4,
+            "numSamplesAudited": 4,
+            "numUnique": 4,
+            "numUniqueAudited": 4,
+            "extras": NO_EXTRA_BATCHES,
+            "lastTalliedAt": assert_is_date,
+        },
+    )
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
@@ -1345,6 +1350,7 @@ def test_multi_contest_batch_comparison_jurisdiction_with_nothing_to_audit_in_ro
         "numUnique": 1,
         "numUniqueAudited": 1,
         "extras": NO_EXTRA_BATCHES,
+        "lastTalliedAt": None,
     }
 
     for i, jurisdiction_id in [(0, jurisdiction_ids[0]), (2, jurisdiction_ids[2])]:
@@ -1986,14 +1992,18 @@ def test_multi_contest_batch_comparison_progress_with_new_contest_draw(
     # Contest 2's results are entered
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
-    assert json.loads(rv.data)["jurisdictions"][0]["currentRoundStatus"] == {
-        "status": "IN_PROGRESS",
-        "numSamples": 16,
-        "numSamplesAudited": 1,
-        "numUnique": 9,
-        "numUniqueAudited": 0,
-        "extras": NO_EXTRA_BATCHES,
-    }
+    compare_json(
+        json.loads(rv.data)["jurisdictions"][0]["currentRoundStatus"],
+        {
+            "status": "IN_PROGRESS",
+            "numSamples": 16,
+            "numSamplesAudited": 1,
+            "numUnique": 9,
+            "numUniqueAudited": 0,
+            "extras": NO_EXTRA_BATCHES,
+            "lastTalliedAt": assert_is_date,
+        },
+    )
     # Per contest, the batch counts as audited for Contest 1 alone
     assert json.loads(rv.data)["jurisdictions"][0]["currentRoundStatusByContestId"] == {
         contest_ids[0]: {

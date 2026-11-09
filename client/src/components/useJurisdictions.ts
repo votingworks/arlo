@@ -65,6 +65,7 @@ export interface IJurisdiction {
     numUniqueAudited: number
     numBatchesAudited?: number
     extras?: IRoundStatusCounts // Only in batch comparison audits
+    lastTalliedAt?: string | null // Only in batch comparison audits
   } | null
   currentRoundStatusByContestId?: Record<string, IBatchRoundStatusCounts> | null
 }

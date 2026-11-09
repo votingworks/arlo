@@ -15,6 +15,7 @@ from werkzeug.exceptions import Conflict, BadRequest
 from . import api
 from .activity import serialize_activity
 from ..models import *
+from ..util.isoformat import isoformat
 from ..database import db_session
 from ..auth import restrict_access, UserType
 from .shared import (
@@ -628,6 +629,19 @@ def batch_round_status(election: Election, round: Round) -> dict[str, JSONDict]:
         .values(Batch.jurisdiction_id, func.count(Batch.id.distinct()))
     )
 
+    # Saving tallies replaces a batch's tally sheets, so the newest sheet
+    # saved since the round started dates the jurisdiction's last save
+    last_tallied_at_by_jurisdiction = dict(
+        BatchResultTallySheet.query.join(Batch)
+        .join(SampledBatchDraw, SampledBatchDraw.batch_id == Batch.id)
+        .filter(
+            SampledBatchDraw.round_id == round.id,
+            BatchResultTallySheet.created_at > round.created_at,
+        )
+        .group_by(Batch.jurisdiction_id)
+        .values(Batch.jurisdiction_id, func.max(BatchResultTallySheet.created_at))
+    )
+
     finalized_jurisdiction_ids = {
         jurisdiction_id
         for (jurisdiction_id,) in BatchResultsFinalized.query.filter_by(
@@ -673,6 +687,9 @@ def batch_round_status(election: Election, round: Round) -> dict[str, JSONDict]:
             "numUnique": num_batches(jurisdiction.id),
             "numUniqueAudited": num_batches_audited(jurisdiction.id),
             "extras": count_samples(extra_draws[jurisdiction.id]),
+            "lastTalliedAt": isoformat(
+                last_tallied_at_by_jurisdiction.get(jurisdiction.id)
+            ),
         }
         for jurisdiction in election.jurisdictions
     }
