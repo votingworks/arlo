@@ -972,7 +972,7 @@ describe('Progress screen', () => {
     }
     // A jurisdiction under review lists its audited batches with statuses
     const contest = contestMocks.one[0]
-    const matchingBatch = {
+    const acceptedBatch = {
       'batch-id-1': {
         name: 'batch1',
         isExtra: false,
@@ -982,15 +982,15 @@ describe('Progress screen', () => {
             auditedVotes: { [contest.choices[0].id]: 5 },
             changeInMargin: 0,
             numBallots: 100,
-            status: 'MATCHES' as const,
+            status: 'ACCEPTED' as const,
           },
         },
       },
     }
     const expectedCalls = [
       aaApiCalls.getDiscrepancies({
-        [reTallying.id]: { notes: [note], batches: matchingBatch },
-        [finalized.id]: { notes: [note], batches: matchingBatch },
+        [reTallying.id]: { notes: [note], batches: acceptedBatch },
+        [finalized.id]: { notes: [note], batches: acceptedBatch },
       }),
       aaApiCalls.getLastLoginByJurisdiction({
         response: lastLoginByJurisdictionMocks.noLogins,
@@ -1009,9 +1009,9 @@ describe('Progress screen', () => {
       aaApiCalls.getDiscrepancies({
         [reTallying.id]: {
           notes: [note, newNote],
-          batches: matchingBatch,
+          batches: acceptedBatch,
         },
-        [finalized.id]: { notes: [note], batches: matchingBatch },
+        [finalized.id]: { notes: [note], batches: acceptedBatch },
       }),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -1051,8 +1051,12 @@ describe('Progress screen', () => {
         })
       ).closest('.bp3-dialog')! as HTMLElement
       within(dialog).getByText('Notes')
-      // Unfinalized to re-tally, though its one batch contest matched
+      // Unfinalized to re-tally, so its accepted batch contest can't be
+      // decided on until it finalizes again
       within(dialog).getByText('Re-tallying')
+      expect(
+        within(dialog).queryByRole('button', { name: 'Mark Needs Review' })
+      ).not.toBeInTheDocument()
       within(dialog).getByText(note.text)
       within(dialog).getByText(new Date(note.createdAt).toLocaleString())
       const addNote = within(dialog).getByRole('button', { name: 'Add Note' })

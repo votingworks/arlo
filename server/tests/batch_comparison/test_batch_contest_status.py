@@ -105,9 +105,13 @@ def test_audit_admin_marks_a_batch_contest(
         f"Marked {off['name']} for {audit.contest['name']} needs review",
     ]
 
-    # Only those decisions, only for audit admins
+    # Only those decisions, only for audit admins, only on finalized tallies
     rv = audit.mark(off, "MATCHES")
     assert rv.status_code == 400
+    audit.unfinalize()
+    rv = audit.mark(off, "NEEDS_REVIEW")
+    assert rv.status_code == 409
+    audit.finalize()
     rv = audit.mark({"id": "not-a-batch"}, "ACCEPTED")
     assert rv.status_code == 404
     audit.log_in_ja()

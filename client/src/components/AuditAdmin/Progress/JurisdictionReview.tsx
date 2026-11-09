@@ -390,9 +390,9 @@ const JurisdictionReview: React.FC<IJurisdictionReviewProps> = ({
                     ? (contestDiscrepancies as IBatchContestDiscrepancies)
                         .status
                     : null
-                // Decided while the round is open, like unfinalizing
+                // Decided on finalized tallies while the round is open
                 const availableDecisions =
-                  status && round.endedAt === null
+                  status && round.endedAt === null && isFinalized
                     ? (DECISIONS[status] ?? [])
                     : []
                 const setStatus = (newStatus: BatchContestDecision) =>

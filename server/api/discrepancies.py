@@ -421,6 +421,14 @@ def set_batch_contest_status(
         raise NotFound()
     if round.ended_at is not None:
         raise Conflict("The round has ended")
+    # Decisions are made on finalized tallies; a re-tally re-judges every pair
+    if (
+        BatchResultsFinalized.query.filter_by(
+            jurisdiction_id=jurisdiction.id, round_id=round.id
+        ).one_or_none()
+        is None
+    ):
+        raise Conflict("Results have not been finalized")
     body = safe_get_json_dict(request)
     validate(body, BATCH_CONTEST_STATUS_SCHEMA)
     status = BatchDiscrepancyStatus(body["status"])
