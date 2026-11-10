@@ -10,6 +10,7 @@ import {
   getJurisdictionStatus,
   JurisdictionProgressStatus,
   IJurisdiction,
+  LastLoginByJurisdiction,
 } from '../../useJurisdictions'
 import { states } from '../Setup/Settings/states'
 import mapCountyCorrections from './map-county-corrections'
@@ -17,6 +18,7 @@ import mapCountyCorrections from './map-county-corrections'
 interface IProps {
   stateAbbreviation: string
   jurisdictions: IJurisdiction[]
+  lastLoginByJurisdiction: LastLoginByJurisdiction
   isRoundStarted: boolean
   auditType: IAuditSettings['auditType']
 }
@@ -130,6 +132,7 @@ const MapSpinner = styled(Spinner)`
 const Map: React.FC<IProps> = ({
   stateAbbreviation,
   jurisdictions,
+  lastLoginByJurisdiction,
   isRoundStarted,
   auditType,
 }) => {
@@ -145,7 +148,11 @@ const Map: React.FC<IProps> = ({
     jurisdiction: IJurisdiction | undefined
   ) => {
     const jurisdictionStatus =
-      jurisdiction && getJurisdictionStatus(jurisdiction)
+      jurisdiction &&
+      getJurisdictionStatus(
+        jurisdiction,
+        lastLoginByJurisdiction[jurisdiction.id]
+      )
 
     switch (jurisdictionStatus) {
       case JurisdictionProgressStatus.UPLOADS_COMPLETE:

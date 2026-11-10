@@ -2321,7 +2321,8 @@ describe('Progress screen', () => {
       })
       expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
 
-      expect(container.querySelectorAll('.county.gray').length).toBe(1) // not logged in
+      expect(container.querySelectorAll('.county.progress-1').length).toBe(1) // logged in
+      expect(container.querySelectorAll('.county.gray').length).toBe(0)
       expect(container.querySelectorAll('.county.progress-2').length).toBe(1) // in progress
       expect(container.querySelectorAll('.county.danger').length).toBe(1) // errored
 
@@ -2331,6 +2332,26 @@ describe('Progress screen', () => {
       expect(container.querySelector('#tooltip')).toHaveTextContent('Geneva')
       userEvent.unhover(container.querySelector('.county.progress-2')!)
       expect(container.querySelector('#tooltip')).not.toBeVisible()
+    })
+  })
+
+  it('colors a county gray on the progress map until its admin logs in', async () => {
+    const expectedCalls = [
+      aaApiCalls.getLastLoginByJurisdiction({
+        response: lastLoginByJurisdictionMocks.noLogins,
+      }),
+      aaApiCalls.getMapData,
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { container } = render({
+        jurisdictions: jurisdictionMocks.uploadingWithAlabamaJurisdictions,
+        auditSettings: auditSettingsMocks.batchComparisonAll,
+      })
+      await waitFor(() => {
+        expect(container.querySelectorAll('.d3-component').length).toBe(1)
+      })
+      expect(container.querySelectorAll('.county.gray').length).toBe(1)
+      expect(container.querySelectorAll('.county.progress-1').length).toBe(0)
     })
   })
 
