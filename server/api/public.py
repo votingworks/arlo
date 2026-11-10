@@ -3,8 +3,9 @@ import os
 import re
 from typing import Any
 
-from werkzeug.exceptions import Conflict, BadRequest, NotFound
+from werkzeug.exceptions import Conflict, BadRequest, NotFound, TooManyRequests
 from flask import jsonify, request
+from sqlalchemy import text
 
 
 from . import api
@@ -16,6 +17,7 @@ from ..auth.auth_helpers import (
     find_or_404,
 )
 from ..audit_math import bravo, providence, sampler_contest, supersimple
+from ..database import db_session
 from ..util.jsonschema import validate
 from ..models import *
 from ..util.get_json import safe_get_json_dict
@@ -187,16 +189,36 @@ def public_compute_providence_sample_size():
         compute_sample_size_input["electionResults"]
     )
     unsupported_reason = providence_unsupported_reason(contest_for_sampler)
+    if unsupported_reason:
+        return jsonify(sampleSize=None, unsupportedReason=unsupported_reason)
+    lock_providence_sample_size_computation()
     return jsonify(
-        sampleSize=(
-            None
-            if unsupported_reason
-            else compute_providence_sample_size(
-                contest_for_sampler, compute_sample_size_input["riskLimitPercentage"]
-            )
+        sampleSize=compute_providence_sample_size(
+            contest_for_sampler, compute_sample_size_input["riskLimitPercentage"]
         ),
-        unsupportedReason=unsupported_reason,
+        unsupportedReason=None,
     )
+
+
+PROVIDENCE_SAMPLE_SIZE_LOCK_KEY = 2495
+
+
+# A Providence computation can take seconds, so only one runs at a time across all web workers, to
+# keep the planner from tying up the whole app. The transaction-scoped lock is released when the
+# request's session is removed
+def lock_providence_sample_size_computation():
+    # Bound how long the lock can be held if the worker holding it dies without closing its
+    # connection. A computation still running after a minute would already have been stopped by
+    # gunicorn's 30-second timeout
+    db_session.execute(text("SET LOCAL idle_in_transaction_session_timeout = '60s'"))
+    locked = db_session.execute(
+        text("SELECT pg_try_advisory_xact_lock(:key)"),
+        {"key": PROVIDENCE_SAMPLE_SIZE_LOCK_KEY},
+    ).scalar()
+    if not locked:
+        raise TooManyRequests(
+            "Another Providence sample size is being computed. Try again in a moment."
+        )
 
 
 # Providence audits reject these contests at contest creation

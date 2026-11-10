@@ -2,10 +2,14 @@ import json
 import io
 import tempfile
 from typing import Any, TypedDict
+from unittest.mock import patch
 
 from flask.testing import FlaskClient
+from sqlalchemy import text
 from ..helpers import *
 from ... import config
+from ...api import public
+from ...database import engine
 
 
 def copy_dict_and_remove_key(input: dict[str, Any], key: str):
@@ -838,6 +842,56 @@ def test_public_compute_providence_sample_size_unsupported(client: FlaskClient):
             "sampleSize": None,
             "unsupportedReason": expected_reason,
         }
+
+
+def test_public_compute_providence_sample_size_busy(client: FlaskClient):
+    election_results = {
+        "candidates": [
+            {"name": "Helga Hippo", "votes": 1000},
+            {"name": "Bobby Bear", "votes": 900},
+        ],
+        "numWinners": 1,
+        "totalBallotsCast": 2000,
+    }
+    # Hold the lock from another connection, as another web worker computing a sample size
+    # would. Use a key of our own so that tests running in parallel aren't affected.
+    lock_key = 24950001
+    lock_connection = engine.connect()
+    lock_connection.execute(text("SELECT pg_advisory_lock(:key)"), {"key": lock_key})
+    try:
+        with patch.object(public, "PROVIDENCE_SAMPLE_SIZE_LOCK_KEY", lock_key):
+            rv = post_json(
+                client,
+                "/api/public/sample-sizes/providence",
+                {"electionResults": election_results, "riskLimitPercentage": 5},
+            )
+            assert rv.status_code == 429
+            assert json.loads(rv.data) == {
+                "errors": [
+                    {
+                        "errorType": "Too Many Requests",
+                        "message": "Another Providence sample size is being computed."
+                        " Try again in a moment.",
+                    }
+                ]
+            }
+
+            # Contests Providence doesn't support are answered without the lock
+            rv = post_json(
+                client,
+                "/api/public/sample-sizes/providence",
+                {
+                    "electionResults": {**election_results, "numWinners": 2},
+                    "riskLimitPercentage": 5,
+                },
+            )
+            assert rv.status_code == 200
+            assert json.loads(rv.data)["sampleSize"] is None
+    finally:
+        lock_connection.execute(
+            text("SELECT pg_advisory_unlock(:key)"), {"key": lock_key}
+        )
+        lock_connection.close()
 
 
 def upload_to_key(client: FlaskClient, key: str):
