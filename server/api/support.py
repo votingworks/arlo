@@ -863,15 +863,14 @@ def create_combined_batch(jurisdiction_id: str):
         draw.round_id != current_round.id for batch in batches for draw in batch.draws
     ):
         raise Conflict("Cannot combine batches sampled in a previous round")
-    # The combined batch is tallied from scratch, which the jurisdiction can't
-    # do once it has finalized its results
+
     if BatchResultsFinalized.query.filter_by(
         jurisdiction_id=jurisdiction.id, round_id=current_round.id
     ).one_or_none():
         raise Conflict("Cannot combine batches after results are finalized")
 
     # Tallies entered for a batch on its own don't cover the combined batch,
-    # and neither does a review of them
+    # and neither does a review of them so clear them out
     for batch in batches:
         batch.combined_batch_name = combined_batch["name"]
         batch.result_tally_sheets = []
@@ -896,8 +895,7 @@ def delete_combined_batch(jurisdiction_id: str, combined_batch_name: str):
     ).all()
     if len(batches) == 0:
         raise NotFound()
-    # The sub-batches are tallied from scratch, which the jurisdiction can't do
-    # once it has finalized its results
+
     current_round = get_current_round(jurisdiction.election)
     if (
         current_round is not None
@@ -907,7 +905,6 @@ def delete_combined_batch(jurisdiction_id: str, combined_batch_name: str):
     ):
         raise Conflict("Cannot uncombine batches after results are finalized")
 
-    # The statuses cover every sub-batch's contests only while still combined
     if current_round is not None:
         for batch in batches:
             for contest_status in contest_statuses_in_round(current_round, batch):

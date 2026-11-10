@@ -419,7 +419,8 @@ def set_batch_contest_status(
     round: Round,
     batch_id: str,
 ):
-    # Competing decisions on the batch wait for each other's status
+    # We lock the batch with_for_update to prevent different updates from
+    # overwriting each other without respecting the proper transition rules
     batch = (
         Batch.query.filter_by(id=batch_id, jurisdiction_id=jurisdiction.id)
         .with_for_update()

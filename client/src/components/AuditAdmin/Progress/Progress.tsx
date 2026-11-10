@@ -245,7 +245,10 @@ const Progress: React.FC<IProgressProps> = ({
             discrepancyQuery.data as BatchDiscrepanciesByJurisdiction,
             ({ batches }) =>
               sortBatches(
-                Object.entries(batches).map(([id, batch]) => ({ id, ...batch }))
+                Object.entries(batches).map(([id, batch]) => ({
+                  id,
+                  ...batch,
+                }))
               )
           )
         : {},
@@ -298,19 +301,15 @@ const Progress: React.FC<IProgressProps> = ({
     batchContests(batchesByJurisdiction[jurisdiction.id] ?? []).some(
       ({ status }) => status !== null
     )
-  // Batch comparison, once the tallies have been finalized: the Status
-  // column's tag and its rank in the ascending sort, from the most pressing
-  // status among the batch contests in scope. Across every contest, a
-  // jurisdiction that has unfinalized is re-tallying, and one with nothing
-  // left to review is simply complete, which its round status already says.
-  // A contest's view says how its batch contests stand, that the jurisdiction
-  // has none sampled for the contest, and that it has unfinalized.
   const reviewTag = (
     jurisdiction: IJurisdiction
   ): { label: string; intent: ExtendedIntent; rank: number } | null => {
+    // In a contest's view, a jurisdiction with no batches sampled for the
+    // contest has nothing to do for it
     if (selectedContest && roundStatusCounts(jurisdiction)?.numSamples === 0) {
       return { label: 'No samples', intent: 'success', rank: 5 }
     }
+    // Across every contest, a jurisdiction that has unfinalized is re-tallying
     const unfinalized = isUnfinalized(jurisdiction)
     if (!selectedContest && unfinalized) {
       return {
@@ -318,6 +317,9 @@ const Progress: React.FC<IProgressProps> = ({
         rank: REVIEW_STATUS_RANK.RE_TALLYING,
       }
     }
+    // Before the first finalize there are no statuses, and across every
+    // contest a jurisdiction with nothing left to review is simply complete.
+    // Either way, its round status says all there is to say so return null
     const status = scopeStatus(jurisdiction.id)
     if (
       !status ||
@@ -335,18 +337,19 @@ const Progress: React.FC<IProgressProps> = ({
       rank: REVIEW_STATUS_RANK[status],
     }
   }
-  // With a contest selected, the sample counts are that contest's. A
-  // jurisdiction with no draws for the contest has no entry for it, and
-  // before a round there are no counts at all. With extra batches excluded,
-  // only the batches the audit math drew count.
+
   const roundStatusCounts = (
     jurisdiction: IJurisdiction
   ): IRoundStatusCounts | null => {
+    // With a contest selected, the sample counts are that contest's. A
+    // jurisdiction with no draws for the contest has no entry for it, and
+    // before a round there are no counts at all
     const counts = selectedContest
       ? jurisdiction.currentRoundStatus &&
         (jurisdiction.currentRoundStatusByContestId?.[selectedContest.id] ??
           NO_DRAWS)
       : jurisdiction.currentRoundStatus
+    // With extra batches excluded, only the batches the audit math drew count
     return counts && excludeExtraBatches && counts.extras
       ? withoutExtras(counts, counts.extras)
       : counts
@@ -503,8 +506,8 @@ const Progress: React.FC<IProgressProps> = ({
          * 0: Not logged in, audit actions not taken
          * 1. Logged in, audit actions not taken
          * 2. Audit in progress or re-tallying, regardless of login status
-         * 3. Batch contests needing review
-         * 4. Batch contests contacted
+         * 3. Needing review
+         * 4. Contacted
          * 5. Audit complete
          */
 
@@ -824,7 +827,7 @@ const Progress: React.FC<IProgressProps> = ({
   }
 
   const lastLoginByJurisdiction = lastLoginQuery.data
-  const reviewedJurisdiction = jurisdictions.find(
+  const jurisdictionUnderReview = jurisdictions.find(
     jurisdiction => jurisdiction.id === jurisdictionReviewId
   )
 
@@ -917,13 +920,13 @@ const Progress: React.FC<IProgressProps> = ({
           auditSettings={auditSettings}
         />
       )}
-      {reviewedJurisdiction && (
+      {jurisdictionUnderReview && (
         <JurisdictionReview
-          discrepancies={jurisdictionDiscrepancies(reviewedJurisdiction.id)!}
-          notes={jurisdictionNotes(reviewedJurisdiction.id)}
-          isReTallying={isUnfinalized(reviewedJurisdiction)}
+          discrepancies={jurisdictionDiscrepancies(jurisdictionUnderReview.id)!}
+          notes={jurisdictionNotes(jurisdictionUnderReview.id)}
+          isReTallying={isUnfinalized(jurisdictionUnderReview)}
           auditType={auditType}
-          jurisdiction={reviewedJurisdiction}
+          jurisdiction={jurisdictionUnderReview}
           electionId={electionId}
           round={round!}
           initialContestId={selectedContest?.id}
