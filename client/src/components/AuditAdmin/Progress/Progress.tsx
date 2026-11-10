@@ -792,7 +792,14 @@ const Progress: React.FC<IProgressProps> = ({
             hour: 'numeric',
             minute: '2-digit',
           })
-          return <span title={date.toLocaleString()}>{`${day}, ${time}`}</span>
+          return (
+            <span
+              title={date.toLocaleString()}
+              style={{ fontVariantNumeric: 'tabular-nums' }}
+            >
+              {`${day}, ${time}`}
+            </span>
+          )
         },
         sortType: sortLastTalliedAt,
       })
