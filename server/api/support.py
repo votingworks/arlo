@@ -41,6 +41,7 @@ from ..util.get_json import safe_get_json_dict
 from .shared import group_combined_batches, is_sample_drawn
 from .jurisdictions import JurisdictionStatus, round_status_by_jurisdiction
 from .discrepancies import (
+    contest_statuses_in_round,
     get_ballot_comparison_discrepancies_by_jurisdiction,
     get_batch_comparison_discrepancies_by_jurisdiction,
 )
@@ -78,20 +79,24 @@ def get_jurisdiction_progress(election: Election, current_round: Round) -> JSOND
 # on the audit admin progress table
 def get_discrepancy_count(election: Election, current_round: Round) -> int | None:
     if election.audit_type == AuditType.BATCH_COMPARISON:
-        discrepancies_by_jurisdiction = (
-            get_batch_comparison_discrepancies_by_jurisdiction(election, current_round)
+        # Matching batch-contests are listed for review without a discrepancy
+        return sum(
+            contest_discrepancy["hasDiscrepancy"]
+            for discrepancies in get_batch_comparison_discrepancies_by_jurisdiction(
+                election, current_round
+            ).values()
+            for contest_discrepancies in discrepancies.values()
+            for contest_discrepancy in contest_discrepancies.values()
         )
-    elif election.audit_type == AuditType.BALLOT_COMPARISON:
-        discrepancies_by_jurisdiction = (
-            get_ballot_comparison_discrepancies_by_jurisdiction(election, current_round)
+    if election.audit_type == AuditType.BALLOT_COMPARISON:
+        return sum(
+            len(contest_discrepancies)
+            for discrepancies in get_ballot_comparison_discrepancies_by_jurisdiction(
+                election, current_round
+            ).values()
+            for contest_discrepancies in discrepancies.values()
         )
-    else:
-        return None
-    return sum(
-        len(contest_discrepancies)
-        for discrepancies in discrepancies_by_jurisdiction.values()
-        for contest_discrepancies in discrepancies.values()
-    )
+    return None
 
 
 def get_round_progress(election: Election) -> JSONDict | None:
@@ -858,17 +863,19 @@ def create_combined_batch(jurisdiction_id: str):
         draw.round_id != current_round.id for batch in batches for draw in batch.draws
     ):
         raise Conflict("Cannot combine batches sampled in a previous round")
-    # The combined batch is tallied from scratch, which the jurisdiction can't
-    # do once it has finalized its results
+
     if BatchResultsFinalized.query.filter_by(
         jurisdiction_id=jurisdiction.id, round_id=current_round.id
     ).one_or_none():
         raise Conflict("Cannot combine batches after results are finalized")
 
-    # Tallies entered for a batch on its own don't cover the combined batch
+    # Tallies entered for a batch on its own don't cover the combined batch,
+    # and neither does a review of them so clear them out
     for batch in batches:
         batch.combined_batch_name = combined_batch["name"]
         batch.result_tally_sheets = []
+        for contest_status in contest_statuses_in_round(current_round, batch):
+            db_session.delete(contest_status)
 
     db_session.commit()
 
@@ -889,6 +896,19 @@ def delete_combined_batch(jurisdiction_id: str, combined_batch_name: str):
     if len(batches) == 0:
         raise NotFound()
 
+    current_round = get_current_round(jurisdiction.election)
+    if (
+        current_round is not None
+        and BatchResultsFinalized.query.filter_by(
+            jurisdiction_id=jurisdiction.id, round_id=current_round.id
+        ).one_or_none()
+    ):
+        raise Conflict("Cannot uncombine batches after results are finalized")
+
+    if current_round is not None:
+        for batch in batches:
+            for contest_status in contest_statuses_in_round(current_round, batch):
+                db_session.delete(contest_status)
     for batch in batches:
         batch.combined_batch_name = None
         batch.result_tally_sheets = []

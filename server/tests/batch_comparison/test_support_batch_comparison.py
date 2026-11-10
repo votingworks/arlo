@@ -416,6 +416,18 @@ def test_support_invalid_combined_batches(
             }
         ]
     }
+    rv = client.delete(
+        f"/api/support/jurisdictions/{jurisdiction_ids[0]}/combined-batches/Combined Batch 1"
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Cannot uncombine batches after results are finalized",
+            }
+        ]
+    }
 
 
 def test_support_get_round_progress_batch_comparison(

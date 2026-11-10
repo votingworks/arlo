@@ -82,7 +82,7 @@ describe('JurisdictionDetail', () => {
       })
 
       await screen.findByText(`ja-1@example.com at ${loginTime}`)
-      screen.getByText('Jurisdiction admin')
+      screen.getByText('Jurisdiction Admin')
       screen.getByText('jurisdiction-1@example.com')
       screen.getByRole('button', { name: 'Copy email' })
     })

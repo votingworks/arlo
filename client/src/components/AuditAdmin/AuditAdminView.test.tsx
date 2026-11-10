@@ -394,6 +394,11 @@ it('finishes a round', async () => {
     aaApiCalls.getLastLoginByJurisdiction(),
     aaApiCalls.getMapData,
     aaApiCalls.postFinishRound,
+    {
+      ...aaApiCalls.getJurisdictions,
+      response: { jurisdictions: jurisdictionMocks.allComplete },
+    },
+    aaApiCalls.getLastLoginByJurisdiction(),
     aaApiCalls.getRounds(roundMocks.singleComplete),
   ]
   await withMockFetch(expectedCalls, async () => {
