@@ -6,6 +6,7 @@ import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 import { ToastContainer } from 'react-toastify'
 
 import AuditPlanner from './AuditPlanner'
+import { IElectionResults } from './electionResults'
 import {
   renderWithRouter,
   serverError,
@@ -138,16 +139,15 @@ function moveSlider(
   }
 }
 
-const body1 = JSON.stringify({
-  electionResults: {
-    candidates: [
-      { name: 'Helga Hippo', votes: 1000 },
-      { name: 'Bobby Bear', votes: 900 },
-    ],
-    numWinners: 1,
-    totalBallotsCast: 2000,
-  },
-})
+const electionResults1 = {
+  candidates: [
+    { name: 'Helga Hippo', votes: 1000 },
+    { name: 'Bobby Bear', votes: 900 },
+  ],
+  numWinners: 1,
+  totalBallotsCast: 2000,
+}
+const body1 = JSON.stringify({ electionResults: electionResults1 })
 
 const body2 = JSON.stringify({
   electionResults: {
@@ -158,6 +158,25 @@ const body2 = JSON.stringify({
     numWinners: 1,
     totalBallotsCast: 2001,
   },
+})
+
+const electionResultsMultipleWinners = {
+  candidates: [
+    { name: 'Helga Hippo', votes: 1000 },
+    { name: 'Bobby Bear', votes: 900 },
+    { name: 'Cami Cat', votes: 800 },
+  ],
+  numWinners: 2,
+  totalBallotsCast: 2000,
+}
+
+const providenceRequestOptions = (
+  electionResults: IElectionResults,
+  riskLimitPercentage: number
+) => ({
+  method: 'POST',
+  body: JSON.stringify({ electionResults, riskLimitPercentage }),
+  headers: { 'Content-Type': 'application/json' },
 })
 
 const apiMocks = {
@@ -231,17 +250,7 @@ const apiMocks = {
     url: '/api/public/sample-sizes',
     options: {
       method: 'POST',
-      body: JSON.stringify({
-        electionResults: {
-          candidates: [
-            { name: 'Helga Hippo', votes: 1000 },
-            { name: 'Bobby Bear', votes: 900 },
-            { name: 'Cami Cat', votes: 800 },
-          ],
-          numWinners: 2,
-          totalBallotsCast: 2000,
-        },
-      }),
+      body: JSON.stringify({ electionResults: electionResultsMultipleWinners }),
       headers: { 'Content-Type': 'application/json' },
     },
     response: {
@@ -250,6 +259,51 @@ const apiMocks = {
       batchComparison: { '5': 1002 },
     },
   },
+  publicComputeProvidenceSampleSize5: {
+    url: '/api/public/sample-sizes/providence',
+    options: providenceRequestOptions(electionResults1, 5),
+    response: {
+      sampleSize: { '0.7': 355, '0.8': 455, '0.9': 555 },
+      unsupportedReason: null,
+    },
+  },
+  publicComputeProvidenceSampleSize6: {
+    url: '/api/public/sample-sizes/providence',
+    options: providenceRequestOptions(electionResults1, 6),
+    response: {
+      sampleSize: { 'all-ballots': 2000 },
+      unsupportedReason: null,
+    },
+  },
+  publicComputeProvidenceSampleSizeBusy: {
+    url: '/api/public/sample-sizes/providence',
+    options: providenceRequestOptions(electionResults1, 6),
+    response: {
+      errors: [
+        {
+          errorType: 'Too Many Requests',
+          message:
+            'Another Providence sample size is being computed. Try again in a moment.',
+        },
+      ],
+    },
+    error: { status: 429, statusText: 'Too Many Requests' },
+  },
+  publicComputeProvidenceSampleSizeMultipleWinners: {
+    url: '/api/public/sample-sizes/providence',
+    options: providenceRequestOptions(electionResultsMultipleWinners, 5),
+    response: {
+      sampleSize: null,
+      unsupportedReason: 'Not supported for contests with multiple winners',
+    },
+  },
+  publicComputeProvidenceSampleSizeError: serverError(
+    'publicComputeProvidenceSampleSize',
+    {
+      url: '/api/public/sample-sizes/providence',
+      options: providenceRequestOptions(electionResults1, 7),
+    }
+  ),
   publicComputeSampleSizesError: serverError('publicComputeSampleSizes', {
     url: '/api/public/sample-sizes',
     options: {
@@ -677,7 +731,10 @@ test('Uncontested contest', async () => {
 })
 
 test('Contest with multiple winners', async () => {
-  const expectedCalls = [apiMocks.publicComputeSampleSizesMultipleWinners]
+  const expectedCalls = [
+    apiMocks.publicComputeSampleSizesMultipleWinners,
+    apiMocks.publicComputeProvidenceSampleSizeMultipleWinners,
+  ]
   await withMockFetch(expectedCalls, async () => {
     renderAuditPlanner()
     await screen.findByRole('heading', { name: 'Audit Planner' })
@@ -720,6 +777,94 @@ test('Contest with multiple winners', async () => {
     expect(screen.queryByText(/70%/)).not.toBeInTheDocument()
     expect(screen.queryByText(/80%/)).not.toBeInTheDocument()
     expect(screen.queryByText(/90%/)).not.toBeInTheDocument()
+
+    userEvent.click(screen.getByRole('radio', { name: 'Providence' }))
+    await screen.findByText('Not supported for contests with multiple winners')
+  })
+})
+
+test('Providence ballot polling type', async () => {
+  const expectedCalls = [
+    apiMocks.publicComputeSampleSizes1,
+    apiMocks.publicComputeProvidenceSampleSize5,
+    apiMocks.publicComputeProvidenceSampleSizeBusy,
+    apiMocks.publicComputeProvidenceSampleSize6,
+    apiMocks.publicComputeProvidenceSampleSizeError,
+  ]
+  await withMockFetch(expectedCalls, async () => {
+    renderAuditPlanner()
+    await screen.findByRole('heading', { name: 'Audit Planner' })
+    const {
+      candidate1NameInput,
+      candidate1VotesInput,
+      candidate2NameInput,
+      candidate2VotesInput,
+      totalBallotsCastInput,
+      planAuditButton,
+    } = await checkThatElectionResultsCardIsInInitialState()
+
+    userEvent.clear(candidate1NameInput)
+    userEvent.type(candidate1NameInput, 'Helga Hippo')
+    userEvent.type(candidate1VotesInput, '1000')
+    userEvent.clear(candidate2NameInput)
+    userEvent.type(candidate2NameInput, 'Bobby Bear')
+    userEvent.type(candidate2VotesInput, '900')
+    userEvent.type(totalBallotsCastInput, '2000')
+    userEvent.click(planAuditButton)
+    expect((await screen.findByText(/ASN/)).closest('div')).toHaveTextContent(
+      'ASN: 505 ballots'
+    )
+
+    const bravoRadioInput = screen.getByRole('radio', { name: 'BRAVO' })
+    const providenceRadioInput = screen.getByRole('radio', {
+      name: 'Providence',
+    })
+    expect(bravoRadioInput).toBeChecked()
+    expect(providenceRadioInput).not.toBeChecked()
+
+    userEvent.click(providenceRadioInput)
+    expect(providenceRadioInput).toBeChecked()
+    expect(bravoRadioInput).not.toBeChecked()
+    expect((await screen.findByText(/70%/)).closest('div')).toHaveTextContent(
+      '70%: 355 ballots'
+    )
+    expect(screen.getByText(/80%/).closest('div')).toHaveTextContent(
+      '80%: 455 ballots'
+    )
+    expect(screen.getByText(/90%/).closest('div')).toHaveTextContent(
+      '90%: 555 ballots'
+    )
+    expect(screen.queryByText(/ASN/)).not.toBeInTheDocument()
+
+    // Each risk limit is fetched separately, retrying while the server is busy
+    const sliderHandle = document.querySelector(
+      '.bp3-slider-handle'
+    )! as HTMLElement
+    moveSlider(sliderHandle, 'right', 1)
+    expect(sliderHandle).toHaveTextContent('6%')
+    await screen.findByText('Full hand tally', {}, { timeout: 3000 })
+    moveSlider(sliderHandle, 'right', 1)
+    expect(sliderHandle).toHaveTextContent('7%')
+    await screen.findByText('Error computing sample size')
+
+    // Risk limits already fetched aren't fetched again
+    moveSlider(sliderHandle, 'left', 2)
+    expect(sliderHandle).toHaveTextContent('5%')
+    expect((await screen.findByText(/70%/)).closest('div')).toHaveTextContent(
+      '70%: 355 ballots'
+    )
+
+    // The ballot polling type only applies to ballot polling
+    userEvent.click(screen.getByRole('radio', { name: 'Ballot Comparison' }))
+    expect(
+      screen.queryByRole('radio', { name: 'Providence' })
+    ).not.toBeInTheDocument()
+    await screen.findByText('1,000 ballots')
+    userEvent.click(screen.getByRole('radio', { name: 'Ballot Polling' }))
+    expect(screen.getByRole('radio', { name: 'Providence' })).toBeChecked()
+    expect((await screen.findByText(/70%/)).closest('div')).toHaveTextContent(
+      '70%: 355 ballots'
+    )
   })
 })
 
@@ -844,6 +989,7 @@ test('Audit plan card interactions', async () => {
     expect(ballotPollingRadioInput).toBeDisabled()
     expect(ballotComparisonRadioInput).toBeDisabled()
     expect(batchComparisonRadioInput).toBeDisabled()
+    expect(screen.getByRole('radio', { name: 'Providence' })).toBeDisabled()
     sliderHandle = document.querySelector('.bp3-slider-handle')! as HTMLElement
     expect(sliderHandle.classList.contains('.bp3-disabled'))
     screen.getByText('—')
@@ -882,6 +1028,7 @@ test('Audit plan card interactions', async () => {
     expect(ballotPollingRadioInput).toBeEnabled()
     expect(ballotComparisonRadioInput).toBeEnabled()
     expect(batchComparisonRadioInput).toBeEnabled()
+    expect(screen.getByRole('radio', { name: 'Providence' })).toBeEnabled()
     sliderHandle = document.querySelector('.bp3-slider-handle')! as HTMLElement
     expect(!sliderHandle.classList.contains('.bp3-disabled'))
     await screen.findByText('Full hand tally')
