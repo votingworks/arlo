@@ -18,6 +18,7 @@ from werkzeug.exceptions import BadRequest, Conflict
 from sqlalchemy.orm import Session
 
 from server.util.collections import diff_file_lists_ignoring_order_and_case
+from server.util.csv_shuffle import shuffle_csv_rows
 from server.util.cvr_snapshot_parse import read_cvr_snapshots
 from server.util.string import strip_optional_string
 
@@ -48,6 +49,7 @@ from ..util.file import (
     get_jurisdiction_folder_path,
     read_zip_filenames,
     validate_and_get_standard_file_upload_request_params,
+    replace_file_contents,
     retrieve_file,
     retrieve_file_to_buffer,
     serialize_file,
@@ -109,6 +111,19 @@ class ElectionResults(TypedDict):
     batch_tallies: dict[BatchKey, dict[str, int]]
     # { batch_key: { contest_id: count } }
     contest_ballot_counts_by_batch: NotRequired[dict[BatchKey, dict[str, int]]]
+
+
+def sorted_batch_items(items):  # noqa: ANN001
+    def batch_sort_key(item: tuple[BatchKey, object]):
+        batch_key, _ = item
+        # Numeric IDs in numeric order (e.g., 2 before 10), then non-numeric
+        # IDs alphabetically
+        return tuple(
+            (0, int(value), "") if value.isdigit() else (1, 0, value)
+            for value in map(str, batch_key)
+        )
+
+    return sorted(items_list_to_dict(items).items(), key=batch_sort_key)
 
 
 def dict_to_items_list(dictionary):  # noqa: ANN001
@@ -335,6 +350,31 @@ def process_batch_inventory_cvr_file(
                     support_user_email=support_user_email,
                 ),
             )
+
+        # Shuffle rows to obfuscate the file
+        input_file = retrieve_file_to_buffer(
+            batch_inventory_data.cvr_file, working_directory
+        )
+        with (
+            input_file,
+            tempfile.TemporaryFile(dir=working_directory) as shuffled_file,
+        ):
+            shuffle_csv_rows(
+                input_file,
+                shuffled_file,
+                # Dominion CVRs have 3 metadata rows above the header row
+                num_rows_to_skip=3,
+                # Temporarily also redact the columns that the client redacts,
+                # for files uploaded before the client started redacting them
+                columns_to_redact=[
+                    "CvrNumber",
+                    "ImprintedId",
+                    "RecordId",
+                    "UniqueVotingIdentifier",
+                ],
+            )
+            shuffled_file.seek(0)
+            replace_file_contents(batch_inventory_data.cvr_file, shuffled_file)
 
     def process_ess():
         ballot_count_by_batch: dict[BatchKey, int] = defaultdict(int)
@@ -1217,9 +1257,11 @@ def download_batch_inventory_worksheet(election: Election, jurisdiction: Jurisdi
     worksheet.writerow([])
 
     worksheet.writerow(["Ballot Group", "CVR Ballot Count", "Checked? (Type Yes/No)"])
-    for group_name, ballot_count in (
-        election_results["ballot_count_by_group"] or {}
-    ).items():
+    # We sort to ensure a deterministic output regardless of the order of rows in
+    # the CVR file
+    for group_name, ballot_count in sorted(
+        (election_results["ballot_count_by_group"] or {}).items()
+    ):
         worksheet.writerow([group_name, ballot_count, ""])
     worksheet.writerow([])
 
@@ -1234,9 +1276,11 @@ def download_batch_inventory_worksheet(election: Election, jurisdiction: Jurisdi
     worksheet.writerow([])
 
     worksheet.writerow(["Batch", "CVR Ballot Count", "Checked? (Type Yes/No)"])
-    for batch_key, ballot_count in items_list_to_dict(
+    # We sort to ensure a deterministic output regardless of the order of rows in
+    # the CVR file
+    for batch_key, ballot_count in sorted_batch_items(
         election_results["ballot_count_by_batch"]
-    ).items():
+    ):
         batch_name = batch_key_to_name(
             batch_key, batch_inventory_data.tabulator_id_to_name
         )
@@ -1385,9 +1429,11 @@ def download_batch_inventory_ballot_manifest(
     else:
         manifest_csv.writerow(["Batch Name", "Number of Ballots", *contest_headers])
 
-    for batch_key, ballot_count in items_list_to_dict(
+    # We sort to ensure a deterministic output regardless of the order of rows in
+    # the CVR file
+    for batch_key, ballot_count in sorted_batch_items(
         election_results["ballot_count_by_batch"]
-    ).items():
+    ):
         batch_name = batch_key_to_name(
             batch_key, batch_inventory_data.tabulator_id_to_name
         )
@@ -1432,9 +1478,9 @@ def download_batch_inventory_batch_tallies(
     batch_tallies = csv.writer(csv_io)
 
     batch_tallies.writerow(["Batch Name", *contest_choice_csv_headers.values()])
-    for batch_key, tallies in items_list_to_dict(
-        election_results["batch_tallies"]
-    ).items():
+    # We sort to ensure a deterministic output regardless of the order of rows in
+    # the CVR file
+    for batch_key, tallies in sorted_batch_items(election_results["batch_tallies"]):
         batch_name = batch_key_to_name(
             batch_key, batch_inventory_data.tabulator_id_to_name
         )

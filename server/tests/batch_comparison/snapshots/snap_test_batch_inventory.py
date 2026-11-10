@@ -110,8 +110,8 @@ Section 1: Check Ballot Groups\r
 2. Ensure that the numbers reconcile. If there is a large discrepancy contact your SOS liaison.\r
 \r
 Ballot Group,CVR Ballot Count,Checked? (Type Yes/No)\r
-Election Day,13,\r
-Mail,2,\r
+Election Day,12,\r
+Mail,3,\r
 \r
 Section 2: Check Batches\r
 1. Locate each batch in storage.\r
@@ -132,8 +132,8 @@ Section 1: Check Ballot Groups\r
 2. Ensure that the numbers reconcile. If there is a large discrepancy contact your SOS liaison.\r
 \r
 Ballot Group,CVR Ballot Count,Checked? (Type Yes/No)\r
-Election Day,13,\r
-Mail,2,\r
+Election Day,12,\r
+Mail,3,\r
 \r
 Section 2: Check Batches\r
 1. Locate each batch in storage.\r
@@ -174,8 +174,8 @@ Section 1: Check Ballot Groups\r
 2. Ensure that the numbers reconcile. If there is a large discrepancy contact your SOS liaison.\r
 \r
 Ballot Group,CVR Ballot Count,Checked? (Type Yes/No)\r
-Election Day,13,\r
-Mail,2,\r
+Election Day,12,\r
+Mail,3,\r
 \r
 Section 2: Check Batches\r
 1. Locate each batch in storage.\r
@@ -216,8 +216,8 @@ Section 1: Check Ballot Groups\r
 2. Ensure that the numbers reconcile. If there is a large discrepancy contact your SOS liaison.\r
 \r
 Ballot Group,CVR Ballot Count,Checked? (Type Yes/No)\r
-Election Day,13,\r
-Mail,2,\r
+Election Day,12,\r
+Mail,3,\r
 \r
 Section 2: Check Batches\r
 1. Locate each batch in storage.\r
@@ -258,8 +258,8 @@ Section 1: Check Ballot Groups\r
 2. Ensure that the numbers reconcile. If there is a large discrepancy contact your SOS liaison.\r
 \r
 Ballot Group,CVR Ballot Count,Checked? (Type Yes/No)\r
-Election Day,13,\r
-Mail,2,\r
+Election Day,12,\r
+Mail,3,\r
 \r
 Section 2: Check Batches\r
 1. Locate each batch in storage.\r
@@ -303,8 +303,8 @@ snapshots[
 ] = """Batch Name,Choice 1-1,Choice 1-2,Write-In\r
 BATCH1,1,2,0\r
 BATCH2,2,1,0\r
-BATCH4,1,0,1\r
 BATCH3,0,0,0\r
+BATCH4,1,0,1\r
 """
 
 snapshots[
