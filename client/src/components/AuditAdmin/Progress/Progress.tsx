@@ -338,6 +338,12 @@ const Progress: React.FC<IProgressProps> = ({
     }
   }
 
+  // Upload statuses before the round, and a contest's view of a re-tallying
+  // jurisdiction's statuses, run longer than the other round statuses
+  const needsWideStatusColumn =
+    !round ||
+    (selectedContest !== undefined && jurisdictions.some(isUnfinalized))
+
   const roundStatusCounts = (
     jurisdiction: IJurisdiction
   ): IRoundStatusCounts | null => {
@@ -396,7 +402,7 @@ const Progress: React.FC<IProgressProps> = ({
     },
     {
       Header: 'Status',
-      minWidth: 210, // Room for the longest status on one line in the default fonts
+      minWidth: needsWideStatusColumn ? 210 : 130,
       accessor: jurisdiction => {
         const { ballotManifest, batchTallies, cvrs } = jurisdiction
 

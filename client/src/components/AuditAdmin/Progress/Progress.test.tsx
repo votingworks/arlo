@@ -109,6 +109,7 @@ describe('Progress screen', () => {
       expect(headers).toHaveLength(3)
       expect(headers[0]).toHaveTextContent('Jurisdiction')
       expect(headers[1]).toHaveTextContent('Status')
+      expect(headers[1]).toHaveStyle({ width: '210px' })
       expect(headers[2]).toHaveTextContent('Ballots in Manifest')
 
       const rows = screen.getAllByRole('row')
@@ -1412,6 +1413,10 @@ describe('Progress screen', () => {
         })
         expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
         screen.getByRole('button', { name: /Review 3/ })
+        const statusHeader = screen.getByRole('columnheader', {
+          name: 'Status',
+        })
+        expect(statusHeader).toHaveStyle({ width: '130px' })
         // Across every contest the jurisdiction needs review; for a contest
         // whose batch contests are all accepted, it stands at Accepted. The
         // re-tallying jurisdiction says so in both views.
@@ -1438,6 +1443,7 @@ describe('Progress screen', () => {
           'success'
         )
         expectStatusTag(statusCell('Jurisdiction 2'), 'No samples', 'success')
+        expect(statusHeader).toHaveStyle({ width: '210px' })
         userEvent.click(screen.getByRole('button', { name: /Review 1/ }))
         const dialog = (
           await screen.findByRole('heading', {
