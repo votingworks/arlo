@@ -20,9 +20,20 @@ def parse(contents: bytes) -> list[list[str]]:
     return list(csv.reader(io.StringIO(contents.decode("latin-1"), newline="")))
 
 
-def shuffle(contents: bytes, num_rows_to_skip: int = 3, chunk_size: int = 100) -> bytes:
+def shuffle(
+    contents: bytes,
+    num_rows_to_skip: int = 3,
+    chunk_size: int = 100,
+    columns_to_redact: list[str] | None = None,
+) -> bytes:
     output = io.BytesIO()
-    shuffle_csv_rows(io.BytesIO(contents), output, num_rows_to_skip, chunk_size)
+    shuffle_csv_rows(
+        io.BytesIO(contents),
+        output,
+        num_rows_to_skip,
+        chunk_size,
+        columns_to_redact=columns_to_redact or [],
+    )
     return output.getvalue()
 
 
@@ -138,3 +149,19 @@ def test_raises_for_utf16_and_utf32(bom, encoding):
     with pytest.raises(UserError, match="UTF-16- and UTF-32-encoded"):
         shuffle_csv_rows(io.BytesIO(contents), output, 3)
     assert output.getvalue() == b""
+
+
+def test_redacts_columns():
+    header = ["CvrNumber", "BatchId", "RecordId"]
+    data_rows = [["1", "B1", "10"], ["", "B2", "20"], ["3", "B3"]]
+    output = parse(
+        shuffle(
+            to_csv([*HEADER_ROWS[:3], header, *data_rows]),
+            columns_to_redact=["CvrNumber", "RecordId", "NotAColumn"],
+        )
+    )
+    assert output[:4] == [*HEADER_ROWS[:3], header]
+    # Empty values and missing cells are left as is
+    assert sorted(output[4:]) == sorted(
+        [["REDACTED", "B1", "REDACTED"], ["", "B2", "REDACTED"], ["REDACTED", "B3"]]
+    )

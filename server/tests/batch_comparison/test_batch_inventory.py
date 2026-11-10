@@ -118,6 +118,31 @@ def parse_csv(contents: str) -> list[list[str]]:
     return list(csv.reader(io.StringIO(contents, newline="")))
 
 
+REDACTED_DOMINION_COLUMNS = [
+    "CvrNumber",
+    "ImprintedId",
+    "RecordId",
+    "UniqueVotingIdentifier",
+]
+
+
+def redact_dominion_columns(
+    header_row: list[str], data_rows: list[list[str]]
+) -> list[list[str]]:
+    indices = {
+        index
+        for index, header in enumerate(header_row)
+        if header in REDACTED_DOMINION_COLUMNS
+    }
+    return [
+        [
+            "REDACTED" if index in indices and value else value
+            for index, value in enumerate(row)
+        ]
+        for row in data_rows
+    ]
+
+
 def assert_is_shuffled_dominion_cvr(shuffled_cvr: str, original_cvr: str):
     # Shuffling rewrites the CSV, which can change quoting and line endings, so
     # compare parsed rows
@@ -125,7 +150,9 @@ def assert_is_shuffled_dominion_cvr(shuffled_cvr: str, original_cvr: str):
     original_rows = parse_csv(original_cvr)
     # Dominion CVRs have 4 header rows (3 metadata rows + the column header row)
     assert shuffled_rows[:4] == original_rows[:4]
-    assert sorted(shuffled_rows[4:]) == sorted(original_rows[4:])
+    assert sorted(shuffled_rows[4:]) == sorted(
+        redact_dominion_columns(original_rows[3], original_rows[4:])
+    )
 
 
 @pytest.fixture
@@ -2925,7 +2952,10 @@ def test_batch_inventory_dominion_shuffles_stored_cvr_file(
     data_line = TEST_CVR.splitlines(keepends=True)[4]
     # Enough rows that the chance of a shuffle leaving them in order is negligible
     original_data_lines = [
-        data_line.replace("1,TABULATOR1,BATCH1,1,", f"{i},TABULATOR1,BATCH1,{i},", 1)
+        # Vary PrecinctPortion too, since the other varying columns get redacted
+        data_line.replace(
+            "1,TABULATOR1,BATCH1,1,", f"{i},TABULATOR1,BATCH1,{i},", 1
+        ).replace(",12345,", f",{i},", 1)
         for i in range(1, 101)
     ]
     cvr = "".join(header_lines + original_data_lines)
@@ -2946,7 +2976,9 @@ def test_batch_inventory_dominion_shuffles_stored_cvr_file(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr/file"
     )
     header_rows = parse_csv("".join(header_lines))
-    original_data_rows = parse_csv("".join(original_data_lines))
+    original_data_rows = redact_dominion_columns(
+        header_rows[3], parse_csv("".join(original_data_lines))
+    )
     stored_rows = parse_csv(rv.data.decode("utf-8"))
     assert stored_rows[:4] == header_rows
     assert sorted(stored_rows[4:]) == sorted(original_data_rows)

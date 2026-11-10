@@ -2,6 +2,7 @@ import csv
 import io
 import itertools
 import secrets
+from collections.abc import Collection
 from typing import IO
 
 from ..worker.tasks import UserError
@@ -19,6 +20,7 @@ def shuffle_csv_rows(
     output_file: IO[bytes],
     num_rows_to_skip: int = 0,
     chunk_size: int = 100,
+    columns_to_redact: Collection[str] = (),
 ) -> None:
     """
     Writes a copy of a CSV to output_file with the data rows (all rows after
@@ -31,7 +33,9 @@ def shuffle_csv_rows(
     ASCII-compatible encoding (e.g., UTF-8 or Windows-1252). Raises for UTF-16
     and UTF-32 files with a byte order mark, which shuffling would corrupt.
 
-    num_rows_to_skip is the number of rows above the header row.
+    num_rows_to_skip is the number of rows above the header row. Non-empty
+    values in columns_to_redact (matched by header name) are replaced with
+    "REDACTED".
     """
     assert chunk_size > 0
 
@@ -59,14 +63,27 @@ def shuffle_csv_rows(
     try:
         reader = csv.reader(text_input)
         writer = csv.writer(text_output)
-        writer.writerows(itertools.islice(reader, num_rows_to_skip + 1))
+        header_rows = list(itertools.islice(reader, num_rows_to_skip + 1))
+        writer.writerows(header_rows)
+        indices_to_redact = {
+            index
+            for index, header in enumerate(header_rows[-1] if header_rows else [])
+            if header in columns_to_redact
+        }
+        rows = (
+            [
+                "REDACTED" if index in indices_to_redact and value != "" else value
+                for index, value in enumerate(row)
+            ]
+            for row in reader
+        )
         # Make the first chunk a random size smaller than chunk_size, so that
         # chunk boundaries vary and the last chunk isn't always a fixed size
         # (e.g., a single row that never moves when there are 101 rows)
-        first_chunk = list(itertools.islice(reader, random.randrange(chunk_size)))
+        first_chunk = list(itertools.islice(rows, random.randrange(chunk_size)))
         random.shuffle(first_chunk)
         writer.writerows(first_chunk)
-        while chunk := list(itertools.islice(reader, chunk_size)):
+        while chunk := list(itertools.islice(rows, chunk_size)):
             random.shuffle(chunk)
             writer.writerows(chunk)
         text_output.flush()

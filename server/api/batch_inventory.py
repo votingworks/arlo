@@ -359,8 +359,20 @@ def process_batch_inventory_cvr_file(
             input_file,
             tempfile.TemporaryFile(dir=working_directory) as shuffled_file,
         ):
-            # Dominion CVRs have 3 metadata rows above the header row
-            shuffle_csv_rows(input_file, shuffled_file, num_rows_to_skip=3)
+            shuffle_csv_rows(
+                input_file,
+                shuffled_file,
+                # Dominion CVRs have 3 metadata rows above the header row
+                num_rows_to_skip=3,
+                # Temporarily also redact the columns that the client redacts,
+                # for files uploaded before the client started redacting them
+                columns_to_redact=[
+                    "CvrNumber",
+                    "ImprintedId",
+                    "RecordId",
+                    "UniqueVotingIdentifier",
+                ],
+            )
             shuffled_file.seek(0)
             replace_file_contents(batch_inventory_data.cvr_file, shuffled_file)
 
