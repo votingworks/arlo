@@ -7,6 +7,61 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
+snapshots["test_public_compute_providence_sample_size 0% risk limit"] = {
+    "sampleSize": {"all-ballots": 1900},
+    "unsupportedReason": None,
+}
+
+snapshots["test_public_compute_providence_sample_size 100-vote margin"] = {
+    "sampleSize": {"0.7": 1900, "0.8": 1900, "0.9": 1900},
+    "unsupportedReason": None,
+}
+
+snapshots["test_public_compute_providence_sample_size 500-vote margin"] = {
+    "sampleSize": {"0.7": 2235, "0.8": 2737, "0.9": 3581},
+    "unsupportedReason": None,
+}
+
+snapshots[
+    "test_public_compute_providence_sample_size 500-vote margin at a 1% risk limit"
+] = {"sampleSize": {"0.7": 3566, "0.8": 4234, "0.9": 5348}, "unsupportedReason": None}
+
+snapshots[
+    "test_public_compute_providence_sample_size 500-vote margin with additional ballots cast"
+] = {"sampleSize": {"0.7": 4470, "0.8": 5474, "0.9": 7162}, "unsupportedReason": None}
+
+snapshots["test_public_compute_providence_sample_size Landslide"] = {
+    "sampleSize": {"0.7": 5, "0.8": 5, "0.9": 5},
+    "unsupportedReason": None,
+}
+
+snapshots[
+    "test_public_compute_providence_sample_size Large number of additional ballots cast"
+] = {
+    "sampleSize": {"0.7": 2000000000, "0.8": 2000000000, "0.9": 2000000000},
+    "unsupportedReason": None,
+}
+
+snapshots["test_public_compute_providence_sample_size Large number of votes"] = {
+    "sampleSize": {"0.7": 1982, "0.8": 2456, "0.9": 3230},
+    "unsupportedReason": None,
+}
+
+snapshots["test_public_compute_providence_sample_size Many candidates"] = {
+    "sampleSize": {"0.7": 3400, "0.8": 3400, "0.9": 3400},
+    "unsupportedReason": None,
+}
+
+snapshots["test_public_compute_providence_sample_size Small number of votes"] = {
+    "sampleSize": {"all-ballots": 3},
+    "unsupportedReason": None,
+}
+
+snapshots["test_public_compute_providence_sample_size Tie"] = {
+    "sampleSize": {"all-ballots": 2000},
+    "unsupportedReason": None,
+}
+
 snapshots["test_public_compute_sample_sizes 1-vote margin"] = {
     "ballotComparison": {
         "0": 1999,

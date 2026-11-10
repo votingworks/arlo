@@ -15,7 +15,7 @@ from ..auth.auth_helpers import (
     check_access,
     find_or_404,
 )
-from ..audit_math import bravo, sampler_contest, supersimple
+from ..audit_math import bravo, providence, sampler_contest, supersimple
 from ..util.jsonschema import validate
 from ..models import *
 from ..util.get_json import safe_get_json_dict
@@ -67,6 +67,16 @@ COMPUTE_SAMPLE_SIZES_INPUT_SCHEMA = {
     "required": ["electionResults"],
 }
 
+COMPUTE_PROVIDENCE_SAMPLE_SIZE_INPUT_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "electionResults": ELECTION_RESULTS_SCHEMA,
+        "riskLimitPercentage": {"type": "integer", "minimum": 0, "maximum": 20},
+    },
+    "additionalProperties": False,
+    "required": ["electionResults", "riskLimitPercentage"],
+}
+
 
 # Conceptually, this is a GET but we use a POST so that we can specify election results in a body.
 # Specifying election results in a query param could cause us to hit URL size limits
@@ -104,8 +114,10 @@ def parse_compute_sample_sizes_input(
     compute_sample_sizes_input: Any,
 ) -> sampler_contest.Contest:
     validate(compute_sample_sizes_input, COMPUTE_SAMPLE_SIZES_INPUT_SCHEMA)
+    return parse_election_results(compute_sample_sizes_input["electionResults"])
 
-    election_results = compute_sample_sizes_input["electionResults"]
+
+def parse_election_results(election_results: Any) -> sampler_contest.Contest:
     candidates = election_results["candidates"]
     num_winners = election_results["numWinners"]
     total_ballots_cast = election_results["totalBallotsCast"]
@@ -162,6 +174,61 @@ def compute_batch_comparison_sample_size(
         + 2
     )
     return min(sample_size, contest.ballots)
+
+
+# Providence sample sizes take longer to compute than the others, so compute them separately.
+# Unlike the general sample size endpoint, we only compute one risk limit at a time
+@api.route("/public/sample-sizes/providence", methods=["POST"])
+@allow_public_access
+def public_compute_providence_sample_size():
+    compute_sample_size_input = safe_get_json_dict(request)
+    validate(compute_sample_size_input, COMPUTE_PROVIDENCE_SAMPLE_SIZE_INPUT_SCHEMA)
+    contest_for_sampler = parse_election_results(
+        compute_sample_size_input["electionResults"]
+    )
+    unsupported_reason = providence_unsupported_reason(contest_for_sampler)
+    return jsonify(
+        sampleSize=(
+            None
+            if unsupported_reason
+            else compute_providence_sample_size(
+                contest_for_sampler, compute_sample_size_input["riskLimitPercentage"]
+            )
+        ),
+        unsupportedReason=unsupported_reason,
+    )
+
+
+# Providence audits reject these contests at contest creation
+def providence_unsupported_reason(contest: sampler_contest.Contest) -> str | None:
+    if contest.is_uncontested:
+        return "Not supported for uncontested contests"
+    # The planner allows as many votes per ballot as there are winners
+    if contest.votes_allowed > 1:
+        return "Not supported for contests with multiple winners"
+    if any(votes == 0 for votes in contest.candidates.values()):
+        return "Not supported for candidates with 0 votes"
+    if sum(contest.candidates.values()) > contest.ballots * contest.votes_allowed:
+        return "Not supported for contests with more votes than ballots"
+    return None
+
+
+def compute_providence_sample_size(
+    contest: sampler_contest.Contest, risk_limit_percentage: int
+) -> dict[str, int]:
+    # A sample can't confirm a tie or meet a 0% risk limit
+    if risk_limit_percentage == 0 or bravo.is_tie(contest):
+        return {"all-ballots": contest.ballots}
+    try:
+        sample_size_options = providence.get_sample_size(
+            risk_limit_percentage, contest, None, None
+        )
+    except ValueError:
+        return {"all-ballots": contest.ballots}
+    return {
+        key: min(option["size"], contest.ballots)
+        for key, option in sample_size_options.items()
+    }
 
 
 # Matches the storage keys issued by get_file_upload_url:
