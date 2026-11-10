@@ -778,17 +778,22 @@ const Progress: React.FC<IProgressProps> = ({
         minWidth: 150, // Room for a date and time on one line
         accessor: ({ currentRoundStatus }) =>
           currentRoundStatus?.lastTalliedAt ?? null,
-        Cell: ({ value }: { value: string | null }) =>
-          value && (
-            <span title={new Date(value).toLocaleString()}>
-              {new Date(value).toLocaleString(undefined, {
-                month: 'short',
-                day: 'numeric',
-                hour: 'numeric',
-                minute: '2-digit',
-              })}
-            </span>
-          ),
+        Cell: ({ value }: { value: string | null }) => {
+          if (!value) return null
+          const date = new Date(value)
+          const day =
+            date.toDateString() === new Date().toDateString()
+              ? 'Today'
+              : date.toLocaleDateString(undefined, {
+                  month: 'short',
+                  day: 'numeric',
+                })
+          const time = date.toLocaleTimeString(undefined, {
+            hour: 'numeric',
+            minute: '2-digit',
+          })
+          return <span title={date.toLocaleString()}>{`${day}, ${time}`}</span>
+        },
         sortType: sortLastTalliedAt,
       })
     }

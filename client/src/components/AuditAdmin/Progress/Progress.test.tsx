@@ -1,4 +1,12 @@
-import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import {
+  afterAll,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest'
 import React from 'react'
 import { screen, within, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -1597,6 +1605,8 @@ describe('Progress screen', () => {
       'jurisdiction-id-1': '2026-11-09T14:14:00+00:00',
       'jurisdiction-id-3': '2026-11-08T09:05:00+00:00',
     }
+    beforeEach(() => vi.setSystemTime(new Date('2026-11-09T20:00:00+00:00')))
+    afterEach(() => vi.useRealTimers())
     const jurisdictions = jurisdictionMocks.oneComplete.map(jurisdiction => ({
       ...jurisdiction,
       currentRoundStatus: jurisdiction.currentRoundStatus && {
@@ -1632,7 +1642,7 @@ describe('Progress screen', () => {
             .map(row => within(row).getAllByRole('cell'))
             .map(cells => [cells[0].textContent, cells[6].textContent])
         expect(column()).toEqual([
-          ['Jurisdiction 1', 'Nov 9, 2:14 PM'],
+          ['Jurisdiction 1', 'Today, 2:14 PM'],
           ['Jurisdiction 2', ''],
           ['Jurisdiction 3', 'Nov 8, 9:05 AM'],
         ])
