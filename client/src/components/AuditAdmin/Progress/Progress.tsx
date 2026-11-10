@@ -371,6 +371,11 @@ const Progress: React.FC<IProgressProps> = ({
   const filter = sortAndFilterState?.filter || ''
   const ballotsOrBatches =
     auditType === 'BATCH_COMPARISON' ? 'Batches' : 'Ballots'
+  const ballotOrBatch = auditType === 'BATCH_COMPARISON' ? 'batch' : 'ballot'
+  const auditedOnce =
+    auditType === 'BATCH_COMPARISON'
+      ? 'tallies are only entered once'
+      : 'it is only audited once'
 
   const columns: Column<IJurisdiction>[] = [
     {
@@ -863,12 +868,29 @@ const Progress: React.FC<IProgressProps> = ({
         )}
         <div style={{ flexGrow: 1 }} />
         {round && (
-          <Switch
-            checked={isShowingUnique}
-            label={`Count unique sampled ${ballotsOrBatches.toLowerCase()}`}
-            onChange={() => setIsShowingUnique(!isShowingUnique)}
-            style={{ marginBottom: 0 }}
-          />
+          <Tooltip
+            content={
+              <div style={{ maxWidth: '400px' }}>
+                <div style={{ marginBottom: '8px' }}>
+                  When off, show draws. If a {ballotOrBatch} is drawn twice, it
+                  will count as 2 {ballotsOrBatches.toLowerCase()} in{' '}
+                  {ballotOrBatch} counts, even though {auditedOnce}.
+                </div>
+                <div>
+                  When on, show {ballotsOrBatches.toLowerCase()}, not draws. If
+                  a {ballotOrBatch} is drawn twice, it will count as 1{' '}
+                  {ballotOrBatch} in {ballotOrBatch} counts.
+                </div>
+              </div>
+            }
+          >
+            <Switch
+              checked={isShowingUnique}
+              label="Hide repeat draws"
+              onChange={() => setIsShowingUnique(!isShowingUnique)}
+              style={{ marginBottom: 0 }}
+            />
+          </Tooltip>
         )}
         {auditType === 'BATCH_COMPARISON' && hasExtraBatches && (
           <Switch

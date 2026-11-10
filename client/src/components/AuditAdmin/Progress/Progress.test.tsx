@@ -138,7 +138,7 @@ describe('Progress screen', () => {
 
       expect(
         screen.queryByRole('checkbox', {
-          name: 'Count unique sampled ballots',
+          name: 'Hide repeat draws',
         })
       ).not.toBeInTheDocument()
     })
@@ -1275,7 +1275,7 @@ describe('Progress screen', () => {
 
         // Counting every sampled batch instead of unique ones
         userEvent.click(
-          screen.getByRole('checkbox', { name: /Count unique sampled/ })
+          screen.getByRole('checkbox', { name: 'Hide repeat draws' })
         )
         expect(cells[4]).toHaveTextContent('10')
         expect(cells[5]).toHaveTextContent('2')
@@ -1712,8 +1712,15 @@ describe('Progress screen', () => {
       expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
 
       const ballotsSwitch = screen.getByRole('checkbox', {
-        name: 'Count unique sampled ballots',
+        name: 'Hide repeat draws',
       })
+      userEvent.hover(ballotsSwitch)
+      await screen.findByText(
+        'When off, show draws. If a ballot is drawn twice, it will count as 2 ballots in ballot counts, even though it is only audited once.'
+      )
+      screen.getByText(
+        'When on, show ballots, not draws. If a ballot is drawn twice, it will count as 1 ballot in ballot counts.'
+      )
       userEvent.click(ballotsSwitch)
 
       let rows = screen.getAllByRole('row')
@@ -1920,9 +1927,17 @@ describe('Progress screen', () => {
 
       expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
 
-      screen.getByRole('checkbox', {
-        name: 'Count unique sampled batches',
-      })
+      userEvent.hover(
+        screen.getByRole('checkbox', {
+          name: 'Hide repeat draws',
+        })
+      )
+      await screen.findByText(
+        'When off, show draws. If a batch is drawn twice, it will count as 2 batches in batch counts, even though tallies are only entered once.'
+      )
+      screen.getByText(
+        'When on, show batches, not draws. If a batch is drawn twice, it will count as 1 batch in batch counts.'
+      )
     })
   })
 
