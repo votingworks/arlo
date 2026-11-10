@@ -42,8 +42,9 @@ from .shared import group_combined_batches, is_sample_drawn
 from .jurisdictions import JurisdictionStatus, round_status_by_jurisdiction
 from .discrepancies import (
     contest_statuses_in_round,
+    drawn_batches_in_round,
     get_ballot_comparison_discrepancies_by_jurisdiction,
-    get_batch_comparison_discrepancies_by_jurisdiction,
+    outstanding_contest_statuses,
 )
 
 AUTH0_DOMAIN = urlparse(AUDITADMIN_AUTH0_BASE_URL).hostname
@@ -75,18 +76,15 @@ def get_jurisdiction_progress(election: Election, current_round: Round) -> JSOND
     )
 
 
-# Counts batch/ballot-contest pairs with discrepancies, matching the count shown
-# on the audit admin progress table
+# Batch comparison counts the batch-contests still under review; ballot
+# comparison counts every ballot-contest with a discrepancy
 def get_discrepancy_count(election: Election, current_round: Round) -> int | None:
     if election.audit_type == AuditType.BATCH_COMPARISON:
-        # Matching batch-contests are listed for review without a discrepancy
         return sum(
-            contest_discrepancy["hasDiscrepancy"]
-            for discrepancies in get_batch_comparison_discrepancies_by_jurisdiction(
-                election, current_round
-            ).values()
-            for contest_discrepancies in discrepancies.values()
-            for contest_discrepancy in contest_discrepancies.values()
+            1
+            for _ in outstanding_contest_statuses(
+                current_round, drawn_batches_in_round(election, current_round)
+            )
         )
     if election.audit_type == AuditType.BALLOT_COMPARISON:
         return sum(

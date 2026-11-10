@@ -402,8 +402,8 @@ def test_slack_worker_finalize_batch_results_discrepancies():
         )
 
     assert ":white_check_mark: No discrepancies" in message_json(0)
-    assert ":warning: 1 batch with discrepancies" in message_json(1)
-    assert ":warning: 3 batches with discrepancies" in message_json(3)
+    assert ":warning: 1 batch contest with discrepancies" in message_json(1)
+    assert ":warning: 3 batch contests with discrepancies" in message_json(3)
 
 
 def test_slack_worker_truncate_long_error_messages():

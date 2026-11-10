@@ -11,6 +11,7 @@ import {
   useCreateOrganization,
   useActiveElections,
   useRoundProgress,
+  IElectionBase,
 } from './support-api'
 import { List, LinkItem } from './List'
 import Audit from './Audit'
@@ -123,7 +124,10 @@ const ActiveAudits = () => {
                 <AuditStatusTag currentRound={election.currentRound} />
               </div>
               {election.currentRound && !election.currentRound.endedAt && (
-                <RoundProgress electionId={election.id} />
+                <RoundProgress
+                  electionId={election.id}
+                  auditType={election.auditType}
+                />
               )}
             </div>
           </LinkItem>
@@ -135,7 +139,13 @@ const ActiveAudits = () => {
 
 // Loaded separately for each audit, since computing discrepancies can be slow
 // for large comparison audits
-const RoundProgress = ({ electionId }: { electionId: string }) => {
+const RoundProgress = ({
+  electionId,
+  auditType,
+}: {
+  electionId: string
+  auditType: IElectionBase['auditType']
+}) => {
   const roundProgress = useRoundProgress(electionId)
 
   if (!roundProgress.isSuccess || !roundProgress.data) return null
@@ -149,9 +159,15 @@ const RoundProgress = ({ electionId }: { electionId: string }) => {
       {jurisdictions.numComplete}/{jurisdictions.numTotal} jurisdictions
       finalized
       {discrepancyCount !== null &&
-        ` · ${discrepancyCount} ${
-          discrepancyCount === 1 ? 'discrepancy' : 'discrepancies'
-        }`}
+        (auditType === 'BATCH_COMPARISON'
+          ? ` · ${
+              discrepancyCount === 1
+                ? '1 batch contest with a pending discrepancy'
+                : `${discrepancyCount} batch contests with pending discrepancies`
+            }`
+          : ` · ${discrepancyCount} ${
+              discrepancyCount === 1 ? 'discrepancy' : 'discrepancies'
+            }`)}
     </div>
   )
 }

@@ -88,6 +88,9 @@ class RecordResults(JurisdictionActivity):
 
 @dataclass
 class FinalizeBatchResults(JurisdictionActivity):
+    # Holds the number of batch-contests still under review, not batches. The
+    # name predates per-contest statuses and stays for backward compatibility
+    # TODO(nikhil): Rename to num_batch_contests_with_discrepancies during offseason
     num_batches_with_discrepancies: int
 
 
