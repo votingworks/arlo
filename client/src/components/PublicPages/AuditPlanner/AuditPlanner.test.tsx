@@ -227,6 +227,29 @@ const apiMocks = {
       batchComparison: { '0': null, '5': null },
     },
   },
+  publicComputeSampleSizesMultipleWinners: {
+    url: '/api/public/sample-sizes',
+    options: {
+      method: 'POST',
+      body: JSON.stringify({
+        electionResults: {
+          candidates: [
+            { name: 'Helga Hippo', votes: 1000 },
+            { name: 'Bobby Bear', votes: 900 },
+            { name: 'Cami Cat', votes: 800 },
+          ],
+          numWinners: 2,
+          totalBallotsCast: 2000,
+        },
+      }),
+      headers: { 'Content-Type': 'application/json' },
+    },
+    response: {
+      ballotComparison: { '5': 1000 },
+      ballotPolling: { '5': { asn: 505 } },
+      batchComparison: { '5': 1002 },
+    },
+  },
   publicComputeSampleSizesError: serverError('publicComputeSampleSizes', {
     url: '/api/public/sample-sizes',
     options: {
@@ -650,6 +673,53 @@ test('Uncontested contest', async () => {
     await screen.findByText('1 ballot')
     userEvent.click(screen.getByRole('radio', { name: 'Batch Comparison' }))
     await screen.findByText('Not supported for uncontested contests')
+  })
+})
+
+test('Contest with multiple winners', async () => {
+  const expectedCalls = [apiMocks.publicComputeSampleSizesMultipleWinners]
+  await withMockFetch(expectedCalls, async () => {
+    renderAuditPlanner()
+    await screen.findByRole('heading', { name: 'Audit Planner' })
+    const {
+      candidate1NameInput,
+      candidate1VotesInput,
+      candidate2NameInput,
+      candidate2VotesInput,
+      addCandidateButton,
+      numberOfWinnersInput,
+      totalBallotsCastInput,
+      planAuditButton,
+    } = await checkThatElectionResultsCardIsInInitialState()
+
+    userEvent.clear(candidate1NameInput)
+    userEvent.type(candidate1NameInput, 'Helga Hippo')
+    userEvent.type(candidate1VotesInput, '1000')
+    userEvent.clear(candidate2NameInput)
+    userEvent.type(candidate2NameInput, 'Bobby Bear')
+    userEvent.type(candidate2VotesInput, '900')
+    userEvent.click(addCandidateButton)
+    const candidate3NameInput = await screen.findByRole('textbox', {
+      name: 'Candidate 3 Name',
+    })
+    userEvent.clear(candidate3NameInput)
+    userEvent.type(candidate3NameInput, 'Cami Cat')
+    userEvent.type(
+      screen.getByRole('spinbutton', { name: 'Candidate 3 Votes' }),
+      '800'
+    )
+    userEvent.clear(numberOfWinnersInput)
+    userEvent.type(numberOfWinnersInput, '2')
+    userEvent.type(totalBallotsCastInput, '2000')
+    userEvent.click(planAuditButton)
+
+    // BRAVO only computes an ASN for contests with multiple winners
+    expect((await screen.findByText(/ASN/)).closest('div')).toHaveTextContent(
+      'ASN: 505 ballots'
+    )
+    expect(screen.queryByText(/70%/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/80%/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/90%/)).not.toBeInTheDocument()
   })
 })
 

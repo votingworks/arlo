@@ -85,15 +85,20 @@ const SampleSize: React.FC<IProps> = ({
       return (
         <div>
           {Object.entries(prettyKey).map(([key, keyLabel]) => {
-            const sampleSize = sizeOptions[key as BallotPollingSampleSizeKey]
+            const optionSampleSize =
+              sizeOptions[key as BallotPollingSampleSizeKey]
+            // The server omits options it didn't compute
+            if (optionSampleSize === undefined) {
+              return null
+            }
             return (
               <div key={key} style={{ marginBottom: '0.5rem' }}>
                 {keyLabel}:{' '}
-                {sampleSize === totalBallotsCast ? (
+                {optionSampleSize === totalBallotsCast ? (
                   <span>Full hand tally</span>
                 ) : (
                   <Count
-                    count={sampleSize}
+                    count={optionSampleSize}
                     singular="ballot"
                     plural="ballots"
                   />

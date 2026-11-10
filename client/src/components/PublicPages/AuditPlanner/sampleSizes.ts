@@ -7,13 +7,16 @@ const BALLOT_POLLING_SAMPLE_SIZE_KEYS = ['asn', '0.7', '0.8', '0.9'] as const
 export type BallotPollingSampleSizeKey =
   (typeof BALLOT_POLLING_SAMPLE_SIZE_KEYS)[number]
 
+// A missing option means it couldn't be computed (e.g. BRAVO only computes an ASN for contests with
+// multiple winners)
+export type BallotPollingSampleSizeOptions =
+  | { [key in BallotPollingSampleSizeKey]?: number }
+  | { 'all-ballots': number }
+
 // A null sample size means the audit type doesn't support the contest (e.g. uncontested contests)
 export type SampleSizes = {
   BALLOT_POLLING: {
-    [riskLimitPercentage: string]:
-      | { [key in BallotPollingSampleSizeKey]: number }
-      | { 'all-ballots': number }
-      | null
+    [riskLimitPercentage: string]: BallotPollingSampleSizeOptions | null
   }
   BALLOT_COMPARISON: { [riskLimitPercentage: string]: number | null }
   BATCH_COMPARISON: { [riskLimitPercentage: string]: number | null }
