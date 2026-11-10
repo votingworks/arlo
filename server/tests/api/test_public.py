@@ -887,6 +887,31 @@ def test_public_compute_providence_sample_size_busy(client: FlaskClient):
             )
             assert rv.status_code == 200
             assert json.loads(rv.data)["sampleSize"] is None
+
+            # Nor do contests whose sample size is known without computing it
+            for election_results_no_computation, risk_limit_percentage in [
+                (election_results, 0),
+                (
+                    {
+                        **election_results,
+                        "candidates": [
+                            {"name": "Helga Hippo", "votes": 1000},
+                            {"name": "Bobby Bear", "votes": 1000},
+                        ],
+                    },
+                    5,
+                ),
+            ]:
+                rv = post_json(
+                    client,
+                    "/api/public/sample-sizes/providence",
+                    {
+                        "electionResults": election_results_no_computation,
+                        "riskLimitPercentage": risk_limit_percentage,
+                    },
+                )
+                assert rv.status_code == 200
+                assert json.loads(rv.data)["sampleSize"] == {"all-ballots": 2000}
     finally:
         lock_connection.execute(
             text("SELECT pg_advisory_unlock(:key)"), {"key": lock_key}

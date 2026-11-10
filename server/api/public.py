@@ -191,7 +191,6 @@ def public_compute_providence_sample_size():
     unsupported_reason = providence_unsupported_reason(contest_for_sampler)
     if unsupported_reason:
         return jsonify(sampleSize=None, unsupportedReason=unsupported_reason)
-    lock_providence_sample_size_computation()
     return jsonify(
         sampleSize=compute_providence_sample_size(
             contest_for_sampler, compute_sample_size_input["riskLimitPercentage"]
@@ -241,6 +240,7 @@ def compute_providence_sample_size(
     # A sample can't confirm a tie or meet a 0% risk limit
     if risk_limit_percentage == 0 or bravo.is_tie(contest):
         return {"all-ballots": contest.ballots}
+    lock_providence_sample_size_computation()
     try:
         sample_size_options = providence.get_sample_size(
             risk_limit_percentage, contest, None, None
