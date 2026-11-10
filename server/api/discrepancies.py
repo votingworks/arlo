@@ -106,9 +106,10 @@ def drawn_batches_in_round(election: Election, round: Round) -> list[Batch]:
 
 # Every batch-contest audited this round, with the contests a batch is still
 # audited for after earlier rounds. Statuses sit on a combined batch's
-# representative.
+# representative. If a jurisdiction is provided, only include its
+# batch-contests.
 def get_batch_comparison_discrepancies_by_jurisdiction(
-    election: Election, round: Round
+    election: Election, round: Round, jurisdiction: Jurisdiction | None = None
 ) -> BatchContestDiscrepanciesByJurisdiction:
     discrepancies_by_jurisdiction: BatchContestDiscrepanciesByJurisdiction = (
         defaultdict(lambda: defaultdict(dict))
@@ -124,7 +125,11 @@ def get_batch_comparison_discrepancies_by_jurisdiction(
     # keeps the statuses
     jurisdiction_ids_under_review: set[str] = set()
     for batch, sub_batches in batches_with_sub_batches(
-        drawn_batches_in_round(election, round)
+        [
+            batch
+            for batch in drawn_batches_in_round(election, round)
+            if jurisdiction is None or batch.jurisdiction_id == jurisdiction.id
+        ]
     ):
         contest_ids = set(contest_ids_to_audit_in_round(round, batch))
         for sub_batch in sub_batches:
@@ -169,7 +174,9 @@ def get_batch_comparison_discrepancies_by_jurisdiction(
     }
 
     show_discrepancies_by_jurisdiction = (
-        show_batch_comparison_discrepancies_by_jurisdiction(
+        {jurisdiction.id: True}
+        if jurisdiction
+        else show_batch_comparison_discrepancies_by_jurisdiction(
             election, round, jurisdiction_ids_under_review
         )
     )
@@ -183,7 +190,7 @@ def get_batch_comparison_discrepancies_by_jurisdiction(
         for batch_key, audited_batch_result in audited_batch_results.items():
             jurisdiction_name, batch_name = batch_key
             jurisdiction_id = jurisdiction_name_to_id[jurisdiction_name]
-            if not show_discrepancies_by_jurisdiction[jurisdiction_id]:
+            if not show_discrepancies_by_jurisdiction.get(jurisdiction_id):
                 continue
 
             if contest.id not in contest_ids_in_round_by_batch_key.get(
@@ -326,9 +333,9 @@ def record_batch_results_unfinalized(round: Round, batches: list[Batch]):
         contest_status.status = BatchDiscrepancyStatus.RE_TALLYING  # ty: ignore[invalid-assignment]
 
 
-# In multi-jurisdiction audits, hide discrepancies if the jurisdiction hasn't finalized tallies
-# Finalized in the given round or under review in it, or finalized in any round
-# when round is None
+# Whether each jurisdiction's discrepancies are shown to audit admins. Always
+# in a single-jurisdiction audit, where review starts before any finalize.
+# Otherwise only once the jurisdiction has finalized tallies at least once
 def show_batch_comparison_discrepancies_by_jurisdiction(
     election: Election,
     round: Round | None,
@@ -340,15 +347,16 @@ def show_batch_comparison_discrepancies_by_jurisdiction(
         jurisidiction_id = jurisdictions[0].id
         return {jurisidiction_id: True}
 
-    finalized = BatchResultsFinalized.query
-    if round is not None:
-        finalized = finalized.filter_by(round_id=round.id)
-    shown_jurisdiction_ids = {
-        jurisdiction_id
-        for (jurisdiction_id,) in finalized.with_entities(
-            BatchResultsFinalized.jurisdiction_id
-        )
-    } | jurisdiction_ids_under_review
+    shown_jurisdiction_ids = (
+        set(jurisdiction_ids_under_review)
+        if round is not None
+        else {
+            jurisdiction_id
+            for (jurisdiction_id,) in BatchResultsFinalized.query.with_entities(
+                BatchResultsFinalized.jurisdiction_id
+            )
+        }
+    )
 
     return {
         jurisdiction.id: (jurisdiction.id in shown_jurisdiction_ids)

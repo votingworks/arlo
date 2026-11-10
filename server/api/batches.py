@@ -426,11 +426,8 @@ def finalize_batch_results(
     )
     add_jurisdiction_note(jurisdiction, "Finalized tallies")
 
-    # The finalized row just added is what shows this jurisdiction in the
-    # listing on its first finalize, before any of its batch contests has a
-    # status
     discrepancies_by_batch_name = get_batch_comparison_discrepancies_by_jurisdiction(
-        election, round
+        election, round, jurisdiction
     ).get(jurisdiction.id, {})
     record_batch_results_finalized(
         round, [batch for batch, _ in batches_to_audit], discrepancies_by_batch_name
