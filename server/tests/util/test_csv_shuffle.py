@@ -3,7 +3,7 @@ import io
 
 import pytest
 
-from ...util.csv_shuffle import shuffle_csv_rows
+from ...util.csv_shuffle import CHUNK_SIZE, shuffle_csv_rows
 from ...worker.tasks import UserError
 
 HEADER_ROWS = [["a"], ["b"], ["c"], ["CvrNumber", "RecordId", "BatchId"]]
@@ -23,7 +23,7 @@ def parse(contents: bytes) -> list[list[str]]:
 def shuffle(
     contents: bytes,
     num_rows_to_skip: int = 3,
-    chunk_size: int = 100,
+    chunk_size: int = CHUNK_SIZE,
     columns_to_redact: list[str] | None = None,
 ) -> bytes:
     output = io.BytesIO()
@@ -44,7 +44,7 @@ def test_shuffles_data_rows_and_leaves_header_rows_in_place():
     assert output[4:] != DATA_ROWS
 
 
-@pytest.mark.parametrize("chunk_size", [1, 7, 50, 1000])
+@pytest.mark.parametrize("chunk_size", [1, 7, 50, CHUNK_SIZE])
 def test_only_shuffles_rows_within_each_chunk(chunk_size):
     output = parse(shuffle(to_csv(HEADER_ROWS + DATA_ROWS), chunk_size=chunk_size))
     shuffled_rows = output[4:]
@@ -57,14 +57,14 @@ def test_only_shuffles_rows_within_each_chunk(chunk_size):
 
 
 def test_moves_a_lone_last_row():
-    # Without randomly offsetting chunks, the 101st row would always be alone
-    # in the last chunk and never move
-    data_rows = [[str(i)] for i in range(101)]
+    # Without randomly offsetting chunks, the last of CHUNK_SIZE + 1 rows would
+    # always be alone in the last chunk and never move
+    data_rows = [[str(i)] for i in range(CHUNK_SIZE + 1)]
     contents = to_csv(HEADER_ROWS + data_rows)
     last_row_positions = {
-        parse(shuffle(contents))[4:].index(["100"]) for _ in range(50)
+        parse(shuffle(contents))[4:].index([str(CHUNK_SIZE)]) for _ in range(50)
     }
-    assert last_row_positions != {100}
+    assert last_row_positions != {CHUNK_SIZE}
 
 
 def test_num_rows_to_skip():

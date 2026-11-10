@@ -10,6 +10,9 @@ from ..worker.tasks import UserError
 # Backed by os.urandom, unlike the default random module
 random = secrets.SystemRandom()
 
+# Rows are shuffled within chunks of this many rows, to keep memory usage bounded
+CHUNK_SIZE = 1000
+
 UTF8_BOM = b"\xef\xbb\xbf"
 # UTF-32 LE's BOM (ff fe 00 00) starts with UTF-16 LE's
 UTF16_AND_UTF32_BOMS = (b"\xfe\xff", b"\xff\xfe", b"\x00\x00\xfe\xff")
@@ -19,7 +22,7 @@ def shuffle_csv_rows(
     input_file: IO[bytes],
     output_file: IO[bytes],
     num_rows_to_skip: int = 0,
-    chunk_size: int = 100,
+    chunk_size: int = CHUNK_SIZE,
     columns_to_redact: Collection[str] = (),
 ) -> None:
     """
@@ -79,7 +82,8 @@ def shuffle_csv_rows(
         )
         # Make the first chunk a random size smaller than chunk_size, so that
         # chunk boundaries vary and the last chunk isn't always a fixed size
-        # (e.g., a single row that never moves when there are 101 rows)
+        # (e.g., a single row that never moves when there are chunk_size + 1
+        # rows)
         first_chunk = list(itertools.islice(rows, random.randrange(chunk_size)))
         random.shuffle(first_chunk)
         writer.writerows(first_chunk)
