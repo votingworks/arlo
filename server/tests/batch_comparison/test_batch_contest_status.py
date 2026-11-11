@@ -36,10 +36,10 @@ def test_batch_contest_statuses_follow_the_tallies(
     audit.unfinalize()
     assert audit.statuses()[batches[0]["name"]] == "RE_TALLYING"
     assert set(audit.statuses().values()) == {"RE_TALLYING", "MATCHES"}
-    # Support still counts the one discrepancy while the batches re-tally
+    # Nothing is under review while the batches re-tally
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)
     rv = client.get(f"/api/support/elections/{election_id}/round-progress")
-    assert json.loads(rv.data)["discrepancyCount"] == 1
+    assert json.loads(rv.data)["discrepancyCount"] == 0
     clear_support_user(client)
     audit.record(batches[0], audit.reported_results(batches[0]))
     audit.finalize()

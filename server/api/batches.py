@@ -31,6 +31,7 @@ from ..activity_log.activity_log import (
 from .discrepancies import (
     add_jurisdiction_note,
     get_batch_comparison_discrepancies_by_jurisdiction,
+    outstanding_contest_statuses,
     record_batch_results_finalized,
     record_batch_results_unfinalized,
 )
@@ -426,12 +427,11 @@ def finalize_batch_results(
     )
     add_jurisdiction_note(jurisdiction, "Finalized tallies")
 
+    batches = [batch for batch, _ in batches_to_audit]
     discrepancies_by_batch_name = get_batch_comparison_discrepancies_by_jurisdiction(
         election, round, jurisdiction
     ).get(jurisdiction.id, {})
-    record_batch_results_finalized(
-        round, [batch for batch, _ in batches_to_audit], discrepancies_by_batch_name
-    )
+    record_batch_results_finalized(round, batches, discrepancies_by_batch_name)
 
     record_activity(
         FinalizeBatchResults(
@@ -440,11 +440,7 @@ def finalize_batch_results(
             jurisdiction_id=jurisdiction.id,
             jurisdiction_name=jurisdiction.name,
             num_batches_with_discrepancies=sum(
-                any(
-                    contest_discrepancies["hasDiscrepancy"]
-                    for contest_discrepancies in batch_discrepancies.values()
-                )
-                for batch_discrepancies in discrepancies_by_batch_name.values()
+                1 for _ in outstanding_contest_statuses(round, batches)
             ),
         )
     )

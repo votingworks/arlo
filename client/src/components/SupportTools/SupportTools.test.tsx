@@ -392,7 +392,7 @@ describe('Support Tools', () => {
         name: 'Organization 1 Audit 2 Round 1 1/2 jurisdictions finalized',
       })
       await screen.findByRole('link', {
-        name: 'Organization 1 Audit 4 Round 1 0/3 jurisdictions finalized · 4 discrepancies',
+        name: 'Organization 1 Audit 4 Round 1 0/3 jurisdictions finalized · 4 batch contests with pending discrepancies',
       })
       screen.getByRole('link', { name: 'Organization 1 Audit 3 Blocked' })
       screen.getByRole('link', { name: 'Organization 1 Audit 5 Round 1' })

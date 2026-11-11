@@ -124,7 +124,10 @@ snapshots["test_slack_worker_message_format 12"] = {
         },
         {
             "elements": [
-                {"text": ":white_check_mark: No discrepancies", "type": "mrkdwn"}
+                {
+                    "text": ":white_check_mark: No pending discrepancies",
+                    "type": "mrkdwn",
+                }
             ],
             "type": "context",
         },
@@ -154,7 +157,7 @@ snapshots["test_slack_worker_message_format 12"] = {
             "type": "context",
         },
     ],
-    "text": "Finalized batch results for Test Jurisdiction (no discrepancies)",
+    "text": "Finalized batch results for Test Jurisdiction (no pending discrepancies)",
 }
 
 snapshots["test_slack_worker_message_format 13"] = {
