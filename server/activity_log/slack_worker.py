@@ -333,9 +333,11 @@ def slack_message(activity: activity_log.Activity):
     if isinstance(activity, activity_log.FinalizeBatchResults):
         num_to_review = activity.num_batches_with_discrepancies
         discrepancy_status = (
-            f"{num_to_review} batch contest{'s' if num_to_review > 1 else ''} with discrepancies"
-            if num_to_review > 0
-            else "no discrepancies"
+            "no pending discrepancies"
+            if num_to_review == 0
+            else "1 batch contest with a pending discrepancy"
+            if num_to_review == 1
+            else f"{num_to_review} batch contests with pending discrepancies"
         )
         discrepancy_emoji = ":warning:" if num_to_review > 0 else ":white_check_mark:"
         return dict(
