@@ -416,7 +416,10 @@ const JurisdictionReview: React.FC<IJurisdictionReviewProps> = ({
                         })}
                       />
                       {status && (
-                        <StatusTag intent={STATUS_TAGS[status].intent}>
+                        <StatusTag
+                          intent={STATUS_TAGS[status].intent}
+                          style={{ flexShrink: 0 }}
+                        >
                           {STATUS_TAGS[status].label}
                         </StatusTag>
                       )}
@@ -428,6 +431,7 @@ const JurisdictionReview: React.FC<IJurisdictionReviewProps> = ({
                               <AsyncButton
                                 key={label}
                                 small
+                                style={{ flexShrink: 0 }}
                                 onClick={() => setStatus(decision)}
                               >
                                 {label}
