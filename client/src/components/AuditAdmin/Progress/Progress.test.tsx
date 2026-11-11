@@ -1,4 +1,12 @@
-import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import {
+  afterAll,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest'
 import React from 'react'
 import { screen, within, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -109,6 +117,7 @@ describe('Progress screen', () => {
       expect(headers).toHaveLength(3)
       expect(headers[0]).toHaveTextContent('Jurisdiction')
       expect(headers[1]).toHaveTextContent('Status')
+      expect(headers[1]).toHaveStyle({ width: '210px' })
       expect(headers[2]).toHaveTextContent('Ballots in Manifest')
 
       const rows = screen.getAllByRole('row')
@@ -137,7 +146,7 @@ describe('Progress screen', () => {
 
       expect(
         screen.queryByRole('checkbox', {
-          name: 'Count unique sampled ballots',
+          name: 'Hide repeat draws',
         })
       ).not.toBeInTheDocument()
     })
@@ -1274,7 +1283,7 @@ describe('Progress screen', () => {
 
         // Counting every sampled batch instead of unique ones
         userEvent.click(
-          screen.getByRole('checkbox', { name: /Count unique sampled/ })
+          screen.getByRole('checkbox', { name: 'Hide repeat draws' })
         )
         expect(cells[4]).toHaveTextContent('10')
         expect(cells[5]).toHaveTextContent('2')
@@ -1412,6 +1421,10 @@ describe('Progress screen', () => {
         })
         expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
         screen.getByRole('button', { name: /Review 3/ })
+        const statusHeader = screen.getByRole('columnheader', {
+          name: 'Status',
+        })
+        expect(statusHeader).toHaveStyle({ width: '130px' })
         // Across every contest the jurisdiction needs review; for a contest
         // whose batch contests are all accepted, it stands at Accepted. The
         // re-tallying jurisdiction says so in both views.
@@ -1438,6 +1451,7 @@ describe('Progress screen', () => {
           'success'
         )
         expectStatusTag(statusCell('Jurisdiction 2'), 'No samples', 'success')
+        expect(statusHeader).toHaveStyle({ width: '210px' })
         userEvent.click(screen.getByRole('button', { name: /Review 1/ }))
         const dialog = (
           await screen.findByRole('heading', {
@@ -1591,6 +1605,8 @@ describe('Progress screen', () => {
       'jurisdiction-id-1': '2026-11-09T14:14:00+00:00',
       'jurisdiction-id-3': '2026-11-08T09:05:00+00:00',
     }
+    beforeEach(() => vi.setSystemTime(new Date('2026-11-09T20:00:00+00:00')))
+    afterEach(() => vi.useRealTimers())
     const jurisdictions = jurisdictionMocks.oneComplete.map(jurisdiction => ({
       ...jurisdiction,
       currentRoundStatus: jurisdiction.currentRoundStatus && {
@@ -1626,7 +1642,7 @@ describe('Progress screen', () => {
             .map(row => within(row).getAllByRole('cell'))
             .map(cells => [cells[0].textContent, cells[6].textContent])
         expect(column()).toEqual([
-          ['Jurisdiction 1', 'Nov 9, 2:14 PM'],
+          ['Jurisdiction 1', 'Today, 2:14 PM'],
           ['Jurisdiction 2', ''],
           ['Jurisdiction 3', 'Nov 8, 9:05 AM'],
         ])
@@ -1706,8 +1722,15 @@ describe('Progress screen', () => {
       expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
 
       const ballotsSwitch = screen.getByRole('checkbox', {
-        name: 'Count unique sampled ballots',
+        name: 'Hide repeat draws',
       })
+      userEvent.hover(ballotsSwitch)
+      await screen.findByText(
+        'When off, show draws. If a ballot is drawn twice, it will count as 2 ballots in ballot counts, even though it is only audited once.'
+      )
+      screen.getByText(
+        'When on, show ballots, not draws. If a ballot is drawn twice, it will count as 1 ballot in ballot counts.'
+      )
       userEvent.click(ballotsSwitch)
 
       let rows = screen.getAllByRole('row')
@@ -1914,9 +1937,17 @@ describe('Progress screen', () => {
 
       expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
 
-      screen.getByRole('checkbox', {
-        name: 'Count unique sampled batches',
-      })
+      userEvent.hover(
+        screen.getByRole('checkbox', {
+          name: 'Hide repeat draws',
+        })
+      )
+      await screen.findByText(
+        'When off, show draws. If a batch is drawn twice, it will count as 2 batches in batch counts, even though tallies are only entered once.'
+      )
+      screen.getByText(
+        'When on, show batches, not draws. If a batch is drawn twice, it will count as 1 batch in batch counts.'
+      )
     })
   })
 

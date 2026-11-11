@@ -338,6 +338,12 @@ const Progress: React.FC<IProgressProps> = ({
     }
   }
 
+  // Upload statuses before the round, and a contest's view of a re-tallying
+  // jurisdiction's statuses, run longer than the other round statuses
+  const needsWideStatusColumn =
+    !round ||
+    (selectedContest !== undefined && jurisdictions.some(isUnfinalized))
+
   const roundStatusCounts = (
     jurisdiction: IJurisdiction
   ): IRoundStatusCounts | null => {
@@ -365,6 +371,11 @@ const Progress: React.FC<IProgressProps> = ({
   const filter = sortAndFilterState?.filter || ''
   const ballotsOrBatches =
     auditType === 'BATCH_COMPARISON' ? 'Batches' : 'Ballots'
+  const ballotOrBatch = auditType === 'BATCH_COMPARISON' ? 'batch' : 'ballot'
+  const auditedOnce =
+    auditType === 'BATCH_COMPARISON'
+      ? 'tallies are only entered once'
+      : 'it is only audited once'
 
   const columns: Column<IJurisdiction>[] = [
     {
@@ -396,7 +407,7 @@ const Progress: React.FC<IProgressProps> = ({
     },
     {
       Header: 'Status',
-      minWidth: 210, // Room for the longest status on one line in the default fonts
+      minWidth: needsWideStatusColumn ? 210 : 130,
       accessor: jurisdiction => {
         const { ballotManifest, batchTallies, cvrs } = jurisdiction
 
@@ -767,17 +778,29 @@ const Progress: React.FC<IProgressProps> = ({
         minWidth: 150, // Room for a date and time on one line
         accessor: ({ currentRoundStatus }) =>
           currentRoundStatus?.lastTalliedAt ?? null,
-        Cell: ({ value }: { value: string | null }) =>
-          value && (
-            <span title={new Date(value).toLocaleString()}>
-              {new Date(value).toLocaleString(undefined, {
-                month: 'short',
-                day: 'numeric',
-                hour: 'numeric',
-                minute: '2-digit',
-              })}
+        Cell: ({ value }: { value: string | null }) => {
+          if (!value) return null
+          const date = new Date(value)
+          const day =
+            date.toDateString() === new Date().toDateString()
+              ? 'Today'
+              : date.toLocaleDateString(undefined, {
+                  month: 'short',
+                  day: 'numeric',
+                })
+          const time = date.toLocaleTimeString(undefined, {
+            hour: 'numeric',
+            minute: '2-digit',
+          })
+          return (
+            <span
+              title={date.toLocaleString()}
+              style={{ fontVariantNumeric: 'tabular-nums' }}
+            >
+              {`${day}, ${time}`}
             </span>
-          ),
+          )
+        },
         sortType: sortLastTalliedAt,
       })
     }
@@ -858,12 +881,29 @@ const Progress: React.FC<IProgressProps> = ({
         )}
         <div style={{ flexGrow: 1 }} />
         {round && (
-          <Switch
-            checked={isShowingUnique}
-            label={`Count unique sampled ${ballotsOrBatches.toLowerCase()}`}
-            onChange={() => setIsShowingUnique(!isShowingUnique)}
-            style={{ marginBottom: 0 }}
-          />
+          <Tooltip
+            content={
+              <div style={{ maxWidth: '400px' }}>
+                <div style={{ marginBottom: '8px' }}>
+                  When off, show draws. If a {ballotOrBatch} is drawn twice, it
+                  will count as 2 {ballotsOrBatches.toLowerCase()} in{' '}
+                  {ballotOrBatch} counts, even though {auditedOnce}.
+                </div>
+                <div>
+                  When on, show {ballotsOrBatches.toLowerCase()}, not draws. If
+                  a {ballotOrBatch} is drawn twice, it will count as 1{' '}
+                  {ballotOrBatch} in {ballotOrBatch} counts.
+                </div>
+              </div>
+            }
+          >
+            <Switch
+              checked={isShowingUnique}
+              label="Hide repeat draws"
+              onChange={() => setIsShowingUnique(!isShowingUnique)}
+              style={{ marginBottom: 0 }}
+            />
+          </Tooltip>
         )}
         {auditType === 'BATCH_COMPARISON' && hasExtraBatches && (
           <Switch
