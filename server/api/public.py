@@ -202,12 +202,12 @@ def public_compute_providence_sample_size():
 PROVIDENCE_SAMPLE_SIZE_LOCK_KEY = 2495
 
 
-# A Providence computation can take seconds, so only one runs at a time across all web workers, to
-# keep the planner from tying up the whole app. The transaction-scoped lock is released when the
-# request's session is removed
+# A Providence computation can take seconds, so only one runs at a time across all gunicorn web
+# workers, to keep the planner from tying up the whole app. The transaction-scoped lock is released
+# when the request's session is removed
 def lock_providence_sample_size_computation():
-    # Bound how long the lock can be held if the worker holding it dies without closing its
-    # connection. A computation still running after a minute would already have been stopped by
+    # Bound how long the lock can be held if the gunicorn web worker holding it dies without closing
+    # its connection. A computation still running after a minute would already have been stopped by
     # gunicorn's 30-second timeout
     db_session.execute(text("SET LOCAL idle_in_transaction_session_timeout = '60s'"))
     locked = db_session.execute(

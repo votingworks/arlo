@@ -853,7 +853,7 @@ def test_public_compute_providence_sample_size_busy(client: FlaskClient):
         "numWinners": 1,
         "totalBallotsCast": 2000,
     }
-    # Hold the lock from another connection, as another web worker computing a sample size
+    # Hold the lock from another connection, as another gunicorn web worker computing a sample size
     # would. Use a key of our own so that tests running in parallel aren't affected.
     lock_key = 24950001
     lock_connection = engine.connect()
