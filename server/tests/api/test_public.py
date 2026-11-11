@@ -2,10 +2,14 @@ import json
 import io
 import tempfile
 from typing import Any, TypedDict
+from unittest.mock import patch
 
 from flask.testing import FlaskClient
+from sqlalchemy import text
 from ..helpers import *
 from ... import config
+from ...api import public
+from ...database import engine
 
 
 def copy_dict_and_remove_key(input: dict[str, Any], key: str):
@@ -599,6 +603,320 @@ def test_public_compute_sample_sizes_uncontested_zero_vote_winner(client: FlaskC
     assert rv.status_code == 200
     response = json.loads(rv.data)
     assert set(response["ballotComparison"].values()) == {2000}
+
+
+def test_public_compute_providence_sample_size_input_validation(client: FlaskClient):
+    election_results = {
+        "candidates": [
+            {"name": "Helga Hippo", "votes": 1000},
+            {"name": "Bobby Bear", "votes": 900},
+        ],
+        "numWinners": 1,
+        "totalBallotsCast": 2000,
+    }
+    for body, expected_status_code, expected_error_message in [
+        (
+            {"electionResults": election_results},
+            400,
+            "'riskLimitPercentage' is a required property",
+        ),
+        (
+            {"riskLimitPercentage": 5},
+            400,
+            "'electionResults' is a required property",
+        ),
+        (
+            {"electionResults": election_results, "riskLimitPercentage": -1},
+            400,
+            "-1 is less than the minimum of 0",
+        ),
+        (
+            {"electionResults": election_results, "riskLimitPercentage": 21},
+            400,
+            "21 is greater than the maximum of 20",
+        ),
+        (
+            {"electionResults": election_results, "riskLimitPercentage": 5.5},
+            400,
+            "5.5 is not of type 'integer'",
+        ),
+        (
+            {
+                "electionResults": {
+                    **election_results,
+                    "candidates": [
+                        {"name": "Helga Hippo", "votes": 1000},
+                        {"name": "Helga Hippo", "votes": 900},
+                    ],
+                },
+                "riskLimitPercentage": 5,
+            },
+            409,
+            "Candidates must have unique names",
+        ),
+    ]:
+        rv = post_json(client, "/api/public/sample-sizes/providence", body)
+        assert rv.status_code == expected_status_code, body
+        response = json.loads(rv.data)
+        assert [error["message"] for error in response["errors"]] == [
+            expected_error_message
+        ]
+
+
+def test_public_compute_providence_sample_size(client: FlaskClient, snapshot):
+    class TestCase(TypedDict):
+        description: str
+        candidates: list[dict[str, Any]]
+        total_ballots_cast: int
+        risk_limit_percentage: int
+
+    test_cases: list[TestCase] = [
+        {
+            "description": "100-vote margin",
+            "candidates": [
+                {"name": "Helga Hippo", "votes": 1000},
+                {"name": "Bobby Bear", "votes": 900},
+            ],
+            "total_ballots_cast": 1900,
+            "risk_limit_percentage": 5,
+        },
+        {
+            "description": "500-vote margin",
+            "candidates": [
+                {"name": "Helga Hippo", "votes": 5250},
+                {"name": "Bobby Bear", "votes": 4750},
+            ],
+            "total_ballots_cast": 10000,
+            "risk_limit_percentage": 5,
+        },
+        {
+            "description": "500-vote margin at a 1% risk limit",
+            "candidates": [
+                {"name": "Helga Hippo", "votes": 5250},
+                {"name": "Bobby Bear", "votes": 4750},
+            ],
+            "total_ballots_cast": 10000,
+            "risk_limit_percentage": 1,
+        },
+        {
+            "description": "500-vote margin with additional ballots cast",
+            "candidates": [
+                {"name": "Helga Hippo", "votes": 5250},
+                {"name": "Bobby Bear", "votes": 4750},
+            ],
+            "total_ballots_cast": 20000,
+            "risk_limit_percentage": 5,
+        },
+        {
+            "description": "Many candidates",
+            "candidates": [
+                {"name": "Helga Hippo", "votes": 1000},
+                {"name": "Bobby Bear", "votes": 900},
+                {"name": "Sally Sloth", "votes": 800},
+                {"name": "Lenny Lion", "votes": 700},
+            ],
+            "total_ballots_cast": 3400,
+            "risk_limit_percentage": 5,
+        },
+        {
+            "description": "Landslide",
+            "candidates": [
+                {"name": "Helga Hippo", "votes": 1000},
+                {"name": "Bobby Bear", "votes": 1},
+            ],
+            "total_ballots_cast": 1001,
+            "risk_limit_percentage": 5,
+        },
+        {
+            "description": "Tie",
+            "candidates": [
+                {"name": "Helga Hippo", "votes": 1000},
+                {"name": "Bobby Bear", "votes": 1000},
+            ],
+            "total_ballots_cast": 2000,
+            "risk_limit_percentage": 5,
+        },
+        {
+            "description": "0% risk limit",
+            "candidates": [
+                {"name": "Helga Hippo", "votes": 1000},
+                {"name": "Bobby Bear", "votes": 900},
+            ],
+            "total_ballots_cast": 1900,
+            "risk_limit_percentage": 0,
+        },
+        {
+            "description": "Large number of votes",
+            "candidates": [
+                {"name": "Helga Hippo", "votes": 1_000_000_000},
+                {"name": "Bobby Bear", "votes": 900_000_000},
+            ],
+            "total_ballots_cast": 1_900_000_000,
+            "risk_limit_percentage": 5,
+        },
+        {
+            # Sample sizes larger than the number of ballots are capped at a full hand tally
+            "description": "Large number of additional ballots cast",
+            "candidates": [
+                {"name": "Helga Hippo", "votes": 1000},
+                {"name": "Bobby Bear", "votes": 900},
+            ],
+            "total_ballots_cast": 2_000_000_000,
+            "risk_limit_percentage": 5,
+        },
+        {
+            # No sample suffices, so Providence finds no sample size at all
+            "description": "Small number of votes",
+            "candidates": [
+                {"name": "Helga Hippo", "votes": 2},
+                {"name": "Bobby Bear", "votes": 1},
+            ],
+            "total_ballots_cast": 3,
+            "risk_limit_percentage": 5,
+        },
+    ]
+    for test_case in test_cases:
+        rv = post_json(
+            client,
+            "/api/public/sample-sizes/providence",
+            {
+                "electionResults": {
+                    "candidates": test_case["candidates"],
+                    "numWinners": 1,
+                    "totalBallotsCast": test_case["total_ballots_cast"],
+                },
+                "riskLimitPercentage": test_case["risk_limit_percentage"],
+            },
+        )
+        assert rv.status_code == 200
+        snapshot.assert_match(json.loads(rv.data), test_case["description"])
+
+
+def test_public_compute_providence_sample_size_unsupported(client: FlaskClient):
+    for candidates, num_winners, expected_reason in [
+        (
+            [{"name": "Helga Hippo", "votes": 1000}],
+            1,
+            "Not supported for uncontested contests",
+        ),
+        (
+            [
+                {"name": "Helga Hippo", "votes": 1100},
+                {"name": "Bobby Bear", "votes": 1000},
+            ],
+            1,
+            "Not supported for contests with more votes than ballots",
+        ),
+        (
+            [
+                {"name": "Helga Hippo", "votes": 1000},
+                {"name": "Bobby Bear", "votes": 900},
+                {"name": "Cami Cat", "votes": 800},
+            ],
+            2,
+            "Not supported for contests with multiple winners",
+        ),
+        (
+            [
+                {"name": "Helga Hippo", "votes": 1000},
+                {"name": "Bobby Bear", "votes": 0},
+            ],
+            1,
+            "Not supported for candidates with 0 votes",
+        ),
+    ]:
+        rv = post_json(
+            client,
+            "/api/public/sample-sizes/providence",
+            {
+                "electionResults": {
+                    "candidates": candidates,
+                    "numWinners": num_winners,
+                    "totalBallotsCast": 2000,
+                },
+                "riskLimitPercentage": 5,
+            },
+        )
+        assert rv.status_code == 200
+        assert json.loads(rv.data) == {
+            "sampleSize": None,
+            "unsupportedReason": expected_reason,
+        }
+
+
+def test_public_compute_providence_sample_size_busy(client: FlaskClient):
+    election_results = {
+        "candidates": [
+            {"name": "Helga Hippo", "votes": 1000},
+            {"name": "Bobby Bear", "votes": 900},
+        ],
+        "numWinners": 1,
+        "totalBallotsCast": 2000,
+    }
+    # Hold the lock from another connection, as another gunicorn web worker computing a sample size
+    # would. Use a key of our own so that tests running in parallel aren't affected.
+    lock_key = 24950001
+    lock_connection = engine.connect()
+    lock_connection.execute(text("SELECT pg_advisory_lock(:key)"), {"key": lock_key})
+    try:
+        with patch.object(public, "PROVIDENCE_SAMPLE_SIZE_LOCK_KEY", lock_key):
+            rv = post_json(
+                client,
+                "/api/public/sample-sizes/providence",
+                {"electionResults": election_results, "riskLimitPercentage": 5},
+            )
+            assert rv.status_code == 429
+            assert json.loads(rv.data) == {
+                "errors": [
+                    {
+                        "errorType": "Too Many Requests",
+                        "message": "Another Providence sample size is being computed."
+                        " Try again in a moment.",
+                    }
+                ]
+            }
+
+            # Contests Providence doesn't support are answered without the lock
+            rv = post_json(
+                client,
+                "/api/public/sample-sizes/providence",
+                {
+                    "electionResults": {**election_results, "numWinners": 2},
+                    "riskLimitPercentage": 5,
+                },
+            )
+            assert rv.status_code == 200
+            assert json.loads(rv.data)["sampleSize"] is None
+
+            # Nor do contests whose sample size is known without computing it
+            for election_results_no_computation, risk_limit_percentage in [
+                (election_results, 0),
+                (
+                    {
+                        **election_results,
+                        "candidates": [
+                            {"name": "Helga Hippo", "votes": 1000},
+                            {"name": "Bobby Bear", "votes": 1000},
+                        ],
+                    },
+                    5,
+                ),
+            ]:
+                rv = post_json(
+                    client,
+                    "/api/public/sample-sizes/providence",
+                    {
+                        "electionResults": election_results_no_computation,
+                        "riskLimitPercentage": risk_limit_percentage,
+                    },
+                )
+                assert rv.status_code == 200
+                assert json.loads(rv.data)["sampleSize"] == {"all-ballots": 2000}
+    finally:
+        lock_connection.execute(
+            text("SELECT pg_advisory_unlock(:key)"), {"key": lock_key}
+        )
+        lock_connection.close()
 
 
 def upload_to_key(client: FlaskClient, key: str):

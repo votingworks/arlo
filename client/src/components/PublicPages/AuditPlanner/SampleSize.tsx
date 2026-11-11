@@ -3,7 +3,13 @@ import styled from 'styled-components'
 import { Icon, Spinner } from '@blueprintjs/core'
 import Count from '../../Atoms/Count'
 import { AuditType } from '../../useAuditSettings'
-import { BallotPollingSampleSizeKey, useSampleSizes } from './sampleSizes'
+import {
+  BallotPollingSampleSizeKey,
+  BallotPollingSampleSizeOptions,
+  BallotPollingMathType,
+  useProvidenceSampleSize,
+  useSampleSizes,
+} from './sampleSizes'
 import { IElectionResults } from './electionResults'
 
 const CONTAINER_HEIGHT = 36
@@ -27,27 +33,37 @@ const ErrorMessage = styled.span`
 interface IProps {
   disabled?: boolean
   auditType: Exclude<AuditType, 'HYBRID'>
+  ballotPollingMathType: BallotPollingMathType
   electionResults: IElectionResults
-  riskLimitPercentage: string
+  riskLimitPercentage: number
   totalBallotsCast: number
 }
 
 const SampleSize: React.FC<IProps> = ({
   disabled,
   auditType,
+  ballotPollingMathType,
   electionResults,
   riskLimitPercentage,
   totalBallotsCast,
 }) => {
   const sampleSizes = useSampleSizes(electionResults)
+  const isProvidence =
+    auditType === 'BALLOT_POLLING' && ballotPollingMathType === 'PROVIDENCE'
+  const providenceSampleSize = useProvidenceSampleSize(
+    electionResults,
+    riskLimitPercentage,
+    isProvidence
+  )
+  const query = isProvidence ? providenceSampleSize : sampleSizes
   const content = (() => {
     if (disabled) {
       return <span>&mdash;</span>
     }
-    if (sampleSizes.isFetching) {
+    if (query.isFetching) {
       return <Spinner size={CONTAINER_HEIGHT} />
     }
-    if (sampleSizes.error) {
+    if (query.error) {
       return (
         <ErrorMessage>
           <Icon icon="error" intent="danger" />
@@ -56,21 +72,29 @@ const SampleSize: React.FC<IProps> = ({
       )
     }
 
-    if (sampleSizes.data?.[auditType][riskLimitPercentage] === null) {
+    const sampleSize = isProvidence
+      ? providenceSampleSize.data?.sampleSize
+      : sampleSizes.data?.[auditType][riskLimitPercentage]
+    if (sampleSize === null) {
       return (
         <ErrorMessage>
           <Icon icon="info-sign" />
-          <span>Not supported for uncontested contests</span>
+          <span>
+            {isProvidence
+              ? providenceSampleSize.data?.unsupportedReason
+              : 'Not supported for uncontested contests'}
+          </span>
         </ErrorMessage>
       )
     }
 
-    if (!sampleSizes.data?.[auditType][riskLimitPercentage]) {
+    // If sampleSize is empty but not null, we are still awaiting the response
+    if (!sampleSize) {
       return <span>&mdash;</span>
     }
 
     if (auditType === 'BALLOT_POLLING') {
-      const sizeOptions = sampleSizes.data[auditType][riskLimitPercentage]
+      const sizeOptions = sampleSize as BallotPollingSampleSizeOptions
 
       if ('all-ballots' in sizeOptions) {
         return <span>Full hand tally</span>
@@ -85,15 +109,20 @@ const SampleSize: React.FC<IProps> = ({
       return (
         <div>
           {Object.entries(prettyKey).map(([key, keyLabel]) => {
-            const sampleSize = sizeOptions[key as BallotPollingSampleSizeKey]
+            const optionSampleSize =
+              sizeOptions[key as BallotPollingSampleSizeKey]
+            // The server omits options it didn't compute
+            if (optionSampleSize === undefined) {
+              return null
+            }
             return (
               <div key={key} style={{ marginBottom: '0.5rem' }}>
                 {keyLabel}:{' '}
-                {sampleSize === totalBallotsCast ? (
+                {optionSampleSize === totalBallotsCast ? (
                   <span>Full hand tally</span>
                 ) : (
                   <Count
-                    count={sampleSize}
+                    count={optionSampleSize}
                     singular="ballot"
                     plural="ballots"
                   />
@@ -105,14 +134,17 @@ const SampleSize: React.FC<IProps> = ({
       )
     }
 
-    const sampleSize = sampleSizes.data[auditType][riskLimitPercentage]
     if (sampleSize === totalBallotsCast) {
       return <span>Full hand tally</span>
     }
     if (auditType === 'BATCH_COMPARISON') {
-      return <Count count={sampleSize} singular="batch" plural="batches" />
+      return (
+        <Count count={sampleSize as number} singular="batch" plural="batches" />
+      )
     }
-    return <Count count={sampleSize} singular="ballot" plural="ballots" />
+    return (
+      <Count count={sampleSize as number} singular="ballot" plural="ballots" />
+    )
   })()
   return <Container>{content}</Container>
 }

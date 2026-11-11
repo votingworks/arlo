@@ -7,6 +7,7 @@ from werkzeug.exceptions import (
     InternalServerError,
     Forbidden,
     RequestEntityTooLarge,
+    TooManyRequests,
 )
 
 from .app import app
@@ -41,6 +42,16 @@ def handle_409(error):  # noqa: ANN001
     return (
         jsonify(errors=[{"message": error.description, "errorType": "Conflict"}]),
         Conflict.code,
+    )
+
+
+@app.errorhandler(TooManyRequests)
+def handle_429(error):  # noqa: ANN001
+    return (
+        jsonify(
+            errors=[{"message": error.description, "errorType": "Too Many Requests"}]
+        ),
+        TooManyRequests.code,
     )
 
 

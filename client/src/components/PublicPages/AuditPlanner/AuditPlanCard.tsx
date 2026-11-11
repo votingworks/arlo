@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
-import { Card, H2, H3, Slider } from '@blueprintjs/core'
+import { Card, H2, H3, Radio, RadioGroup, Slider } from '@blueprintjs/core'
 
 import SampleSize from './SampleSize'
 import SegmentedControl from '../../Atoms/SegmentedControl'
 import { AuditType } from '../../useAuditSettings'
 import { IElectionResults } from './electionResults'
+import { BallotPollingMathType } from './sampleSizes'
 import { useCssBreakpoints } from '../../../utils/responsiveness'
 
 const HIDDEN_LABEL_CLASS_NAME = 'hidden-label'
@@ -51,6 +52,14 @@ const SubHeading = styled(H3)`
   }
 `
 
+const BallotPollingMathTypeContainer = styled.div`
+  margin-top: 16px;
+
+  .bp3-label {
+    font-weight: 600;
+  }
+`
+
 const RiskLimitSlider = styled(Slider)`
   &.bp3-slider .${HIDDEN_LABEL_CLASS_NAME} {
     color: transparent;
@@ -87,6 +96,8 @@ const AuditPlanCard: React.FC<IProps> = ({ disabled, electionResults }) => {
   const { isMobileWidth } = useCssBreakpoints()
   const [selectedAuditType, setSelectedAuditType] =
     useState<Exclude<AuditType, 'HYBRID'>>('BALLOT_POLLING')
+  const [ballotPollingMathType, setBallotPollingMathType] =
+    useState<BallotPollingMathType>('BRAVO')
   const [riskLimitPercentage, setRiskLimitPercentage] = useState(
     DEFAULT_RISK_LIMIT_PERCENTAGE
   )
@@ -114,6 +125,25 @@ const AuditPlanCard: React.FC<IProps> = ({ disabled, electionResults }) => {
             value={selectedAuditType}
             vertical={isMobileWidth}
           />
+          {selectedAuditType === 'BALLOT_POLLING' && (
+            <BallotPollingMathTypeContainer>
+              <RadioGroup
+                disabled={disabled}
+                inline
+                label="Ballot Polling Type"
+                name="ballotPollingMathType"
+                onChange={e =>
+                  setBallotPollingMathType(
+                    e.currentTarget.value as BallotPollingMathType
+                  )
+                }
+                selectedValue={ballotPollingMathType}
+              >
+                <Radio label="BRAVO" value="BRAVO" />
+                <Radio label="Providence" value="PROVIDENCE" />
+              </RadioGroup>
+            </BallotPollingMathTypeContainer>
+          )}
         </Section>
 
         <Section>
@@ -148,8 +178,9 @@ const AuditPlanCard: React.FC<IProps> = ({ disabled, electionResults }) => {
         <SampleSize
           disabled={disabled}
           auditType={selectedAuditType}
+          ballotPollingMathType={ballotPollingMathType}
           electionResults={electionResults}
-          riskLimitPercentage={debouncedRiskLimitPercentage.toString()}
+          riskLimitPercentage={debouncedRiskLimitPercentage}
           totalBallotsCast={electionResults.totalBallotsCast}
         />
       </SampleSizeSection>
