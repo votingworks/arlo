@@ -1728,6 +1728,79 @@ def test_multi_contest_batch_comparison_uncombining_forgets_statuses(
     assert statuses.count() == 0
 
 
+def test_multi_contest_batch_comparison_counts_batch_contests_to_review(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
+    election_settings,
+    manifests,
+    batch_tallies,
+    round_1_id: str,
+):
+    # Every batch is tallied as reported except one drawn for both contests,
+    # which is off by a vote in each
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches"
+    )
+    batches = json.loads(rv.data)["batches"]
+    off = next(
+        batch
+        for batch in batches
+        if set(batch["contestIdsToAudit"]) == set(contest_ids)
+    )
+    reported_tallies = Jurisdiction.query.get(jurisdiction_ids[0]).batch_tallies
+    for batch in batches:
+        results = {
+            choice_id: votes
+            for contest_id in batch["contestIdsToAudit"]
+            for choice_id, votes in reported_tallies[batch["name"]][contest_id].items()
+            if choice_id != "ballots"
+        }
+        if batch["id"] == off["id"]:
+            for contest_id in contest_ids:
+                first_choice_id = Contest.query.get(contest_id).choices[0].id
+                results[first_choice_id] += 1
+        rv = put_batch_results(
+            client, election_id, jurisdiction_ids[0], round_1_id, batch["id"], [results]
+        )
+        assert_ok(rv)
+    finalize_url = f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/finalize"
+    assert_ok(post_json(client, finalize_url))
+
+    # Both batch-contests count, not the one batch
+    finalize_record = (
+        ActivityLogRecord.query.filter_by(
+            organization_id=Election.query.get(election_id).organization_id,
+            activity_name="FinalizeBatchResults",
+        )
+        .order_by(ActivityLogRecord.timestamp.desc())
+        .first()
+    )
+    assert finalize_record.info["num_batches_with_discrepancies"] == 2
+    round_progress_url = f"/api/support/elections/{election_id}/round-progress"
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
+    rv = client.get(round_progress_url)
+    assert json.loads(rv.data)["discrepancyCount"] == 2
+    clear_support_user(client)
+
+    # Accepting one contest's discrepancy leaves the other to review
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/{off['id']}/discrepancy-status",
+        {"contestId": contest_ids[0], "status": "ACCEPTED"},
+    )
+    assert_ok(rv)
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
+    rv = client.get(round_progress_url)
+    assert json.loads(rv.data)["discrepancyCount"] == 1
+    clear_support_user(client)
+
+
 def test_multi_contest_batch_comparison_combined_batch_tallied_in_two_rounds(
     client: FlaskClient,
     election_id: str,
