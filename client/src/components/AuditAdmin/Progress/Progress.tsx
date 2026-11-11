@@ -838,6 +838,7 @@ const Progress: React.FC<IProgressProps> = ({
         <ProgressMap
           stateAbbreviation={auditSettings.state}
           jurisdictions={jurisdictions}
+          lastLoginByJurisdiction={lastLoginByJurisdiction}
           isRoundStarted={!!round}
           auditType={auditType}
         />
