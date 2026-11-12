@@ -564,6 +564,7 @@ class Contest(BaseModel):
         cascade="all, delete-orphan",
         passive_deletes=True,
         order_by="ContestChoice.created_at",
+        lazy="selectin",
     )
     jurisdictions = relationship(
         "Jurisdiction",
@@ -571,6 +572,7 @@ class Contest(BaseModel):
         uselist=True,
         order_by="Jurisdiction.name",
         passive_deletes=True,
+        lazy="selectin",
     )
     results = relationship(
         "RoundContestResult",
