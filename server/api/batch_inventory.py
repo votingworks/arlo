@@ -381,6 +381,9 @@ def process_batch_inventory_cvr_file(
         batch_tallies: dict[BatchKey, dict[str, int]] = defaultdict(
             lambda: defaultdict(int)
         )
+        contest_ballot_counts_by_batch: dict[BatchKey, dict[str, int]] = defaultdict(
+            lambda: defaultdict(int)
+        )
 
         # ZIP file with multiple CSVs
         if batch_inventory_data.cvr_file.storage_path.endswith(".zip"):
@@ -468,6 +471,10 @@ def process_batch_inventory_cvr_file(
                         header_indices,
                         required=False,
                     )
+                    # A blank cell means the contest wasn't on the ballot.
+                    # Undervotes, overvotes, and write-ins still count.
+                    if choice_name:
+                        contest_ballot_counts_by_batch[batch_key][contest.id] += 1
                     choice_id = validate_choice_name_and_get_choice_id(
                         contest, choice_name
                     )
@@ -511,6 +518,10 @@ def process_batch_inventory_cvr_file(
                         header_indices,
                         required=False,
                     )
+                    # A blank cell means the contest wasn't on the ballot.
+                    # Undervotes, overvotes, and write-ins still count.
+                    if choice_name:
+                        contest_ballot_counts_by_batch[batch_key][contest.id] += 1
                     choice_id = validate_choice_name_and_get_choice_id(
                         contest, choice_name
                     )
@@ -534,6 +545,9 @@ def process_batch_inventory_cvr_file(
             ballot_count_by_group=None,  # ty: ignore[invalid-argument-type]
             batch_to_counting_group=None,  # ty: ignore[invalid-argument-type]
             batch_tallies=dict_to_items_list(batch_tallies),
+            contest_ballot_counts_by_batch=dict_to_items_list(
+                contest_ballot_counts_by_batch
+            ),
         )
         batch_inventory_data.election_results = election_results  # ty: ignore[invalid-assignment]
 
@@ -1407,7 +1421,7 @@ def download_batch_inventory_ballot_manifest(
     should_include_container_column = len(batch_to_counting_group) > 0
 
     # Only card style data audits read per-contest counts, and only Dominion
-    # CVRs processed since the counts were added have them
+    # and ES&S CVRs processed since the counts were added have them
     contests_with_ballot_count_column = (
         list(jurisdiction.contests)
         if election.audit_math_type == AuditMathType.MACRO_CARD_STYLE_DATA

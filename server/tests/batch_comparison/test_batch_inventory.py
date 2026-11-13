@@ -3211,6 +3211,142 @@ def test_batch_inventory_card_style_data_manifest(
     }
 
 
+# Blank cells mean the contest wasn't on the ballot
+ESS_CVR_WITH_CONTESTS_NOT_ON_BALLOT_ROWS = [
+    ("1", "Batch 1", "Choice 1-2", "Choice 2-1"),
+    ("2", "Batch 1", "Choice 1-1", ""),
+    ("3", "Batch 1", "undervote", "Choice 2-2"),
+    ("4", "Batch 2", "overvote", ""),
+    ("5", "Batch 2", "Write-in", "Choice 2-1"),
+    ("6", "Batch 2", "", "Choice 2-3"),
+    ("7", "Batch 3", "", "undervote"),
+    ("8", "Batch 3", "", "Choice 2-1"),
+]
+
+ESS_SINGLE_CSV_WITH_CONTESTS_NOT_ON_BALLOT = (
+    "Cast Vote Record,Precinct,Ballot Style,Batch,Contest 1,Contest 2\n"
+    + "".join(
+        f"{cvr},p,bs,{batch},{contest_1},{contest_2}\n"
+        for cvr, batch, contest_1, contest_2 in ESS_CVR_WITH_CONTESTS_NOT_ON_BALLOT_ROWS
+    )
+)
+
+ESS_ZIP_CVR_WITH_CONTESTS_NOT_ON_BALLOT = (
+    "Cast Vote Record,Precinct,Ballot Style,Contest 1,Contest 2\n"
+    + "".join(
+        f"{cvr},p,bs,{contest_1},{contest_2}\n"
+        for cvr, _, contest_1, contest_2 in ESS_CVR_WITH_CONTESTS_NOT_ON_BALLOT_ROWS
+    )
+)
+
+ESS_ZIP_BALLOTS_WITH_CONTESTS_NOT_ON_BALLOT = (
+    "Cast Vote Record,Batch,Ballot Status,Original Ballot Exception,"
+    "Remaining Ballot Exception,Write-in Type,Results Report,Reporting Group,"
+    "Tabulator CVR,Precinct ID\n"
+    + "".join(
+        f"{cvr},{batch},Not Reviewed,,,,N,Election Day,000{cvr},p\n"
+        for cvr, batch, _, _ in ESS_CVR_WITH_CONTESTS_NOT_ON_BALLOT_ROWS
+    )
+)
+
+
+@pytest.mark.parametrize(
+    "election_id", [AuditMathType.MACRO_CARD_STYLE_DATA], indirect=True
+)
+@pytest.mark.parametrize("is_zip", [False, True])
+def test_batch_inventory_card_style_data_manifest_ess(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
+    is_zip: bool,
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type",
+        {"systemType": CvrFileType.ESS},
+    )
+    assert_ok(rv)
+    if is_zip:
+        rv = upload_batch_inventory_cvr(
+            client,
+            zip_cvrs(
+                [
+                    (
+                        io.BytesIO(ESS_ZIP_CVR_WITH_CONTESTS_NOT_ON_BALLOT.encode()),
+                        "ess_cvr.csv",
+                    ),
+                    (
+                        io.BytesIO(
+                            ESS_ZIP_BALLOTS_WITH_CONTESTS_NOT_ON_BALLOT.encode()
+                        ),
+                        "ess_ballots.csv",
+                    ),
+                ]
+            ),
+            election_id,
+            jurisdiction_ids[0],
+            "application/zip",
+        )
+    else:
+        rv = upload_batch_inventory_cvr(
+            client,
+            io.BytesIO(ESS_SINGLE_CSV_WITH_CONTESTS_NOT_ON_BALLOT.encode()),
+            election_id,
+            jurisdiction_ids[0],
+        )
+    assert_ok(rv)
+    processing = get_file_processing(
+        client, election_id, jurisdiction_ids[0], "batch-inventory/cvr"
+    )
+    assert processing["status"] == ProcessingStatus.PROCESSED, processing["error"]
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/ballot-manifest"
+    )
+    ballot_manifest = rv.data.decode("utf-8")
+    assert ballot_manifest == (
+        "Batch Name,Number of Ballots,Contest 1 - Number of Ballots,Contest 2 - Number of Ballots\r\n"
+        "Batch 1,3,3,2\r\n"
+        "Batch 2,3,2,2\r\n"
+        "Batch 3,2,0,2\r\n"
+    )
+
+    # The manifest parser reads the columns back
+    rv = upload_ballot_manifest(
+        client, io.BytesIO(ballot_manifest.encode()), election_id, jurisdiction_ids[0]
+    )
+    assert_ok(rv)
+    processing = get_file_processing(
+        client, election_id, jurisdiction_ids[0], "ballot-manifest"
+    )
+    assert processing["status"] == ProcessingStatus.PROCESSED, processing["error"]
+    contest_1_id, contest_2_id = contest_ids
+    assert {
+        batch.name: batch.num_ballots_by_contest_id
+        for batch in Batch.query.filter_by(jurisdiction_id=jurisdiction_ids[0])
+    } == {
+        "Batch 1": {contest_1_id: 3, contest_2_id: 2},
+        "Batch 2": {contest_1_id: 2, contest_2_id: 2},
+        "Batch 3": {contest_1_id: 0, contest_2_id: 2},
+    }
+
+    # Blank cells don't count as votes
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/batch-tallies"
+    )
+    assert rv.data.decode("utf-8") == (
+        "Batch Name,Contest 1 - Choice 1-1,Contest 1 - Choice 1-2,Contest 1 - Write-In,"
+        "Contest 2 - Choice 2-1,Contest 2 - Choice 2-2,Contest 2 - Choice 2-3,Contest 2 - Write-In\r\n"
+        "Batch 1,1,1,0,1,1,0,0\r\n"
+        "Batch 2,0,0,1,1,0,1,0\r\n"
+        "Batch 3,0,0,0,1,0,0,0\r\n"
+    )
+
+
 @pytest.mark.parametrize(
     "election_id", [AuditMathType.MACRO_CARD_STYLE_DATA], indirect=True
 )
