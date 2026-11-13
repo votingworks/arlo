@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 import os.path
+import re
 from unittest.mock import Mock, patch
 from urllib.parse import urlparse
 from flask.testing import FlaskClient
@@ -1160,3 +1161,81 @@ def test_list_users_by_organization(
     ]
     for line in expected_users:
         assert line in csv_contents
+
+
+def parse_login_code_rows(html: str) -> list[list[str]]:
+    tbody = html.split("<tbody>")[1].split("</tbody>")[0]
+    return [
+        re.findall(r"<td>(.*?)</td>", row)
+        for row in re.findall(r"<tr>(.*?)</tr>", tbody)
+    ]
+
+
+def test_support_list_jurisdiction_admin_login_codes(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],  # noqa: ARG001
+):
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
+    rv = client.get(f"/api/support/elections/{election_id}/login-codes")
+    assert rv.status_code == 200
+    html = rv.data.decode()
+    assert (
+        "<tr><th>Jurisdiction</th><th>Email</th><th>Login Code</th><th>Expires</th></tr>"
+        in html
+    )
+    assert parse_login_code_rows(html) == []
+
+    # Set up a JA in another audit
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    other_election_id = create_election(
+        client,
+        audit_name="Other audit",
+        organization_id=Election.query.get(election_id).organization_id,
+    )
+    rv = upload_jurisdictions_file(
+        client,
+        io.BytesIO(b"Jurisdiction,Admin Email\nJ1,other-ja@example.com\n"),
+        other_election_id,
+    )
+    assert_ok(rv)
+
+    now = datetime.now(timezone.utc)
+    default_ja = User.query.filter_by(email=default_ja_email(election_id)).one()
+    j3_ja_email = f"j3-{election_id}@example.com"
+    j3_ja = User.query.filter_by(email=j3_ja_email).one()
+    other_ja = User.query.filter_by(email="other-ja@example.com").one()
+
+    default_ja.login_code = "123456"
+    default_ja.login_code_requested_at = now - timedelta(minutes=5)
+    j3_ja.login_code = "654321"
+    j3_ja.login_code_requested_at = now - timedelta(minutes=1)
+    other_ja.login_code = "111111"
+    other_ja.login_code_requested_at = now
+    db_session.commit()
+
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
+    rv = client.get(f"/api/support/elections/{election_id}/login-codes")
+    assert parse_login_code_rows(rv.data.decode()) == [
+        ["J1", default_ja_email(election_id), "123456", "In 10 min"],
+        ["J2", default_ja_email(election_id), "123456", "In 10 min"],
+        ["J3", j3_ja_email, "654321", "In 14 min"],
+    ]
+
+    # Expired codes aren't listed
+    default_ja = User.query.filter_by(email=default_ja_email(election_id)).one()
+    default_ja.login_code_requested_at = now - timedelta(minutes=16)
+    db_session.commit()
+    rv = client.get(f"/api/support/elections/{election_id}/login-codes")
+    assert parse_login_code_rows(rv.data.decode()) == [
+        ["J3", j3_ja_email, "654321", "In 14 min"],
+    ]
+
+
+def test_support_list_jurisdiction_admin_login_codes_requires_support(
+    client: FlaskClient, election_id: str
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    clear_support_user(client)
+    rv = client.get(f"/api/support/elections/{election_id}/login-codes")
+    assert rv.status_code == 403

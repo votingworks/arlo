@@ -27,6 +27,7 @@ from ..config import (
     AUDITADMIN_AUTH0_CLIENT_ID,
     AUDITADMIN_AUTH0_CLIENT_SECRET,
     FLASK_ENV,
+    LOGIN_CODE_LIFETIME,
 )
 from ..util.jsonschema import JSONDict, validate
 from ..util.isoformat import isoformat
@@ -406,6 +407,51 @@ def get_election(election_id: str):
 def get_election_round_progress(election_id: str):
     election = get_or_404(Election, election_id)
     return jsonify(get_round_progress(election))
+
+
+@api.route("/support/elections/<election_id>/login-codes", methods=["GET"])
+@restrict_access_support
+def list_jurisdiction_admin_login_codes(election_id: str):
+    election = get_or_404(Election, election_id)
+    now = datetime.now(timezone.utc)
+    rows = (
+        User.query.join(User.jurisdictions)
+        .filter(Jurisdiction.election_id == election.id)
+        .filter(User.login_code.isnot(None))
+        .filter(User.login_code_requested_at > now - LOGIN_CODE_LIFETIME)
+        .order_by(Jurisdiction.name, User.email)
+        .with_entities(
+            Jurisdiction.name,
+            User.email,
+            User.login_code,
+            User.login_code_requested_at,
+        )
+        .all()
+    )
+
+    def format_row(row: tuple[str, str, str, datetime]) -> str:
+        jurisdiction_name, email, login_code, requested_at = row
+        expires_at = requested_at + LOGIN_CODE_LIFETIME
+        minutes_until_expiry = max(1, round((expires_at - now).total_seconds() / 60))
+        expiry = f"In {minutes_until_expiry} min"
+        parts = [jurisdiction_name, email, login_code, expiry]
+        return f"<tr>{''.join([f'<td>{part}</td>' for part in parts])}</tr>"
+
+    newline = "\n"
+    return f"""
+<html>
+<body style='padding: 1rem;'>
+    <table style='border-spacing: 0.5rem; text-align: left;'>
+        <thead>
+            <tr><th>Jurisdiction</th><th>Email</th><th>Login Code</th><th>Expires</th></tr>
+        </thead>
+        <tbody>
+            {newline.join([format_row(row) for row in rows])}
+        </tbody>
+    </table>
+</body>
+</html>
+    """
 
 
 @api.route("/support/elections/<election_id>", methods=["DELETE"])
