@@ -481,26 +481,29 @@ def process_batch_inventory_cvr_file(
             headers = next(cvrs)
             header_indices = get_header_indices(headers)
             for row_index, row in enumerate(cvrs):
+                batch_col = column_value(
+                    row,
+                    "Batch",
+                    row_index + 1,
+                    header_indices,
+                    required=False,
+                )
+                batch_name_col = column_value(
+                    row,
+                    "Batch Name",
+                    row_index + 1,
+                    header_indices,
+                    required=False,
+                )
+                batch = batch_col if batch_col is not None else batch_name_col
+                if batch is None:
+                    raise UserError(
+                        "Missing Batch and Batch Name columns from CSV, at least one must be defined."
+                    )
+                batch_key: BatchKey = ("", batch)  # ty: ignore[unsound-assignment]
+                ballot_count_by_batch[batch_key] += 1
+
                 for contest in contests:
-                    batch_col = column_value(
-                        row,
-                        "Batch",
-                        row_index + 1,
-                        header_indices,
-                        required=False,
-                    )
-                    batch_name_col = column_value(
-                        row,
-                        "Batch Name",
-                        row_index + 1,
-                        header_indices,
-                        required=False,
-                    )
-                    batch = batch_col if batch_col is not None else batch_name_col
-                    if batch is None:
-                        raise UserError(
-                            "Missing Batch and Batch Name columns from CSV, at least one must be defined."
-                        )
                     choice_name = column_value(
                         row,
                         contest.name,
@@ -508,13 +511,10 @@ def process_batch_inventory_cvr_file(
                         header_indices,
                         required=False,
                     )
-
-                    batch_key: BatchKey = ("", batch)  # ty: ignore[unsound-assignment]
                     choice_id = validate_choice_name_and_get_choice_id(
                         contest, choice_name
                     )
 
-                    ballot_count_by_batch[batch_key] += 1
                     if choice_id:
                         batch_tallies[batch_key][choice_id] += 1
 

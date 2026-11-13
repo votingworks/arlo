@@ -2722,6 +2722,39 @@ def test_batch_inventory_ess_cvr_upload_no_ballot_file(
         )
 
 
+def test_batch_inventory_ess_single_csv_multi_contest_ballot_counts(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],  # pylint: disable=unused-argument
+):
+    # Each CVR row is one ballot, no matter how many contests are on it
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type",
+        {"systemType": CvrFileType.ESS},
+    )
+    assert_ok(rv)
+    rv = upload_batch_inventory_cvr(
+        client,
+        io.BytesIO(ESS_CVR_WITH_BATCH_CVR_COLUMN.encode()),
+        election_id,
+        jurisdiction_ids[0],
+        "text/csv",
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/ballot-manifest"
+    )
+    assert rv.data.decode("utf-8") == (
+        "Batch Name,Number of Ballots\r\nBatch 1,4\r\nBatch 2,5\r\nBatch 3,5\r\n"
+    )
+
+
 def test_batch_inventory_ess_cvr_upload_multi_contest(
     client: FlaskClient,
     election_id: str,
