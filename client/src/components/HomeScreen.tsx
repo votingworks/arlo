@@ -214,18 +214,6 @@ const LoginScreen: React.FC = () => {
             <Button type="submit" intent={Intent.PRIMARY} large>
               Log in to your audit
             </Button>
-            <p
-              style={{
-                marginTop: '15px',
-                padding: '10px',
-                backgroundColor: '#ede7f6',
-                borderRadius: '4px',
-                fontWeight: 'bold',
-              }}
-            >
-              If you do not have access to your email, please contact
-              VotingWorks Arlo support at 510-462-5454.
-            </p>
           </form>
         ) : (
           <>
