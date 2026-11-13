@@ -1,5 +1,6 @@
 import csv
 from datetime import datetime, timedelta
+import html
 import io
 import uuid
 import secrets
@@ -435,7 +436,9 @@ def list_jurisdiction_admin_login_codes(election_id: str):
         minutes_until_expiry = max(1, round((expires_at - now).total_seconds() / 60))
         expiry = f"In {minutes_until_expiry} min"
         parts = [jurisdiction_name, email, login_code, expiry]
-        return f"<tr>{''.join([f'<td>{part}</td>' for part in parts])}</tr>"
+        return (
+            f"<tr>{''.join([f'<td>{html.escape(part)}</td>' for part in parts])}</tr>"
+        )
 
     newline = "\n"
     return f"""
