@@ -48,6 +48,10 @@ const BATCH_INVENTORY_CONFIGS: {
   'a67791e3-90a0-4d4e-a5e7-929f82bf4ce6': {
     showBallotManifest: false,
   },
+  // Virginia - CVR Upload
+  'b52e1f51-6f3c-41bc-a528-5b252406ba4f': {
+    showBallotManifest: true,
+  },
 }
 
 export const useBatchInventoryFeatureFlag = (
