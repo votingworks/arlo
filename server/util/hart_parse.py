@@ -19,6 +19,15 @@ def findall_xml(xml: ElementTree | Element, tag: str):
     return xml.findall(f"{{{NAMESPACE}}}{tag}")
 
 
+def parse_contest_names(cvr_xml: ElementTree) -> set[str]:
+    # Hart CVRs list every contest on the ballot, including ones with no
+    # votes, so these are the contests on the ballot
+    return {
+        find_xml(contest, "Name").text
+        for contest in findall_xml(find_xml(cvr_xml, "Contests"), "Contest")
+    }
+
+
 def parse_contest_results(cvr_xml: ElementTree):
     # { contest_name: voted_for_choices }
     results = defaultdict(set)

@@ -57,7 +57,12 @@ from ..util.file import (
     timestamp_filename,
     unzip_files,
 )
-from ..util.hart_parse import find_xml, parse_contest_results, find_text_xml
+from ..util.hart_parse import (
+    find_xml,
+    find_text_xml,
+    parse_contest_names,
+    parse_contest_results,
+)
 from ..worker.tasks import UserError, background_task, create_background_task
 from . import ballot_manifest
 from ..util.csv_download import csv_response, jurisdiction_timestamp_name
@@ -647,6 +652,9 @@ def process_batch_inventory_cvr_file(
         batch_tallies: dict[BatchKey, dict[str, int]] = defaultdict(
             lambda: defaultdict(int)
         )
+        contest_ballot_counts_by_batch: dict[BatchKey, dict[str, int]] = defaultdict(
+            lambda: defaultdict(int)
+        )
 
         # cvr_file is a ZIP file with multiple XMLs
         zip_entry_names = unzip_files(cvr_file, working_directory)
@@ -678,7 +686,14 @@ def process_batch_inventory_cvr_file(
                 collapse_whitespace(contest_name): choice_names
                 for contest_name, choice_names in parse_contest_results(cvr_xml).items()
             }
+            contest_names_on_ballot = {
+                collapse_whitespace(contest_name)
+                for contest_name in parse_contest_names(cvr_xml)
+            }
             for contest in contests:
+                if collapse_whitespace(contest.name) in contest_names_on_ballot:
+                    contest_ballot_counts_by_batch[batch_key][contest.id] += 1
+
                 choices = contest_results.get(collapse_whitespace(contest.name), set())
                 validated_choice_ids = []
                 for choice_name in choices:
@@ -711,6 +726,9 @@ def process_batch_inventory_cvr_file(
             ballot_count_by_group=None,  # ty: ignore[invalid-argument-type]
             batch_to_counting_group=None,  # ty: ignore[invalid-argument-type]
             batch_tallies=dict_to_items_list(batch_tallies),
+            contest_ballot_counts_by_batch=dict_to_items_list(
+                contest_ballot_counts_by_batch
+            ),
         )
         batch_inventory_data.election_results = election_results  # ty: ignore[invalid-assignment]
 
@@ -1407,7 +1425,7 @@ def download_batch_inventory_ballot_manifest(
     should_include_container_column = len(batch_to_counting_group) > 0
 
     # Only card style data audits read per-contest counts, and only Dominion
-    # CVRs processed since the counts were added have them
+    # and Hart CVRs processed since the counts were added have them
     contests_with_ballot_count_column = (
         list(jurisdiction.contests)
         if election.audit_math_type == AuditMathType.MACRO_CARD_STYLE_DATA

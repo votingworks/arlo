@@ -1,4 +1,5 @@
 import csv
+import re
 import pytest
 from flask.testing import FlaskClient
 from ..helpers import *
@@ -3175,6 +3176,94 @@ def test_batch_inventory_card_style_data_manifest(
         "TABULATOR1 - BATCH2": {contest_1_id: 3, contest_2_id: 3},
         "TABULATOR2 - BATCH1": {contest_1_id: 3, contest_2_id: 3},
         "TABULATOR2 - BATCH2": {contest_1_id: 3, contest_2_id: 6},
+    }
+
+
+def without_contest_1(cvr_xml: str) -> str:
+    # Remove Contest 1 from a Hart CVR, as if it weren't on the ballot
+    return re.sub(
+        r"<Contest>\s*<Name>Contest 1</Name>.*?</Contest>",
+        "",
+        cvr_xml,
+        count=1,
+        flags=re.DOTALL,
+    )
+
+
+@pytest.mark.parametrize(
+    "election_id", [AuditMathType.MACRO_CARD_STYLE_DATA], indirect=True
+)
+def test_batch_inventory_hart_card_style_data_manifest(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: list[str],
+    contest_ids: list[str],
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type",
+        {"systemType": CvrFileType.HART},
+    )
+    assert_ok(rv)
+
+    hart_cvrs = [
+        build_hart_cvr("BATCH1", "1", "1-1-1", "0,1,1,1,0"),
+        build_hart_cvr("BATCH1", "2", "1-1-2", "1,0,1,0,1"),
+        # Undervoted in both contests, but both are still on the ballot
+        build_hart_cvr("BATCH1", "3", "1-1-3", "0,0,0,0,0"),
+        build_hart_cvr("BATCH2", "1", "1-2-1", "1,0,1,0,1"),
+        # Overvoted in Contest 1, which is still on the ballot
+        build_hart_cvr("BATCH2", "2", "1-2-2", "1,1,1,1,0"),
+        # Contest 1 isn't on these ballots
+        without_contest_1(build_hart_cvr("BATCH2", "3", "1-2-3", "0,0,1,0,1")),
+        without_contest_1(build_hart_cvr("BATCH2", "4", "1-2-4", "0,0,0,1,1")),
+    ]
+    rv = upload_batch_inventory_cvr(
+        client,
+        zip_hart_cvrs(hart_cvrs),
+        election_id,
+        jurisdiction_ids[0],
+        "application/zip",
+    )
+    assert_ok(rv)
+
+    contest_1_id, contest_2_id = contest_ids
+    election_results = BatchInventoryData.query.get(
+        jurisdiction_ids[0]
+    ).election_results
+    assert items_list_to_dict(election_results["contest_ballot_counts_by_batch"]) == {
+        ("", "BATCH1"): {contest_1_id: 3, contest_2_id: 3},
+        ("", "BATCH2"): {contest_1_id: 2, contest_2_id: 4},
+    }
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/ballot-manifest"
+    )
+    ballot_manifest = rv.data.decode("utf-8")
+    assert ballot_manifest == (
+        "Batch Name,Number of Ballots,Contest 1 - Number of Ballots,Contest 2 - Number of Ballots\r\n"
+        "BATCH1,3,3,3\r\n"
+        "BATCH2,4,2,4\r\n"
+    )
+
+    # The manifest parser reads the columns back
+    rv = upload_ballot_manifest(
+        client, io.BytesIO(ballot_manifest.encode()), election_id, jurisdiction_ids[0]
+    )
+    assert_ok(rv)
+    processing = get_file_processing(
+        client, election_id, jurisdiction_ids[0], "ballot-manifest"
+    )
+    assert processing["status"] == ProcessingStatus.PROCESSED
+    assert {
+        batch.name: batch.num_ballots_by_contest_id
+        for batch in Batch.query.filter_by(jurisdiction_id=jurisdiction_ids[0])
+    } == {
+        "BATCH1": {contest_1_id: 3, contest_2_id: 3},
+        "BATCH2": {contest_1_id: 2, contest_2_id: 4},
     }
 
 

@@ -4,6 +4,7 @@ from ...util.hart_parse import (
     find_text_xml,
     find_xml,
     findall_xml,
+    parse_contest_names,
     parse_contest_results,
 )
 
@@ -61,3 +62,21 @@ def test_parse_contest_results(namespace):
     results = parse_contest_results(cvr_xml)
     assert "Contest1" in results
     assert "Choice1" in results["Contest1"]
+
+
+def test_parse_contest_names(namespace):
+    cvr = Element(f"{{{namespace}}}CVR")
+    contests = Element(f"{{{namespace}}}Contests")
+    for name in ["Contest1", "Contest2"]:
+        contest = Element(f"{{{namespace}}}Contest")
+        contest_name = Element(f"{{{namespace}}}Name")
+        contest_name.text = name
+        contest.append(contest_name)
+        # No votes in either contest
+        contest.append(Element(f"{{{namespace}}}Options"))
+        contests.append(contest)
+    cvr.append(contests)
+    cvr_xml = ElementTree(cvr)
+
+    assert parse_contest_names(cvr_xml) == {"Contest1", "Contest2"}
+    assert parse_contest_results(cvr_xml) == {}
