@@ -3,27 +3,49 @@
 # that are relevant for database-backed storage, then simplifying for just our use case.
 
 import secrets
+from collections.abc import Iterator
 from typing import Any
 from datetime import datetime, timezone
 
 from flask import Flask, Request
 from flask.sessions import SessionInterface, SessionMixin
-from werkzeug.datastructures import CallbackDict
 from typing_extensions import override
 from .models import WebSession
 from .database import db_session
 from . import config
 
 
-class ArloSession(CallbackDict[str, Any], SessionMixin):
+class ArloSession(SessionMixin):
     def __init__(self, sid=None, initial=None):  # noqa: ANN001
-        def on_update(self):  # noqa: ANN001
-            self.modified = True
-
-        CallbackDict.__init__(self, initial, on_update)
+        self.data: dict[str, Any] = dict(initial or {})
+        self.updated_keys: set[str] = set()
         self.sid = sid
         self.permanent = True
         self.modified = False
+
+    @override
+    def __getitem__(self, key: str) -> Any:
+        return self.data[key]
+
+    @override
+    def __setitem__(self, key: str, value: Any) -> None:
+        self.data[key] = value
+        self.updated_keys.add(key)
+        self.modified = True
+
+    @override
+    def __delitem__(self, key: str) -> None:
+        del self.data[key]
+        self.updated_keys.add(key)
+        self.modified = True
+
+    @override
+    def __iter__(self) -> Iterator[str]:
+        return iter(self.data)
+
+    @override
+    def __len__(self) -> int:
+        return len(self.data)
 
 
 class ArloSessionInterface(SessionInterface):
@@ -56,10 +78,14 @@ class ArloSessionInterface(SessionInterface):
         # but has no impact if the URL handler completed successfully and called commit().
         db_session.remove()
 
-        saved_session = WebSession.query.filter_by(id=session.sid).first()
+        saved_session = (
+            WebSession.query.filter_by(id=session.sid).with_for_update().first()
+        )
 
         if saved_session:
-            saved_session.data = dict(session)
+            saved_session.data = merge_session_changes(
+                saved_session.data, session.data, session.updated_keys
+            )
         else:
             new_session = WebSession(id=session.sid, data=dict(session))
             db_session.add(new_session)
@@ -90,6 +116,19 @@ class ArloSessionInterface(SessionInterface):
             path=path,
             secure=secure,
         )
+
+
+# Concurrent requests share one session row, so a slow request that wrote back its whole
+# copy of the session would overwrite a later one that finished first. This could be a
+# separate login attempt that completed while the slow request was still running.
+# Write back only the keys this request set or deleted, so each request's changes are
+# preserved independently.
+def merge_session_changes(
+    stored: dict[str, Any], current: dict[str, Any], updated_keys: set[str]
+) -> dict[str, Any]:
+    merged = {key: value for key, value in stored.items() if key not in updated_keys}
+    merged.update({key: current[key] for key in updated_keys if key in current})
+    return merged
 
 
 def cleanup_sessions(db_session):  # noqa: ANN001
