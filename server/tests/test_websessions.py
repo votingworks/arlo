@@ -8,7 +8,7 @@ from .. import config
 from ..database import db_session
 
 
-def test_websession_create():
+def mock_app_request_response():
     app = Mock()
     app.config = {
         "SESSION_COOKIE_NAME": "COOKIE_MONSTER",
@@ -25,6 +25,11 @@ def test_websession_create():
     resp = Mock()
     resp.set_cookie = MagicMock()
 
+    return app, req, resp
+
+
+def test_websession_create():
+    app, req, resp = mock_app_request_response()
     asi = ArloSessionInterface()
     session = asi.open_session(app, req)
     assert session
@@ -70,3 +75,56 @@ def test_websession_create():
     session_3 = asi.open_session(app, req)
     assert session_3.sid != session.sid
     assert "foo" not in session_3
+
+
+def saved_session(initial):  # noqa: ANN001
+    app, req, resp = mock_app_request_response()
+    asi = ArloSessionInterface()
+    session = asi.open_session(app, req)
+    session.update(initial)
+    asi.save_session(app, session, resp)
+    req.cookies.get = MagicMock(return_value=session.sid)
+    return (
+        lambda: asi.open_session(app, req),
+        lambda session: asi.save_session(app, session, resp),
+    )
+
+
+def test_websession_overlapping_requests_keep_each_others_changes():
+    open_request, save = saved_session({"user": None, "last_request_at": 1})
+    slow_request, login_request = open_request(), open_request()
+
+    login_request["user"] = "jurisdiction_admin"
+    save(login_request)
+    slow_request["last_request_at"] = 2
+    save(slow_request)
+
+    assert dict(open_request()) == {
+        "_permanent": True,
+        "user": "jurisdiction_admin",
+        "last_request_at": 2,
+    }
+
+
+def test_websession_overlapping_requests_keep_each_others_deletions():
+    open_request, save = saved_session({"oauth_state": "abc"})
+    callback_request, other_request = open_request(), open_request()
+
+    del callback_request["oauth_state"]
+    save(callback_request)
+    other_request["user"] = "audit_admin"
+    save(other_request)
+
+    assert dict(open_request()) == {"_permanent": True, "user": "audit_admin"}
+
+
+def test_websession_setting_a_key_to_its_loaded_value_still_writes_it():
+    open_request, save = saved_session({"user": None})
+    login_request, logout_request = open_request(), open_request()
+
+    login_request["user"] = "jurisdiction_admin"
+    save(login_request)
+    logout_request["user"] = None
+    save(logout_request)
+
+    assert dict(open_request()) == {"_permanent": True, "user": None}

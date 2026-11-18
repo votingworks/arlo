@@ -1169,7 +1169,7 @@ def test_logout(client: FlaskClient, aa_email: str):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email)
 
     with client.session_transaction() as session:
-        previous_session = session.copy()  # ty: ignore[unresolved-attribute]
+        previous_session = dict(session)
 
     rv = client.get("/auth/logout")
     assert rv.status_code == 302
@@ -1190,7 +1190,7 @@ def test_logout(client: FlaskClient, aa_email: str):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email)
 
     with client.session_transaction() as session:
-        previous_session = session.copy()  # ty: ignore[unresolved-attribute]
+        previous_session = dict(session)
 
     rv = client.get("/auth/logout")
     assert rv.status_code == 302
@@ -1217,7 +1217,7 @@ def test_support_logout(client: FlaskClient, aa_email: str):
     set_support_user(client, SA_EMAIL)
 
     with client.session_transaction() as session:
-        previous_session = session.copy()  # ty: ignore[unresolved-attribute]
+        previous_session = dict(session)
 
     rv = client.get("/auth/support/logout")
     assert rv.status_code == 302
@@ -1237,7 +1237,7 @@ def test_support_logout(client: FlaskClient, aa_email: str):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email)
 
     with client.session_transaction() as session:
-        previous_session = session.copy()  # ty: ignore[unresolved-attribute]
+        previous_session = dict(session)
 
     rv = client.get("/auth/support/logout")
     assert rv.status_code == 302
