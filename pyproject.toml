@@ -18,7 +18,7 @@ dependencies = [
     "SQLAlchemy~=1.3.20",
     "typing-extensions>=4.1.0,<5",
     "auth0-python>=3.16.2,<4",
-    "gunicorn>=23.0.0,<24",
+    "gunicorn>=24.1.1,<25",
     "sentry-sdk[flask]>=2.36.0,<3",
     "athena",
     "psycopg2-binary>=2.9.9,<3",
