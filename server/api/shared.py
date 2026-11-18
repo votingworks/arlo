@@ -288,14 +288,7 @@ def sampled_batch_results(
     include_non_rla_batches=False,  # noqa: ANN001
 ) -> BatchTallies:
     results_by_batch_and_choice = (
-        Batch.query.filter(
-            Batch.id.in_(
-                Batch.query.join(Jurisdiction)
-                .filter(Jurisdiction.election_id == contest.election_id)
-                .join(SampledBatchDraw)
-                .values(Batch.id)
-            )
-        )
+        Batch.query.filter(Batch.draws.any())
         .join(Jurisdiction)
         .join(Jurisdiction.contests)
         .filter(Contest.id == contest.id)
