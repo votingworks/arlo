@@ -2,7 +2,7 @@ from collections import defaultdict
 import random
 from typing import TypedDict, cast as typing_cast
 from sqlalchemy import and_, func, literal
-from sqlalchemy.orm import joinedload, load_only, selectinload
+from sqlalchemy.orm import load_only, selectinload
 
 
 from ..models import *
@@ -534,16 +534,29 @@ def sampled_ballot_interpretations_to_cvrs(
         )
 
     ballots = ballots_query.options(
-        load_only(SampledBallot.id, SampledBallot.status),
-        joinedload(SampledBallot.interpretations)
-        .load_only(
-            BallotInterpretation.contest_id,
-            BallotInterpretation.interpretation,
-            BallotInterpretation.has_invalid_write_in,
-        )
-        .joinedload(BallotInterpretation.selected_choices)
-        .load_only(ContestChoice.id),
+        load_only(SampledBallot.id, SampledBallot.status)
     ).all()
+    interpretation_by_ballot_id = {
+        interpretation.ballot_id: interpretation
+        for interpretation in BallotInterpretation.query.filter_by(
+            contest_id=contest.id
+        )
+        .filter(
+            BallotInterpretation.ballot_id.in_(
+                ballots_query.with_entities(SampledBallot.id).subquery()
+            )
+        )
+        .options(
+            load_only(
+                BallotInterpretation.ballot_id,
+                BallotInterpretation.interpretation,
+                BallotInterpretation.has_invalid_write_in,
+            ),
+            selectinload(BallotInterpretation.selected_choices).load_only(
+                ContestChoice.id
+            ),
+        )
+    }
 
     write_in_choices = [
         choice for choice in contest.choices if str(choice.name).lower() == "write-in"
@@ -568,14 +581,7 @@ def sampled_ballot_interpretations_to_cvrs(
             cvrs[ballot.id] = {"times_sampled": times_sampled, "cvr": None}
 
         elif ballot.status == BallotStatus.AUDITED:
-            interpretation = next(
-                (
-                    interpretation
-                    for interpretation in ballot.interpretations
-                    if interpretation.contest_id == contest.id
-                ),
-                None,
-            )
+            interpretation = interpretation_by_ballot_id.get(ballot.id)
             if (
                 interpretation is None  # Legacy case for contest not on ballot
                 or interpretation.interpretation == Interpretation.CONTEST_NOT_ON_BALLOT
