@@ -796,7 +796,10 @@ class SampledBallotDraw(BaseModel):
     round = relationship("Round", back_populates="sampled_ballot_draws")
 
     contest_id = Column(
-        String(200), ForeignKey("contest.id", ondelete="cascade"), nullable=False
+        String(200),
+        ForeignKey("contest.id", ondelete="cascade"),
+        nullable=False,
+        index=True,
     )
     contest = relationship("Contest")
 
