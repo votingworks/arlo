@@ -1,0 +1,36 @@
+# Claude Approvals policy: https://code.claude.com/docs/en/approvals-setup
+#
+# Every change needs Claude's review to pass (then Claude approves) and
+# approval from one human who isn't a PR author. If the review has no result
+# (error, timeout, spend limit), the human approval alone is enough.
+#
+# Remove `mode: observe` to start enforcing this policy.
+version: 1
+mode: observe
+rules:
+  - purpose: "Blocked until Claude's review passes; then Claude approves and one person who isn't an author must approve. If the review has no result, one person who isn't an author is enough."
+    paths: ['**']
+    nested: inherit
+    verdict: { claude: blocks }
+    findings:
+      resolution: { claude/code_review: humans }
+    override:
+      - {
+          if: 'claude/code_review = error OR claude/code_review = incomplete',
+          verdict:
+            {
+              claude: comments,
+              seats: [{ count: 1, from: [humans, '!pr/authors'] }],
+            },
+        }
+      - {
+          if: 'claude/code_review = pass',
+          verdict:
+            {
+              claude: approves,
+              seats: [{ count: 1, from: [humans, '!pr/authors'] }],
+            },
+        }
+  - purpose: "Nobody can dismiss Claude's findings on the review rules by resolving them."
+    paths: ['**/.claude/**']
+    findings: { resolution: nobody }
